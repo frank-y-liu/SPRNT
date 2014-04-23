@@ -1,6 +1,0 @@
-A few shell scripts to invoke SPRNT binary and parse result files (in text format!)
-
-All will be installed in bin/ after running "make install"
-
-spt-mode.el defines the emacs mode for the spt files. 
-
