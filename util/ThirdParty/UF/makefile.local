@@ -1,0 +1,53 @@
+# -*- makefile -*- 
+
+## makefile for DRSS
+
+.PHONY: clean realclean
+
+
+##################################################################
+##
+## should not have to change too much beyond this point
+##
+
+OPT_FLAG = -Wall -O3 -fPIC
+INC = -IUMFPACK/Include -IAMD/Include -IUFconfig -ICOLAMD/Include \
+	-IKLU/Include -IBTF/Include
+BITS = -m64
+
+CFLAGS=-Wall ${OPT_FLAG} ${INC} ${BITS}
+CXXFLAGS=-Wall ${OPT_FLAG} ${INC} ${BITS}
+
+LINK_FLAGS=${BITS}
+
+## change this line since we have different top level drivers
+OBJS = lsolver.o csolver.o
+
+HDRS = lsolver.h solver_vec.h solver_def.h
+EXEC = libsolvers.so
+
+OBJS += $(wildcard UMFPACK/Lib/*.o)
+OBJS += $(wildcard KLU/Lib/*.o)
+OBJS += $(wildcard AMD/Lib/*.o)
+OBJS += $(wildcard BTF/Lib/*.o)
+OBJS += $(wildcard COLAMD/Lib/*.o)
+
+all: $(EXEC)
+
+
+$(OBJS): $(HDRS)
+$(EXEC): ${OBJS}
+	 $(CXX) $^ -o ${EXEC} -shared ${OPT_FLAG} ${LINK_FLAGS}
+
+## other options
+clean:
+	-rm -rf $(OBJS)
+
+realclean:
+	-rm -rf $(OBJS) $(EXEC) 
+
+distclean:
+	-rm -rf $(OBJS) $(EXEC) 
+
+## end
+

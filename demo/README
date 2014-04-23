@@ -1,0 +1,25 @@
+April 2014
+
+SPRNT can be invoked through API (application programming interface). By using API, the
+model developers have much more freedom to control the behavior of the simulation engine.
+(But they also have more responsbility to make sure things are done correctly). As a 
+matter of fact, the command-line version of SPRNT is simply a netlist parser on top of
+a bunch of API calls to the library. The example here is a simple demonstration on how 
+to get it done. Although the demo river network is hardcoded, it is quite possible to 
+integrate SPRNT into a more comprehensive simulation framework so that the river network 
+can be specified on the fly, simulated and analyzed, without even generate a file. 
+
+A few things to watch out:
+
+1. You have to provide the path to the solver dynamic library. After running "make install",
+   the solver library should be in "lib/". One way to set up the search path is 
+   "export LD_LIBRARY_PATH=../lib" or simply run "./run_demo.sh"
+
+2. Make sure you run "make install" before trying the example in this directory. See above 
+   for the reason.
+
+3. Make sure that the node index starts from 0, and sequentially increase. (This is not an
+   issue for the command-line command because a parser translates the node names to correct
+   node indices)
+
+

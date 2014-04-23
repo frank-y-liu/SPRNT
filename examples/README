@@ -1,0 +1,11 @@
+For each test, the makefile will do two things: 
+1. run SPRNT to generate output file
+2. compare the output file with golden results, stored in "golden"
+
+Note that the golden results are generated on a 64bit computer. If you
+compile the code on a 32bit computer, the output files will be different. 
+And the test will fail. You can manually compared the results to see
+if the results are drastically different from golden. 
+
+To run them manually, use "bin/run_sprint.sh"
+

@@ -1,0 +1,64 @@
+#
+#  Copyright (C) 2011, 2014 International Business Machines
+#
+#  Author:  Frank Liu, IBM
+#
+#  All Rights Reserved. This program and the accompanying materials
+#  are made available under the terms of the Eclipse Public License v1.0
+#  which accompanies this distribution, and is available at
+#  http://www.eclipse.org/legal/epl-v10.html
+#
+
+#
+# top level switches 
+
+CC = @CC@
+CXX = @CXX@
+FC = @F77@
+
+AR = @AR@
+RANLIB = @RANLIB@
+
+# where to find the libraries
+LIBHOME := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
+
+# optimization flags
+OPT_FLAG = -O3 -fPIC
+
+# Debug
+MYDEBUG =
+
+# bits info
+ifeq ("$(shell uname -m)","i686")
+  BITS = -m32
+else
+  BITS = -m64
+endif
+
+## gfortran libs
+LIBFORTRAN = -lgfortran
+
+## where to find blas
+# heavily tuned atlas, 
+#BLAS = -L/usr/local/atlas/lib -llapack -lf77blas -lcblas -latlas -lgfortran
+# standard offering blas
+BLAS = -lblas
+
+# where to find required libraries
+SPLINE_HOME=$(LIBHOME)/ThirdParty/CMLIB
+UF_HOME=$(LIBHOME)/ThirdParty/UF
+
+# sprnt library
+SRC_HOME=${LIBHOME}/src
+SPT_HOME=${LIBHOME}/spt
+UTL_HOME=${LIBHOME}/util
+
+# test
+TEST_HOME=${LIBHOME}/examples
+
+# we are done
+
+# Local Variables:
+# mode: makefile
+# End:
+

@@ -1,0 +1,8 @@
+April 2014, ver 1.2.2
+ - initial release. core functions: topology check, compute steady state 
+   solution, compute unsteady state solution.
+ - the river stream network can be specified in the "netlist" format.
+ - supports API mode, users can construct the river networks in 
+   memory, simulate to a certain time point, pause, update forcing terms,
+   and proceed to another time point, and so on. 
+
