@@ -3642,7 +3642,7 @@ _ACEOF
 
 else
 
-   as_fn_error $? "something is wrong with the math lib -m ..." "$LINENO" 5;
+   as_fn_error $? "unable to locate libgfortran" "$LINENO" 5;
 
 fi
 
