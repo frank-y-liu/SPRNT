@@ -22,8 +22,8 @@ include ${ROOT}/Make.rules
 ## should not have to change too much beyond this point
 ##
 
-CFLAGS=-Wall -DLINUX ${OPT_FLAG} -I${SRC_HOME} ${BITS}
-CXXFLAGS=-Wall -std=c++0x -DLINUX ${OPT_FLAG} -I${SRC_HOME} ${BITS}
+CFLAGS=-Wall -DLINUX -DGIT_HASH=\"$(GIT_HASH)\" ${OPT_FLAG} -I${SRC_HOME} ${BITS}
+CXXFLAGS=-Wall -std=c++0x -DLINUX -DGIT_HASH=\"$(GIT_HASH)\" ${OPT_FLAG} -I${SRC_HOME} ${BITS}
 
 LINK_FLAGS=-L${SRC_HOME} -lsprnt \
 	-L${SPLINE_HOME} -ldbsplin \
