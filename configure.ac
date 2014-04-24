@@ -48,6 +48,11 @@ AC_CHECK_LIB(m,cbrt,[],[
    AC_MSG_ERROR([something is wrong with the math lib -m ...]);
 ])
 
+# check libgfortran, should be installed with gfortran
+AC_CHECK_LIB(gfortran,_gfortran_fget,[],[
+   AC_MSG_ERROR([something is wrong with the math lib -m ...]);
+])
+
 # we also need blas
 AC_CHECK_LIB(blas,dnrm2_,[],[
    AC_MSG_ERROR([unable to locate the blas library]);

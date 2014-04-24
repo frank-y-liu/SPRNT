@@ -3596,6 +3596,57 @@ else
 fi
 
 
+# check libgfortran, should be installed with gfortran
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for _gfortran_fget in -lgfortran" >&5
+$as_echo_n "checking for _gfortran_fget in -lgfortran... " >&6; }
+if ${ac_cv_lib_gfortran__gfortran_fget+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lgfortran  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char _gfortran_fget ();
+int
+main ()
+{
+return _gfortran_fget ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_gfortran__gfortran_fget=yes
+else
+  ac_cv_lib_gfortran__gfortran_fget=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_gfortran__gfortran_fget" >&5
+$as_echo "$ac_cv_lib_gfortran__gfortran_fget" >&6; }
+if test "x$ac_cv_lib_gfortran__gfortran_fget" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBGFORTRAN 1
+_ACEOF
+
+  LIBS="-lgfortran $LIBS"
+
+else
+
+   as_fn_error $? "something is wrong with the math lib -m ..." "$LINENO" 5;
+
+fi
+
+
 # we also need blas
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for dnrm2_ in -lblas" >&5
 $as_echo_n "checking for dnrm2_ in -lblas... " >&6; }
