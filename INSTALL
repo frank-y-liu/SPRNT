@@ -41,3 +41,9 @@ make clean                          : remove the objective files
 make realclean                      : remove the static library and executables
 make distclean                      : remove thirdparty components
 
+To run SPRNT:
+The easiest way is to use the script "run_spt.sh". After "make install", it is available in
+bin directory (default ./bin), as well as the SPRNT executable and the dynamic libray. There
+are afew examples in ./examples directory, which can be run manually 
+
+

@@ -7,5 +7,5 @@ compile the code on a 32bit computer, the output files will be different.
 And the test will fail. You can manually compared the results to see
 if the results are drastically different from golden. 
 
-To run them manually, use "bin/run_sprint.sh"
+To run them manually, use "bin/run_spt.sh"
 
