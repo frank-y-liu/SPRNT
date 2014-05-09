@@ -10,7 +10,7 @@ BTF-1.1.3
 COLAMD-2.7.4
 UFconfig-3.7.1
 
-Other versions probably will work, but I haven't test them. If you want to try, you 
+Other versions probably will work, but I haven't tested them. If you want to try, you 
 are on your own.
 
 You can manually download the source code of the packages and drop them in the CMLIB
