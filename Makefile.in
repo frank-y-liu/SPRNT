@@ -95,6 +95,7 @@ distclean:
 	-rm -rf Makefile
 	-rm -rf config.status
 	-rm -rf config.log
+	-rm -rf aclocal.m4
 
 # Local Variables:
 # mode: makefile

@@ -58,6 +58,10 @@ AC_CHECK_LIB(blas,dnrm2_,[],[
    AC_MSG_ERROR([unable to locate the blas library]);
 ])
 
+# check if c++0x is available, if so, use it
+# if not, use slower 
+AX_LOC_CXX_COMPILE_STDCXX_0X
+
 AC_CONFIG_FILES([
 Make.rules
 Makefile
