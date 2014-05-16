@@ -23,7 +23,7 @@ include ${ROOT}/Make.rules
 ##
 
 CFLAGS=-Wall -DLINUX -DGIT_HASH=\"$(GIT_HASH)\" ${OPT_FLAG} -I${SRC_HOME} ${BITS}
-CXXFLAGS=-Wall -std=c++0x -DLINUX -DGIT_HASH=\"$(GIT_HASH)\" ${OPT_FLAG} -I${SRC_HOME} ${BITS}
+CXXFLAGS=-Wall ${CXX_STDCXX_0X_FLAG} -DLINUX -DGIT_HASH=\"$(GIT_HASH)\" ${OPT_FLAG} -I${SRC_HOME} ${BITS}
 
 LINK_FLAGS=-L${SRC_HOME} -lsprnt \
 	-L${SPLINE_HOME} -ldbsplin \

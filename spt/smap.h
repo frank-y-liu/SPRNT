@@ -24,23 +24,46 @@
  capacity: since we use int, the max number of entries is ~2,000,000,000
 
  not particularly fast, but we only use it when parsing the netlist.
+
+ Update:
+   on older compiler which doesn't support c++0x, use <map>
+   unscientific testing shows <map> is twice as slow as <unordered_map>
+ 
  */
 
 #ifndef _SMAP_H
 #define _SMAP_H
 
+#if __cplusplus > 201100L
+#define HAS_CXX_SUPPORT
+#endif
+
 #include <string>
+#ifdef HAS_CXX_SUPPORT
 #include <unordered_map>
+#else
+#include <map>
+#endif
 
 using namespace std;
 
 class SMap {
 private:
+#ifdef HAS_CXX_SUPPORT
+  typedef std::unordered_map< std::string, int>   MapType;
+#else
+  typedef std::map<std::string, int>               MapType;
+#endif
   int                             _cntr;
-  unordered_map < string, int >   _M;
+  MapType                         _M;
 
 public:
+#ifdef HAS_CXX_SUPPORT
   SMap():_cntr(0) { _M.rehash(15000000); } // slightly different hash function
+#else
+  SMap():_cntr(0) {}
+#endif
+
   ~SMap() {}
 
   /* public methods */
@@ -51,7 +74,7 @@ public:
   // if not, create a new entry and returns key
   int Create(const char *s) {
     string ns(s);
-    unordered_map < string, int >::const_iterator loc;
+    MapType::const_iterator loc;
 
     loc = _M.find(ns);
     if ( loc == _M.end() ) {
@@ -67,7 +90,7 @@ public:
   // if found, return key
   int Check(const char *s) {
     string ns(s);
-    unordered_map < string, int >::const_iterator loc;
+    MapType::const_iterator loc;
 
     loc = _M.find(ns);
     if ( loc == _M.end() ) {
@@ -79,6 +102,7 @@ public:
   
 };
 
+#undef HAS_CXX_SUPPORT
 #endif
 
 // Local Variables: 
