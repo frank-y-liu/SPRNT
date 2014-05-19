@@ -58,8 +58,9 @@ AC_CHECK_LIB(blas,dnrm2_,[],[
    AC_MSG_ERROR([unable to locate the blas library]);
 ])
 
-# check if c++0x is available, if so, use it
-# if not, use slower 
+# check if c++0x is available
+#  if yes, use <unordered_map> for string->integer mapping
+#  if not, use <map> (about twice as slow as <unordered_map>)
 AX_LOC_CXX_COMPILE_STDCXX_0X
 
 AC_CONFIG_FILES([
