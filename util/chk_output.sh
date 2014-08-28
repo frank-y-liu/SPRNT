@@ -24,7 +24,7 @@ if [ ! $? -eq 0 ]; then
 fi
 
 echo "Output file $1 contains the following nodes:"
-cat $1 | sed '/^\*\*\*/d' | awk '{print $1}' | sort -n -u |\
+cat $1 | sed '/^\*\*\*/d' | awk '{print $1}' | sort -u |\
 awk '{printf("%s ",$1); if ( NR % 13 == 0 ){printf("\n");}}END{printf("\n");}'
 echo " "
 echo "Output file $1 contains unsteady results at the following time points:"
