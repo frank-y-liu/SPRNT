@@ -17,6 +17,7 @@
 #define _SIM_PARSE_H
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include <assert.h>

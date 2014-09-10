@@ -11,11 +11,12 @@
 #
 
 # Frank Liu, May 2014,
+# Frank Liu, Sept 2014: watch out when the c++0x is not set 
 # 
 # Modified to define a variable CXX_STDCXX_0X_FLAG, 
 # based on AX_CXX_COMPILE_STDCXX_0X written by B. Kosnik
 # 
-# honor the same license - free as beer, as far as the copyright notice is displayed
+# honor the same license - free as in beer, as far as the copyright notice is displayed
 
 # LICENSE
 #
