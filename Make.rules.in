@@ -58,7 +58,7 @@ UTL_HOME=${LIBHOME}/util
 TEST_HOME=${LIBHOME}/examples
 
 ## get git hash
-GIT_HASH := $(shell git rev-parse --short=16 HEAD)
+GIT_HASH := $(shell git rev-parse --short=8 HEAD)
 
 # we are done
 
