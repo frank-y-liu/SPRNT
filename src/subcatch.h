@@ -175,6 +175,10 @@ class Subcatchment {
   double CalFroude();                                  // return optimal step size and
 						       // calculate froude numbers
 
+  // as the name says
+  void CopyXpToX(void) { memcpy(&_X[0], &_Xp[0], _num_eqns*sizeof(double) ); }
+  void CopyXpToXtm1(void) { memcpy(&_Xtm1[0], &_Xp[0], _num_eqns*sizeof(double) ); }
+
   // bounding
   double Accept(double t, int needed, double& qdif, double &adif);
   int CheckMinA(double mina);   // check min A, not for bounding
