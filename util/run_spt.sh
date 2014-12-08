@@ -13,8 +13,7 @@ if [ ! -r "$SCRIPTPATH/../lib/libsolvers.so" ]; then
   exit -1 
 fi
 if [ $# -lt 1 ]; then
-  echo "Usage: `basename $0` <netlist file>"
-  echo "       `basename $0` -checkonly <netlist file>"
+  $SCRIPTPATH/sprnt
   exit 1
 fi
 
