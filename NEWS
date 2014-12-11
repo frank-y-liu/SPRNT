@@ -6,3 +6,6 @@ April 2014, ver 1.2.2
    memory, simulate to a certain time point, pause, update forcing terms,
    and proceed to another time point, and so on. 
 
+December 2014, ver 1.2.3
+ - Added a separate driver to enable "rolling" simulation, basically a quick-
+   and-dirty way of API function. It will not be automatically built.
