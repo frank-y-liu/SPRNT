@@ -118,7 +118,7 @@ int main(int argc, char** argv) {
   } 
 
   // steady solve, two phases
-  rc = SUB->SteadySolve(600, 600, 2*OPT.Tol());
+  rc = SUB->SteadySolve(600, 600, 2.0*OPT.Tol());
   if (rc<0) {
     fprintf(stdout,"[EE]: first phase of steady-state solve failed\n");
     goto out;

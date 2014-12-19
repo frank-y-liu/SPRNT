@@ -248,7 +248,14 @@ int ngraph::TChk() {
     
     junk = this->_FindDownStreamNodes(nn, &tmp_nodes[0], &tmp_vals[0]);
     vv += nn->Injection();
-    nn->SumDown() += vv;
+    // we add the injection at this node when computing the Q, but it has to propagate
+    // downstream. This is due to the definition of the Qlateral. Except when the
+    // injection is at the LEAF, in which case it's a Qsource and we have to keep it!
+    if ( LEAF == nn->GetType() ) {
+      nn->SumDown() += vv;
+    } else {
+      nn->SumDown() += vv-nn->Injection(); 
+    }
     for (int jj=0; jj<junk; jj++) {
       NS.Push(tmp_nodes[jj]);
       VS.Push(vv*tmp_vals[jj]);
