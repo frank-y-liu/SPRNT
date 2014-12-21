@@ -438,6 +438,7 @@ int Subcatchment::MakeSolver(int mx_sz) {
   _M.SetDimensions(_num_eqns, _num_eqns);
 
   _s = new Solver_Interface;
+  // heuristics to allocate different solvers
 #if 1 
   if ( mx_sz < 16383 ) {
     if ((_s->Setup(L_KLU)) < 0 ) {
@@ -745,7 +746,6 @@ int Subcatchment::CheckMinA(double mina) {
 
   for (int j=1; j<_num_eqns; j+=2) {
     if (_X[j]-mina < 0 ) {
-      //      fprintf(stdout,"Found small A:%.3e\n", _X[j]);
 #if 0
       _X[j] = -0.1*_X[j];
 #else
@@ -1024,7 +1024,8 @@ int Subcatchment::SteadySolve(int jac_num, int max_iter, double tol) {
   this->InitSolutions();
 
   // do a few full blow Newton's iteration to make sure
-  int rc;
+  int rc=0;
+#if 1
   int dobounding=1, num_iter=0;
   double maxnorm, minnorm, tdiff;
   FILE *F=NULL;
@@ -1035,7 +1036,7 @@ int Subcatchment::SteadySolve(int jac_num, int max_iter, double tol) {
   } else {
     fprintf(stdout,"[II]: Steady state solve converged in %d steps\n", num_iter);
   }
-  
+#endif  
   return (rc);
 
 }
