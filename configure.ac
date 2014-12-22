@@ -1,5 +1,11 @@
 # A few checks to make sure we have required components
 # 
+# The configure file will not be removed and should be fairly portable
+# To create new configure file, do the following:
+#    aclocal -I . 
+#    autoconf
+#
+# use -I flag to make sure that the local m4 will be used.
 
 AC_INIT(sprint_config, version_0.9)
 AC_MSG_NOTICE([Checking required libraries for SPRNT])
@@ -78,6 +84,11 @@ AC_MSG_NOTICE([ make dep])
 AC_MSG_NOTICE([ make ])
 AC_MSG_NOTICE([ make test (optional)])
 AC_MSG_NOTICE([ make install])
+AC_MSG_NOTICE([Options to clean])
+AC_MSG_NOTICE([ make uninstall - as the name says])
+AC_MSG_NOTICE([ make clean     - clean the libraries only ])
+AC_MSG_NOTICE([ make realclean - linbraries + binary])
+AC_MSG_NOTICE([ make distclean - remove downloadd 3rd party components and Make files])
 AC_MSG_NOTICE([==============================================================])
 
 ## we are done

@@ -3699,8 +3699,9 @@ else
 fi
 
 
-# check if c++0x is available, if so, use it
-# if not, use slower
+# check if c++0x is available
+#  if yes, use <unordered_map> for string->integer mapping
+#  if not, use <map> (about twice as slow as <unordered_map>)
 
 
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking if g++ supports C++0x features without additional flags" >&5
@@ -5060,6 +5061,16 @@ $as_echo "$as_me:  make " >&6;}
 $as_echo "$as_me:  make test (optional)" >&6;}
 { $as_echo "$as_me:${as_lineno-$LINENO}:  make install" >&5
 $as_echo "$as_me:  make install" >&6;}
+{ $as_echo "$as_me:${as_lineno-$LINENO}: Options to clean" >&5
+$as_echo "$as_me: Options to clean" >&6;}
+{ $as_echo "$as_me:${as_lineno-$LINENO}:  make uninstall - as the name says" >&5
+$as_echo "$as_me:  make uninstall - as the name says" >&6;}
+{ $as_echo "$as_me:${as_lineno-$LINENO}:  make clean     - clean the libraries only " >&5
+$as_echo "$as_me:  make clean     - clean the libraries only " >&6;}
+{ $as_echo "$as_me:${as_lineno-$LINENO}:  make realclean - linbraries + binary" >&5
+$as_echo "$as_me:  make realclean - linbraries + binary" >&6;}
+{ $as_echo "$as_me:${as_lineno-$LINENO}:  make distclean - remove downloadd 3rd party components and Make files" >&5
+$as_echo "$as_me:  make distclean - remove downloadd 3rd party components and Make files" >&6;}
 { $as_echo "$as_me:${as_lineno-$LINENO}: ==============================================================" >&5
 $as_echo "$as_me: ==============================================================" >&6;}
 
