@@ -926,14 +926,18 @@ int Subcatchment::SteadySolve(int jac_num, int max_iter, double tol) {
 
   int       tmpbuf[16], status, cur, nxt, fo[32];
   Node      *pn;
-  double    aa, qq, len, t1, t2, dadx, naa, correction, ratio[32];
+  double    aa, qq, len, ratio[32];
   if ( _G.GetNumRoots() != 1 ) {
     fprintf(stdout,"EEE Bummer: requires one (and only one) root node. Found %d\n",
 	    _G.GetNumRoots() );
     return (-1);
   }
   
-  // we are just going to use a DFS traversal by using a stack
+#if 0
+  // option 1
+  // DFS traversal + BE formula, deprecated
+
+  double t1,t2, dadx, correction, naa;
   _G.GetRoots(&tmpbuf[0]); // too cautious?
   cur = tmpbuf[0];  
 
@@ -1001,12 +1005,8 @@ int Subcatchment::SteadySolve(int jac_num, int max_iter, double tol) {
       fprintf(stdout,"     correction=%.3e\n", correction);
 #endif
 
-#if 1
       if ( aa > correction) naa = aa - correction;
       else                  naa = aa;
-#else
-      naa = aa;
-#endif
 
       ST.Push( nxt );
       ST_A.Push( naa );
@@ -1020,6 +1020,55 @@ int Subcatchment::SteadySolve(int jac_num, int max_iter, double tol) {
     } // else we are at leaves, simply do nothing
   }
 
+#else
+  // option 2
+  // Use A associated with normal depth
+  // no need to do DFS traversal, but use stack so that we can handle branches nicely
+
+  _G.GetRoots(&tmpbuf[0]);
+  cur = tmpbuf[0];  
+  pn = this->GetNode( cur );  
+
+  aa = _G.GetA( cur );
+  qq = _G.GetQ( cur );
+
+  // we don't do anything for the root node, since A is already given, just copy the values
+  pn->Q0() = qq;
+  pn->A0() = aa;
+
+  nxt = _G.GetUpstreamNode( cur );
+  ST.Push( nxt );
+  
+  // use stack
+  while (1) {
+    status = ST.Pop(cur);
+    if ( status == -1 ) break; // stack is empty, done!
+    
+    pn = this->GetNode( cur );
+    qq = _G.GetQ( cur );
+    pn->Q0() = qq;
+
+    aa = pn->KinematicEstimate( qq );
+    pn->A0() = aa;
+
+#if 0
+    fprintf(stdout,"a=%.3e q=%.3e\n", aa, qq);
+#endif
+
+    status = _G.GetUpstreamLength( cur, len); // whether we are at branch point
+    if ( status == 0 ) {
+      nxt = _G.GetUpstreamNode( cur );
+      ST.Push( nxt );
+    } else {
+      _G.GetJunctionFanouts( cur, &fo[0], &ratio[0] );
+      for (int jj=0; jj<status; jj++) {
+	ST.Push( fo[jj] );
+      }
+    }
+  }
+
+#endif
+  
   // copy to X
   this->InitSolutions();
 
@@ -1036,7 +1085,8 @@ int Subcatchment::SteadySolve(int jac_num, int max_iter, double tol) {
   } else {
     fprintf(stdout,"[II]: Steady state solve converged in %d steps\n", num_iter);
   }
-#endif  
+#endif
+
   return (rc);
 
 }
