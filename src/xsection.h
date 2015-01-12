@@ -59,9 +59,6 @@ class XSection {
 
   virtual int ReachedBankFull(double a) { return 0; }
   virtual int ReachedMinimalA(double a)     { return 0; }
-  void GetQbyManning(double a, double s, double n,
-		     double &q, double &dqda); // manning's method
-  double GetKinemA(double q, double s, double n, double a0);
 
 };
 

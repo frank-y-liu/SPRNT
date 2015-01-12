@@ -21,49 +21,6 @@
 #include "xsection.h"
 #include "options.h"
 
-// get Q by Manning's formula
-void XSection::GetQbyManning(double a, double s, double n, double &q, double &dqda) {
-  double rr = sqrt(s)/n;
-  double p, dpda;
-  double s1;
-
-  this->GetHydroRadius(a, p, dpda);
-  s1 = pow(a/p, 0.666667);
-
-  q = rr*a*s1;
-  dqda = rr*(1.66667*s1 - 0.666667*(a/p)*s1*dpda);
-}
-
-// get A based on kinematic assumption, use Newton's method
-double XSection::GetKinemA(double q, double s, double n, double a0) {
-  double tol=1e-5*ABS(q);   // sort of arbitrary
-  double stp=0.05;
-  double a1, q0, q1, dq, rhs;
-  int c1=0, c2=0;
-
-  // first use secant method to find a good spot
-  this->GetQbyManning(a0, s, n, q0, dq);
-  a1 = (1.0+0.5*stp)*a0;
-  this->GetQbyManning(a1, s, n, q1, dq);
-  
-  while ( (q-q0)*(q-q1) > 0) {
-    if ( ABS(q-q1) > ABS(q-q0) ) stp = -stp;
-    a1 = (1.0+stp)*a1;
-    this->GetQbyManning(a1, s, n, q1, dq);
-    c1++;
-  }
-
-  // Newton's method, starting from a1
-  rhs = q1-q;
-  while ( ABS(rhs) > tol ) {
-    a1 = a1 - 0.75 * rhs/dq;
-    this->GetQbyManning(a1, s, n, q1, dq);
-    rhs = q1-q;
-    c2++;
-  }
-  return (a1);
-}
-
 // R type, rectangular
 inline double R_XSection::GetDepth(double a) {
   return a/_b0;
@@ -109,8 +66,10 @@ void R_XSection::GetEqFriction(double a, double &ef, double &efda) {
 }
 
 void R_XSection::GetHydroRadius(double a, double &r, double &drda) {
-  r = 2*a/_b0 + _b0;    // need to be double checked!
-  drda = 2/_b0;
+  double p;   // wetted perimeter
+  p = 2*a/_b0 + _b0;
+  r = a/p;
+  drda = (1.0 - a/p *( 2/_b0))/p;
 }
 
 // T type, trapezoidal 
