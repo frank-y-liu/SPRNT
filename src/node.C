@@ -51,8 +51,9 @@ void Node::SetInitValues(double *X) {
   X[_a_idx] = _a0;
 }
 
-/* kinematic routing using Newton's method, returns A */
-// need to debug the code
+/* kinematic routing using bisection method, returns A */
+/* if s_r <= 0, returns -1.0 
+   upper level code should take care of it */
 double Node::KinematicEstimate(double Q) {
   const double tol = 1e-6;
   const int num_iter = 50;   // all hard coded 
@@ -63,9 +64,13 @@ double Node::KinematicEstimate(double Q) {
   double r, drda;
   double v0, v1, vt;
 
+  if ( _sr < 5e-6 ) {  // sr could be negative or zero, make coef NaN, or zero
+    return -1.0;
+  }
+
   // we use bisection method, 
   a0 = 1e-6;
-  a1 = 1;
+  a1 = 0.01;
   while (1) {
     _xs->GetHydroRadius(a1,r,drda);
     v1 = coef*pow(r,p1)*a1 - Q;

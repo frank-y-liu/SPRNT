@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
   OPT.SSTol() = 5e-8;
   OPT.Tol() = 1e-6;
   OPT.EpsilonA() =  1e-4;
-  OPT.DebugLevel() = 0;
+  OPT.DebugLevel() = 0;  // Debug level is exposed by VERBOSE flag as well 
 
   rc = read_spt_from_file(F, SUB, NODE_NAMES, &HASH, stdout); // also modifies OPT and
                                                               // STAT in the global

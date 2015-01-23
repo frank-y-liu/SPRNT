@@ -1032,6 +1032,8 @@ int Subcatchment::SteadySolve(int jac_num, int max_iter, double tol) {
   aa = _G.GetA( cur );
   qq = _G.GetQ( cur );
 
+  double prev_aa = aa;
+
   // we don't do anything for the root node, since A is already given, just copy the values
   pn->Q0() = qq;
   pn->A0() = aa;
@@ -1049,7 +1051,12 @@ int Subcatchment::SteadySolve(int jac_num, int max_iter, double tol) {
     pn->Q0() = qq;
 
     aa = pn->KinematicEstimate( qq );
-    pn->A0() = aa;
+    if ( aa < 0 ) { // negative slope, use a conservative value
+      pn->A0() = 10*prev_aa;
+    } else {
+      pn->A0() = aa;
+      prev_aa = aa;
+    }
 
 #if 0
     fprintf(stdout,"a=%.3e q=%.3e\n", aa, qq);
@@ -1072,7 +1079,7 @@ int Subcatchment::SteadySolve(int jac_num, int max_iter, double tol) {
   // copy to X
   this->InitSolutions();
 
-  // do a few full blow Newton's iteration to make sure
+  // do a few Newton's iterations to solve for A only
   int rc=0;
 #if 1
   int dobounding=1, num_iter=0;

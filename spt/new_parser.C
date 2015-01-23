@@ -573,7 +573,7 @@ int read_spt_from_file(FILE* F, Subcatchment *SUB, NameStore *NODE_NAMES, SMap *
 
       tmp = Prime->Find_Value( Op_Descriptor[18]._key); // verbose
       if (tmp) {
-	OPT.DebugLevel() = atoi(tmp) > 0 ? 1 : 0;
+	OPT.DebugLevel() = atoi(tmp) > 0 ? atoi(tmp) : 0;
 	if (out) fprintf(out,"[II]: Verbose set to %1d\n", OPT.DebugLevel() );
       }
 
@@ -711,9 +711,11 @@ int read_spt_from_file(FILE* F, Subcatchment *SUB, NameStore *NODE_NAMES, SMap *
 	goto back;
       }
       s0 = atof(tmp);
-      if ( s0 < 0 ) {
-	if (out) fprintf(out, "Bummer: reference slope sR at location %s is %.4e. Must be positive\n", node_id, s0);
+      if ( s0 < 1e-6 ) {
+	if (out) fprintf(out, "[WW]: reference slope sR at location %s is nonpositive with value of %.4e. \n", node_id, s0);
+#if 0
 	goto back;
+#endif
       }
 
       tmp = Prime->Find_Value( Node_Descriptor[2]._key);  // "n"

@@ -261,9 +261,18 @@ double XY_XSection::CheckEqFrictiondA(double a) {
 void XY_XSection::GetHydroRadius(double a, double &r, double &drda) {
   double p, dp;
 
-  p = _per_sp.EvalFun( a );
-  dp = _per_sp.EvalDer( a );
-
+  if ( a > _aa_bf ) { // larger than bankfull
+    double p2 = _per_sp.EvalFun( 0.95*_aa_bf);
+    p = _per_sp.EvalFun( _aa_bf );
+    p = p + (a-_aa_bf)*(p-p2)/(0.05*_aa_bf); // linear projection
+    dp = _per_sp.EvalDer( 0.95*_aa_bf );
+  } else if ( a <_aa_min ) {
+    p = _per_sp.EvalFun( a ); 
+    dp = _per_sp.EvalDer( a );
+  } else {
+    p = _per_sp.EvalFun( a );
+    dp = _per_sp.EvalDer( a );
+  }
   r = a/p;
   drda = ( 1 - a *dp/p)/p;
 }
