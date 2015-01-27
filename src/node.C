@@ -68,19 +68,28 @@ double Node::KinematicEstimate(double Q) {
     return -1.0;
   }
 
-  // we use bisection method, 
+
   a0 = 1e-6;
   a1 = 0.01;
-  while (1) {
+  const int slimit = 20;  // 2^20 * 0.01 ~= 1.04e+4
+  int found_ub = 0;
+  for (jj=0; jj<slimit; jj++) {
     _xs->GetHydroRadius(a1,r,drda);
     v1 = coef*pow(r,p1)*a1 - Q;
-    if ( v1 > 0 ) break;
+    if ( v1 > 0 ) {
+      found_ub = 1;
+      break;
+    }
     a1 *= 2.0;
   }
+  if ( found_ub == 0 ) { 
+    return -1.0;    //failed to find ub, let up-level handle it
+  }
 
+  // we use the bisection method
   _xs->GetHydroRadius(a0,r,drda);
   v0 = coef*pow(r,p1)*a0 - Q;
-  
+
   for ( jj=0; jj<num_iter; jj++) {
     if ( ABS(a0-a1) < tol ) {
       at = v0;
