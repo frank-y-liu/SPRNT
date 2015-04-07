@@ -58,7 +58,12 @@ UTL_HOME=${LIBHOME}/util
 TEST_HOME=${LIBHOME}/examples
 
 ## get git hash
-GIT_HASH := $(shell git rev-parse --short=8 HEAD)
+GET_GIT_HASH := $(shell git rev-parse --short=8 HEAD 1>&2 2> /dev/null; echo $$?)
+ifneq ($(GET_GIT_HASH),0)
+  GIT_HASH := "xxxxxxxx"
+else
+  GIT_HASH := $(shell git rev-parse --short=8 HEAD)
+endif
 
 # we are done
 
