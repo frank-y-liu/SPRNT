@@ -535,6 +535,7 @@ double Subcatchment::CalFroude() {
   _max_froude = _Froude[bl];
 
   // calculate step size, use fudge number in OPT to scale it up
+  // we use a heuristic method in place of the Froude number
   int tmp;
   tiny = 1e49;
   for (j=0; j<_num_eqns; j++) {
