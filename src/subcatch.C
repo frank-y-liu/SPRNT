@@ -949,7 +949,7 @@ int Subcatchment::SteadySolve(int jac_num, int max_iter, double tol, int use_acc
   Node      *pn;
   double    aa, qq, len, ratio[32];
   if ( _G.GetNumRoots() != 1 ) {
-    fprintf(stdout,"EEE Bummer: requires one (and only one) root node. Found %d\n",
+    fprintf(stdout,"[EE] Bummer: requires one (and only one) root node. Found %d\n",
 	    _G.GetNumRoots() );
     return (-1);
   }
@@ -976,7 +976,7 @@ int Subcatchment::SteadySolve(int jac_num, int max_iter, double tol, int use_acc
   // by checking the length, we would know whether we have a junction point or not
   status = _G.GetUpstreamLength( cur, len);
   if ( status != 0 ) {
-    fprintf(stdout,"EEE Bummer: the root node doesn't look right\n");
+    fprintf(stdout,"[EE] Bummer: the root node doesn't look right\n");
     return (-1);
   }
   
@@ -1379,7 +1379,7 @@ int Subcatchment::UnsteadySolve(double final_t, int jac_num, int max_iter, doubl
 	  fprintf(stdout,"   reduce time step to %.2e\n", dtused);
 	}
 	if ( dtused < OPT.MinDT() ) {
-	  fprintf(stderr, "EEE Bummer: time step too small at time point %.4e\n", current_t);
+	  fprintf(stderr, "[EE] Bummer: time step too small at time point %.4e\n", current_t);
 	  return ERROR;
 	}
       }
