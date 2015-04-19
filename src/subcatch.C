@@ -607,23 +607,43 @@ int Subcatchment::GetCelerity(double &max_cel, double &op_dt) {
   return (max_cel>OPT.MaxC() ? 1 : 0);
 }
 
-// Kinematic routing based on Q0, make sure they are fed before calling this function
-void Subcatchment::KinematicEstimate(FILE *F) {
+// Kinematic routing based on Q0, make sure they are populated before calling this
+// function
+// whatever in A will be ignored
+void Subcatchment::KinematicEstimate(FILE *F, char** NAMES) {
   int jj;
-  double a,y;
+  double a,y,fn,q;
   if ( OPT.UseMetric() == 1 ) {
-    fprintf(F,"%% %2s %9s %9s %9s\n", "id", "Q0(m3/s)", "A0(m2)", "Depth(m)");
+    fprintf(F,"%%%% %6s %9s %9s %9s %9s\n", "id", "Q0(m3/s)", "A0(m2)", "Depth(m)", "Froude Num");
     for (jj=0; jj<_num_nodes; jj++) {
-      a = _NS[jj]->KinematicEstimate( _NS[jj]->Q0() );
+      q = _NS[jj]->Q0();
+      a = _NS[jj]->KinematicEstimate( q );
       y = _NS[jj]->GetDepth(a);
-      fprintf(F,"%4d %9.3f %9.3f %9.3f\n", _NS[jj]->Id(), _NS[jj]->Q0(), a, y);
+      fn = _NS[jj]->GetFroude(q, a);
+      if (!NAMES) fprintf(F,"%9d ", _NS[jj]->Id());
+      else        fprintf(F,"%9s ", NAMES[ _NS[jj]->Id() ] );
+      fprintf(F,"%9.3f", _NS[jj]->Q0());
+      if ( a > 0 ) {
+	fprintf(F," %9.3f %9.3f %9.3f\n", a, y, fn);
+      } else {
+	fprintf(F," %9s %9s %9s\n", "N/A", "N/A", "N/A");
+      }
     }
   } else {
-    fprintf(F,"%% %2s %9s %9s %9s\n", "id", "Q0(f3/s)", "A0(f2)", "Depth(f)");
+    fprintf(F,"%%%% %6s %9s %9s %9s %9s\n", "id", "Q0(f3/s)", "A0(f2)", "Depth(f)", "Froude Num");
     for (jj=0; jj<_num_nodes; jj++) {
-      a = _NS[jj]->KinematicEstimate( _NS[jj]->Q0() );
+      q = _NS[jj]->Q0();
+      a = _NS[jj]->KinematicEstimate( q );
       y = _NS[jj]->GetDepth(a);
-      fprintf(F,"%4d %9.3f %9.3f %9.3f\n", _NS[jj]->Id(), _NS[jj]->Q0()/OPT.F3toM3(), a/OPT.F2toM2(), y/OPT.FtoM() );
+      fn = _NS[jj]->GetFroude(q, a);
+      if (!NAMES) fprintf(F,"%9d ", _NS[jj]->Id());
+      else        fprintf(F,"%9s ", NAMES[ _NS[jj]->Id() ] );
+      fprintf(F,"%9.3f", _NS[jj]->Q0()/OPT.F3toM3());
+      if ( a > 0 ) {
+	fprintf(F," %9.3f %9.3f %9.3f\n", a/OPT.F2toM2(), y/OPT.FtoM(), fn);
+      } else {
+	fprintf(F," %9s %9s %9s\n", "N/A", "N/A", "N/A");
+      }
     }
   }
 }
@@ -921,7 +941,7 @@ void Subcatchment::PrintOnDemand(FILE *F, double tnow, int pstart, int what, cha
    current implementation assumes there is only ONE root node
 
 */
-int Subcatchment::SteadySolve(int jac_num, int max_iter, double tol) {
+int Subcatchment::SteadySolve(int jac_num, int max_iter, double tol, int use_acc) {
   MyStack<int>      ST;
   MyStack<double>   ST_A;
 
@@ -1052,8 +1072,8 @@ int Subcatchment::SteadySolve(int jac_num, int max_iter, double tol) {
     pn->Q0() = qq;
 
     aa = pn->KinematicEstimate( qq );
-    if ( aa < 0 ) { // negative slope, use a conservative value
-      pn->A0() = 10*prev_aa;
+    if ( aa < 0 ) { // failed to find A, use a conservative value;
+      pn->A0() = 5.0*prev_aa;
     } else {
       pn->A0() = aa;
       prev_aa = aa;
@@ -1063,7 +1083,7 @@ int Subcatchment::SteadySolve(int jac_num, int max_iter, double tol) {
     fprintf(stdout,"a=%.3e q=%.3e\n", aa, qq);
 #endif
 
-    status = _G.GetUpstreamLength( cur, len); // whether we are at branch point
+    status = _G.GetUpstreamLength( cur, len); // whether we are at branch point or not
     if ( status == 0 ) {
       nxt = _G.GetUpstreamNode( cur );
       ST.Push( nxt );
@@ -1080,23 +1100,25 @@ int Subcatchment::SteadySolve(int jac_num, int max_iter, double tol) {
   // copy to X
   this->InitSolutions();
 
-  // do a few Newton's iterations to solve for A only
+  // do Newton's iterations to solve for A only
   int rc=0;
-#if 1
-  int dobounding=1, num_iter=0;
-  double maxnorm, minnorm, tdiff;
-  FILE *F=NULL;
-  rc = NonLinearStep(0.0, -1.0, jac_num, max_iter, tol, dobounding, 
-		     num_iter, minnorm, maxnorm, tdiff, F);
-  if ( rc < 0 ) { // failed to converge
-    fprintf(stdout,"Bummer: steady state solve failed to converge\n");
-  } else {
-    fprintf(stdout,"[II]: Steady state solve converged in %d steps\n", num_iter);
+  if (use_acc==1) {
+    int dobounding=1, num_iter=0;
+    double maxnorm, minnorm, tdiff;
+    FILE *F=NULL;
+
+    // negative step size triggers solveing for dynamic equations only
+    rc = NonLinearStep(0.0, -1.0, jac_num, max_iter, tol, dobounding, 
+		       num_iter, minnorm, maxnorm, tdiff, F);
+
+    if ( rc < 0 ) { // failed to converge
+      fprintf(stdout,"Bummer: steady state solve failed to converge\n");
+    } else {
+      fprintf(stdout,"[II]: Steady state solve converged in %d steps\n", num_iter);
+    }
   }
-#endif
 
   return (rc);
-
 }
 
 // steady solve: this version uses pseudo dynamic method. It can be slow.

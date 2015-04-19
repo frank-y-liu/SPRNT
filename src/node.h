@@ -122,11 +122,12 @@ class Node {
 
   /* print the froude number */
   double GetFroude(double *X);
-  
+  double GetFroude(double q, double a);
+
   // Depth is the solution of the SVE, which is relative to the sR line
   // AbsoluteDepth is the depth from the bathymetry bottom
-  double GetDepth(double a) { return _xs->GetDepth(a) + _hr; }
-  double GetAbsoluteDepth(double a) { return _xs->GetDepth(a); }
+  double GetDepth(double a) { return a < 0 ?-1.0 : _xs->GetDepth(a) + _hr; }
+  double GetAbsoluteDepth(double a) { return a < 0 ? -1.0 : _xs->GetDepth(a); }
   double GetElevation(double a) { return _xs->GetDepth(a) + _zr + _hr; }
   double GetAbyDepth(double a) { return _xs->GetAbyDepth(a); }
   double GetDepthdA(double a) { return _xs->GetDepthdA(a); }

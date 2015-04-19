@@ -187,11 +187,11 @@ class Subcatchment {
   /*  methods for solve */
   int InitSolutions(void);
 
-  /* steady solve, use "pseudo unsteady" method */
-  int SteadySolve(double dt, int jac_num, int max_iter, double tol);
-  /* steady solve, use newton's method on A. Usually it should be followed by a call to
-     the psuedo unsteady method */
-  int SteadySolve(int jac_num, int max_iter, double tol); 
+  /* steady solve, this is the "psuedo unsteady" method */
+  int SteadySolve(double dt, int jac_num, int max_iter, double tol );
+  /* steady solve, when use_acc is set, use newton's method on A. 
+     Usually it should be followed by a call to the psuedo unsteady method */
+  int SteadySolve(int jac_num, int max_iter, double tol, int use_acc=1); 
 
   /* unsteady method
      if OUT != NULL : print results to OUT
@@ -216,7 +216,7 @@ class Subcatchment {
   void MatlabDumpX(FILE *F, const char *name="X");
   void MatlabDumpXp(FILE *F, const char *name="Xp");
   void PrintEvaluationValues(double t, double dt, FILE *F, const char *separator="NoName");
-  void KinematicEstimate(FILE *F);
+  void KinematicEstimate(FILE *F, char **N=NULL);
   int CheckBankFull();
   int CheckMinimalA();
 

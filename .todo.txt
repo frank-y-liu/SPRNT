@@ -1,0 +1,6 @@
+1. check with kinematic routing and froude number calculation : done 04/17/15
+
+2. mass conservation based bounding to avoid Gibbs 
+
+3. introduce "reach" into overall data structure
+

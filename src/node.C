@@ -57,7 +57,7 @@ void Node::SetInitValues(double *X) {
 double Node::KinematicEstimate(double Q) {
   const double tol = 1e-6;
   const int num_iter = 50;   // all hard coded 
-  const double p1 = 0.66667;
+  const double p1 = 2/3.0;
   int jj;
   double coef = sqrt(_sr/_nsq);    // = sqrt(s0)/n
   double a0, a1, at;
@@ -68,10 +68,9 @@ double Node::KinematicEstimate(double Q) {
     return -1.0;
   }
 
-
   a0 = 1e-6;
   a1 = 0.01;
-  const int slimit = 20;  // 2^20 * 0.01 ~= 1.04e+4
+  const int slimit = 25;  // 2^25 * 0.01 ~= 3.3e+5, hopefully large enough for upper bound
   int found_ub = 0;
   for (jj=0; jj<slimit; jj++) {
     _xs->GetHydroRadius(a1,r,drda);
@@ -83,7 +82,7 @@ double Node::KinematicEstimate(double Q) {
     a1 *= 2.0;
   }
   if ( found_ub == 0 ) { 
-    return -1.0;    //failed to find ub, let up-level handle it
+    return -1.0;    //failed to find ub, let up-level handle the fault
   }
 
   // we use the bisection method
@@ -108,15 +107,17 @@ double Node::KinematicEstimate(double Q) {
       a0 = at;
     }
   }
+
   // we are not checking number of iters
+  // just returns the average of the last two iterations
+  // results could be crappy if predefined iteration limit is not sufficient
   return (a0+a1)/2.0;
 }
 
-// calculate the froude number
+// calculate the froude number at a perticular node
 // which is Q*sqrt(b)/ (sqrt_g* A^1.5)
 // 
-// There is a redundent portion of code to calculate the froude numbers for all nodes in
-// subcatchment code.
+// There is also a vectorized implementation of this function in the subcatchment class
 double Node::GetFroude(double *X) {
   double q = X[QIdx()];
   double a = X[AIdx()];
@@ -125,7 +126,16 @@ double Node::GetFroude(double *X) {
   assert( a > 0 );  
   assert( b > 0 );
 
-  return q*sqrt(b)/(OPT.SqrtG() * pow(a,1.5));
+  return q*sqrt(b)/(OPT.SqrtG() * a * sqrt(a) );
+
+}
+
+// overloaded with given q and a
+double Node::GetFroude(double q, double a) {
+  if ( a < 0 ) return -1.0;
+
+  double b=this->_xs->GetWidth( a );
+  return ( q*sqrt(b)/(OPT.SqrtG() * a * sqrt(a)) );
 }
 
 /* Methods related to Equations and its derived classes */

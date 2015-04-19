@@ -101,7 +101,11 @@ int main(int argc, char** argv) {
 
   // quit if docheck == 1
   if ( OPT.CheckOnly() == 1 || docheck==1 ) {
-    printf("The connectivity of the given netlist appears to be correct\n");
+    printf("[II]: The connectivity of the given netlist appears to be correct\n");
+    printf("Kinematic routing and froude number calculation results (N/A = not applicable):\n"); 
+    const int kinematic_only = 1;
+    SUB->SteadySolve(600, 600, 2.0*OPT.Tol(), !kinematic_only); // we need to pass 0 
+    SUB->KinematicEstimate(stdout, NODE_NAMES->Store()); 
     goto out;
   }
 
@@ -118,7 +122,7 @@ int main(int argc, char** argv) {
   } 
 
   // steady solve, two phases
-  rc = SUB->SteadySolve(600, 600, 2.0*OPT.Tol());
+  rc = SUB->SteadySolve(600, 600, 2.0*OPT.Tol(), OPT.SteadyAcc() );
   if (rc<0) {
     fprintf(stdout,"[EE]: first phase of steady-state solve failed\n");
     goto out;
