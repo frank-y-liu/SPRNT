@@ -133,8 +133,9 @@ void T_XSection::GetEqFriction(double a, double &ef, double &efda) {
 void T_XSection::GetHydroRadius(double a, double &r, double &drda) {
   double t1 = sqrt(_effb0*_effb0 + a/_s);
   double t2 = sqrt(1+_s*+_s);
-  r = _b0 + 2 * t2 * ( t1 - _effb0);
-  drda = t2/(_s*t1);
+  double p = _b0 + 2 * t2 * ( t1 - _effb0); // wetted perimeter
+  r = a/p;
+  drda = 1.0/p + a*t2/(_s*t1);
 }
 
 // Local Variables:

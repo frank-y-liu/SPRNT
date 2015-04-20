@@ -22,7 +22,7 @@
 
 #define VERSION_MAJOR 1
 #define VERSION_MINOR 2
-#define VERSION_REVISION 7
+#define VERSION_REVISION 8
 
 #ifdef __GNUG__
 
@@ -40,7 +40,7 @@
 
 void PrintHeader(FILE *F) {
   fprintf(F,"  \n");
-  fprintf(F,"   SPRNt: Simulation Program for River Networks\n");
+  fprintf(F,"   SPRNT: Simulation Program for River Networks\n");
   fprintf(F,"      version %d.%d.%d (%s) : %s  %s\n", 
 	  VERSION_MAJOR, VERSION_MINOR, VERSION_REVISION, GIT_HASH, BUILD_DATE, BUILD_TIME);
   fprintf(F,"      compiled with %s\n", COMPILER_VER);
