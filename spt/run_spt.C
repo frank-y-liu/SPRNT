@@ -99,6 +99,9 @@ int main(int argc, char** argv) {
     goto out;
   }
 
+  // make solver
+  SUB->MakeSolver( SUB->GetNumNodes() );
+
   // quit if docheck == 1
   if ( OPT.CheckOnly() == 1 || docheck==1 ) {
     printf("[II]: The connectivity of the given netlist appears to be correct\n");
@@ -109,8 +112,6 @@ int main(int argc, char** argv) {
     goto out;
   }
 
-  // make solver
-  SUB->MakeSolver( SUB->GetNumNodes() );
 
   //  SUB->InitSolutions();
   FS = NULL;
