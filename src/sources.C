@@ -19,6 +19,9 @@
 
 int PWL::CheckTime(int sz, double *t) {
   double thresh = (t[sz-1] - t[0])*OPT.Epsilon();
+  if ( (t[sz-1]-t[0])<OPT.Epsilon() ) thresh = OPT.Epsilon();
+  if ( sz < 2 ) return (-1);
+  
   for (int jj=1; jj<sz; jj++) {
     if ( t[jj] - t[jj-1] < thresh ) return (-1);
   }

@@ -22,7 +22,7 @@
 
 #define VERSION_MAJOR 1
 #define VERSION_MINOR 2
-#define VERSION_REVISION 8
+#define VERSION_REVISION 9
 
 #ifdef __GNUG__
 
