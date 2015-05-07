@@ -9,3 +9,8 @@ April 2014, ver 1.2.2
 December 2014, ver 1.2.3
  - Added a separate driver to enable "rolling" simulation, basically a quick-
    and-dirty way of API function. It will not be automatically built.
+
+April 2015, ver 1.2.9
+ - New initial condition computation method 
+ - Various bug fixes
+
