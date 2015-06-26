@@ -10,10 +10,13 @@
 ## should not have to change too much beyond this point
 ##
 
-OPT_FLAG = -Wall -O3 -fPIC
-INC = -IUMFPACK/Include -IAMD/Include -IUFconfig -ICOLAMD/Include \
-	-IKLU/Include -IBTF/Include
-BITS = -m64
+OPT_FLAG = -O3 -fPIC
+SPARSE_HOME=./SuiteSparse
+INC=-I$(SPARSE_HOME)/UMFPACK/Include \
+	-I$(SPARSE_HOME)/AMD/Include -I$(SPARSE_HOME)/COLAMD/Include \
+	-I$(SPARSE_HOME)/UFconfig \
+	-I$(SPARSE_HOME)/KLU/Include -I$(SPARSE_HOME)/BTF/Include
+BITS=-m64
 
 CFLAGS=-Wall ${OPT_FLAG} ${INC} ${BITS}
 CXXFLAGS=-Wall ${OPT_FLAG} ${INC} ${BITS}
@@ -26,11 +29,11 @@ OBJS = lsolver.o csolver.o
 HDRS = lsolver.h solver_vec.h solver_def.h
 EXEC = libsolvers.so
 
-OBJS += $(wildcard UMFPACK/Lib/*.o)
-OBJS += $(wildcard KLU/Lib/*.o)
-OBJS += $(wildcard AMD/Lib/*.o)
-OBJS += $(wildcard BTF/Lib/*.o)
-OBJS += $(wildcard COLAMD/Lib/*.o)
+OBJS += $(wildcard $(SPARSE_HOME)/UMFPACK/Lib/*.o)
+OBJS += $(wildcard $(SPARSE_HOME)/KLU/Lib/*.o)
+OBJS += $(wildcard $(SPARSE_HOME)/AMD/Lib/*.o)
+OBJS += $(wildcard $(SPARSE_HOME)/BTF/Lib/*.o)
+OBJS += $(wildcard $(SPARSE_HOME)/COLAMD/Lib/*.o)
 
 all: $(EXEC)
 
