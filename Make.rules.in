@@ -24,7 +24,7 @@ CXX_STDCXX_0X_FLAG = @CXX_STDCXX_0X_FLAG@
 LIBHOME := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 
 # optimization flags
-OPT_FLAG = -O3 -fPIC
+OPT_FLAG = -O3
 
 # Debug
 MYDEBUG =

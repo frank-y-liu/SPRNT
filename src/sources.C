@@ -23,7 +23,7 @@ int PWL::CheckTime(int sz, double *t) {
   if ( sz < 2 ) return (-1);
   
   for (int jj=1; jj<sz; jj++) {
-    if ( t[jj] - t[jj-1] < thresh ) return (-1);
+    if ( (t[jj] - t[jj-1]) < thresh ) return (-1);
   }
   return 0;
 }

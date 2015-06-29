@@ -78,6 +78,9 @@ clean:
 	cd $(SPT_HOME); make clean
 	cd $(TEST_HOME); make clean
 
+testclean:
+	cd $(TEST_HOME); make clean
+
 realclean:
 	cd $(SRC_HOME); make realclean;
 	cd $(SPT_HOME); make realclean;
