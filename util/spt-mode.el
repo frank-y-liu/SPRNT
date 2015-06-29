@@ -70,7 +70,7 @@
       '("DEF" "END" "def" "end" "Def" "End" "options" "node" "segment" "junction"
 	"qsource" "lateralsource" "boundarycondition" "Options" "Node" "Segment" "Junction" "QSource"
 	"LateralSource" "BoundaryCondition" "TimeSeries" "timeseries"
-	"Trapezoidal" "trapezoidal" "Rectangular" "rectangular" "XY" "xy"
+	"Trapezoidal" "trapezoidal" "Rectangular" "rectangular" "XY" "xy" "INTRINSIC" "intrinsic"
 	) 'words)
      ;;
      ;; Builtins.
@@ -84,7 +84,7 @@
 	      "PrtStart" "prtstart" "PrtStartUnit" "prtstartunit"
 	      "sr" "SR" "n" "N" "zr" "ZR" "hr" "HR" "T" "t" "V" "v"
 	      "Location" "location" "up" "Up" "Down" "down" "Length" "length"
-	      "Type" "type" "x" "X" "y" "Y"
+	      "Type" "type" "x" "X" "y" "Y" "A" "a" "P" "p" "W" "w"
 	      "up1" "Up1" "up2" "Up2" "coeff1" "Coeff1" "coeff2" "Coeff2"
 	      "xcoord" "XCoord" "ycoord" "YCoord"
 	      "lmax" "LMax" "lmin" "LMin"

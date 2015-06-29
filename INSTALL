@@ -38,6 +38,7 @@ You will need write permission to the destination directories.
 To clearn up:
 
 make clean                          : remove the objective files
+make testclean                      : remove results in testing directory 
 make realclean                      : remove the static library and executables
 make distclean                      : remove thirdparty components
 

@@ -54,7 +54,8 @@ class XY_XSection : public XSection {
   
   // methods for the real usage
   int Build(int num_pairs, double *xx, double *yy, xs_trans *m);
-
+  int Build(int num, double *aa, double *pp, double *yy, double *ww);
+	    
   double GetDepth(double a);
   double GetDepthdA(double a);
   double GetWidth(double a);

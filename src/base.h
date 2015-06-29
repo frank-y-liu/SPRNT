@@ -30,7 +30,7 @@ enum {OK=0, WARNING=1, ERROR=-1};
 enum {MAXFIXSZ=5000, MAXDENSESIZE=255, MAXGR=1};
 
 /* X section types */
-enum XsecType { RECT=0, TRAP, SPLINE, LIN, XS_UNKNOWN};
+enum XsecType { RECT=0, TRAP, SPLINE, INTRINSIC, XS_UNKNOWN};
 
 /* communicate with the solver */
 enum SolverType { S_UMF, S_KLU, S_UNKNOWN };

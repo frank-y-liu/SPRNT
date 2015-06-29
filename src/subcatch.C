@@ -272,6 +272,31 @@ node_id Subcatchment::MakeNode(int id, float s0, float n, double x, double y, fl
   return (_num_nodes-1);
 }
 
+// make a node for the INTRINSIC xsection
+// the underline type is actuall XY!x
+node_id Subcatchment::MakeNode(int id, float s0, float n, double x, double y, float q0, float a0, float z0, float h0,
+			       XsecType tp, int num_pts, double *aa, double *pp, double *yy, double *ww) {
+
+  XY_XSection *tx;
+  Node        *node;
+  char        buf[512];
+  assert ( tp == INTRINSIC );
+  assert ( num_pts > 5 );
+
+  sprintf(buf,"node %d :", id);
+  OPT.CopyToBuf(buf);
+
+  tx = new XY_XSection(id);
+  // build the cross section
+  tx->Build(num_pts, aa, pp, yy, ww);
+  node = new Node(id, s0, n, (XSection*)tx, x,y, q0, a0, z0, h0);
+
+  // printf("node %d, bf=%.3f\n", id, node->XS()->GetBkfA());
+  _NS[_num_nodes++] = node;
+  _G.AddNode( id ); // insert to graph
+  return (_num_nodes-1);
+}
+
 // assign the node index to the nodes
 int Subcatchment::AssignNodes() {
   for (int j=0; j<_num_nodes; j++) {

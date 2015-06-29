@@ -125,11 +125,13 @@ class Subcatchment {
 
   /* methods to construct the subcatchment, returns the node index*/
   node_id MakeNode(int id, float s0, float n, double x, double y, float q0, float a0, float z0, float h0, 
-	       XsecType tp, double b0);  // RECT
+		   XsecType tp, double b0);  // RECT
   node_id MakeNode(int id, float s0, float n, double x, double y, float q0, float a0, float z0, float h0, 
-	       XsecType tp, double b0, double s);  // TRAP
+		   XsecType tp, double b0, double s);  // TRAP
   node_id MakeNode(int id, float s0, float n, double x, double y, float q0, float a0, float z0, float h0, 
-	       XsecType tp, int sec_num, double *xsecx, double *xsecy); // XY
+		   XsecType tp, int sec_num, double *xsecx, double *xsecy); // XY
+  node_id MakeNode(int id, float s0, float n, double x, double y, float q0, float a0, float z0, float h0, 
+		   XsecType tp, int num_pt, double *aa, double *pp, double *yy, double *ww); // INTRINSIC
 
   // determine the total number of nodes, and assign the indices to the X vector
   int AssignNodes();

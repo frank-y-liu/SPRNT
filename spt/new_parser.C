@@ -51,7 +51,8 @@ Descriptor Node_Descriptor[] = {
   { "YCOORD", no, ft_real },
   { "TRAPEZOIDAL", secondary, ft_block },
   { "RECTANGULAR", secondary, ft_block },
-  { "XY"         , secondary, ft_block }
+  { "XY"         , secondary, ft_block },
+  { "INTRINSIC",   secondary, ft_block }
 };
 
 Descriptor Time_Descriptor[] = {
@@ -80,6 +81,14 @@ Descriptor TS_Descriptor[] = {
   { "V", yes, ft_real },
   { "TIMEUNIT", no, ft_real}
 };
+
+Descriptor APYW_Descriptor[] = {
+  { "A", yes, ft_real },
+  { "P", yes, ft_real },
+  { "Y", yes, ft_real },
+  { "W", yes, ft_real }  // need quad to store the data
+};
+
 
 Descriptor Segment_Descriptor[] = {
   { "UP",      yes, ft_ascii },
@@ -320,7 +329,7 @@ int read_2d_arrays(StrBuffer *s, Descriptor *des, SimpleDblArray *d, int with_un
 		       des[0]._key, s->LineNumber());
       return 0;
     } else {
-      d->ithX(cntr) = atof(t);
+      d->ithVal(0, cntr) = atof(t);
     }
 
     if ( (t = s->Get_ith_Value(des[1]._key, jj+1))==NULL) {
@@ -333,10 +342,89 @@ int read_2d_arrays(StrBuffer *s, Descriptor *des, SimpleDblArray *d, int with_un
 		       des[1]._key, s->LineNumber());
       return 0;
     } else {
-      d->ithY(cntr++) = atof(t);
+      d->ithVal(1,cntr++) = atof(t);
     }
   }
   return cntr;
+}
+
+// hard coded assumption that the data would be 4D, no checking of unit
+int read_4d_arrays(StrBuffer *s, Descriptor *des, SimpleDblQuad *d, FILE *out) {
+  int jj=0;
+  int cntr=0;
+  char *t;
+  int idx = 0;
+
+  for (; jj<s->NumPairs(); jj++) {  // jj has been set
+    if ( (t=s->Get_ith_Value(des[idx]._key, jj))==NULL) {
+      if (out) fprintf(out,"Bummer: unable to locate keyword \"%s\" for array on line %d\n", 
+		       des[idx]._key, s->LineNumber());
+      return 0;
+    }
+    if ( !is_scientific(t) ) {
+      if (out) fprintf(out, "Bummer: invalid number found in field \"%s\" on line %d\n",
+			 des[idx]._key, s->LineNumber());
+      return 0;
+    } else {
+      d->ithVal(idx, cntr) = atof(t);
+    }
+
+    // everything here is hard coded for quadruple
+    idx++;
+    if ( idx>3 ) { // make idx cycle from 0 to 3
+      idx = 0;
+      cntr++;    // increment cntr when we cross
+    }
+  }
+
+  return cntr;
+}
+
+/* check the sanity of the APYW data */
+int check_4d_apyw(int num, SimpleDblQuad *d, FILE *out) {
+  double *tmp, threshold;
+
+  // check A, it has to be monotonically increasing
+  tmp = d->getIthArray(0); 
+  threshold = (tmp[num-1]-tmp[0]) < OPT.Epsilon() ? OPT.Epsilon() : (tmp[num-1]-tmp[0])*OPT.Epsilon();
+  for (int jj=0; jj< num-1; jj++) {
+    if ( (tmp[jj+1]-tmp[jj])<threshold ) {
+      if (out) fprintf(out, "Bummer: wetted area specification in INTRINSIC x-section has to be monotonically increasing.\n");
+      return (-1);
+    }
+  }
+
+  // check P it has to be monotonically increasing
+  tmp = d->getIthArray(1); 
+  threshold = (tmp[num-1]-tmp[0]) < OPT.Epsilon() ? OPT.Epsilon() : (tmp[num-1]-tmp[0])*OPT.Epsilon();
+  for (int jj=0; jj< num-1; jj++) {
+    if ( (tmp[jj+1]-tmp[jj])<threshold ) {
+      if (out) fprintf(out, "Bummer: wetted perimeter specification in INTRINSIC x-section has to be monotonically increasing.\n");
+      return (-1);
+    }
+  }
+
+  // check Y it has to be monotonically increasing
+  tmp = d->getIthArray(2); 
+  threshold = (tmp[num-1]-tmp[0]) < OPT.Epsilon() ? OPT.Epsilon() : (tmp[num-1]-tmp[0])*OPT.Epsilon();
+  for (int jj=0; jj< num-1; jj++) {
+    if ( (tmp[jj+1]-tmp[jj])<threshold ) {
+      if (out) fprintf(out, "Bummer: depth specification in INTRINSIC x-section has to be monotonically increasing.\n");
+      return (-1);
+    }
+  }
+
+  // check W it has to be monotonically increasing, but warning only
+  tmp = d->getIthArray(2); 
+  threshold = (tmp[num-1]-tmp[0]) < OPT.Epsilon() ? OPT.Epsilon() : (tmp[num-1]-tmp[0])*OPT.Epsilon();
+  for (int jj=0; jj< num-1; jj++) {
+    if ( (tmp[jj+1]-tmp[jj])<threshold ) {
+      if (out) fprintf(out, "Warning: surface width specification in INTRINSIC x-section is NOT monotonically increasing.\n");
+    }
+  }
+
+  return 0;
+
 }
 
 // top level function to parse the spt netlist and construct the SUBCATCHMENT object
@@ -350,7 +438,8 @@ int read_spt_from_file(FILE* F, Subcatchment *SUB, NameStore *NODE_NAMES, SMap *
   unsigned int n_op,n_node, n_seg, n_junc, n_qs, n_ls, n_bdn;
   StrBuffer *Prime, *Second;
   SimpleDblArray dba;
-  double *XX=NULL, *YY=NULL;
+  SimpleDblQuad dqa4; 
+  double *XX=NULL, *YY=NULL, *PP=NULL, *WW=NULL, *AA=NULL; // pointers only
 
   FlexVec<int, SHORT_ARRY_LENGTH>  qsources; // we store index only
   FlexVec<int, SHORT_ARRY_LENGTH>  lsources;
@@ -359,8 +448,8 @@ int read_spt_from_file(FILE* F, Subcatchment *SUB, NameStore *NODE_NAMES, SMap *
   ChkSum   mychk;
   char     chktmp[10];
 
-  Prime = new StrBuffer(1023);  // both arrayes can automatically grow if needed
-  Second = new StrBuffer(4095);
+  Prime = new StrBuffer(1023);    // both arrayes can automatically grow if needed
+  Second = new StrBuffer(4095,4); // by default set to 4 in case we encounter APYW cases
   r_code = -1;      // by default, the return code indicates failure
   
   /* we first read the option blocks */
@@ -419,6 +508,7 @@ int read_spt_from_file(FILE* F, Subcatchment *SUB, NameStore *NODE_NAMES, SMap *
   SUB->InitGraph(n_node, n_seg, n_junc); //Testing
 
   // allocate memory to store the boundary conditions
+  // by default the value is -1
   qsources.size(n_node+10);
   lsources.size(n_node+10);
   asources.size(n_node+10);
@@ -649,7 +739,6 @@ int read_spt_from_file(FILE* F, Subcatchment *SUB, NameStore *NODE_NAMES, SMap *
     }
   }
   
-  
   // add nodes,  check duplicate
   rewind(F);
   rc = def_not_found;
@@ -803,36 +892,71 @@ int read_spt_from_file(FILE* F, Subcatchment *SUB, NameStore *NODE_NAMES, SMap *
 	  }
 	}
 	xtp = SPLINE;
+
+      } else if ( Second->Cmp_Head(Node_Descriptor[10]._key)) { // "INTRINSIC"
+	if ( Second->NumPairs() % 4 != 0 ) {
+	  if (out) fprintf(out,"Bummer: unbalanced APYW quad for %s statement on line %d\n", 
+			   Node_Descriptor[10]._key,Second->LineNumber());
+	  goto back;
+	}
+	dqa4.Reset();
+	num_pairs = read_4d_arrays(Second, APYW_Descriptor, &dqa4, out);
+	if ( num_pairs <= 5 ) {
+	  if (out) fprintf(out,"Bummer: error reading 4D data specified in line %d, requires at least 5 points \n", Second->LineNumber() );
+	  goto back;
+	}
+	if ( check_4d_apyw(num_pairs, &dqa4, out) < 0 ) {
+	  if (out) fprintf(out,"Bummer: INTRINC x-section data specified near line %d are erroneous \n", Second->LineNumber() );
+	  goto back;
+	}
+	xtp = INTRINSIC;
 	
       } else {
-	if (out) fprintf(out,"Bummer: NODE statement on line %d requires at least one of the x-section specification: %s, %s or %s\n",
-			 Prime->LineNumber(), Node_Descriptor[5]._key, Node_Descriptor[6]._key, Node_Descriptor[7]._key);
+	if (out) fprintf(out,"Bummer: NODE statement on line %d requires at least one of the x-section specifications: %s, %s, %s or %s\n",
+			 Prime->LineNumber(), Node_Descriptor[7]._key, Node_Descriptor[8]._key, Node_Descriptor[9]._key, Node_Descriptor[10]._key);
 	goto back;
       }
       
       // at this point, all variables are ready, create the node
       // use node_idx, s0, n, h0, z0, dba (good)
       // first do scaling based UseMetric()
-      XX = dba.X();
-      YY = dba.Y();
-      if (OPT.UseMetric() == 0 ) {
+      if ( xtp == SPLINE ) {
+	XX = dba.getIthArray(0);
+	YY = dba.getIthArray(1);
+      } else if ( xtp == INTRINSIC ) {
+	AA = dqa4.getIthArray(0);  // sequence is hardcoded in APYW_Descriptor
+	PP = dqa4.getIthArray(1);
+	YY = dqa4.getIthArray(2);
+	WW = dqa4.getIthArray(3);
+      }
+
+      if (OPT.UseMetric() == 0 ) { // scaling in case 
 	if (xtp == SPLINE) {
 	  for (int jj=0; jj<num_pairs; jj++) {
 	    XX[jj] *= OPT.FtoM();
 	    YY[jj] *= OPT.FtoM();
+	  }
+	} else if ( xtp == INTRINSIC) {
+	  for (int jj=0; jj<num_pairs; jj++) {
+	    AA[jj] *= OPT.F2toM2();  // wetted area
+	    YY[jj] *= OPT.FtoM();    // everything else is linear
+	    PP[jj] *= OPT.FtoM();
+	    WW[jj] *= OPT.FtoM();
 	  }
 	} else {  // RECT or TRAP, only change the bottom width, slope is dimensionless
 	  width *= OPT.FtoM();
 	}
 	z0 *= OPT.FtoM();
 	h0 *= OPT.FtoM();
-      }
+      } 
       
       if ( xtp == SPLINE ) {
 #ifdef DBGSPLINE
 	printf("node name %s, id %d\n", node_id, (unsigned int)node_index); 
 #endif
 	SUB->MakeNode((unsigned int)node_index, s0, n, x, y, q0, a0, z0, h0, SPLINE, num_pairs, XX, YY);
+      } else if (xtp == INTRINSIC) {
+	SUB->MakeNode((unsigned int)node_index, s0, n, x, y, q0, a0, z0, h0, INTRINSIC, num_pairs, AA, PP, YY, WW);
       } else if (xtp == TRAP) {
 	SUB->MakeNode((unsigned int)node_index, s0, n, x, y, q0, a0, z0, h0, TRAP, width, slope);
       } else if (xtp == RECT) {
@@ -913,8 +1037,8 @@ int read_spt_from_file(FILE* F, Subcatchment *SUB, NameStore *NODE_NAMES, SMap *
 
       // ready to insert Q source, with node and time series in dba (good), remember the
       // dba.Scale() field, which is the time scale
-      XX = dba.X();
-      YY = dba.Y();
+      XX = dba.getIthArray(0);
+      YY = dba.getIthArray(1);
       src_id = SUB->MakeSource(num_pairs, &XX[0], &YY[0], dba.Scale(), (OPT.UseMetric()==0?OPT.F3toM3():1.0) );
       if (src_id<0) {
 	if (out) fprintf(out,"Bummer: problem with QSource at node \"%s\" on line %d\n",
@@ -973,8 +1097,8 @@ int read_spt_from_file(FILE* F, Subcatchment *SUB, NameStore *NODE_NAMES, SMap *
       }
       // ready to insert lateral source, with loc_index and time series in dba (good),
       // remember dba.Scale()
-      XX = dba.X();
-      YY = dba.Y();
+      XX = dba.getIthArray(0);
+      YY = dba.getIthArray(1);
       src_id = SUB->MakeSource(num_pairs, &XX[0], &YY[0], dba.Scale(), (OPT.UseMetric()==0?OPT.F3toM3():1.0) );
       if (src_id<0) {
 	if (out) fprintf(out,"Bummer: problem with LATERALSOURCE at node \"%s\" on line %d\n",
@@ -1052,8 +1176,8 @@ int read_spt_from_file(FILE* F, Subcatchment *SUB, NameStore *NODE_NAMES, SMap *
 
       // ready to insert Bdn condition, with loc_index and time series in dba (good),
       // remember dba.Scale()
-      XX = dba.X();
-      YY = dba.Y();
+      XX = dba.getIthArray(0);
+      YY = dba.getIthArray(1);
       if ( bnd_is_area == 0 ) {
 	node = SUB->GetNode( loc_index );
 	if ( !node ) {

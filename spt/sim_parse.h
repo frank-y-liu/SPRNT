@@ -68,6 +68,7 @@ typedef struct {
   const FType     _type;
 } Descriptor;
 
+#if 0
 // simple memory manager for double array to avoid repeated free/malloc
 // The user is reponsible of keeking track of the indices
 class SimpleDblArray {
@@ -116,6 +117,68 @@ class SimpleDblArray {
   const double Scale() const { return _scale; }
 
 };
+#else
+/*
+  Simple N-tuple, by default N=2
+  default size = 512
+  This template is intended to be used to temporary store data, therefore it is not bullet
+  proof. Avoid letting non-friends to use it
+
+  To assigned the data: use ithVal() method
+  getIthArray() is provided to quickly access the data, but it is not safe
+  
+  Reset() will reset the template for next use. Memory is not freed till the instance is
+  deleted
+
+ */
+template<class T, unsigned int NSEQ=2>
+class simpleTuple {
+ protected:
+ T     **_data;
+ T       _scale;
+
+ int     _alloc_size;
+ int     _size;
+
+ inline void _grow(int sz) {
+   if ( sz < _alloc_size) return;
+   T *tmp;
+   int newsz = 2*sz; // growth policy
+   for (int jj=0; jj<NSEQ; jj++) {
+     tmp = (T*)malloc(sizeof(T)*newsz);
+     memcpy(tmp, _data[jj], sizeof(T)*_alloc_size);
+     free(_data[jj]);
+     _data[jj] = tmp;
+   }
+   _alloc_size = newsz;
+ }
+
+ public:
+ simpleTuple(int sz=512) {
+   _data = (T**)malloc(NSEQ*sizeof(T*));
+   for (unsigned int jj=0; jj<NSEQ; jj++)  _data[jj] = (T*)malloc(sizeof(T)*sz);
+   _alloc_size = sz;
+   _size = 0;
+   _scale = (T)1.0;
+ }
+
+ ~simpleTuple() {
+   for (unsigned int jj=0; jj<NSEQ; jj++)  if (_data[jj]) free(_data[jj]);
+   free (_data);
+ }
+
+ // methods:
+ T &ithVal(int jj, int kk) { assert(jj<NSEQ); _grow(kk); return (_data[jj][kk]); }
+ T *getIthArray(int jj) { assert(jj<NSEQ); return (_data[jj]); } /* be careful */
+
+ void Reset() { _size = 0; _scale=(T)1.0; }
+ const int Size() const { return _size; }
+ void SetScale(T s) { _scale = s; }
+ const T Scale() const { return _scale; }
+
+};
+
+#endif
 
 // class to store the node names, by the given index
 class NameStore {
@@ -194,11 +257,11 @@ class StrBuffer {
   }
 
  public:
-  StrBuffer(int init_size) { 
+  StrBuffer(int init_size, unsigned int num_pairs=2) { 
     assert(init_size>0);
     _buffer = (char*) malloc(sizeof(char)* init_size);
     _size = init_size;
-    _allocate_pairs(2);
+    _allocate_pairs(num_pairs);
     Reset();
   }
 
@@ -240,6 +303,11 @@ class StrBuffer {
 			    // key-value pair
   
 };
+
+
+// for convenience
+typedef simpleTuple<double>   SimpleDblArray;
+typedef simpleTuple<double,4> SimpleDblQuad;
 
 #endif
 

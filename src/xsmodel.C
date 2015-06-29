@@ -57,14 +57,57 @@ int XY_XSection::Build(int num, double *xx, double *yy, xs_trans *m) {
 
 #ifdef DBGSPLINE
   int jj;
-  double st=(_aa_bf-_aa_min)/1000;
+  const int N=30;
+  double st=(_aa_bf-_aa_min)/N;
   printf("spline sampling\n");
-  for (jj=0; jj<1000; jj++) {
-    printf("=6= %.5e %.5e %.5e %.5e %.5e\n", jj*st, 
-	   _w_sp.EvalFun(jj*st), _per_sp.EvalFun(jj*st), _cen_sp.EvalFun(jj*st), _y_sp.EvalFun(jj*st) );
+  for (jj=0; jj<N; jj++) {
+    printf("=6= %.5e %.5e %.5e %.5e\n", jj*st, 
+	    _per_sp.EvalFun(jj*st), _y_sp.EvalFun(jj*st), _w_sp.EvalFun(jj*st) );
   }
+
+  printf("raw data splines were built upon\n");
+  for (jj=0; jj<num_sample; jj++) {
+    printf("=7= %.5e %.5e %.5e %.5e\n", ap[jj], pp[jj], yp[jj], lp[jj]);
+  }
+
 #endif
 
+  return 0;
+}
+
+int XY_XSection::Build(int num_sample, double *aa, double *pp, double *yy, double *ww) {
+
+  if (num_sample < 5 ) {
+    fprintf(stderr, "INTRINSIC cross section requires at least 5 data points for x-section %d.\n", _id);
+    return (-1);
+  }
+
+  const int k=3; // was 3rd order spline
+
+  _y_sp.Init(num_sample,k);
+  _per_sp.Init(num_sample,k);
+  _w_sp.Init(num_sample,k);
+
+  _y_sp.Construct(&aa[0], &yy[0]);
+  _per_sp.Construct(&aa[0], &pp[0]);
+  _w_sp.Construct(&aa[0], &ww[0]);
+
+  // determine threshold values related to bankful depth and min area
+  _aa_bf = aa[num_sample-1]*0.999;
+  _aa_min = aa[0]*1e-3;
+
+  // done!
+
+#ifdef DBGSPLINE
+  int jj;
+  double st=(_aa_bf-_aa_min)/1000;
+  printf("intrinsic sampling\n");
+  for (jj=0; jj<1000; jj++) {
+    printf("=6= %.5e %.5e %.5e %.5e\n", jj*st, 
+	   _w_sp.EvalFun(jj*st), _per_sp.EvalFun(jj*st), _y_sp.EvalFun(jj*st) );
+  }
+#endif
+  
   return 0;
 }
 

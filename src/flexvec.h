@@ -100,6 +100,27 @@ class GrowVec : public FlexVec<T,FIXSZ> {
   }
 };
 
+/*
+  GrowVecPair, a pair of GrowVec
+ */
+template<class T, int FIXSZ=MAXFIXSZ>
+class GrowVecPair {
+protected:
+  GrowVec<T, FIXSZ>  _first;
+  GrowVec<T, FIXSZ>  _second;
+  
+public:
+  GrowVecPair()      :_first(), _second() {}
+  GrowVecPair(int sz):_first(sz),_second(sz) {}
+  GrowVecPair( const GrowVecPair<T,FIXSZ>& ) {}
+  T& First(int i) { return ( _first[i] );  }
+  T& Second(int i) { return ( _second[i] ); }
+  T getFirstVal(int i) const { return _first.getVal(i); }
+  T getSecondVal(int i) const { return _second.getVal(i); }
+};
+
+typedef GrowVecPair<double>  doublePair;
+
 #endif
 
 // Local Variables:
