@@ -43,8 +43,8 @@ if test x"$DIRNAME_CHECK" != x"yes" ; then
     AC_MSG_ERROR([need dirname to continue ...])
 fi
 
-# need realpath for shell scripts
-AC_CHECK_PROG(REALPATH_CHECK,realpath,yes)
+# need readlink for shell scripts
+AC_CHECK_PROG(REALPATH_CHECK,readlink,yes)
 if test x"$REALPATH_CHECK" != x"yes" ; then
     AC_MSG_ERROR([need realpath to continue ...])
 fi

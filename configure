@@ -3503,9 +3503,9 @@ if test x"$DIRNAME_CHECK" != x"yes" ; then
     as_fn_error $? "need dirname to continue ..." "$LINENO" 5
 fi
 
-# need realpath for shell scripts
-# Extract the first word of "realpath", so it can be a program name with args.
-set dummy realpath; ac_word=$2
+# need readlink for shell scripts
+# Extract the first word of "readlink", so it can be a program name with args.
+set dummy readlink; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
 if ${ac_cv_prog_REALPATH_CHECK+:} false; then :
