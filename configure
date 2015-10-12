@@ -585,6 +585,7 @@ ac_default_prefix=.
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
 CXX_STDCXX_0X_FLAG
+LOC_BLAS_LIBS
 REALPATH_CHECK
 DIRNAME_CHECK
 CURL_CHECK
@@ -3649,9 +3650,54 @@ fi
 
 
 # we also need blas
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for dnrm2_ in -lblas" >&5
-$as_echo_n "checking for dnrm2_ in -lblas... " >&6; }
-if ${ac_cv_lib_blas_dnrm2_+:} false; then :
+#AC_CHECK_LIB(blas, dnrm2_, [],[
+#   AC_MSG_ERROR([unable to locate the blas library]);
+#])
+
+## check blas, determines blas flag
+
+ax_loc_blas_ok=no
+# try customer flag first
+if test $ax_loc_blas_ok = no; then
+   if test "x$BLAS_LIB" != x; then
+       saved_LIBS="$LIBS";
+       LIBS="$BLAS_LIB $LIBS"
+       { $as_echo "$as_me:${as_lineno-$LINENO}: checking check user defined flags specified in BLAS_LIB ..." >&5
+$as_echo_n "checking check user defined flags specified in BLAS_LIB ...... " >&6; }
+       cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char dgemm_ ();
+int
+main ()
+{
+return dgemm_ ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ax_loc_blas_ok=yes, LOC_BLAS_LIBS=$BLAS_LIB
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_loc_blas_ok" >&5
+$as_echo "$ax_loc_blas_ok" >&6; }
+       LIBS="$saved_LIBS"
+   fi
+fi
+
+# try system default
+if test $ax_loc_blas_ok = no; then
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for dgemm_ in -lblas" >&5
+$as_echo_n "checking for dgemm_ in -lblas... " >&6; }
+if ${ac_cv_lib_blas_dgemm_+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   ac_check_lib_save_LIBS=$LIBS
@@ -3665,38 +3711,37 @@ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 #ifdef __cplusplus
 extern "C"
 #endif
-char dnrm2_ ();
+char dgemm_ ();
 int
 main ()
 {
-return dnrm2_ ();
+return dgemm_ ();
   ;
   return 0;
 }
 _ACEOF
 if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_blas_dnrm2_=yes
+  ac_cv_lib_blas_dgemm_=yes
 else
-  ac_cv_lib_blas_dnrm2_=no
+  ac_cv_lib_blas_dgemm_=no
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_blas_dnrm2_" >&5
-$as_echo "$ac_cv_lib_blas_dnrm2_" >&6; }
-if test "x$ac_cv_lib_blas_dnrm2_" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBBLAS 1
-_ACEOF
-
-  LIBS="-lblas $LIBS"
-
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_blas_dgemm_" >&5
+$as_echo "$ac_cv_lib_blas_dgemm_" >&6; }
+if test "x$ac_cv_lib_blas_dgemm_" = xyes; then :
+  ax_loc_blas_ok=yes
+                              LOC_BLAS_LIBS="-lblas"
 else
 
-   as_fn_error $? "unable to locate the blas library" "$LINENO" 5;
+   as_fn_error $? "unable to find any useable blas" "$LINENO" 5;
 
 fi
+
+fi
+
 
 
 # check if c++0x is available
@@ -3885,7 +3930,7 @@ $as_echo "#define HAVE_STDCXX_0X /**/" >>confdefs.h
 
 
 
-ac_config_files="$ac_config_files Make.rules Makefile"
+ac_config_files="$ac_config_files Make.rules Makefile UFconfig.mk"
 
 
 cat >confcache <<\_ACEOF
@@ -4595,6 +4640,7 @@ do
   case $ac_config_target in
     "Make.rules") CONFIG_FILES="$CONFIG_FILES Make.rules" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
+    "UFconfig.mk") CONFIG_FILES="$CONFIG_FILES UFconfig.mk" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

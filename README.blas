@@ -1,0 +1,17 @@
+Oct 1, 2015
+
+SPRNT uses BLAS for certain low-level vector options. One of the linear solvers, UMFPACK,
+uses BLAS dgemm routine for matrix vector multiplication. By default, system-wide static
+BLAS installation will be used (usually /usr/lib/libblas.a). The choise of default BLAS
+library can be overwritten by specifying variable BLAS_LIB during configure. For example,
+if a customer BLAS library /usr/local/lib/libmyblas.a should be used, the configure
+should be:
+
+./configure BLAS_LIB="-L/usr/local/lib -lmyblas"
+
+If ATLAS should be used, the configure script should be called as:
+
+./configure BLAS_LIB="-L/usr/local/atlas/lib -lf77blas -lcblas -latlas -lgfortran"
+
+
+

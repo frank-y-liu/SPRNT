@@ -96,6 +96,7 @@ distclean:
 	cd $(TEST_HOME); make realclean;
 	-rm -rf Make.rules
 	-rm -rf Makefile
+	-rm -rf UFconfig.mk
 	-rm -rf config.status
 	-rm -rf config.log
 	-rm -rf aclocal.m4

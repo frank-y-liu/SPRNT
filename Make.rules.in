@@ -39,11 +39,8 @@ endif
 ## gfortran libs
 LIBFORTRAN = -lgfortran
 
-## where to find blas
-# heavily tuned atlas, 
-#BLAS = -L/usr/local/atlas/lib -llapack -lf77blas -lcblas -latlas -lgfortran
-# standard offering blas
-BLAS = -lblas
+## where to find blas, returned by ax_loc_blas
+BLAS = @LOC_BLAS_LIBS@
 
 # where to find required libraries
 SPLINE_HOME=$(LIBHOME)/ThirdParty/CMLIB

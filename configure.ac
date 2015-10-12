@@ -60,9 +60,12 @@ AC_CHECK_LIB(gfortran,_gfortran_fget,[],[
 ])
 
 # we also need blas
-AC_CHECK_LIB(blas,dnrm2_,[],[
-   AC_MSG_ERROR([unable to locate the blas library]);
-])
+#AC_CHECK_LIB(blas, dnrm2_, [],[
+#   AC_MSG_ERROR([unable to locate the blas library]);
+#])
+
+## check blas, determines blas flag
+AX_LOC_BLAS
 
 # check if c++0x is available
 #  if yes, use <unordered_map> for string->integer mapping
@@ -72,6 +75,7 @@ AX_LOC_CXX_COMPILE_STDCXX_0X
 AC_CONFIG_FILES([
 Make.rules
 Makefile
+UFconfig.mk
 ])
 
 AC_OUTPUT
