@@ -13,5 +13,9 @@ If ATLAS should be used, the configure script should be called as:
 
 ./configure BLAS_LIB="-L/usr/local/atlas/lib -lf77blas -lcblas -latlas -lgfortran"
 
-
+Caveats:
+1. The location of the library should be provided as the absolute path. Relative path
+   is not going to work.
+2. The BLAS library (or its equivalent) should be built as positition independent 
+   (i.e., with -fPIC flag for gcc)
 
