@@ -30,5 +30,6 @@ echo "Updating the config file ......"
 echo " "
 \mv -f SuiteSparse/UFconfig/UFconfig.mk SuiteSparse/UFconfig/UFconfig.mk.org
 \cp -f ../../UFconfig.mk SuiteSparse/UFconfig/UFconfig.mk
+\cp -f ../../uf_makefile.local ./makefile.local
 
 echo "... Done!"

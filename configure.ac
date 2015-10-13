@@ -76,6 +76,7 @@ AC_CONFIG_FILES([
 Make.rules
 Makefile
 UFconfig.mk
+uf_makefile.local
 ])
 
 AC_OUTPUT

@@ -26,13 +26,17 @@
 
 AC_DEFUN([AX_LOC_BLAS],[
 ax_loc_blas_ok=no
+LOC_BLAS_ARCHIVE=""
 # try customer flag first
 if test $ax_loc_blas_ok = no; then
    if test "x$BLAS_LIB" != x; then
        saved_LIBS="$LIBS";
        LIBS="$BLAS_LIB $LIBS"
        AC_MSG_CHECKING([check user defined flags specified in BLAS_LIB ...])
-       AC_TRY_LINK_FUNC(dgemm_, [ax_loc_blas_ok=yes, LOC_BLAS_LIBS=$BLAS_LIB],[])
+       AC_TRY_LINK_FUNC(dgemm_, [ax_loc_blas_ok=yes
+                                 LOC_BLAS_LIBS=$BLAS_LIB
+                                 LOC_BLAS_ARCHIVE="-Wl,--whole-archive $BLAS_LIB -Wl,--no-whole-archive"
+                                 ],[])
        AC_MSG_RESULT($ax_loc_blas_ok)
        LIBS="$saved_LIBS"
    fi   
@@ -46,4 +50,5 @@ if test $ax_loc_blas_ok = no; then
 			      ])
 fi
 AC_SUBST([LOC_BLAS_LIBS])
+AC_SUBST([LOC_BLAS_ARCHIVE])
 ]) dnl done

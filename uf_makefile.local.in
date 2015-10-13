@@ -40,7 +40,7 @@ all: $(EXEC)
 
 $(OBJS): $(HDRS)
 $(EXEC): ${OBJS}
-	 $(CXX) $^ -o ${EXEC} -shared ${OPT_FLAG} ${LINK_FLAGS}
+	 $(CXX) $^ -o ${EXEC} -shared @LOC_BLAS_ARCHIVE@ ${OPT_FLAG} ${LINK_FLAGS}
 
 ## other options
 clean:

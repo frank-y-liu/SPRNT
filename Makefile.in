@@ -97,6 +97,7 @@ distclean:
 	-rm -rf Make.rules
 	-rm -rf Makefile
 	-rm -rf UFconfig.mk
+	-rm -rf uf_makefile.local
 	-rm -rf config.status
 	-rm -rf config.log
 	-rm -rf aclocal.m4

@@ -585,6 +585,7 @@ ac_default_prefix=.
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
 CXX_STDCXX_0X_FLAG
+LOC_BLAS_ARCHIVE
 LOC_BLAS_LIBS
 REALPATH_CHECK
 DIRNAME_CHECK
@@ -3657,6 +3658,7 @@ fi
 ## check blas, determines blas flag
 
 ax_loc_blas_ok=no
+LOC_BLAS_ARCHIVE=""
 # try customer flag first
 if test $ax_loc_blas_ok = no; then
    if test "x$BLAS_LIB" != x; then
@@ -3683,7 +3685,10 @@ return dgemm_ ();
 }
 _ACEOF
 if ac_fn_c_try_link "$LINENO"; then :
-  ax_loc_blas_ok=yes, LOC_BLAS_LIBS=$BLAS_LIB
+  ax_loc_blas_ok=yes
+                                 LOC_BLAS_LIBS=$BLAS_LIB
+                                 LOC_BLAS_ARCHIVE="-Wl,--whole-archive $BLAS_LIB -Wl,--no-whole-archive"
+
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
@@ -3741,6 +3746,7 @@ else
 fi
 
 fi
+
 
 
 
@@ -3930,7 +3936,7 @@ $as_echo "#define HAVE_STDCXX_0X /**/" >>confdefs.h
 
 
 
-ac_config_files="$ac_config_files Make.rules Makefile UFconfig.mk"
+ac_config_files="$ac_config_files Make.rules Makefile UFconfig.mk uf_makefile.local"
 
 
 cat >confcache <<\_ACEOF
@@ -4641,6 +4647,7 @@ do
     "Make.rules") CONFIG_FILES="$CONFIG_FILES Make.rules" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "UFconfig.mk") CONFIG_FILES="$CONFIG_FILES UFconfig.mk" ;;
+    "uf_makefile.local") CONFIG_FILES="$CONFIG_FILES uf_makefile.local" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
