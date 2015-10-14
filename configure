@@ -3650,11 +3650,6 @@ else
 fi
 
 
-# we also need blas
-#AC_CHECK_LIB(blas, dnrm2_, [],[
-#   AC_MSG_ERROR([unable to locate the blas library]);
-#])
-
 ## check blas, determines blas flag
 
 ax_loc_blas_ok=no
