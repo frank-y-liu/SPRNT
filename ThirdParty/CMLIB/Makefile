@@ -14,13 +14,13 @@ TARGET = libdbsplin.a
 
 ALL = TARGET
 
-SRCS=	$(wildcard src/dbsplin/*.f) $(wildcard src/dtensbs/*.f) \
-	$(wildcard src/machcon/*.f) $(wildcard src/xerror/*.f)
+SRCS=	$(wildcard src/src/dbsplin/*.f) $(wildcard src/src/dtensbs/*.f) \
+	$(wildcard src/src/machcon/*.f) $(wildcard src/src/xerror/*.f)
 
-OBJS=	$(patsubst %.f,%.o, $(wildcard src/dbsplin/*.f)) \
-	$(patsubst %.f,%.o, $(wildcard src/dtensbs/*.f)) \
-	$(patsubst %.f,%.o, $(wildcard src/machcon/*.f)) \
-	$(patsubst %.f,%.o, $(wildcard src/xerror/*.f)) 
+OBJS=	$(patsubst %.f,%.o, $(wildcard src/src/dbsplin/*.f)) \
+	$(patsubst %.f,%.o, $(wildcard src/src/dtensbs/*.f)) \
+	$(patsubst %.f,%.o, $(wildcard src/src/machcon/*.f)) \
+	$(patsubst %.f,%.o, $(wildcard src/src/xerror/*.f)) 
 
 $(TARGET): $(OBJS)
 	$(AR) $(ARFLAGS) $@ $?
@@ -34,9 +34,6 @@ realclean:
 
 distclean:
 	-rm -rf $(OBJS) $(TARGET) 
-	-rm -rf src
-	-rm -rf dbsplin_archive
-	-rm -rf dtensbs_archive
-	-rm -rf dbsplin_depend
+	-rm -rf src/*
 
 # DO NOT DELETE

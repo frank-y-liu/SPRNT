@@ -1,29 +1,19 @@
 #! /bin/bash
 
-echo "Fetch modules from lib.stat.cmu.edu ......"
+echo "Fetch modules from ftp.nist.gov ......"
 echo " "
-if [ ! -f dbsplin_archive ]; then
-curl http://lib.stat.cmu.edu/cmlib/src/dbsplin/archive -o dbsplin_archive
+if [ ! -f src/src.tar.gz ]; then
+curl ftp://ftp.nist.gov/pub/cmlib/src.tar.Z -o src/src.tar.gz
 fi
-if [ ! -f dbsplin_depend ]; then
-curl http://lib.stat.cmu.edu/cmlib/src/dbsplin/depend -o dbsplin_depend
-fi
-if [ ! -f dtensbs_archive ]; then
-curl http://lib.stat.cmu.edu/cmlib/src/dtensbs/archive -o dtensbs_archive
-fi
-
-chmod 700 dbsplin_archive
-chmod 700 dbsplin_depend
-chmod 700 dtensbs_archive
 
 echo " "
 echo "Expanding the modules ......"
 echo " "
-./dbsplin_archive > /dev/null 2>&1
-./dbsplin_depend  > /dev/null 2>&1
-./dtensbs_archive > /dev/null 2>&1
+
+cd src
+tar -xzvf src.tar.gz > /dev/null 2>&1 
+cd -
 
 echo "... Done!"
-
 
 #end
