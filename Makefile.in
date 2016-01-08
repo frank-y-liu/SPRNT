@@ -30,8 +30,8 @@ include $(ROOT)/Make.rules
 prefix=@prefix@
 
 all:
-	cd $(SRC_HOME); make
-	cd $(SPT_HOME); make
+	cd $(SRC_HOME); make -j $(NPROC)
+	cd $(SPT_HOME); make -j $(NPROC)
 
 test:
 	cd $(TEST_HOME); make 

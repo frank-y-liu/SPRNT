@@ -62,6 +62,23 @@ else
   GIT_HASH := $(shell git rev-parse --short=8 HEAD)
 endif
 
+# detect number of cores, works only on linux and mac os
+# detect the number of cores
+# OS flag only works for Linux and Mac
+OS := $(shell uname -s)
+ifeq ($(OS),Linux)
+	NPROC := $(shell grep -c ^processor /proc/cpuinfo)
+else
+# need to handle mac OS
+	NPROC := 1
+endif
+
+# x86 assumption: 2 thread per core, minimal 1
+NPROC := $(shell echo "$(NPROC)/2"|bc)
+ifeq ($(NPROC),0)
+	NPROC := 1
+endif
+
 # we are done
 
 # Local Variables:

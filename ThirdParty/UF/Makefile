@@ -3,13 +3,15 @@
 
 .PHONY: clean realclean distclean
 
+include ../../Make.rules
+
 all:
-	cd SuiteSparse/AMD; make; cd -
-	cd SuiteSparse/BTF; make; cd -
-	cd SuiteSparse/COLAMD; make; cd -
-	cd SuiteSparse/KLU; make; cd -
-	cd SuiteSparse/UMFPACK; make; cd -
-	make -f makefile.local
+	cd SuiteSparse/AMD; make -j$(NPROC); cd -
+	cd SuiteSparse/BTF; make -j$(NPROC); cd -
+	cd SuiteSparse/COLAMD; make -j$(NPROC); cd -
+	cd SuiteSparse/KLU; make -j$(NPROC); cd -
+	cd SuiteSparse/UMFPACK; make -j$(NPROC); cd -
+	make -j$(NPROC) -f makefile.local
 
 clean:
 	cd SuiteSparse/AMD; make clean; cd -
@@ -36,6 +38,7 @@ distclean:
 	make realclean -f makefile.local
 	-rm -rf SuiteSparse
 	\rm -rf *.tar.gz
+	-rm -rf makefile.local
 
 # Local Variables:
 # mode: makefile

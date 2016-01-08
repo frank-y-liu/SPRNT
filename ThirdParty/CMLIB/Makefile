@@ -2,13 +2,10 @@
 
 .PHONY:   clean realclean distclean
 
-AR = ar
+include ../../Make.rules
+
 ARFLAGS = ruv
-
-FC = gfortran
-FFLAGS	= -O3
-
-RANLIB = ranlib
+FFLAGS	= $(OPT_FLAG)
 
 TARGET = libdbsplin.a
 
