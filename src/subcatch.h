@@ -200,10 +200,10 @@ class Subcatchment {
      if WAVE != NULL : store the results to WAVE
    */
   int UnsteadySolve(double final_t, int jac_num, int max_iter, double tol, 
-		    Waveforms *WV, FILE *OUT, int what2print, int pstart, char** N);
+		    Waveforms *WV, sptFile OUT, int what2print, int pstart, char** N);
 
   /* printing */
-  void PrintOnDemand(FILE *F, double tnow, int tstart, int what=0, char **NAMES=NULL); 
+  void PrintOnDemand(sptFile F, double tnow, int tstart, int what=0, char **NAMES=NULL); 
 
   /* methods for debugging */
   void PrintToFile(FILE *F, int converged_x=1);

@@ -54,6 +54,14 @@ AC_CHECK_LIB(m,cbrt,[],[
    AC_MSG_ERROR([something is wrong with the math lib -m ...]);
 ])
 
+# check zlib, define a local flag and handle it internally
+AX_CHECK_ZLIB([
+AC_MSG_NOTICE([Found zlib. I/O compression will be enabled])
+AC_SUBST(LOC_HAVE_LIBZ,[-DHAVE_LIBZ])
+],[
+AC_MSG_NOTICE([Unable to find zlib.])
+])
+
 # check libgfortran, should be installed with gfortran
 AC_CHECK_LIB(gfortran,_gfortran_fget,[],[
    AC_MSG_ERROR([unable to locate libgfortran]);

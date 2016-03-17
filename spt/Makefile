@@ -22,13 +22,18 @@ include ${ROOT}/Make.rules
 ## should not have to change too much beyond this point
 ##
 
-CFLAGS=-Wall -DLINUX -DGIT_HASH=\"$(GIT_HASH)\" ${OPT_FLAG} -I${SRC_HOME} ${BITS}
-CXXFLAGS=-Wall ${CXX_STDCXX_0X_FLAG} -DLINUX -DGIT_HASH=\"$(GIT_HASH)\" ${OPT_FLAG} -I${SRC_HOME} ${BITS}
+CFLAGS=-Wall -DLINUX -DGIT_HASH=\"$(GIT_HASH)\" ${OPT_FLAG} -I${SRC_HOME} ${LOC_HAVE_LIBZ} ${BITS}
+CXXFLAGS=-Wall ${CXX_STDCXX_0X_FLAG} -DLINUX -DGIT_HASH=\"$(GIT_HASH)\" ${OPT_FLAG} -I${SRC_HOME} ${LOC_HAVE_LIBZ} ${BITS}
 
+ifdef LOC_HAVE_LIBZ
+	EXT_LINK_FLAGS=-lm -ldl -lz
+else
+	EXT_LINK_FLAGS=-lm -ldl
+endif
 LINK_FLAGS=-L${SRC_HOME} -lsprnt \
 	-L${SPLINE_HOME} -ldbsplin \
 	${BLAS} ${LIBFORTRAN} \
-	${BITS} -lm -ldl
+	${BITS} ${EXT_LINK_FLAGS}
 
 ## 
 HDRS = $(wildcard *.h)

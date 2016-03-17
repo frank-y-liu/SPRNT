@@ -19,6 +19,7 @@ include ${ROOT}/Make.rules
 # locations to find the executable 
 CMD=LD_LIBRARY_PATH=../ThirdParty/UF ${SPT_HOME}/sprnt
 DIFF=diff -q
+UNZIP=gzip -q -d
 
 CASES= $(wildcard *.spt)
 OUTPUT= $(addsuffix .output.dat, $(wildcard *.spt))
@@ -26,6 +27,7 @@ OUTPUT= $(addsuffix .output.dat, $(wildcard *.spt))
 # RULES
 %.spt.output.dat : %.spt
 	$(CMD) $?
+	-$(UNZIP) $?.output.dat.gz
 
 all: test
 
@@ -34,8 +36,10 @@ test : $(OUTPUT)
 
 clean:
 	-rm -rf *.output.dat
+	-rm -rf *.output.dat.gz
 
 realclean:
 	-rm -rf *.output.dat
+	-rm -rf *.output.dat.gz
 ## end
 

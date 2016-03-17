@@ -19,6 +19,7 @@ FC = @F77@
 AR = @AR@
 RANLIB = @RANLIB@
 CXX_STDCXX_0X_FLAG = @CXX_STDCXX_0X_FLAG@
+LOC_HAVE_LIBZ = @LOC_HAVE_LIBZ@
 
 # where to find the libraries
 LIBHOME := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))

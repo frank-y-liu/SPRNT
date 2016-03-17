@@ -66,6 +66,30 @@ template<class T> inline double DBL_SIGN(T x)  { return (x>=0) ? 1.0 : -1.0; };
 #define PRT_D  0x02
 #define PRT_Z  0x01
 
+/* deal with file compresion */
+#ifdef HAVE_LIBZ
+
+#include <zlib.h>
+#define sptFile gzFile
+#define sptOpenToRead(a) gzopen((a),"r")
+#define sptGets(buf,len, fp) gzgets(fp, buf, len)
+#define sptRewind(a) gzrewind(a)
+#define sptOpenToWrite(a) gzopen((a),"w")
+#define sptFprintf(a, ...) gzprintf(a, ##__VA_ARGS__)
+#define sptClose(a) gzclose(a)
+
+#else
+
+#define sptFile FILE*
+#define sptOpenToRead(a) fopen((a),"r")
+#define sptGets(buf,len, fp) fgets(buf, len, fp)
+#define sptRewind(a) rewind(a)
+#define sptOpenToWrite(a) fopen((a),"w")
+#define sptFprintf(a, ...) fprintf(a,__VA_ARGS__)
+#define sptClose(a) fclose(a)
+
+#endif
+
 #endif // _BASE_H
 
 // Local Variables:

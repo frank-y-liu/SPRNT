@@ -19,3 +19,7 @@ June 2015, ver 1.3.1
    data (trapezoidal, Y-Z pairs), the x-section can be specified by A(wetted area)-P(
    wetted perimeter), A-Y(depth) and A-W(free surface width).
 
+March, 2016, ver 1.3.5
+ - added support of zlib. If zlib is present, the input files can be compressed. The 
+   output files will always be compressed. Use "gzip -d" to deflate the compressed
+   output file

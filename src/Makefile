@@ -25,10 +25,10 @@ include ${ROOT}/Make.rules
 ##
 
 CFLAGS=-Wall -DLINUX -DGIT_HASH=\"$(GIT_HASH)\" ${OPT_FLAG} \
-	${BITS} ${MYDEBUG} 
+	${LOC_HAVE_LIBZ} ${BITS} ${MYDEBUG} 
 
 CXXFLAGS=-Wall -DLINUX -DGIT_HASH=\"$(GIT_HASH)\" ${OPT_FLAG} \
-	${BITS} ${MYDEBUG} 
+	${LOC_HAVE_LIBZ} ${BITS} ${MYDEBUG} 
 
 ARFLAGS=ruv
 

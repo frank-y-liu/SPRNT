@@ -175,7 +175,7 @@ FirstDef decipher_keyword(char *pt, Descriptor *des, int sz) {
   return rc;
 }
 
-FirstDef search_block(FILE *fp, int *cur_ln, Descriptor *des, int sz, StrBuffer *p, StrBuffer *s, FILE *out) {
+FirstDef search_block(sptFile fp, int *cur_ln, Descriptor *des, int sz, StrBuffer *p, StrBuffer *s, FILE *out) {
   int state;
   FirstDef found_key=def_not_found;
   int rc_end, rc_def;
@@ -197,7 +197,7 @@ FirstDef search_block(FILE *fp, int *cur_ln, Descriptor *des, int sz, StrBuffer 
   p->Reset();
   s->Reset();
 
-  while ( (fgets(tmpbuf, MAX_LINE_LENGTH, fp)) != NULL) {  
+  while ( ( sptGets(tmpbuf, MAX_LINE_LENGTH, fp)) != NULL) {  
     ln_number++;
     if ( tmpbuf[0]=='#'||tmpbuf[0]=='*'||tmpbuf[0]=='%') continue; /* comments */
 
@@ -429,7 +429,7 @@ int check_4d_apyw(int num, SimpleDblQuad *d, FILE *out) {
 
 // top level function to parse the spt netlist and construct the SUBCATCHMENT object
 // as well as modifying the Options and Sgraph objects
-int read_spt_from_file(FILE* F, Subcatchment *SUB, NameStore *NODE_NAMES, SMap *HASH, FILE* out) {
+int read_spt_from_file(sptFile F, Subcatchment *SUB, NameStore *NODE_NAMES, SMap *HASH, FILE* out) {
 
   FirstDef rc;
   int r_code;
@@ -475,7 +475,7 @@ int read_spt_from_file(FILE* F, Subcatchment *SUB, NameStore *NODE_NAMES, SMap *
     }
     if ( rc == def_not_found ) break;
   }
-  rewind(F);
+  sptRewind(F);
   
   if (out) {
     fprintf(out,"[II]: Found %d nodes, %d segmetns, %d junctions, %d q_sources, %d lateral sources, %d bdn condtions, %d options in the netlist\n", 
@@ -525,7 +525,7 @@ int read_spt_from_file(FILE* F, Subcatchment *SUB, NameStore *NODE_NAMES, SMap *
     double prtstartunit = 1.0, prtstart = 0.0;
     double spinuptime = 0.0;
 
-    rewind(F);
+    sptRewind(F);
     rc = def_not_found;
     line_num = 0;
     while (1) {  
@@ -740,7 +740,7 @@ int read_spt_from_file(FILE* F, Subcatchment *SUB, NameStore *NODE_NAMES, SMap *
   }
   
   // add nodes,  check duplicate
-  rewind(F);
+  sptRewind(F);
   rc = def_not_found;
   line_num = 0;
   while (1) {  
@@ -976,7 +976,7 @@ int read_spt_from_file(FILE* F, Subcatchment *SUB, NameStore *NODE_NAMES, SMap *
 
 
   // records Qsrc, Lsrc and Bdn's
-  rewind(F);
+  sptRewind(F);
   rc = def_not_found;
   line_num = 0;
   while (1) {  
@@ -1216,7 +1216,7 @@ int read_spt_from_file(FILE* F, Subcatchment *SUB, NameStore *NODE_NAMES, SMap *
 
   // process the rest, segments, junctions
   rc = def_not_found;
-  rewind(F);
+  sptRewind(F);
   line_num = 0;
   while (1) {  
     int up_idx, down_idx;

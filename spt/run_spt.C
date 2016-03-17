@@ -32,14 +32,16 @@
 Options      OPT;
 Stats        STAT;
 
-int read_spt_from_file(FILE* fF, Subcatchment *s, NameStore *NODE_NAMES, SMap *hw, FILE* out);
+int read_spt_from_file(sptFile fF, Subcatchment *s, NameStore *NODE_NAMES, SMap *hw, FILE* out);
 char* get_basename(char*);
 
 int main(int argc, char** argv) {
   const int buf_len = 512;
   int   rc, docheck, print_flag;
   char fname[buf_len], outname[buf_len];
-  FILE *F, *FS;
+  sptFile F;
+  sptFile outF;
+  FILE *FS;
   mytm TM;
   
   // These are permanent stores and we need to worry about memory management
@@ -62,7 +64,7 @@ int main(int argc, char** argv) {
     strncpy(fname, argv[1], buf_len);
   }
 
-  if ( (F=fopen(fname, "r")) == NULL ) {
+  if ( (F=sptOpenToRead(fname)) == NULL ) {
     printf("Bummer: unable to open netlist file %s\n", argv[1]);
     return (-1);
   }
@@ -149,10 +151,15 @@ int main(int argc, char** argv) {
   if (OPT.PrintA()==1) print_flag |= PRT_A;
   if (OPT.PrintZ()==1) print_flag |= PRT_Z;
   if (OPT.PrintD()==1) print_flag |= PRT_D;
+#ifdef HAVE_LIBZ
+  sprintf(outname,"%s.output.dat.gz", fname);
+#else
   sprintf(outname,"%s.output.dat", fname);
+#endif
   if ( print_flag ) {
-    FS = fopen(outname,"w");
-    if ( FS == NULL ) {
+    outF = sptOpenToWrite(outname);
+
+    if ( outF == NULL ) {
       fprintf(stdout,"[II]: Unable to open output file %s. Request ignored\n", outname);
     } else {
       fprintf(stdout,"[II]: Unsteady results will be stored in \"%s\"\n", outname);
@@ -161,18 +168,19 @@ int main(int argc, char** argv) {
 						  // others are enabled
   } else {
     fprintf(stdout,"[II]: No printing request made. Nothing will be stored\n");
-    FS = NULL;
+    outF = NULL;
   }
 
   TM.start();
-  rc = SUB->UnsteadySolve(OPT.StopTime(), 1, 25, OPT.Tol(), NULL, FS, print_flag, OPT.PrintStart(), NODE_NAMES->Store() ); 
+  rc = SUB->UnsteadySolve(OPT.StopTime(), 1, 25, OPT.Tol(), NULL, outF, print_flag, OPT.PrintStart(), NODE_NAMES->Store() ); 
+
   TM.stop();
-  if ( FS ) fclose(FS);
+  if ( outF ) sptClose(outF);
 
   fprintf(stdout, "[II]: Simulation of the %d-min event took %.3f seconds.\n", (int)(OPT.StopTime()/60.0), TM.read() );
 
  out:
-  if (F) fclose(F);
+  if (F) sptClose(F);
   if ( SUB ) delete SUB;
   if ( NODE_NAMES) delete NODE_NAMES;
 

@@ -816,7 +816,7 @@ inline double lin_interp(double t1, double x1, double t2, double x2, double tt) 
 //    0x02         D
 //    0x01         Z
 // combination are allowed, but the sequence is fixed
-void Subcatchment::PrintOnDemand(FILE *F, double tnow, int pstart, int what, char **NAMES) {
+void Subcatchment::PrintOnDemand(sptFile F, double tnow, int pstart, int what, char **NAMES) {
   double fq, fa, fd;
   if (OPT.UseMetric() ==1 ) {
     fq = 1.0;
@@ -838,32 +838,32 @@ void Subcatchment::PrintOnDemand(FILE *F, double tnow, int pstart, int what, cha
   if (interval == 0 ) {  // we print whatever we have if interval is 0
     // print the header
     if (OPT.UseMetric() ==1 ) {
-      fprintf(F,"*** id time(min)");
-      if ( what & PRT_Q ) fprintf(F," flow(m3/s)");
-      if ( what & PRT_A ) fprintf(F," wet_a(m2)");
-      if ( what & PRT_D ) fprintf(F," depth(m)");
-      if ( what & PRT_Z ) fprintf(F," surf_elev(m)");
-      if ( what & PRT_XY) fprintf(F," xy-coordinates");
-      fprintf(F,"\n");
+      sptFprintf(F,"*** id time(min)");
+      if ( what & PRT_Q ) sptFprintf(F," flow(m3/s)");
+      if ( what & PRT_A ) sptFprintf(F," wet_a(m2)");
+      if ( what & PRT_D ) sptFprintf(F," depth(m)");
+      if ( what & PRT_Z ) sptFprintf(F," surf_elev(m)");
+      if ( what & PRT_XY) sptFprintf(F," xy-coordinates");
+      sptFprintf(F,"\n");
     } else {
-      fprintf(F,"*** id time(min)");
-      if ( what & PRT_Q ) fprintf(F," flow(ft3/s)");
-      if ( what & PRT_A ) fprintf(F," wet_a(ft2)");
-      if ( what & PRT_D ) fprintf(F," depth(ft)");
-      if ( what & PRT_Z ) fprintf(F," surf_elev(ft)");
-      if ( what & PRT_XY) fprintf(F," xy-coordinates");
-      fprintf(F,"\n");
+      sptFprintf(F,"*** id time(min)");
+      if ( what & PRT_Q ) sptFprintf(F," flow(ft3/s)");
+      if ( what & PRT_A ) sptFprintf(F," wet_a(ft2)");
+      if ( what & PRT_D ) sptFprintf(F," depth(ft)");
+      if ( what & PRT_Z ) sptFprintf(F," surf_elev(ft)");
+      if ( what & PRT_XY) sptFprintf(F," xy-coordinates");
+      sptFprintf(F,"\n");
     }
     // print the rest
     for (int jj=0; jj<_num_nodes; jj++) {
-      if (!NAMES) fprintf(F, "%d %6.2f", _NS[jj]->Id(), tnow/60.0);
-      else        fprintf(F, "%s %6.2f", NAMES[_NS[jj]->Id()], tnow/60.0);
-      if ( what & PRT_Q) fprintf(F, PRT_FMT, _X[_NS[jj]->QIdx()] * fq);
-      if ( what & PRT_A) fprintf(F, PRT_FMT, _X[_NS[jj]->AIdx()] * fa);
-      if ( what & PRT_D) fprintf(F, PRT_FMT, _Depth[jj] * fd);
-      if ( what & PRT_Z) fprintf(F, PRT_FMT, _Elevation[jj] * fd);
-      if ( what & PRT_XY) fprintf(F, PRT_XY_FMT, _NS[jj]->X(), _NS[jj]->Y());
-      fprintf(F,"\n");
+      if (!NAMES) sptFprintf(F, "%d %6.2f", _NS[jj]->Id(), tnow/60.0);
+      else        sptFprintf(F, "%s %6.2f", NAMES[_NS[jj]->Id()], tnow/60.0);
+      if ( what & PRT_Q) sptFprintf(F, PRT_FMT, _X[_NS[jj]->QIdx()] * fq);
+      if ( what & PRT_A) sptFprintf(F, PRT_FMT, _X[_NS[jj]->AIdx()] * fa);
+      if ( what & PRT_D) sptFprintf(F, PRT_FMT, _Depth[jj] * fd);
+      if ( what & PRT_Z) sptFprintf(F, PRT_FMT, _Elevation[jj] * fd);
+      if ( what & PRT_XY) sptFprintf(F, PRT_XY_FMT, _NS[jj]->X(), _NS[jj]->Y());
+      sptFprintf(F,"\n");
     }
   } else {  // we only print at the frequency being asked for
     if ( tnowmin < pstart) return;
@@ -872,33 +872,33 @@ void Subcatchment::PrintOnDemand(FILE *F, double tnow, int pstart, int what, cha
     if (  prev_t < 0 && pstart == 0 ) {
       // print the header
       if ( OPT.UseMetric() == 1 )  {
-	fprintf(F,"*** id time(min)");
-	if ( what & PRT_Q ) fprintf(F," flow(m3/s)");
-	if ( what & PRT_A ) fprintf(F," wet_a(m2)");
-	if ( what & PRT_D ) fprintf(F," depth(m)");
-	if ( what & PRT_Z ) fprintf(F," surf_elev(m)");
-	if ( what & PRT_XY) fprintf(F," xy-coordinates");
-	fprintf(F,"\n");
+	sptFprintf(F,"*** id time(min)");
+	if ( what & PRT_Q ) sptFprintf(F," flow(m3/s)");
+	if ( what & PRT_A ) sptFprintf(F," wet_a(m2)");
+	if ( what & PRT_D ) sptFprintf(F," depth(m)");
+	if ( what & PRT_Z ) sptFprintf(F," surf_elev(m)");
+	if ( what & PRT_XY) sptFprintf(F," xy-coordinates");
+	sptFprintf(F,"\n");
       } else {
-	fprintf(F,"*** id time(min)");
-	if ( what & PRT_Q ) fprintf(F," flow(ft3/s)");
-	if ( what & PRT_A ) fprintf(F," wet_a(ft2)");
-	if ( what & PRT_D ) fprintf(F," depth(ft)");
-	if ( what & PRT_Z ) fprintf(F," surf_elev(ft)");
-	if ( what & PRT_XY) fprintf(F," xy-coordinates");
+	sptFprintf(F,"*** id time(min)");
+	if ( what & PRT_Q ) sptFprintf(F," flow(ft3/s)");
+	if ( what & PRT_A ) sptFprintf(F," wet_a(ft2)");
+	if ( what & PRT_D ) sptFprintf(F," depth(ft)");
+	if ( what & PRT_Z ) sptFprintf(F," surf_elev(ft)");
+	if ( what & PRT_XY) sptFprintf(F," xy-coordinates");
 
-	fprintf(F,"\n");
+	sptFprintf(F,"\n");
       }
 
       for (int jj=0; jj<_num_nodes; jj++) {
-	if (!NAMES) fprintf(F, "%d %d", _NS[jj]->Id(), 0 );
-	else        fprintf(F, "%s %d", NAMES[_NS[jj]->Id()], 0);
-	if ( what & PRT_Q) fprintf(F, PRT_FMT, _X[_NS[jj]->QIdx()] * fq);
-	if ( what & PRT_A) fprintf(F, PRT_FMT, _X[_NS[jj]->AIdx()] * fa);
-	if ( what & PRT_D) fprintf(F, PRT_FMT, _Depth[jj] * fd);
-	if ( what & PRT_Z) fprintf(F, PRT_FMT, _Elevation[jj] * fd);
-	if ( what & PRT_XY) fprintf(F, PRT_XY_FMT, _NS[jj]->X(), _NS[jj]->Y());
-	fprintf(F,"\n");
+	if (!NAMES) sptFprintf(F, "%d %d", _NS[jj]->Id(), 0 );
+	else        sptFprintf(F, "%s %d", NAMES[_NS[jj]->Id()], 0);
+	if ( what & PRT_Q) sptFprintf(F, PRT_FMT, _X[_NS[jj]->QIdx()] * fq);
+	if ( what & PRT_A) sptFprintf(F, PRT_FMT, _X[_NS[jj]->AIdx()] * fa);
+	if ( what & PRT_D) sptFprintf(F, PRT_FMT, _Depth[jj] * fd);
+	if ( what & PRT_Z) sptFprintf(F, PRT_FMT, _Elevation[jj] * fd);
+	if ( what & PRT_XY) sptFprintf(F, PRT_XY_FMT, _NS[jj]->X(), _NS[jj]->Y());
+	sptFprintf(F,"\n");
       }
       // move print time stamp forward
       prev_t += interval;
@@ -906,42 +906,42 @@ void Subcatchment::PrintOnDemand(FILE *F, double tnow, int pstart, int what, cha
       int tprt = prev_t + interval;
       while ( prev_t + interval <= tnowmin ) {
 	if ( OPT.UseMetric() == 1 ) {
-	  fprintf(F,"*** id time(min)");
-	  if ( what & PRT_Q ) fprintf(F," flow(m3/s)");
-	  if ( what & PRT_A ) fprintf(F," wet_a(m2)");
-	  if ( what & PRT_D ) fprintf(F," depth(m)");
-	  if ( what & PRT_Z ) fprintf(F," surf_elev(m)");
-	  if ( what & PRT_XY) fprintf(F," xy-coordinates");
-	  fprintf(F,"\n");
+	  sptFprintf(F,"*** id time(min)");
+	  if ( what & PRT_Q ) sptFprintf(F," flow(m3/s)");
+	  if ( what & PRT_A ) sptFprintf(F," wet_a(m2)");
+	  if ( what & PRT_D ) sptFprintf(F," depth(m)");
+	  if ( what & PRT_Z ) sptFprintf(F," surf_elev(m)");
+	  if ( what & PRT_XY) sptFprintf(F," xy-coordinates");
+	  sptFprintf(F,"\n");
 	} else {
-	  fprintf(F,"*** id time(min)");
-	  if ( what & PRT_Q ) fprintf(F," flow(ft3/s)");
-	  if ( what & PRT_A ) fprintf(F," wet_a(ft2)");
-	  if ( what & PRT_D ) fprintf(F," depth(ft)");
-	  if ( what & PRT_Z ) fprintf(F," surf_elev(ft)");
-	  if ( what & PRT_XY) fprintf(F," xy-coordinates");
-	  fprintf(F,"\n");
+	  sptFprintf(F,"*** id time(min)");
+	  if ( what & PRT_Q ) sptFprintf(F," flow(ft3/s)");
+	  if ( what & PRT_A ) sptFprintf(F," wet_a(ft2)");
+	  if ( what & PRT_D ) sptFprintf(F," depth(ft)");
+	  if ( what & PRT_Z ) sptFprintf(F," surf_elev(ft)");
+	  if ( what & PRT_XY) sptFprintf(F," xy-coordinates");
+	  sptFprintf(F,"\n");
 	}
 	for (int jj=0; jj<_num_nodes; jj++) {
-	  if (!NAMES) fprintf(F, "%d %d", _NS[jj]->Id(), prev_t+interval);
-	  else        fprintf(F, "%s %d", NAMES[_NS[jj]->Id()], prev_t+interval);
+	  if (!NAMES) sptFprintf(F, "%d %d", _NS[jj]->Id(), prev_t+interval);
+	  else        sptFprintf(F, "%s %d", NAMES[_NS[jj]->Id()], prev_t+interval);
 	  // in order for interpolation, we recompute depth and elevation at the previous
 	  // time point on the fly. Note that "tprt" is given in minutes
-	  if ( what & PRT_Q) fprintf(F, PRT_FMT, lin_interp(
+	  if ( what & PRT_Q) sptFprintf(F, PRT_FMT, lin_interp(
 							   _tm1, _Xtm1[_NS[jj]->QIdx()], 
 							   _t,_X[_NS[jj]->QIdx()], tprt*60.0) * fq);
-	  if ( what & PRT_A) fprintf(F, PRT_FMT, lin_interp(
+	  if ( what & PRT_A) sptFprintf(F, PRT_FMT, lin_interp(
 							   _tm1,_Xtm1[_NS[jj]->AIdx()], 
 							   _t,_X[_NS[jj]->AIdx()], tprt*60.0) * fa );
-	  if ( what & PRT_D) fprintf(F, PRT_FMT, lin_interp(
+	  if ( what & PRT_D) sptFprintf(F, PRT_FMT, lin_interp(
 							   _tm1, _NS[jj]->GetAbsoluteDepth(_Xtm1[_NS[jj]->AIdx()]), 
 							   _t,_Depth[jj], tprt*60.0) * fd );
-	  if ( what & PRT_Z) fprintf(F, PRT_FMT, lin_interp(
+	  if ( what & PRT_Z) sptFprintf(F, PRT_FMT, lin_interp(
 							   _tm1, _NS[jj]->GetElevation(_Xtm1[_NS[jj]->AIdx()]), 
 							   _t,_Elevation[jj], tprt*60.0) * fd);
 
-	  if ( what & PRT_XY) fprintf(F, PRT_XY_FMT, _NS[jj]->X(), _NS[jj]->Y());
-	  fprintf(F,"\n");
+	  if ( what & PRT_XY) sptFprintf(F, PRT_XY_FMT, _NS[jj]->X(), _NS[jj]->Y());
+	  sptFprintf(F,"\n");
 	}
 	// move print time stamp forward
 	prev_t += interval;
@@ -1326,7 +1326,7 @@ double Subcatchment::QueryBreakPoint(double tnow, int &atbrkpt) {
    if successful and OUT!=NULL, print the values to OUT at each time point
  */
 int Subcatchment::UnsteadySolve(double final_t, int jac_num, int max_iter, double tol, 
-				Waveforms *WV, FILE *OUT, int what2print, int pstart, char **NAMES) {
+				Waveforms *WV, sptFile OUT, int what2print, int pstart, char **NAMES) {
 
   double current_t = _t;  // we can call this many times, pick up t from previous runs
   int    rc;
@@ -1357,9 +1357,15 @@ int Subcatchment::UnsteadySolve(double final_t, int jac_num, int max_iter, doubl
 
   // print a header
   if (OUT!=NULL) {
-    fprintf(OUT,"*** SPRNt Results. Netlist: \"%s\" Epoch: \"%s\" Reqested Tstop: ", STAT.InFile(), STAT.Epoch() );
-    if ( (((int)OPT.StopTime())/3600) > 0 ) fprintf(OUT,"%d hr %d min\n", ((int)OPT.StopTime())/3600, (((int)OPT.StopTime())/60)%60 );
-    else                                fprintf(OUT,"%d min\n", ((int)OPT.StopTime())/60);
+
+    sptFprintf(OUT,"*** SPRNt Results. Netlist: \"%s\" Epoch: \"%s\" Reqested Tstop: ", STAT.InFile(), STAT.Epoch() );
+
+    if ( (((int)OPT.StopTime())/3600) > 0 ) {
+      sptFprintf(OUT,"%d hr %d min\n", ((int)OPT.StopTime())/3600, (((int)OPT.StopTime())/60)%60 );
+    }  else  {
+      sptFprintf(OUT,"%d min\n",((int)OPT.StopTime())/60);
+    }
+
   }
 
   while ( 1 ) {
