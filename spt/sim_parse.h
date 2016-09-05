@@ -144,7 +144,7 @@ class simpleTuple {
    if ( sz < _alloc_size) return;
    T *tmp;
    int newsz = 2*sz; // growth policy
-   for (int jj=0; jj<NSEQ; jj++) {
+   for (unsigned int jj=0; jj<NSEQ; jj++) {
      tmp = (T*)malloc(sizeof(T)*newsz);
      memcpy(tmp, _data[jj], sizeof(T)*_alloc_size);
      free(_data[jj]);
@@ -168,8 +168,8 @@ class simpleTuple {
  }
 
  // methods:
- T &ithVal(int jj, int kk) { assert(jj<NSEQ); _grow(kk); return (_data[jj][kk]); }
- T *getIthArray(int jj) { assert(jj<NSEQ); return (_data[jj]); } /* be careful */
+  T &ithVal(int jj, int kk) { assert((unsigned int)jj<NSEQ); _grow(kk); return (_data[jj][kk]); }
+  T *getIthArray(int jj) { assert((unsigned int)jj<NSEQ); return (_data[jj]); } /* be careful */
 
  void Reset() { _size = 0; _scale=(T)1.0; }
  const int Size() const { return _size; }
