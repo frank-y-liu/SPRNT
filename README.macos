@@ -1,0 +1,30 @@
+August 29, 2016
+
+As of version 1.3.6, SPRNT can be compiled and run on Mac OS. It has been tested on 
+OS X El Capitan, all functionalities are correct.
+
+1. As on Linux platforms, there is no graphic interface. You have to launch a "Terminal" 
+   in order to compile and run SPRNT. 
+
+2. Prerequisite: XCode (make sure commandline functions are installed) and gfortran. A 
+   good place to downland gfortran for Mac OS is 
+
+   https://gcc.gnu.org/wiki/GFortranBinaries
+
+   After installation, make sure you can find both the compiler "gfortran", as well as 
+   library libgfortran.a. Usually the library is located at /usr/local/gfortran/lib
+
+3. Open a terminal and go to the directory where SPRNT code is located.
+
+4. To run configure, you have to provide the location of the gfortran library by typing
+ 
+   export LDFLAGS=-L<location of libgfortran.a>; ./configure
+
+   For example, if libgfortran is at /usr/local/gfortran/lib, then configure should be 
+   invoked as:
+
+   export LDFLAGS=-L/usr/local/gfortran/lib; ./configure
+
+   Note this is different than compiling SPRNT on a Linux platform.
+
+5. On Mac OS, SPRNT will automatically download BLAS.

@@ -22,8 +22,10 @@ if [ ! -r "$SCRIPTPATH/sprnt" ]; then
   exit -1
 fi
 if [ ! -r "$SCRIPTPATH/../lib/libsolvers.so" ]; then
-  echo "Need the solver library to proceed ..."
-  exit -1 
+    if [ ! -r "$SCRIPTPATH/../lib/libsolvers.dylib" ]; then
+	echo "Need the solver library to proceed ..."
+	exit -1
+    fi
 fi
 if [ $# -lt 1 ]; then
   $SCRIPTPATH/sprnt

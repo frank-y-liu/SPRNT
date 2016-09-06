@@ -86,7 +86,11 @@ MEX=
 # BLAS = -lgoto -lgfortran -lgfortranbegin
 
 # This is probably slow ... it might connect to the Standard Reference BLAS:
-BLAS = @LOC_BLAS_LIBS@ -lgfortran -lgfortranbegin
+ifeq ($(shell uname),Darwin)
+BLAS = -L${BLAS_HOME} -lblas @LDFLAGS@ -lgfortran
+else
+BLAS = @LOC_BLAS_LIBS@ -lgfortran
+endif
 LAPACK = 
 
 # The BLAS might not contain xerbla, an error-handling routine for LAPACK and

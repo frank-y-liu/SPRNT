@@ -22,7 +22,7 @@
 #include "options.h"
 
 // R type, rectangular
-inline double R_XSection::GetDepth(double a) {
+double R_XSection::GetDepth(double a) { // to make clang compiler happy
   return a/_b0;
 }
 
@@ -73,7 +73,7 @@ void R_XSection::GetHydroRadius(double a, double &r, double &drda) {
 }
 
 // T type, trapezoidal 
-inline double T_XSection::GetDepth(double a) {
+double T_XSection::GetDepth(double a) {  // to make clang compiler happy
   return ( sqrt(_effb0*_effb0 + a/_s) - _effb0 );
 }
 

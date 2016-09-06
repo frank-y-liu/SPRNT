@@ -4,6 +4,7 @@
 
 .PHONY: clean realclean
 
+include ../../Make.rules
 
 ##################################################################
 ##
@@ -27,7 +28,13 @@ LINK_FLAGS=${BITS}
 OBJS = lsolver.o csolver.o
 
 HDRS = lsolver.h solver_vec.h solver_def.h
+ifeq ($(shell uname),Darwin)
+EXEC = libsolvers.dylib
+DYN_FLAG = -dynamiclib
+else
 EXEC = libsolvers.so
+DYN_FLAG = -shared
+endif
 
 OBJS += $(wildcard $(SPARSE_HOME)/UMFPACK/Lib/*.o)
 OBJS += $(wildcard $(SPARSE_HOME)/KLU/Lib/*.o)
@@ -40,7 +47,7 @@ all: $(EXEC)
 
 $(OBJS): $(HDRS)
 $(EXEC): ${OBJS}
-	 $(CXX) $^ -o ${EXEC} -shared @LOC_BLAS_ARCHIVE@ ${OPT_FLAG} ${LINK_FLAGS}
+	 $(CXX) $^ -o ${EXEC} ${DYN_FLAG} ${BLAS} ${LIBFORTRAN} ${OPT_FLAG} ${LINK_FLAGS}
 
 ## other options
 clean:

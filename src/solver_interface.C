@@ -20,7 +20,16 @@
 
 #include "solver_interface.h"
 
+#ifdef __APPLE__
+  #include "TargetConditionals.h"
+  #if TARGET_OS_MAC
+    const char* Solver_Interface::_name="libsolvers.dylib";
+  #else
+  #error "Unsupported Apple platfor"
+  #endif
+#else
 const char* Solver_Interface::_name="libsolvers.so";
+#endif
 
 Solver_Interface::~Solver_Interface() {
   if ( _s ) delete_solver(_s);
