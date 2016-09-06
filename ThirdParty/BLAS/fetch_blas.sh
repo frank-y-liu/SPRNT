@@ -1,6 +1,6 @@
 #! /bin/bash
 
-echo "Fetch modules from ftp.nist.gov ......"
+echo "Fetch modules from netlib.org ......"
 echo " "
 if [ ! -f src/src.tar.gz ]; then
 curl http://www.netlib.org/blas/blas-3.6.0.tgz -o src/src.tar.gz
