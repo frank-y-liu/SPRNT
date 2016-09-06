@@ -79,7 +79,7 @@ ifeq ($(OS),Linux)
 	NPROC := $(shell grep -c ^processor /proc/cpuinfo)
 else
 # need to handle mac OS
-	NPROC := 1
+	NPROC := $(shell sysctl -n hw.ncpu)
 endif
 
 # x86 assumption: 2 thread per core, minimal 1
