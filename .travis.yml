@@ -6,6 +6,7 @@ compiler:
 before_script:
   - sudo apt-get install gfortran
   - sudo apt-get install curl
+  - sudo apt-get install libblas-dev
 
 script: ./configure && make dep && make && make test
 
