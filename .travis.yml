@@ -3,6 +3,10 @@ language: cpp
 compiler:
  - gcc
 
+before_script:
+  - sudo apt-get install gfortran
+  - sudo apt-get install curl
+
 script: ./configure && make dep && make && make test
 
 
