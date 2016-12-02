@@ -1125,8 +1125,13 @@ int Subcatchment::SteadySolve(int jac_num, int max_iter, double tol, int use_acc
   // copy to X
   this->InitSolutions();
 
-  // do Newton's iterations to solve for A only
   int rc=0;
+  
+#if 0
+  // do Newton's iterations to solve for A only
+  // by skipping it, the second phase (pseudo time marching will have to spend many more
+  // iterations to achieve convergence
+  
   if (use_acc==1) {
     int dobounding=1, num_iter=0;
     double maxnorm, minnorm, tdiff;
@@ -1142,7 +1147,7 @@ int Subcatchment::SteadySolve(int jac_num, int max_iter, double tol, int use_acc
       fprintf(stdout,"[II]: Steady state solve converged in %d steps\n", num_iter);
     }
   }
-
+#endif
   return (rc);
 }
 
