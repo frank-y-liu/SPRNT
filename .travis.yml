@@ -4,3 +4,5 @@ compiler:
  - gcc
 
 script: ./configure && make dep && make && make test
+
+
