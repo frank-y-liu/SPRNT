@@ -114,11 +114,32 @@ void Subcatchment::PrintAToFile(FILE *F, int partial_list_only) {
    save Xtm1 - for steady state, they are the same as X;
    but it also has the benefit of capable of having a hot restart for unsteady case
  */
-int Subcatchment::SaveSteadyStateToFile(FILE *F) {
+int Subcatchment::SaveSteadyStateToFile(FILE *F, char **NAMES) {
   int j;
-  fprintf(F,"%d %s\n", _num_eqns, STAT.ChkSum() );
-  for (j=0; j<_num_eqns; j++) fprintf(F,"%.29e\n", _Xtm1[j]);
+  if ( NAMES == NULL ) {
+    fprintf(F,"%d %s\n", _num_eqns, STAT.ChkSum() );
+    for (j=0; j<_num_eqns; j++) fprintf(F,"%.29e\n", _Xtm1[j]);
+  } else {
+    /* added node names in the steady-state storage */
+    fprintf(F, "%d %s\n", _num_eqns, STAT.ChkSum() );
+    for (j=0; j<_num_eqns; j++) {
+      /*
+       * this part can be hazardous: we assume Q and A entries are sequentially placed in
+       * _X, and other related vectors. The reason of doing this is to avoid performing
+       * another name->index look-up when we read the data back in. Of course the caveat
+       * is that nobody messes with the steady state data sequence.
+       */
+      if ( j%2 == 0 ) {
+	assert( _NS[ j/2 ]->QIdx() == j );
+	fprintf(F, "%s Q %.29e\n", NAMES[ _NS[ j/2 ]->Id() ], _Xtm1[ j ] );
+      } else {
+	assert( _NS[ (j-1)/2 ]->AIdx() == j );
+	fprintf(F, "%s A %.29e\n", NAMES[ _NS[ (j-1)/2 ]->Id() ], _Xtm1[ j ] );
+      }
+    }
+  }
   return OK;
+    
 }
 
 /* load the steady state from file, overwrite the existing values
@@ -140,16 +161,47 @@ int Subcatchment::LoadSteadyStateFromFile(FILE *F, int cmp_chksum) {
     return WARNING;
   }
 
+#if 0
+  /* we will not do any check sum computation at all */
   if ( cmp_chksum==1) {
     if ( strncmp(chksum, STAT.ChkSum(), 8) != 0 ) {
       fprintf(stderr,"[WW]: Signature mismatch found in steadystate file %s. Stored steady state ignored!\n", STAT.SSFile() );
       return WARNING;
     }
   } // else we skip it
-
-  j=0;
+#endif
+  
+  /*
+   * Note that even though the (real) node names are present in the steady-state file, we
+   * are not checking them. The reason is that if so we will need to pass the SMAP object,
+   * a clunky process. So we simply skip the checking. Yes, it's hazardous, and we assume
+   * nobody messes with the sequence.
+   */
+  const char* DELIM = " \t";
+  char *ptoken;
+  int  fcntr;
+  
+  j=0;  
   while ( (fgets(buf,512,F)) != NULL ) {
-    v = atof(buf);
+    /* we only need the third column */
+    ptoken = strtok(buf, DELIM);
+    v = 0.0;     /* usually zero is a bad value and will quickly cause unsteady to fail */
+    fcntr = 0;
+    while ( ptoken != NULL ) {
+      switch (fcntr) {
+      case 0:
+      case 1:
+	break;
+      case 2:
+	/* pluck the third column only, the format is "name Q|A value" */
+	v = atof(ptoken);
+	break;
+      default:
+	break;
+      }
+      fcntr++;
+      ptoken = strtok(NULL, DELIM);
+    }
     if ( isnan(v) || isinf(v) || ( j%2==1 && v<1e-8 ) ) {
       fprintf(stderr,"[WW]: Found bad values in ssfiles. Ignored\n");
       return WARNING;
@@ -161,6 +213,13 @@ int Subcatchment::LoadSteadyStateFromFile(FILE *F, int cmp_chksum) {
     fprintf(stderr,"[WW]: Not sufficient values in ssfile. Ignored\n");
     return WARNING;
   }
+
+  /* 
+   * yet another quirkiness, we have to copy to Xtm1, because the first thing unsteady
+   * solve do is copy it back! 
+   */
+  memcpy(&_Xtm1[0], &_Xp[0], _num_eqns*sizeof(double));
+  memcpy(&_X[0], &_Xp[0], _num_eqns*sizeof(double));
   return OK;
 }
 

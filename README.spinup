@@ -1,0 +1,43 @@
+January 9, 2016
+
+This experimental branch adds functions to perform spin-up. It relies on steadystate files
+(specified in OPTIONS) to achieve this functionality.
+
+1. If a steadystate filename is not specified, SPRNT will compute the initial conditions using
+steady state solve method, then proceed to perform unsteady solve.
+
+2. If a steadystate filename is specified, but does not exist, SPRNT will behave exactly same as
+1). However after successful completion of the steady state solve, it will store the initial
+conditions of all notes in the specified steadystate file.
+
+3. If a steadystate filename is specified and it does exist, SPRNT will skip the steadystate solve,
+and simply load the initial conditions from the steadystate file and directly proceed to unsteady
+solve.
+
+The content of a steadystate file looks like the following:
+
+62 5a9f3412
+60.1 Q 1.46669883689999977605111780576e+02
+60.1 A 1.73927660607367386091937078163e+02
+59.5 Q 1.46669863540573004456746275537e+02
+59.5 A 3.61458756931188077032857108861e+02
+58.8 Q 1.46669837919961594252526992932e+02
+58.8 A 4.80699978962101113211247138679e+02
+58.05 Q 1.46669830910990498296087025665e+02
+58.05 A 4.06714249400299252101831370965e+02
+57 Q 1.46669846304761477995270979591e+02
+57 A 5.52459266088041204056935384870e+02
+
+The first line specifies statistics of the steadystate file and should never be touched. Starting
+from the second line, each line specifies the initial condition of one node, in the format of "<node
+name> <Q|A> <value>". The first two fields should never be modified. In case of spin-up
+experimenting, the initial values can be modified. However, since the specified values will be
+directly used as initial conditions, improper setting of these values could make the unsteady solve
+unstable. Therefore, the guidelines below should be strictly followed:
+
+1. The initial values should have enough resolution. The default print format is "%.29e".
+2. Do not modified the first two fields. The delimiter should be a single space (" ").
+3. Do not delete any line
+4. Do not change the ordering in any fashion.
+5. Do not add any new lines, even empty space.
+

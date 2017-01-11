@@ -88,10 +88,10 @@ int main(int argc, char** argv) {
   rc = read_spt_from_file(F, SUB, NODE_NAMES, &HASH, stdout); // also modifies OPT and
                                                               // STAT in the global
                                                               // namespace
-  // save the netlist file
+  // save the netlist file name
   STAT.SetInFile( get_basename( fname ) );
 
-  if (rc < 0 ) goto out;  // there is error!
+  if (rc < 0 ) goto out;  // there are errors!
 
   // do a topo check
   rc = SUB->TopologyCheck();
@@ -114,37 +114,46 @@ int main(int argc, char** argv) {
     goto out;
   }
 
-
-  //  SUB->InitSolutions();
+  /* compute the initial conditions
+   *  logic:
+   *     if steadystate file exisits, load from the steadystate file, and proceed to
+   *       unsteady calculation
+   *     if steadystate file does not exist, compute the initial conditions. if a
+   *       steadystate file is specified, store the computed initial conditions in 
+   *       the file
+   */
   FS = NULL;
   if ( STAT.SSFile() ) FS = fopen(STAT.SSFile(),"r");
   if ( FS ) { 
     rc = SUB->LoadSteadyStateFromFile(FS);
     fclose(FS);
-    if ( rc == OK ) printf("[II]: Loaded steady states from \"%s\"\n", STAT.SSFile());
-  } 
+    if ( rc == OK ) printf("[II]: Loaded steady states from \"%s\", no additional init cond computation is done.\n", STAT.SSFile());
+    
+  } else {
 
-  // steady solve, two phases
-  rc = SUB->SteadySolve(600, 600, 2.0*OPT.Tol(), OPT.SteadyAcc() );
-  if (rc<0) {
-    fprintf(stdout,"[EE]: first phase of steady-state solve failed\n");
-    goto out;
-  }
+    // steady solve, two phases
+    rc = SUB->SteadySolve(600, 600, 2.0*OPT.Tol(), OPT.SteadyAcc() );
+    if (rc<0) {
+      fprintf(stdout,"[EE]: first phase of steady-state solve failed\n");
+      goto out;
+    }
 
-  rc = SUB->SteadySolve(25.0, 45, 45, OPT.Tol() );
-  if (rc<0) {
-    fprintf(stdout,"[EE]: second phase of steady-state solve failed\n");
-    goto out;
-  }
+    rc = SUB->SteadySolve(25.0, 45, 45, OPT.Tol() );
+    if (rc<0) {
+      fprintf(stdout,"[EE]: second phase of steady-state solve failed\n");
+      goto out;
+    }
 
-  // store back if needed
-  if ( rc > 0 && STAT.SSFile() ) {
-    FS=fopen(STAT.SSFile(),"w");
-    SUB->SaveSteadyStateToFile(FS);
-    fclose(FS);
-    fprintf(stdout, "[II]: Saved steady state to file \"%s\"\n", STAT.SSFile());
-  }
+    // store back if needed
+    if ( rc > 0 && STAT.SSFile() ) {
+      FS=fopen(STAT.SSFile(),"w");
+      SUB->SaveSteadyStateToFile(FS, NODE_NAMES->Store() );
+      fclose(FS);
+      fprintf(stdout, "[II]: Saved steady state to file \"%s\"\n", STAT.SSFile());
+    }
+  } /* end initial condition computation */
 
+  
   // run unsteady
   print_flag = 0;
   if (OPT.PrintQ()==1) print_flag |= PRT_Q;

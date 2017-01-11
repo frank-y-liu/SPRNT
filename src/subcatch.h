@@ -209,7 +209,7 @@ class Subcatchment {
   void PrintToFile(FILE *F, int converged_x=1);
   void PrintQToFile(FILE *F, int partial_list_only=1); // filter out those w/ zero xy
   void PrintAToFile(FILE *F, int partial_list_only=1);
-  int SaveSteadyStateToFile(FILE *F);
+  int SaveSteadyStateToFile(FILE *F, char **NAMES=NULL);
   int LoadSteadyStateFromFile(FILE *F, int cmp_chksum=1);
   inline double GetQ(int nidx) { assert(nidx<_num_nodes); return (_Xp[2*nidx]);}
   inline double GetA(int nidx) { assert(nidx<_num_nodes); return (_Xp[2*nidx+1]); }
