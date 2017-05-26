@@ -47,6 +47,7 @@ class Options {
   double    _ht;         // limit to envoke n correction, in meters, set to zero to
 			 // disable it
   int       _check_only; // flag to run kinematic checking only
+  int       _steady_only;// flag to run steady only
   int       _steady_acc; // flag to accelerate steady solve
   int       _spin_up;    // source ramping time (in seconds), set to <=0 to disable it
   int       _print_int;  // interval to print, in minutes, if 0, print everything
@@ -110,6 +111,7 @@ class Options {
     _lmin = 0.0;
     _min_n = 1e-3;
     _check_only = 0;
+    _steady_only = 0;
     _steady_acc = 1;
     _spin_up = 0;
     _buf[0]= 0;
@@ -156,6 +158,7 @@ class Options {
   int& PrintInterval() { return _print_int; }
   int& PrintStart() { return _print_start; }
   int& CheckOnly() { return _check_only; }
+  int& SteadyOnly() { return _steady_only; }
   int& SteadyAcc() { return _steady_acc; }
   int& SpinUpTime() { return _spin_up; }
 

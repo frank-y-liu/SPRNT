@@ -92,8 +92,6 @@ class Subcatchment {
   int EvaluateRHS(double t, double dt);
   int Evaluate(double t, double dt);
 
-  /* utilities to compute a few others */
-  int ComputeDepthAndElevation(int what2print);
 
  public:
   Subcatchment(int cid):_cid(cid),_num_nodes(0),_num_eqns(0),_num_src(0),
@@ -204,13 +202,16 @@ class Subcatchment {
 
   /* printing */
   void PrintOnDemand(sptFile F, double tnow, int tstart, int what=0, char **NAMES=NULL); 
-
+  void PrintHeader(sptFile F, int steadyonly=0);
+  
   /* methods for debugging */
   void PrintToFile(FILE *F, int converged_x=1);
   void PrintQToFile(FILE *F, int partial_list_only=1); // filter out those w/ zero xy
   void PrintAToFile(FILE *F, int partial_list_only=1);
-  int SaveSteadyStateToFile(FILE *F);
+
+  int SaveSteadyStateToFile(FILE *F);           // save to ssfile only
   int LoadSteadyStateFromFile(FILE *F, int cmp_chksum=1);
+  
   inline double GetQ(int nidx) { assert(nidx<_num_nodes); return (_Xp[2*nidx]);}
   inline double GetA(int nidx) { assert(nidx<_num_nodes); return (_Xp[2*nidx+1]); }
   void MatlabDumpDX(FILE *F, const char* name="DX");
@@ -223,6 +224,9 @@ class Subcatchment {
   int CheckMinimalA();
 
   void PrintCoordToFile(FILE *F);
+
+  int ComputeDepthAndElevation(int what2print);
+
 };
 
 #endif
