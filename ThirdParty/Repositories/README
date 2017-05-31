@@ -1,0 +1,11 @@
+May 2016
+
+The source code in this repository directory is *NOT* part of SPRNT distribution. They are 
+cached here simply for the convenience of deployment. They are under different license terms.
+
+The locations of the original source code are listed below (as of May 2017):
+
+BLAS:        http://www.netlib.org/blas/blas-3.6.0.tgz
+CMLIB:       ftp://ftp.nist.gov/pub/cmlib/src.tar.Z
+SparseSuite: http://faculty.cse.tamu.edu/davis/SuiteSparse/SuiteSparse-3.0.0.tar.gz
+

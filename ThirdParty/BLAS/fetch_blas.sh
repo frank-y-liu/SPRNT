@@ -1,9 +1,11 @@
 #! /bin/bash
 
-echo "Fetch modules from netlib.org ......"
+echo "Fetch cached modules ......"
 echo " "
 if [ ! -f src/src.tar.gz ]; then
-curl http://www.netlib.org/blas/blas-3.6.0.tgz -o src/src.tar.gz
+## original location
+## curl http://www.netlib.org/blas/blas-3.6.0.tgz -o src/src.tar.gz
+\cp ../Repositories/BLAS/blas-3.6.0.tar.gz src/src.tar.gz
 fi
 
 echo " "
