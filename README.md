@@ -29,9 +29,11 @@ For bugs/questions/comments/critiques, please send email through GitHub.
 ## References
 
 * Liu, Frank, and Ben R. Hodges. "[Applying microprocessor analysis methods to river
-network modelling](http://dx.doi.org/10.1016/j.envsoft.2013.09.013)." Environmental Modelling & Software 52 (2014): 234-252.
+network modelling](https://dx.doi.org/10.1016/j.envsoft.2013.09.013)." Environmental Modelling & Software 52 (2014): 234-252.
 
 * Hodges, Ben R., and Frank Liu. "[Rivers and Electric Networks: Crossing Disciplines in
-Modeling and Simulation](http://dx.doi.org/10.1561/1000000033)" Foundations and Trends in Electronic Design Automation 8.1
+Modeling and Simulation](https://dx.doi.org/10.1561/1000000033)" Foundations and Trends in Electronic Design Automation 8.1
 (2014): 1-116.
+
+* Yu, Cheng-Wei, Frank Liu and Ben R. Hodges. "[Consistent initial conditions for the Saint-Venant equations in river network modeling](https://doi.org/10.5194/hess-21-4959-2017)" Hydrology and Earth System Science 21.9(2017) 4959.  
 
