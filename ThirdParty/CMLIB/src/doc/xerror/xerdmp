@@ -1,0 +1,23 @@
+ 
+      SUBROUTINE XERDMP
+C***BEGIN PROLOGUE  XERDMP
+C***DATE WRITTEN   790801   (YYMMDD)
+C***REVISION DATE  840405   (YYMMDD)
+C***CATEGORY NO.  R3C
+C***KEYWORDS  ERROR,XERROR PACKAGE
+C***AUTHOR  JONES, R. E., (SNLA)
+C***PURPOSE  Prints the error tables and then clears them
+C***DESCRIPTION
+C
+C     Abstract
+C        XERDMP prints the error tables, then clears them.
+C
+C     Written by Ron Jones, with SLATEC Common Math Library Subcommittee
+C     Latest revision ---  7 June 1978
+C***REFERENCES  JONES R.E., *SLATEC COMMON MATHEMATICAL LIBRARY ERROR
+C                 HANDLING PACKAGE*, SAND78-1189, SANDIA LABORATORIES,
+C                 1978.
+C***ROUTINES CALLED  XERSAV
+C***END PROLOGUE  XERDMP
+ 
+ 

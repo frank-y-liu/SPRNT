@@ -1,0 +1,63 @@
+ 
+      SUBROUTINE ORTBAK(NM,LOW,IGH,A,ORT,M,Z)
+C***BEGIN PROLOGUE  ORTBAK
+C***DATE WRITTEN   760101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  D4C4
+C***KEYWORDS  EIGENVALUES,EIGENVECTORS,EISPACK
+C***AUTHOR  SMITH, B. T., ET AL.
+C***PURPOSE  Forms eigenvectors of general real matrix from
+C            eigenvectors of upper Hesenberg matrix output from ORTHES
+C***DESCRIPTION
+C
+C     This subroutine is a translation of the ALGOL procedure ORTBAK,
+C     NUM. MATH. 12, 349-368(1968) by Martin and Wilkinson.
+C     HANDBOOK FOR AUTO. COMP., VOL.II-LINEAR ALGEBRA, 339-358(1971).
+C
+C     This subroutine forms the eigenvectors of a REAL GENERAL
+C     matrix by back transforming those of the corresponding
+C     upper Hessenberg matrix determined by  ORTHES.
+C
+C     On INPUT
+C
+C        NM must be set to the row dimension of two-dimensional
+C          array parameters as declared in the calling program
+C          dimension statement.
+C
+C        LOW and IGH are integers determined by the balancing
+C          subroutine  BALANC.  If  BALANC  has not been used,
+C          set LOW=1 and IGH equal to the order of the matrix.
+C
+C        A contains information about the orthogonal trans-
+C          formations used in the reduction by  ORTHES
+C          in its strict lower triangle.
+C
+C        ORT contains further information about the trans-
+C          formations used in the reduction by  ORTHES.
+C          Only elements LOW through IGH are used.
+C
+C        M is the number of columns of Z to be back transformed.
+C
+C        Z contains the real and imaginary parts of the eigen-
+C          vectors to be back transformed in its first M columns.
+C
+C     On OUTPUT
+C
+C        Z contains the real and imaginary parts of the
+C          transformed eigenvectors in its first M columns.
+C
+C        ORT has been altered.
+C
+C     NOTE that ORTBAK preserves vector Euclidean norms.
+C
+C     Questions and comments should be directed to B. S. Garbow,
+C     APPLIED MATHEMATICS DIVISION, ARGONNE NATIONAL LABORATORY
+C     ------------------------------------------------------------------
+C***REFERENCES  B. T. SMITH, J. M. BOYLE, J. J. DONGARRA, B. S. GARBOW,
+C                 Y. IKEBE, V. C. KLEMA, C. B. MOLER, *MATRIX EIGEN-
+C                 SYSTEM ROUTINES - EISPACK GUIDE*, SPRINGER-VERLAG,
+C                 1976.
+C***ROUTINES CALLED  (NONE)
+C***END PROLOGUE  ORTBAK
+ 
+ 

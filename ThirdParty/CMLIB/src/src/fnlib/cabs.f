@@ -1,0 +1,17 @@
+      FUNCTION CABS (Z)
+C APRIL 1977 VERSION.  W. FULLERTON, C3, LOS ALAMOS SCIENTIFIC LAB.
+      COMPLEX Z
+      DATA SQEPS /0./
+C
+      IF (SQEPS.EQ.0.) SQEPS = SQRT (R1MACH(4))
+C
+      X = ABS (REAL (Z))
+      Y = ABS (AIMAG (Z))
+      R1 = AMIN1 (X, Y)
+      R2 = AMAX1 (X, Y)
+C
+      CABS = R2
+      IF (R1.GT.R2*SQEPS) CABS = R2*SQRT(1.0+(R1/R2)**2)
+C
+      RETURN
+      END

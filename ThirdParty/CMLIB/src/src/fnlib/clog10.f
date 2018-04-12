@@ -1,0 +1,25 @@
+      COMPLEX FUNCTION CLOG10(Z)
+C***BEGIN PROLOGUE  CLOG10
+C***DATE WRITTEN   770401   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***REVISION HISTORY (YYMMDD)
+C   000601  Changed CLOG to generic LOG
+C***CATEGORY NO.  C4B
+C***KEYWORDS  BASE TEN,COMPLEX,ELEMENTARY FUNCTION,LOGARITHM
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the principal value of the complex base 10
+C            logarithm.
+C***DESCRIPTION
+C
+C CLOG10(Z) calculates the principal value of the complex common
+C or base 10 logarithm of Z for -PI .LT. arg(Z) .LE. +PI.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  (NONE)
+C***END PROLOGUE  CLOG10
+      COMPLEX Z
+      DATA ALOGE / 0.4342944819 0325182765E0 /
+C***FIRST EXECUTABLE STATEMENT  CLOG10
+      CLOG10 = ALOGE * LOG(Z)
+C
+      RETURN
+      END

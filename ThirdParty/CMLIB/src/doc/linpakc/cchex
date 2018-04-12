@@ -1,0 +1,130 @@
+ 
+      SUBROUTINE CCHEX(R,LDR,P,K,L,Z,LDZ,NZ,C,S,JOB)
+C***BEGIN PROLOGUE  CCHEX
+C***DATE WRITTEN   780814   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D7B
+C***KEYWORDS  CHOLESKY DECOMPOSITION,COMPLEX,EXCHANGE,LINEAR ALGEBRA,
+C             LINPACK,MATRIX,POSITIVE DEFINITE
+C***AUTHOR  STEWART, G. W., (U. OF MARYLAND)
+C***PURPOSE  CCHEX updates the Cholesky factorization  A=CTRANS(R)*R  of
+C            a positive definite matrix A of order P under diagonal
+C            permutations of the form U*R*E=RR, where E is a permutation
+C            matrix.
+C***DESCRIPTION
+C
+C     CCHEX updates the Cholesky factorization
+C
+C                   A = CTRANS(R)*R
+C
+C     of a positive definite matrix A of order P under diagonal
+C     permutations of the form
+C
+C                   TRANS(E)*A*E
+C
+C     where E is a permutation matrix.  Specifically, given
+C     an upper triangular matrix R and a permutation matrix
+C     E (which is specified by K, L, and JOB), CCHEX determines
+C     a unitary matrix U such that
+C
+C                           U*R*E = RR,
+C
+C     where RR is upper triangular.  At the users option, the
+C     transformation U will be multiplied into the array Z.
+C     If A = CTRANS(X)*X, so that R is the triangular part of the
+C     QR factorization of X, then RR is the triangular part of the
+C     QR factorization of X*E, i.e. X with its columns permuted.
+C     For a less terse description of what CCHEX does and how
+C     it may be applied, see the LINPACK Guide.
+C
+C     The matrix Q is determined as the product U(L-K)*...*U(1)
+C     of plane rotations of the form
+C
+C                           (    C(I)       S(I) )
+C                           (                    ) ,
+C                           ( -CONJG(S(I))  C(I) )
+C
+C     where C(I) is real.  The rows these rotations operate on
+C     are described below.
+C
+C     There are two types of permutations, which are determined
+C     by the value of JOB.
+C
+C     1. Right circular shift (JOB = 1).
+C
+C         The columns are rearranged in the following order.
+C
+C                1,...,K-1,L,K,K+1,...,L-1,L+1,...,P.
+C
+C         U is the product of L-K rotations U(I), where U(I)
+C         acts in the (L-I,L-I+1)-plane.
+C
+C     2. Left circular shift (JOB = 2).
+C         The columns are rearranged in the following order
+C
+C                1,...,K-1,K+1,K+2,...,L,K,L+1,...,P.
+C
+C         U is the product of L-K rotations U(I), where U(I)
+C         acts in the (K+I-1,K+I)-plane.
+C
+C     On Entry
+C
+C         R      COMPLEX(LDR,P), where LDR .GE. P.
+C                R contains the upper triangular factor
+C                that is to be updated.  Elements of R
+C                below the diagonal are not referenced.
+C
+C         LDR    INTEGER.
+C                LDR is the leading dimension of the array R.
+C
+C         P      INTEGER.
+C                P is the order of the matrix R.
+C
+C         K      INTEGER.
+C                K is the first column to be permuted.
+C
+C         L      INTEGER.
+C                L is the last column to be permuted.
+C                L must be strictly greater than K.
+C
+C         Z      COMPLEX(LDZ,NZ), where LDZ .GE. P.
+C                Z is an array of NZ P-vectors into which the
+C                transformation U is multiplied.  Z is
+C                not referenced if NZ = 0.
+C
+C         LDZ    INTEGER.
+C                LDZ is the leading dimension of the array Z.
+C
+C         NZ     INTEGER.
+C                NZ is the number of columns of the matrix Z.
+C
+C         JOB    INTEGER.
+C                JOB determines the type of permutation.
+C                       JOB = 1  right circular shift.
+C                       JOB = 2  left circular shift.
+C
+C     On Return
+C
+C         R      contains the updated factor.
+C
+C         Z      contains the updated matrix Z.
+C
+C         C      REAL(P).
+C                C contains the cosines of the transforming rotations.
+C
+C         S      COMPLEX(P).
+C                S contains the sines of the transforming rotations.
+C
+C     LINPACK.  This version dated 08/14/78 .
+C     Stewart, G. W., University of Maryland, Argonne National Lab.
+C
+C     CCHEX uses the following functions and subroutines.
+C
+C     Extended BLAS CROTG
+C     Fortran MIN0
+C***REFERENCES  DONGARRA J.J., BUNCH J.R., MOLER C.B., STEWART G.W.,
+C                 *LINPACK USERS  GUIDE*, SIAM, 1979.
+C***ROUTINES CALLED  CROTG
+C***END PROLOGUE  CCHEX
+ 
+ 

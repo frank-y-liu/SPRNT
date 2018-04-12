@@ -1,0 +1,39 @@
+ 
+      SUBROUTINE DCOPY(N,DX,INCX,DY,INCY)
+C***BEGIN PROLOGUE  DCOPY
+C***DATE WRITTEN   791001   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D1A5
+C***KEYWORDS  BLAS,COPY,DOUBLE PRECISION,LINEAR ALGEBRA,VECTOR
+C***AUTHOR  LAWSON, C. L., (JPL)
+C           HANSON, R. J., (SNLA)
+C           KINCAID, D. R., (U. OF TEXAS)
+C           KROGH, F. T., (JPL)
+C***PURPOSE  D.P. vector copy y = x
+C***DESCRIPTION
+C
+C                B L A S  Subprogram
+C    Description of Parameters
+C
+C     --Input--
+C        N  number of elements in input vector(s)
+C       DX  double precision vector with N elements
+C     INCX  storage spacing between elements of DX
+C       DY  double precision vector with N elements
+C     INCY  storage spacing between elements of DY
+C
+C     --Output--
+C       DY  copy of vector DX (unchanged if N .LE. 0)
+C
+C     Copy double precision DX to double precision DY.
+C     For I = 0 to N-1, copy DX(LX+I*INCX) to DY(LY+I*INCY),
+C     where LX = 1 if INCX .GE. 0, else LX = (-INCX)*N, and LY is
+C     defined in a similar way using INCY.
+C***REFERENCES  LAWSON C.L., HANSON R.J., KINCAID D.R., KROGH F.T.,
+C                 *BASIC LINEAR ALGEBRA SUBPROGRAMS FOR FORTRAN USAGE*,
+C                 ALGORITHM NO. 539, TRANSACTIONS ON MATHEMATICAL
+C                 SOFTWARE, VOLUME 5, NUMBER 3, SEPTEMBER 1979, 308-323
+C***ROUTINES CALLED  (NONE)
+C***END PROLOGUE  DCOPY
+ 
+ 

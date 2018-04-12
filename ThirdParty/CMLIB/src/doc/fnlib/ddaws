@@ -1,0 +1,36 @@
+ 
+      DOUBLE PRECISION FUNCTION DDAWS(X)
+C***BEGIN PROLOGUE  DDAWS
+C***DATE WRITTEN   780401   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C8C
+C***KEYWORDS  DAWSONS FUNCTION,DOUBLE PRECISION,SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the d.p. Dawson's function.
+C***DESCRIPTION
+C
+C DDAWS(X) calculates the double precision Dawson's integral
+C for double precision argument X.
+C
+C Series for DAW        on the interval  0.          to  1.00000E+00
+C                                        with weighted error   8.95E-32
+C                                         log weighted error  31.05
+C                               significant figures required  30.41
+C                                    decimal places required  31.71
+C
+C Series for DAW2       on the interval  0.          to  1.60000E+01
+C                                        with weighted error   1.61E-32
+C                                         log weighted error  31.79
+C                               significant figures required  31.40
+C                                    decimal places required  32.62
+C
+C Series for DAWA       on the interval  0.          to  6.25000E-02
+C                                        with weighted error   1.97E-32
+C                                         log weighted error  31.71
+C                               significant figures required  29.79
+C                                    decimal places required  32.64
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D1MACH,DCSEVL,INITDS,XERROR
+C***END PROLOGUE  DDAWS
+ 
+ 

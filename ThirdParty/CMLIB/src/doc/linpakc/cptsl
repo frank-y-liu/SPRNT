@@ -1,0 +1,48 @@
+ 
+      SUBROUTINE CPTSL(N,D,E,B)
+C***BEGIN PROLOGUE  CPTSL
+C***DATE WRITTEN   780814   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D2D2A
+C***KEYWORDS  COMPLEX,LINEAR ALGEBRA,LINPACK,MATRIX,POSITIVE DEFINITE,
+C             SOLVE,TRIDIAGONAL
+C***AUTHOR  DONGARRA, J., (ANL)
+C***PURPOSE  Solves a COMPLEX POSITIVE DEFINITE TRIDIAGONAL system of
+C            equations.
+C***DESCRIPTION
+C
+C     CPTSL given a positive definite tridiagonal matrix and a right
+C     hand side will find the solution.
+C
+C     On Entry
+C
+C        N        INTEGER
+C                 is the order of the tridiagonal matrix.
+C
+C        D        COMPLEX(N)
+C                 is the diagonal of the tridiagonal matrix.
+C                 On output D is destroyed.
+C
+C        E        COMPLEX(N)
+C                 is the offdiagonal of the tridiagonal matrix.
+C                 E(1) through E(N-1) should contain the
+C                 offdiagonal.
+C
+C        B        COMPLEX(N)
+C                 is the right hand side vector.
+C
+C     On Return
+C
+C        B        contains the solution.
+C
+C     LINPACK.  This version dated 08/14/78 .
+C     Jack Dongarra, Argonne National Laboratory.
+C
+C     No externals
+C     Fortran CONJG,MOD
+C***REFERENCES  DONGARRA J.J., BUNCH J.R., MOLER C.B., STEWART G.W.,
+C                 *LINPACK USERS  GUIDE*, SIAM, 1979.
+C***ROUTINES CALLED  (NONE)
+C***END PROLOGUE  CPTSL
+ 
+ 

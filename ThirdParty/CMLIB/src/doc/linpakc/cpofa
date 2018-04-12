@@ -1,0 +1,55 @@
+ 
+      SUBROUTINE CPOFA(A,LDA,N,INFO)
+C***BEGIN PROLOGUE  CPOFA
+C***DATE WRITTEN   780814   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D2D1B
+C***KEYWORDS  COMPLEX,FACTOR,LINEAR ALGEBRA,LINPACK,MATRIX,
+C             POSITIVE DEFINITE
+C***AUTHOR  MOLER, C. B., (U. OF NEW MEXICO)
+C***PURPOSE  Factors a COMPLEX HERMITIAN POSITIVE DEFINITE matrix.
+C***DESCRIPTION
+C
+C     CPOFA factors a complex Hermitian positive definite matrix.
+C
+C     CPOFA is usually called by CPOCO, but it can be called
+C     directly with a saving in time if  RCOND  is not needed.
+C     (Time for CPOCO) = (1 + 18/N)*(Time for CPOFA) .
+C
+C     On Entry
+C
+C        A       COMPLEX(LDA, N)
+C                the Hermitian matrix to be factored.  Only the
+C                diagonal and upper triangle are used.
+C
+C        LDA     INTEGER
+C                the leading dimension of the array  A .
+C
+C        N       INTEGER
+C                the order of the matrix  A .
+C
+C     On Return
+C
+C        A       an upper triangular matrix  R  so that  A =
+C                CTRANS(R)*R where  CTRANS(R)  is the conjugate
+C                transpose.  The strict lower triangle is unaltered.
+C                If  INFO .NE. 0 , the factorization is not complete.
+C
+C        INFO    INTEGER
+C                = 0  for normal return.
+C                = K  signals an error condition.  The leading minor
+C                     of order  K  is not positive definite.
+C
+C     LINPACK.  This version dated 08/14/78 .
+C     Cleve Moler, University of New Mexico, Argonne National Lab.
+C
+C     Subroutines and Functions
+C
+C     BLAS CDOTC
+C     Fortran AIMAG,CMPLX,CONJG,REAL,SQRT
+C***REFERENCES  DONGARRA J.J., BUNCH J.R., MOLER C.B., STEWART G.W.,
+C                 *LINPACK USERS  GUIDE*, SIAM, 1979.
+C***ROUTINES CALLED  CDOTC
+C***END PROLOGUE  CPOFA
+ 
+ 

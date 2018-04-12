@@ -1,0 +1,64 @@
+ 
+      SUBROUTINE DSISL(A,LDA,N,KPVT,B)
+C***BEGIN PROLOGUE  DSISL
+C***DATE WRITTEN   780814   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D2B1A
+C***KEYWORDS  DOUBLE PRECISION,LINEAR ALGEBRA,LINPACK,MATRIX,SOLVE,
+C             SYMMETRIC
+C***AUTHOR  BUNCH, J., (UCSD)
+C***PURPOSE  Solves the double precision SYMMETRIC system
+C            A*X=B  using the factors computed by DSIFA.
+C***DESCRIPTION
+C
+C     DSISL solves the double precision symmetric system
+C     A * X = B
+C     using the factors computed by DSIFA.
+C
+C     On Entry
+C
+C        A       DOUBLE PRECISION(LDA,N)
+C                the output from DSIFA.
+C
+C        LDA     INTEGER
+C                the leading dimension of the array  A .
+C
+C        N       INTEGER
+C                the order of the matrix  A .
+C
+C        KPVT    INTEGER(N)
+C                the pivot vector from DSIFA.
+C
+C        B       DOUBLE PRECISION(N)
+C                the right hand side vector.
+C
+C     On Return
+C
+C        B       the solution vector  X .
+C
+C     Error Condition
+C
+C        A division by zero may occur if  DSICO  has set RCOND .EQ. 0.0
+C        or  DSIFA  has set INFO .NE. 0  .
+C
+C     To compute  INVERSE(A) * C  where  C  is a matrix
+C     with  P  columns
+C           CALL DSIFA(A,LDA,N,KPVT,INFO)
+C           IF (INFO .NE. 0) GO TO ...
+C           DO 10 J = 1, P
+C              CALL DSISL(A,LDA,N,KPVT,C(1,J))
+C        10 CONTINUE
+C
+C     LINPACK.  This version dated 08/14/78 .
+C     James Bunch, Univ. Calif. San Diego, Argonne Nat. Lab.
+C
+C     Subroutines and Functions
+C
+C     BLAS DAXPY,DDOT
+C     Fortran IABS
+C***REFERENCES  DONGARRA J.J., BUNCH J.R., MOLER C.B., STEWART G.W.,
+C                 *LINPACK USERS  GUIDE*, SIAM, 1979.
+C***ROUTINES CALLED  DAXPY,DDOT
+C***END PROLOGUE  DSISL
+ 
+ 

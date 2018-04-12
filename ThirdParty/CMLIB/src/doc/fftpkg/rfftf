@@ -1,0 +1,68 @@
+ 
+      SUBROUTINE RFFTF(N,R,WSAVE)
+C***BEGIN PROLOGUE  RFFTF
+C***DATE WRITTEN   790601   (YYMMDD)
+C***REVISION DATE  830401   (YYMMDD)
+C***CATEGORY NO.  J1A1
+C***KEYWORDS  FOURIER TRANSFORM
+C***AUTHOR  SWARZTRAUBER, P. N., (NCAR)
+C***PURPOSE  Forward transform of a real, periodic sequence.
+C***DESCRIPTION
+C
+C  Subroutine RFFTF computes the Fourier coefficients of a real
+C  perodic sequence (Fourier analysis).  The transform is defined
+C  below at output parameter R.
+C
+C  Input Parameters
+C
+C  N       the length of the array R to be transformed.  The method
+C          is most efficient when N is a product of small primes.
+C          N may change so long as different work arrays are provided
+C
+C  R       a real array of length N which contains the sequence
+C          to be transformed
+C
+C  WSAVE   a work array which must be dimensioned at least 2*N+15
+C          in the program that calls RFFTF.  The WSAVE array must be
+C          initialized by calling subroutine RFFTI(N,WSAVE), and a
+C          different WSAVE array must be used for each different
+C          value of N.  This initialization does not have to be
+C          repeated so long as N remains unchanged.  Thus subsequent
+C          transforms can be obtained faster than the first.
+C          the same WSAVE array can be used by RFFTF and RFFTB.
+C
+C
+C  Output Parameters
+C
+C  R       R(1) = the sum from I=1 to I=N of R(I)
+C
+C          If N is even set L = N/2; if N is odd set L = (N+1)/2
+C
+C            then for K = 2,...,L
+C
+C               R(2*K-2) = the sum from I = 1 to I = N of
+C
+C                    R(I)*COS((K-1)*(I-1)*2*PI/N)
+C
+C               R(2*K-1) = the sum from I = 1 to I = N of
+C
+C                   -R(I)*SIN((K-1)*(I-1)*2*PI/N)
+C
+C          If N is even
+C
+C               R(N) = the sum from I = 1 to I = N of
+C
+C                    (-1)**(I-1)*R(I)
+C
+C   *****  Note:
+C               This transform is unnormalized since a call of RFFTF
+C               followed by a call of RFFTB will multiply the input
+C               sequence by N.
+C
+C  WSAVE   contains results which must not be destroyed between
+C          calls of RFFTF or RFFTB.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  RFFTF1
+C***END PROLOGUE  RFFTF
+ 
+ 

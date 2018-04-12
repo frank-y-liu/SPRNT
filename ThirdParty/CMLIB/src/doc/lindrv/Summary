@@ -1,0 +1,72 @@
+ 
+ 
+ 
+P A C K A G E      LINDRV
+ 
+(Version 1980 )
+ 
+Programs to solve linear systems of algebraic equations in a  number  of
+forms. Provides an easy to use interface to the LINPACK package.
+ 
+ 
+CGEFS.........Factors and solves a  general  complex  system  of  linear
+              equations.
+CGEIR.........Factors and solves a  general  complex  system  of  linear
+              equations  and  provides  estimate  of  accuracy  of   the
+              solution (needs NXN extra storage).
+CNBCO.........Factors a complex band matrix by Gaussian Elimination  and
+              estimates its condition number.
+CNBDI.........Computes the determinant of a  complex  band  matrix  from
+              previously computed factors.
+CNBFA.........Factors   a   non-symmetric   complex   band   matrix   by
+              elimination.
+CNBFS.........Factors and solves a general complex band matrix system of
+              linear equations.
+CNBIR.........Factors and solves a  general  nonsymmetric  complex  band
+              system of equations and estimates accuracy of the solution
+              (requires Nx(2ML+MU) extra storage).
+CNBSL.........Solves the nonsymmetric complex band system  of  equations
+              using factors previously computed.
+CPOFS.........Factors and solves  positive  definite  symmetric  complex
+              system of linear equations.
+CPOIR.........Solves  positive  definite  Hermitian  complex  system  of
+              linear  equations  and  estimates  the  accuracy  of   the
+              solution (requires NxN extra storage).
+DNBCO.........Factors  a  double  precision  band  matrix  by   Gaussian
+              elimination and estimates the condition of the matrix.
+DNBDI.........Computes determinant of double precision band matrix using
+              factors previously computed.
+DNBFA.........Factors  a  double  precision  band  matrix  by   Gaussian
+              elimination.
+DNBFS.........Factors and  solves  general  nonsymmetric  banded  double
+              precision system of linear equations.
+DNBSL.........Solves a double precision band system of  equations  using
+              previously computed factors.
+DPOFS.........Factors and solves a positive  definite  symmetric  double
+              precision system of equations.
+SGEFS.........Factors and solves a general NXN single  precision  system
+              of linear equations.
+SGEIR.........Factors and solves a general single  precision  system  of
+              linear equations and estimates solution accuracy (requires
+              NxN extra storage).
+SNBCO.........Factors a real band matrix  by  Gaussian  elimination  and
+              estimates condition of the matrix.
+SNBDI.........Computes the determinant of a single precision band matrix
+              using factors previously computed.
+SNBFA.........Factors a single precision band matrix by elimination.
+SNBFS.........Factors and solves a general nonsymmetric single precision
+              banded system of linear equations.
+SNBIR.........Factors and solves a general nonsymmetric single precision
+              banded system of equations and estimates solution accuracy
+              (needs Nx(2ML+MU) extra storage).
+SNBSL.........Solves a  general  nonsymmetric  single  precision  banded
+              system  of  linear  equations   using   factors   computed
+              previously.
+SPOFS.........Factors and solves a symmetric  positive  definite  single
+              precision system of linear equations.
+SPOIR.........Factors and solves a symmetric  positive  definite  single
+              precision  system  of  equations  and  estimates  solution
+              accuracy (needs NxN extra storage).
+ 
+ 
+ 

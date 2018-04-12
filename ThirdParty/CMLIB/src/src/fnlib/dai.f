@@ -1,0 +1,86 @@
+      DOUBLE PRECISION FUNCTION DAI(X)
+C***BEGIN PROLOGUE  DAI
+C***DATE WRITTEN   770701   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C10D
+C***KEYWORDS  AIRY FUNCTION,DOUBLE PRECISION,SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Calculates the d.p. Airy function.
+C***DESCRIPTION
+C
+C DAI(X) calculates the double precision Airy function for double
+C precision argument X.
+C
+C Series for AIF        on the interval -1.00000E+00 to  1.00000E+00
+C                                        with weighted error   8.37E-33
+C                                         log weighted error  32.08
+C                               significant figures required  30.87
+C                                    decimal places required  32.63
+C
+C Series for AIG        on the interval -1.00000E+00 to  1.00000E+00
+C                                        with weighted error   7.47E-34
+C                                         log weighted error  33.13
+C                               significant figures required  31.50
+C                                    decimal places required  33.68
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D1MACH,D9AIMP,DAIE,DCSEVL,INITDS,XERROR
+C***END PROLOGUE  DAI
+      DOUBLE PRECISION X, AIFCS(13), AIGCS(13), THETA, XM, XMAX, X3SML,
+     1  Z, D1MACH, DCSEVL, DAIE
+      DATA AIF CS(  1) / -.3797135849 6669997496 1970894694 14 D-1     /
+      DATA AIF CS(  2) / +.5919188853 7263638574 3197280137 77 D-1     /
+      DATA AIF CS(  3) / +.9862928057 7279975365 6038910440 60 D-3     /
+      DATA AIF CS(  4) / +.6848843819 0765667554 8548301824 12 D-5     /
+      DATA AIF CS(  5) / +.2594202596 2194713019 4892790814 03 D-7     /
+      DATA AIF CS(  6) / +.6176612774 0813750329 4457496972 36 D-10    /
+      DATA AIF CS(  7) / +.1009245417 2466117901 4295562246 01 D-12    /
+      DATA AIF CS(  8) / +.1201479251 1179938141 2880332253 33 D-15    /
+      DATA AIF CS(  9) / +.1088294558 8716991878 5252954666 66 D-18    /
+      DATA AIF CS( 10) / +.7751377219 6684887039 2384000000 00 D-22    /
+      DATA AIF CS( 11) / +.4454811203 7175638391 4666666666 66 D-25    /
+      DATA AIF CS( 12) / +.2109284523 1692343466 6666666666 66 D-28    /
+      DATA AIF CS( 13) / +.8370173591 0741333333 3333333333 33 D-32    /
+      DATA AIG CS(  1) / +.1815236558 1161273011 5562099578 64 D-1     /
+      DATA AIG CS(  2) / +.2157256316 6010755534 0306388199 68 D-1     /
+      DATA AIG CS(  3) / +.2567835698 7483249659 0524280901 33 D-3     /
+      DATA AIG CS(  4) / +.1426521411 9792403898 8294969217 21 D-5     /
+      DATA AIG CS(  5) / +.4572114920 0180426070 4340975581 91 D-8     /
+      DATA AIG CS(  6) / +.9525170843 5647098607 3922788405 92 D-11    /
+      DATA AIG CS(  7) / +.1392563460 5771399051 1504206861 90 D-13    /
+      DATA AIG CS(  8) / +.1507099914 2762379592 3069911386 66 D-16    /
+      DATA AIG CS(  9) / +.1255914831 2567778822 7032053333 33 D-19    /
+      DATA AIG CS( 10) / +.8306307377 0821340343 8293333333 33 D-23    /
+      DATA AIG CS( 11) / +.4465753849 3718567445 3333333333 33 D-26    /
+      DATA AIG CS( 12) / +.1990085503 4518869333 3333333333 33 D-29    /
+      DATA AIG CS( 13) / +.7470288525 6533333333 3333333333 33 D-33    /
+      DATA NAIF, NAIG, X3SML, XMAX / 2*0, 2*0.D0 /
+C***FIRST EXECUTABLE STATEMENT  DAI
+      IF (NAIF.NE.0) GO TO 10
+      NAIF = INITDS (AIFCS, 13, 0.1*SNGL(D1MACH(3)))
+      NAIG = INITDS (AIGCS, 13, 0.1*SNGL(D1MACH(3)))
+C
+      X3SML = D1MACH(3)**0.3334D0
+      XMAX = (-1.5D0*DLOG(D1MACH(1)))**0.6667D0
+      XMAX = XMAX - XMAX*DLOG(XMAX)/(4.0D0*DSQRT(XMAX)+1.0D0) - 0.01D0
+C
+ 10   IF (X.GE.(-1.D0)) GO TO 20
+      CALL D9AIMP (X, XM, THETA)
+      DAI = XM * DCOS(THETA)
+      RETURN
+C
+ 20   IF (X.GT.1.0D0) GO TO 30
+      Z = 0.0D0
+      IF (DABS(X).GT.X3SML) Z = X**3
+      DAI = 0.375D0 + (DCSEVL (Z, AIFCS, NAIF) - X*(0.25D0 +
+     1  DCSEVL (Z, AIGCS, NAIG)) )
+      RETURN
+C
+ 30   IF (X.GT.XMAX) GO TO 40
+      DAI = DAIE(X) * DEXP(-2.0D0*X*DSQRT(X)/3.0D0)
+      RETURN
+C
+ 40   DAI = 0.0D0
+      CALL XERROR ( 'DAI     X SO BIG AI UNDERFLOWS', 30, 1, 1)
+      RETURN
+C
+      END

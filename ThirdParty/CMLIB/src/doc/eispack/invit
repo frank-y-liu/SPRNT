@@ -1,0 +1,97 @@
+ 
+      SUBROUTINE INVIT(NM,N,A,WR,WI,SELECT,MM,M,Z,IERR,RM1,RV1,RV2)
+C***BEGIN PROLOGUE  INVIT
+C***DATE WRITTEN   760101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  D4C2B
+C***KEYWORDS  EIGENVALUES,EIGENVECTORS,EISPACK
+C***AUTHOR  SMITH, B. T., ET AL.
+C***PURPOSE  Computes eigenvectors of upper Hessenberg (real) matrix
+C            associated with specified eigenvalues by inverse
+C            iteration.
+C***DESCRIPTION
+C
+C     This subroutine is a translation of the ALGOL procedure INVIT
+C     by Peters and Wilkinson.
+C     HANDBOOK FOR AUTO. COMP., VOL.II-LINEAR ALGEBRA, 418-439(1971).
+C
+C     This subroutine finds those eigenvectors of a REAL UPPER
+C     Hessenberg matrix corresponding to specified eigenvalues,
+C     using inverse iteration.
+C
+C     On INPUT
+C
+C        NM must be set to the row dimension of two-dimensional
+C          array parameters as declared in the calling program
+C          dimension statement.
+C
+C        N is the order of the matrix.
+C
+C        A contains the Hessenberg matrix.
+C
+C        WR and WI contain the real and imaginary parts, respectively,
+C          of the eigenvalues of the matrix.  The eigenvalues MUST be
+C          stored in a manner IDENTICAL to that of subroutine  HQR,
+C          which recognizes possible splitting of the matrix.
+C
+C        SELECT specifies the eigenvectors to be found. The
+C          eigenvector corresponding to the J-th eigenvalue is
+C          specified by setting SELECT(J) to .TRUE.
+C
+C        MM should be set to an upper bound for the number of
+C          columns required to store the eigenvectors to be found.
+C          NOTE that two columns are required to store the
+C          eigenvector corresponding to a complex eigenvalue.
+C
+C     On OUTPUT
+C
+C        A and WI are unaltered.
+C
+C        WR may have been altered since close eigenvalues are perturbed
+C          slightly in searching for independent eigenvectors.
+C
+C        SELECT may have been altered.  If the elements corresponding
+C          to a pair of conjugate complex eigenvalues were each
+C          initially set to .TRUE., the program resets the second of
+C          the two elements to .FALSE.
+C
+C        M is the number of columns actually used to store
+C          the eigenvectors.
+C
+C        Z contains the real and imaginary parts of the eigenvectors.
+C          If the next selected eigenvalue is real, the next column
+C          of Z contains its eigenvector.  If the eigenvalue is
+C          complex, the next two columns of Z contain the real and
+C          imaginary parts of its eigenvector.  The eigenvectors are
+C          normalized so that the component of largest magnitude is 1.
+C          Any vector which fails the acceptance test is set to zero.
+C
+C        IERR is set to
+C          ZERO       for normal return,
+C          -(2*N+1)   if more than MM columns of Z are necessary
+C                     to store the eigenvectors corresponding to
+C                     the specified eigenvalues.
+C          -K         if the iteration corresponding to the K-th
+C                     value fails,
+C          -(N+K)     if both error situations occur.
+C
+C        RM1, RV1, and RV2 are temporary storage arrays.  Note that RM1
+C          is square of dimension N by N and, augmented by two columns
+C          of Z, is the transpose of the corresponding ALGOL B array.
+C
+C     The ALGOL procedure GUESSVEC appears in INVIT in line.
+C
+C     Calls PYTHAG(A,B) for sqrt(A**2 + B**2).
+C     Calls CDIV for complex division.
+C
+C     Questions and comments should be directed to B. S. Garbow,
+C     APPLIED MATHEMATICS DIVISION, ARGONNE NATIONAL LABORATORY
+C     ------------------------------------------------------------------
+C***REFERENCES  B. T. SMITH, J. M. BOYLE, J. J. DONGARRA, B. S. GARBOW,
+C                 Y. IKEBE, V. C. KLEMA, C. B. MOLER, *MATRIX EIGEN-
+C                 SYSTEM ROUTINES - EISPACK GUIDE*, SPRINGER-VERLAG,
+C                 1976.
+C***ROUTINES CALLED  CDIV,PYTHAG
+C***END PROLOGUE  INVIT
+ 
+ 

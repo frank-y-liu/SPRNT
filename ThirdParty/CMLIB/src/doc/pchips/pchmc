@@ -1,0 +1,96 @@
+ 
+      SUBROUTINE PCHMC(N,X,F,D,INCFD,SKIP,ISMON,IERR)
+C***BEGIN PROLOGUE  PCHMC
+C***DATE WRITTEN   820518   (YYMMDD)
+C***REVISION DATE  870707   (YYMMDD)
+C***CATEGORY NO.  E1B
+C***KEYWORDS  LIBRARY=SLATEC(PCHIP),
+C             TYPE=SINGLE PRECISION(PCHMC-S DPCHMC-D),
+C             CUBIC HERMITE INTERPOLATION,MONOTONE INTERPOLATION,
+C             PIECEWISE CUBIC INTERPOLATION
+C***AUTHOR  FRITSCH, F. N., (LLNL)
+C             MATHEMATICS AND STATISTICS DIVISION
+C             LAWRENCE LIVERMORE NATIONAL LABORATORY
+C             P.O. BOX 808  (L-316)
+C             LIVERMORE, CA  94550
+C             FTS 532-4275, (415) 422-4275
+C***PURPOSE  Check a cubic Hermite function for monotonicity.
+C***DESCRIPTION
+C
+C          PCHMC:  Piecewise Cubic Hermite Monotonicity Checker.
+C
+C     Checks the cubic Hermite function defined by  N, X, F, D  for
+C     monotonicity.
+C
+C     To provide compatibility with PCHIM and PCHIC, includes an
+C     increment between successive values of the F- and D-arrays.
+C
+C ----------------------------------------------------------------------
+C
+C  Calling sequence:
+C
+C        PARAMETER  (INCFD = ...)
+C        INTEGER  N, ISMON(N), IERR
+C        REAL  X(N), F(INCFD,N), D(INCFD,N)
+C        LOGICAL  SKIP
+C
+C        CALL  PCHMC (N, X, F, D, INCFD, SKIP, ISMON, IERR)
+C
+C   Parameters:
+C
+C     N -- (input) number of data points.  (Error return if N.LT.2 .)
+C
+C     X -- (input) real array of independent variable values.  The
+C           elements of X must be strictly increasing:
+C                X(I-1) .LT. X(I),  I = 2(1)N.
+C           (Error return if not.)
+C
+C     F -- (input) real array of function values.  F(1+(I-1)*INCFD) is
+C           the value corresponding to X(I).
+C
+C     D -- (input) real array of derivative values.  D(1+(I-1)*INCFD) is
+C           the value corresponding to X(I).
+C
+C     INCFD -- (input) increment between successive values in F and D.
+C           (Error return if  INCFD.LT.1 .)
+C
+C     SKIP -- (input/output) logical variable which should be set to
+C           .TRUE. if the user wishes to skip checks for validity of
+C           preceding parameters, or to .FALSE. otherwise.
+C           This will save time in case these checks have already
+C           been performed.
+C           SKIP will be set to .TRUE. on normal return.
+C
+C     ISMON -- (output) integer array indicating on which intervals the
+C           PCH function defined by  N, X, F, D  is monotonic.
+C           For data interval [X(I),X(I+1)],
+C             ISMON(I) = -1  if function is strictly decreasing;
+C             ISMON(I) =  0  if function is constant;
+C             ISMON(I) =  1  if function is strictly increasing;
+C             ISMON(I) =  2  if function is non-monotonic;
+C             ISMON(I) =  3  if unable to determine.  (This means that
+C                            the D-values are near the boundary of the
+C                            monotonicity region.  A small increase pro-
+C                            duces non-monotonicity; decrease, strict
+C                            monotonicity.)
+C           The above applies to I=1(1)N-1.  ISMON(N) indicates whether
+C              the entire function is monotonic on [X(1),X(N)].
+C
+C     IERR -- (output) error flag.
+C           Normal return:
+C              IERR = 0  (no errors).
+C           "Recoverable" errors:
+C              IERR = -1  if N.LT.2 .
+C              IERR = -2  if INCFD.LT.1 .
+C              IERR = -3  if the X-array is not strictly increasing.
+C          (The ISMON-array has not been changed in any of these cases.)
+C               NOTE:  The above errors are checked in the order listed,
+C                   and following arguments have **NOT** been validated.
+C
+C***REFERENCES  F.N.FRITSCH AND R.E.CARLSON, 'MONOTONE PIECEWISE CUBIC
+C                 INTERPOLATION,' SIAM J.NUMER.ANAL. 17, 2 (APRIL 1980),
+C                 238-246.
+C***ROUTINES CALLED  CHFMC,XERROR
+C***END PROLOGUE  PCHMC
+ 
+ 

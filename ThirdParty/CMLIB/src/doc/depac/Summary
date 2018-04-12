@@ -1,0 +1,21 @@
+ 
+                 DEPAC
+   DEPAC is a suite of FORTRAN programs for the solution of initial
+value problems for ordinary differential equations,
+ 
+                 y' = f(x,y)
+                             y(x-init) = y-init
+ 
+Currently, there are three user callable programs in this package,
+ 
+                 DERKF           Runge Kutta method
+                 DEABM           Adams predictor corrector method
+                 DEBDF           Gear stiff method
+ 
+One major advantage of the DEPAC organiziation is that all three programs
+have almost identical calling sequences.  This facilitates changing from
+one to the other.
+ 
+.
+ 
+ 

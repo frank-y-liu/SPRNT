@@ -1,0 +1,72 @@
+ 
+      SUBROUTINE IMTQLV(N,D,E,E2,W,IND,IERR,RV1)
+C***BEGIN PROLOGUE  IMTQLV
+C***DATE WRITTEN   760101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  D4A5,D4C2A
+C***KEYWORDS  EIGENVALUES,EIGENVECTORS,EISPACK
+C***AUTHOR  SMITH, B. T., ET AL.
+C***PURPOSE  Computes eigenvalues of symmetric tridiagonal matrix by the
+C            implicit QL method. Eigenvectors may be computed later.
+C***DESCRIPTION
+C
+C     This subroutine is a variant of  IMTQL1  which is a translation of
+C     ALGOL procedure IMTQL1, NUM. MATH. 12, 377-383(1968) by Martin and
+C     Wilkinson, as modified in NUM. MATH. 15, 450(1970) by Dubrulle.
+C     HANDBOOK FOR AUTO. COMP., VOL.II-LINEAR ALGEBRA, 241-248(1971).
+C
+C     This subroutine finds the eigenvalues of a SYMMETRIC TRIDIAGONAL
+C     matrix by the implicit QL method and associates with them
+C     their corresponding submatrix indices.
+C
+C     On INPUT
+C
+C        N is the order of the matrix.
+C
+C        D contains the diagonal elements of the input matrix.
+C
+C        E contains the subdiagonal elements of the input matrix
+C          in its last N-1 positions.  E(1) is arbitrary.
+C
+C        E2 contains the squares of the corresponding elements of E.
+C          E2(1) is arbitrary.
+C
+C     On OUTPUT
+C
+C        D and E are unaltered.
+C
+C        Elements of E2, corresponding to elements of E regarded
+C          as negligible, have been replaced by zero causing the
+C          matrix to split into a direct sum of submatrices.
+C          E2(1) is also set to zero.
+C
+C        W contains the eigenvalues in ascending order.  If an
+C          error exit is made, the eigenvalues are correct and
+C          ordered for indices 1,2,...IERR-1, but may not be
+C          the smallest eigenvalues.
+C
+C        IND contains the submatrix indices associated with the
+C          corresponding eigenvalues in W -- 1 for eigenvalues
+C          belonging to the first submatrix from the top,
+C          2 for those belonging to the second submatrix, etc.
+C
+C        IERR is set to
+C          ZERO       for normal return,
+C          J          if the J-th eigenvalue has not been
+C                     determined after 30 iterations.
+C
+C        RV1 is a temporary storage array.
+C
+C     Calls PYTHAG(A,B) for sqrt(A**2 + B**2).
+C
+C     Questions and comments should be directed to B. S. Garbow,
+C     APPLIED MATHEMATICS DIVISION, ARGONNE NATIONAL LABORATORY
+C     ------------------------------------------------------------------
+C***REFERENCES  B. T. SMITH, J. M. BOYLE, J. J. DONGARRA, B. S. GARBOW,
+C                 Y. IKEBE, V. C. KLEMA, C. B. MOLER, *MATRIX EIGEN-
+C                 SYSTEM ROUTINES - EISPACK GUIDE*, SPRINGER-VERLAG,
+C                 1976.
+C***ROUTINES CALLED  PYTHAG
+C***END PROLOGUE  IMTQLV
+ 
+ 

@@ -1,0 +1,31 @@
+      COMPLEX FUNCTION CGAMR(Z)
+C***BEGIN PROLOGUE  CGAMR
+C***DATE WRITTEN   770701   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C7A
+C***KEYWORDS  COMPLEX,GAMMA FUNCTION,RECIPROCAL,
+C             RECIPROCAL GAMMA FUNCTION,SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the reciprocal Gamma function of complex argument.
+C***DESCRIPTION
+C
+C CGAMR(Z) calculates the reciprocal gamma function for COMPLEX
+C argument Z.  This is a preliminary version that is not accurate.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  CLNGAM,XERCLR,XGETF,XSETF
+C***END PROLOGUE  CGAMR
+      COMPLEX Z, CLNGAM, CEXP
+C***FIRST EXECUTABLE STATEMENT  CGAMR
+      CGAMR = (0.0, 0.0)
+      X = REAL (Z)
+      IF (X.LE.0.0 .AND. AINT(X).EQ.X .AND. AIMAG(Z).EQ.0.0) RETURN
+C
+      CALL XGETF (IROLD)
+      CALL XSETF (1)
+      CGAMR = CLNGAM(Z)
+      CALL XERCLR
+      CALL XSETF (IROLD)
+      CGAMR = CEXP (-CGAMR)
+C
+      RETURN
+      END

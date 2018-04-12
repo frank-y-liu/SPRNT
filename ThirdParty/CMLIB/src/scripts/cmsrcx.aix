@@ -1,0 +1,80 @@
+#! /bin/csh -f
+
+#  usage: cmsrcx <subprogram> ...
+
+#  retrieves source for CMLIB subprograms whose name(s)
+#  are listed on the command line, including all additional
+#  CMLIB subprograms which are required to run them.  The
+#  requested items are written to standard output.
+
+#  The environment variable CMLIBDIR, if set, is taken to be the
+#  directory where CMLIB source and documentation is stored.  The
+#  named directory is presumed to have CMLIB's scripts subdirectory.
+#  If CMLIBDIR is not set, then /usr/local/apps/cmlib is used.
+
+#  Ron Boisvert, CAML NIST
+#  05 Dec 90 (Revised 22 Oct 91)
+
+# This version is for AIX.
+
+set cmdir = /usr/local/apps/cmlib
+
+set userdir = `printenv CMLIBDIR`
+if ("$userdir" != "") set cmdir = $userdir
+set cmsrc = $cmdir/scripts/cmsrc
+if (! -f $cmsrc) then
+  echo "CMLIB source retrieval script $cmsrc does not exist."
+  exit
+endif
+
+#  fc        == the fortran compiler
+#  mapoption == compiler option that generates BSD-type load map
+#  cmlib     == how cmlib is referenced on compiler command line
+
+set fc = xlf
+set mapoption = -Wl,-berok,-bmap:prog.M
+set cmlib =  $cmdir/`$cmdir/utils/itl-arch`/lib/libcm.a
+
+onintr cleanup
+
+set tmpdir = /tmp/cmsrcx.$$
+
+mkdir $tmpdir
+cd $tmpdir
+
+# -------------------------------------------------------
+# generate fortran program which calls requested routines
+# -------------------------------------------------------
+
+foreach name ($argv)
+  echo "      call $name" >> prog.f
+end
+echo "      end" >> prog.f
+
+# -----------------------------------------------
+# compile this program and capture the loader map
+# -----------------------------------------------
+
+$fc prog.f $mapoption $cmlib >& /dev/null
+
+# -----------------------------------------------
+# massage loader map into sequence of cmsrc calls
+# -----------------------------------------------
+
+grep '/libcm\.a\[' prog.M \
+  | sed -e 's/^.*>  *//' \
+        -e 's/\.f.*$//' |sort -u  > externals
+
+foreach x ($argv)
+  sed -e /^$x\$/d externals > externals.tmp
+  mv externals.tmp externals
+end
+
+$cmsrc $argv
+$cmsrc `cat externals`
+
+cleanup:
+         cd
+         rm -r -f $tmpdir
+
+

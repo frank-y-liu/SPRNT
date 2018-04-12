@@ -1,0 +1,18 @@
+ 
+      COMPLEX FUNCTION CPSI(ZIN)
+C***BEGIN PROLOGUE  CPSI
+C***DATE WRITTEN   780501   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C7C
+C***KEYWORDS  COMPLEX,DIGAMMA FUNCTION,PSI FUNCTION,SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the Psi function of complex argument.
+C***DESCRIPTION
+C
+C PSI(X) calculates the psi (or digamma) function of X.  PSI(X)
+C is the logarithmic derivative of the gamma function of X.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  CCOT,R1MACH,XERROR
+C***END PROLOGUE  CPSI
+ 
+ 

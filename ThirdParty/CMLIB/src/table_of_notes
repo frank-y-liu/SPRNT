@@ -1,0 +1,198 @@
+AIX-*-4.3 [viscue] 
+
+Option	Include Name		Special needs
+
+  1	aix
+
+  2	aix_autodbl		Includes relaxed.inits fnlib routines, inits.f and
+                                   initds.f, with a relaxed accuracy requirement.
+                                fcnpak TEST 1-2 (DOUBLE PRECISION) fail, accuracy 
+                                   is only good to 110 digits instead of 114.
+				Tests using 21 as input were run for blas and
+				   quadpkd -  check output.
+
+  3	aix_f90			
+
+  4	aix_f90_autodbl		Optimization was turned off for routine 
+                                   ddassl/ddassl.f.
+                                Includes relaxed.inits fnlib routines, inits.f and
+                                   initds.f, with a relaxed accuracy requirement.
+                                fcnpak TEST 1-2 (DOUBLE PRECISION) fail, accuracy 
+                                   is only good to ~ 110 digits instead of 114.
+				Tests using 21 as input were run for blas and
+				   quadpkd -  check output.
+
+
+
+AIX-*-4,2 [viscue]  - was not rebuilt with March/June 2000 changes
+
+Option  Include Name            Special needs
+
+  1     aix
+
+  2     aix_autodbl             Includes relaxed.inits fnlib routines, inits.f and
+                                   initds.f, with a relaxed accuracy requirement.
+                                Tests using 21 as input were run for blas and
+                                   quadpkd -  check output.
+
+  3     aix_f90                 Optimization was turned off for sublibraries
+                                   ddassl and sdassl.
+
+  4     aix_f90_autodbl         Optimization was turned off for sublibraries
+                                   ddassl and sdassl.
+                                Includes relaxed.inits fnlib routines, inits.f and
+                                   initds.f, with a relaxed accuracy requirement.
+                                Tests using 21 as input were run for blas and
+                                   quadpkd -  check output.
+
+
+
+SunOS-*-5.6 [wahoo]
+
+Option	Include Name		Special needs
+
+  1	solaris2		Includes sun.stub routines f, fmat, gvec, uivp,
+                                   and uvec to create .so.
+
+  2	solaris2_r8		Includes sun.stub routines f, fmat, gvec, uivp,
+				   and uvec to create .so.
+                                Includes relaxed.inits fnlib routines, inits.f and
+                                   initds.f, with a relaxed accuracy requirement.
+				r8 compiler option is replaced with
+				   "-xtypemap=real:64,double:128,integer:mixed".
+
+  3	solaris2_f90		libcm.a is being made until further
+				   investigation of why -ztext isn't
+				   working during creation of libcm.so.
+
+
+
+SunOS-sun4m-4.1.3_U1 [sunbow] - was not rebuilt with March/June 2000 changes
+
+Option	Include Name		Special needs
+
+  1	sun4
+
+  2	sun4_r8			Includes relaxed.inits fnlib routines, inits.f and
+                                   initds.f, with a relaxed accuracy requirement.
+				Test using 21 as input was run for blas -
+                                   check output.
+
+
+
+IRIX64-*-6.5 [visage]
+
+Option	Include Name		Special needs
+
+  1	irix64_mips4		System versions of fnlib routines erf, erfc,
+				   derf, and derfc are used.
+				Optimization was turned off for fnlib routines
+                                   ai, daws, ei (fnlibs 14, 42, and 74 were
+                                   failing during execution).
+				Test using 21 as input was run for fishpak -
+				   check output.
+
+  2	irix64_i8r8d16_mips4 	Includes relaxed.inits fnlib routines, inits.f and
+                                   initds.f, with a relaxed accuracy requirement.
+				Test using 21 as input was run for blas - check
+				   output for CSCAL.
+
+  3	irix64_n32_mips4	System versions of fnlib routines erf, erfc,
+				   derf, and derfc are used.
+				Optimization was turned off for fnlib routines
+                                   ai, daws, ei (fnlibs 14, 42, and 74 were
+                                   failing during execution).
+				Test using 21 as input was run for fishpak -
+				   check output.
+
+  4	irix64_n32_i8r8d16_mips4 Includes relaxed.inits fnlib routines, inits.f and
+                                   initds.f, with a relaxed accuracy requirement.
+				Test using 21 as input was run for blas - check
+				   output for CSCAL.
+
+  5	irix64_f90_mips4	System versions of fnlib routines erf, erfc,
+				   derf, and derfc are used.
+				Optimization was turned off for fnlib routines
+				   ai, daws, ei (fnlibs 14, 42, and 74 were
+                                   failing during execution).
+				Test using 21 as input was run for fishpak - 
+				   check output.
+
+  6	irix64_f90_default64_mips4 Includes relaxed.inits fnlib routines, inits.f and
+                                   initds.f, with a relaxed accuracy requirement.
+				Test using 21 as input was run for blas - check
+				   output for CSCAL.
+
+  7	irix64_f90n32_mips4	System versions of fnlib routines erf, erfc,
+			   	 derf, and derfc are used.
+				Optimization was turned off for sublibrary
+			   	 fnlib (fnlibs 14, 42, and 74 were failing).
+				Test using 21 as input was run for fishpak -
+		  	    	 check output.
+
+  8	irix64_f90n32_i8r8d16_mips4 Includes relaxed.inits fnlib routines, inits.f and
+                                   initds.f, with a relaxed accuracy requirement.
+				Test using 21 as input was run for blas - check
+				   output for CSCAL.
+
+
+  3	irix64_n32_mips3		see above
+
+  4	irix64_n32_i8r8d16_mips3	see above
+
+  7	irix64_f90n32_mips3		see above
+
+  8	irix64_f90n32_i8r8d16_mips3	see above
+
+
+
+IRIX-IP25-6.2 [hydra.boulder] - FORTRAN 90 was not working correctly 
+
+Option  Include Name            Special needs
+
+  1	irix64_mips4			see above (optimization was used for all fnlib routines)
+
+  2	irix64_i8r8d16_mips4		see above
+
+
+  3     irix64_n32_mips3                see above (optimization was used for all fnlib routines)
+
+  4     irix64_n32_i8r8d16_mips3        see above
+
+
+  7     irix64_f90n32_mips3             From 1998 - was created on visage by Ron - does   
+                                        not contain any source changes made after 02/02/98
+
+
+
+IRIX-*-5.3 [crindy] - was not rebuilt with March/June 2000 changes
+
+Option	Include Name		Special needs
+
+  1	irix_mips1		None  		(This is a mips1/o32 library
+						compiled with 'f77 -O2 -static')
+
+  2	irix_mips2		None		(This is an o32 library compiled
+						with 'f77 -mips2 -O2 -static')
+
+
+
+HP-UX-9000-10 [tb1 (735)]  - was not rebuilt with March/June 2000 changes
+
+Option	Include Name		Special needs
+
+  1	hpux			None  		(Options can be added if needed,
+						 contains epg scripts and man
+                                                 page.)
+
+Linux-i686-2.0.34 (g77)  [rapid - /usr/local/lib/libcm.a created with pgf77 exists too]
+
+Option  Include Name            Special needs
+
+  1     linux                   -g3 -fno-automatic was used for routines
+                                   ddassl/ddassl.f and sdassl/sdassl.f
+                                   [Note: g77 version 2.90.27 980315 on Linux
+                                   required these special compilation options,
+                                   however on Solaris using g77 version 2.95.2
+                                   19991024 no special compilation options were
+                                   required.]

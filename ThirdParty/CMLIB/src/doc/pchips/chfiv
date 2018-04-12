@@ -1,0 +1,46 @@
+ 
+      REAL FUNCTION CHFIV(X1,X2,F1,F2,D1,D2,A,B,IERR)
+C***BEGIN PROLOGUE  CHFIV
+C***REFER TO  PCHIA
+C***ROUTINES CALLED  XERROR
+C***REVISION DATE  870707   (YYMMDD)
+C***DESCRIPTION
+C
+C          CHFIV:  Cubic Hermite Function Integral Evaluator.
+C
+C     Called by  PCHIA  to evaluate the integral of a single cubic (in
+C     Hermite form) over an arbitrary interval (A,B).
+C
+C ----------------------------------------------------------------------
+C
+C  Calling sequence:
+C
+C        INTEGER  IERR
+C        REAL  X1, X2, F1, F2, D1, D2, A, B
+C        REAL  VALUE, CHFIV
+C
+C        VALUE = CHFIV (X1, X2, F1, F2, D1, D2, A, B, IERR)
+C
+C   Parameters:
+C
+C     VALUE -- (output) value of the requested integral.
+C
+C     X1,X2 -- (input) endpoints if interval of definition of cubic.
+C           (Must be distinct.  Error return if not.)
+C
+C     F1,F2 -- (input) function values at the ends of the interval.
+C
+C     D1,D2 -- (input) derivative values at the ends of the interval.
+C
+C     A,B -- (input) endpoints of interval of integration.
+C
+C     IERR -- (output) error flag.
+C           Normal return:
+C              IERR = 0 (no errors).
+C           "Recoverable errors":
+C              IERR = -1  if X1.EQ.X2 .
+C                (VALUE has not been set in this case.)
+C
+C***END PROLOGUE  CHFIV
+ 
+ 

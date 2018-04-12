@@ -1,0 +1,64 @@
+ 
+      SUBROUTINE HTRIDI(NM,N,AR,AI,D,E,E2,TAU)
+C***BEGIN PROLOGUE  HTRIDI
+C***DATE WRITTEN   760101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  D4C1B1
+C***KEYWORDS  EIGENVALUES,EIGENVECTORS,EISPACK
+C***AUTHOR  SMITH, B. T., ET AL.
+C***PURPOSE  Reduces complex Hermitian matrix to real symmetric
+C            tridiagonal matrix using unitary similarity
+C            transformations.
+C***DESCRIPTION
+C
+C     This subroutine is a translation of a complex analogue of
+C     the ALGOL procedure TRED1, NUM. MATH. 11, 181-195(1968)
+C     by Martin, Reinsch, and Wilkinson.
+C     HANDBOOK FOR AUTO. COMP., VOL.II-LINEAR ALGEBRA, 212-226(1971).
+C
+C     This subroutine reduces a COMPLEX HERMITIAN matrix
+C     to a real symmetric tridiagonal matrix using
+C     unitary similarity transformations.
+C
+C     On INPUT
+C
+C        NM must be set to the row dimension of two-dimensional
+C          array parameters as declared in the calling program
+C          dimension statement.
+C
+C        N is the order of the matrix.
+C
+C        AR and AI contain the real and imaginary parts,
+C          respectively, of the complex hermitian input matrix.
+C          Only the lower triangle of the matrix need be supplied.
+C
+C     On OUTPUT
+C
+C        AR and AI contain information about the unitary trans-
+C          formations used in the reduction in their full lower
+C          triangles.  Their strict upper triangles and the
+C          diagonal of AR are unaltered.
+C
+C        D contains the diagonal elements of the tridiagonal matrix.
+C
+C        E contains the subdiagonal elements of the tridiagonal
+C          matrix in its last N-1 positions.  E(1) is set to zero.
+C
+C        E2 contains the squares of the corresponding elements of E.
+C          E2 may coincide with E if the squares are not needed.
+C
+C        TAU contains further information about the transformations.
+C
+C     Calls PYTHAG(A,B) for sqrt(A**2 + B**2).
+C
+C     Questions and comments should be directed to B. S. Garbow,
+C     APPLIED MATHEMATICS DIVISION, ARGONNE NATIONAL LABORATORY
+C     ------------------------------------------------------------------
+C***REFERENCES  B. T. SMITH, J. M. BOYLE, J. J. DONGARRA, B. S. GARBOW,
+C                 Y. IKEBE, V. C. KLEMA, C. B. MOLER, *MATRIX EIGEN-
+C                 SYSTEM ROUTINES - EISPACK GUIDE*, SPRINGER-VERLAG,
+C                 1976.
+C***ROUTINES CALLED  PYTHAG
+C***END PROLOGUE  HTRIDI
+ 
+ 

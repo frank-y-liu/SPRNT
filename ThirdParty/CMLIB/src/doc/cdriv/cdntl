@@ -1,0 +1,31 @@
+ 
+      SUBROUTINE CDNTL (EPS,F,FA,HMAX,HOLD,IMPL,JTASK,MATDIM,MAXORD,
+     8   MINT,MITER,ML,MU,N,NDE,SAVE1,T,Y,YWT,H,MNTOLD,MTROLD,NFE,RC,YH,
+     8   A,CONVRG,EL,IER,IPVT,NQ,NWAIT,RH,RMAX,SAVE2,TQ,TREND,ISWFLG)
+C***BEGIN PROLOGUE  CDNTL
+C***REFER TO  CDRIV3
+C  Subroutine CDNTL is called to set parameters on the first call
+C  to CDSTP, on an internal restart, or when the user has altered
+C  MINT, MITER, and/or H.
+C  On the first call, the order is set to 1 and the initial derivatives
+C  are calculated.  RMAX is the maximum ratio by which H can be
+C  increased in one step.  It is initially RMINIT to compensate
+C  for the small initial H, but then is normally equal to RMNORM.
+C  If a failure occurs (in corrector convergence or error test), RMAX
+C  is set at RMFAIL for the next increase.
+C  If the caller has changed MINT, or if JTASK = 0, CDCST is called
+C  to set the coefficients of the method.  If the caller has changed H,
+C  YH must be rescaled.  If H or MINT has been changed, NWAIT is
+C  reset to NQ + 2 to prevent further increases in H for that many
+C  steps.  Also, RC is reset.  RC is the ratio of new to old values of
+C  the coefficient L(0)*H.  If the caller has changed MITER, RC is
+C  set to 0 to force the partials to be updated, if partials are used.
+C***ROUTINES CALLED  CDCST,CDSCL,CGEFA,CGESL,CGBFA,CGBSL,SCNRM2
+C***DATE WRITTEN   790601   (YYMMDD)
+C***REVISION DATE  850320   (YYMMDD)
+C***CATEGORY NO.  I1A2,I1A1B
+C***AUTHOR  KAHANER, D. K., NATIONAL BUREAU OF STANDARDS,
+C           SUTHERLAND, C. D., LOS ALAMOS NATIONAL LABORATORY
+C***END PROLOGUE  CDNTL
+ 
+ 

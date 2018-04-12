@@ -1,0 +1,17 @@
+ 
+      REAL FUNCTION CV(XVAL,NDATA,NCONST,NORD,NBKPT,BKPT,W)
+C***BEGIN PROLOGUE  CV
+C***REFER TO  FC
+C
+C     This is a companion function subprogram for FC( ).
+C     The documentation for FC( ) has more complete
+C     usage instructions.
+C
+C      Evaluate the variance function of the curve obtained
+C      by the constrained B-spline fitting subprogram, FC( ).
+C
+C     Revised Feb. 14, 1979.
+C***ROUTINES CALLED  BSPLVN,SDOT
+C***END PROLOGUE  CV
+ 
+ 

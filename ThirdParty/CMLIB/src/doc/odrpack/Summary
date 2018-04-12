@@ -1,0 +1,2986 @@
+ 
+------------------------------------------------------------------
+                        ODRPACK 1.3  MANUAL
+------------------------------------------------------------------
+ 
+1
+                               Reference Guide
+ 
+                                     for
+ 
+                                   ODRPACK
+ 
+            software for weighted orthogonal distance regression
+ 
+ 
+                                version  1.3
+                                  02-04-87
+ 
+ 
+ 
+                                Paul T. Boggs
+              Optimization Group/Scientific Computing Division
+            National Bureau of Standards, Gaithersburg, MD 20899
+ 
+                               Richard H. Byrd
+                       Department of Computer Science
+                  University of Colorado, Boulder, CO 80309
+ 
+                             Janet R. Donaldson
+              Optimization Group/Scientific Computing Division
+            National Bureau of Standards, Boulder, CO 80303-3328
+ 
+                             Robert B. Schnabel
+                       Department of Computer Science
+                  University of Colorado, Boulder, CO 80309
+                                     and
+              Optimization Group/Scientific Computing Division
+            National Bureau of Standards, Boulder, CO 80303-3328
+ 
+ 
+ 
+ 
+                               ***keywords***
+                       orthogonal distance regression
+                           nonlinear least squares
+                             errors in variables
+ 
+ 
+ 
+ 
+                              ***categories***
+                                  G2E,I1B1
+ 
+ 
+ 
+1    TABLE OF CONTENTS
+ 
+ 
+       I.  Introduction
+ 
+      II.  Background
+ 
+     III.  Starting Values for BETA and DELTA
+ 
+      IV.  Default Values and Structured Arguments
+ 
+       V.  Subroutine Declaration and Call Statements
+ 
+      VI.  Subroutine Argument Descriptions
+           A.  Synopsis
+           B.  Detailed Descriptions of
+               ODRPACK User-Callable Subroutine Arguments
+ 
+     VII.  Examples
+           A.  DODR Example Program, Data and ODRPACK Generated Report
+           B.  DODRC Example Program, Data and ODRPACK Generated Report
+ 
+    VIII.  Scaling Algorithms
+           A.  Beta Scaling
+           B.  Delta Scaling
+ 
+      IX.  Extracting Information from the Work Vectors
+           A.  Extracting Information from Vector WORK
+           B.  Extracting Information from Vector IWORK
+ 
+       X.  Acknowledgments
+ 
+      XI.  References
+ 
+ 
+ 
+1   I.  INTRODUCTION
+        ------------
+ 
+    ODRPACK is a portable collection of ANSI '77 Fortran subroutines for
+    fitting a model to data.  It is designed primarily for instances
+    when the independent as well as the dependent variables have
+    significant errors, implementing a highly efficient algorithm for
+    solving the weighted orthogonal distance regression problem, i.e.,
+    for minimizing the sum of the squares of the weighted orthogonal
+    distances between each data point and the curve described by the
+    model equation.  It can also be used to solve the ordinary least
+    squares problem where all of the errors are attributed to the
+    observations of the dependent variable.
+ 
+    ODRPACK is designed to accommodate many levels of user sophistication
+    and problem difficulty.
+ 
+    * It is easy to use, providing two levels of user-control of the
+      computations, extensive error handling facilities, comprehensive
+      printed reports and no size restrictions other than effective
+      machine size.
+ 
+    * The necessary derivatives (Jacobian matrices) are approximated
+      numerically if they are not supplied by the user.
+ 
+    * The correctness of user-supplied derivatives can be verified by
+      the derivative checking procedure provided.
+ 
+    * Both weighted and unweighted analysis can be performed.
+ 
+    * Subsets of the unknowns can be treated as constants with their
+      values held fixed at their input values, allowing the user to
+      examine the results obtained by estimating subsets of the
+      unknowns of a general model without rewriting the model
+      subroutine.
+ 
+    * The ODRPACK scaling algorithm automatically accommodates poorly
+      scaled problems, in which the model parameters and/or unknown
+      errors in the independent variables vary widely in magnitude.
+ 
+    * The trust region Levenberg-Marquardt algorithm implemented by
+      ODRPACK has a computational effort per step which is of the same
+      order as that required for ordinary least squares, even though the
+      number of unknowns estimated in the orthogonal distance regression
+      problem is the number of unknown model parameters plus the number
+      of independent variables, while the number of unknowns estimated
+      in the ordinary least squares problem is simply the number of
+      unknown model parameters.
+ 
+    * ODRPACK is portable and is easily used with other Fortran
+      subroutine libraries.
+ 
+    The following sections describe ODRPACK in greater detail.  Users
+    are directed to section II for a brief description of the orthogonal
+    distance regression algorithm.  This section introduces notation and
+    provides background material for understanding the remainder of the
+    documentation.  Section III describes the need for starting values
+    for BETA and DELTA, and section IV describes two features of ODRPACK
+    which simplify the user interface with the package.  The information
+    in these two sections will be especially important to first time
+    users of ODRPACK.  The subroutine declaration and call statements
+    are given in section V and the subroutine arguments are defined in
+    section VI.  The sample programs shown in section VII can be used as
+    templates for creating the user's own program.  The information
+    provided in section VIII describes the scaling algorithm and section
+    IX describes how the user can extract computed results from the work
+    vectors.  The information in these two sections is generally not
+    needed by first time users of ODRPACK.
+ 
+ 
+ 
+1   II.  BACKGROUND
+         ----------
+ 
+    Let
+ 
+    Y(I) = FN(X(I,*)+DELTA(I,*);BETA) - EPSILON(I)                (eq.1)
+ 
+    for I=1,...,N, where
+ 
+    N                                 is the number of observations
+                                      (see subroutine argument N);
+ 
+    Y(I), I=1,...,N                   are the observed values of the
+                                      dependent variable, where Y(I)
+                                      depends on X(I,J), J=1,...,M (see
+                                      subroutine argument Y);
+ 
+    FN                                is the function used to predict
+                                      values of the dependent variable
+                                      (see subroutine argument FUN);
+ 
+    X(I,J), I=1,...,N & J=1,...,M     are the observed values of the
+                                      independent variable (see
+                                      subroutine argument X);
+ 
+    DELTA(I,J), I=1,...,N & J=1,...,M are the unknown errors in X(I,J)
+                                      which are to be estimated (see
+                                      subroutine arguments JOB and
+                                      WORK);
+ 
+    BETA(K), K=1,...,NP               are the function parameters which
+                                      are to be estimated (see
+                                      subroutine argument BETA);
+ 
+    EPSILON(I), I=1,...,N             are the unknown errors in Y(I)
+                                      which are to be estimated (see
+                                      subroutine argument WORK).
+ 
+    The square of the weighted orthogonal distance from the point
+    (X(I,*),Y(I)) to the point FN(X(I,*)+DELTA(I,*);BETA) on the curve
+    described by the model equation, i.e., the square of the
+    observational errors, is given by
+ 
+    R(I)**2 = [FN(X(I,*)+DELTA(I,*);BETA) - Y(I)]**2 +
+                                                                  (eq.2)
+               M
+              SUM [D(I,J)*DELTA(I,J)]**2
+              J=1
+ 
+    for I = 1,...,N, where
+ 
+    D(I,J), I=1,...,N & J=1,...,M     are the DELTA weights, which can
+                                      be used to compensate for
+                                      instances when the precision of
+                                      the X observations is different
+                                      from that of the Y observations
+                                      (see subroutine argument RHO).
+ 
+    The least squares orthogonal distance solution is then that which
+    minimizes with respect to BETA and DELTA the sum of the squared
+    weighted observational errors,
+ 
+     N
+    SUM [ ( W(I) * R(I) ) **2 ]                                   (eq.3)
+    I=1
+ 
+    where
+ 
+    W(I), I=1,...,N                   are the observational error
+                                      weights, which can be used to
+                                      compensate for unequal precision
+                                      in the observational errors (see
+                                      subroutine argument W).
+ 
+    The solution is found using a trust region Levenberg-Marquardt
+    method [Boggs, Byrd and Schnabel (1985)], with scaling used to
+    accommodate problems in which estimated values have widely varying
+    magnitudes.  The Jacobian matrices, i.e., the matrices of first
+    partial derivatives of FN with respect to each BETA and each X, are
+    computed at every iteration either by finite differences or by a
+    user-supplied subroutine, as specified by subroutine argument JOB
+    (see section VI.B).  The iterations are stopped when any one of
+    three stopping criteria are met.  Two of these indicate the
+    iterations have converged to a solution.  These are "sum-of-squares
+    convergence", which indicates that the change in the sum of the
+    squared weighted observational errors is sufficiently small, and
+    "parameter convergence", which indicates the change in the
+    parameters is sufficiently small.  The third stopping criteria is a
+    limit on the number of iterations.
+ 
+ 
+ 
+1   III.  STARTING VALUES FOR BETA AND DELTA
+          ----------------------------------
+ 
+    Starting values for BETA must be provided by the user.  Users
+    familiar with the ordinary nonlinear least squares problem are
+    generally aware of the importance of obtaining good starting values
+    for the estimated function parameters.  It is equally important to
+    obtain good starting values for the parameters when using the
+    orthogonal distance regression technique.  Good starting values can
+    significantly decrease the number of iterations required to find a
+    solution; a poor starting value may even prevent the solution from
+    being found at all.  Reasonable starting values are often available
+    from previous analysis or experiments.  When good starting values
+    are not readily available, the user may have to do some preliminary
+    analysis to obtain them.  Himmelblau (1970) offers several
+    suggestions for obtaining starting values when they are not
+    available from other sources.
+ 
+    When using the technique of orthogonal distance regression it is
+    also important to have good starting values for the estimated
+    errors, DELTA, in the independent variables.  The ODRPACK default is
+    to initialize DELTA to zero, which is the most obvious initial value
+    for the DELTA's.  (Note that zero starting values for DELTA do not
+    cause the scaling problems discussed in section VI that zero
+    starting values for BETA cause.) However initializing the DELTA's to
+    zero is equivalent to initially assigning all of the errors to the
+    dependent variable as is done for ordinary least squares.  While
+    initializing the DELTA's to zero is quite adequate in many cases, in
+    others it is not.  A plot of the curve described by the model
+    function and observed data for the initial parameters may indicate
+    whether or not zero starting values for DELTA are reasonable.  Often
+    it is visually possible to determine better starting values for the
+    DELTA's, especially when an asymptote is involved.  For example, in
+    the case of an asymptote, the user may need to initialize some of
+    the DELTA's to the horizontal distance to the curve, while leaving
+    the other DELTA's initialized to zero in order to obtain a
+    reasonable solution.  Proper initialization of DELTA can mean the
+    difference between solving a difficult problem and not solving it.
+ 
+ 
+ 
+1   IV.  DEFAULT VALUES AND STRUCTURED ARGUMENTS
+         ---------------------------------------
+ 
+    ODRPACK uses default values and structured arguments to simplify the
+    user interface.  The availability of default values in ODRPACK means
+    that the user does not have to be concerned with determining values
+    for many of the ODRPACK arguments unless the problem being solved
+    requires the use of non-default values.  Structured arguments, which
+    exploit the possibly symmetric structure of the independent variable
+    data, reduce the amount of storage space required for arguments and
+    reduces the work required by the user to initialize those arguments.
+ 
+    DEFAULT VALUES.  Default values have been specified for ODRPACK
+    subroutine arguments wherever feasible.  These default values are
+    invoked by setting the argument to any negative value.  Arrays with
+    default values are invoked by setting the first element of the array
+    to a negative value, in which case only the first value of the array
+    will ever be used.  This allows a scalar to be used to invoke the
+    default values of arrays, thus saving space and the need to declare
+    such arrays.
+ 
+    Users are encouraged to invoke the default values of arguments
+    wherever possible.  The default values have been found to be
+    reasonable for a wide class of problems.  Their use will greatly
+    simplify the initial use of ODRPACK for a given problem.  Fine
+    tuning of these arguments can then be done later if it is found
+    necessary.
+ 
+    STRUCTURED ARGUMENTS.  Structured arguments are included in ODRPACK
+    because the properties of the individual elements of the possibly
+    multi-column independent variable data are often constant throughout
+    a given column of the independent variable or even throughout the
+    whole independent variable matrix.  For example, section II
+    introduces the DELTA weights, specified by subroutine argument RHO,
+    that indicate how DELTA and EPSILON of each observation (X,Y) are to
+    be weighted in the weighted orthogonal distance.  If each row of the
+    independent variable indicates an hourly temperature reading and
+    each column a different day on which the temperature readings were
+    taken, then the user would probably want to weight each of the
+    DELTA's equally.  If one column of the independent variable
+    contained hourly temperature readings and the other hourly humidity
+    readings, then the user might want to weight each of the DELTA's in
+    the first column the same, and to weight each of the DELTA's in the
+    second column the same, but not necessarily want to weight the two
+    columns equally.  Of course, in other cases, the user might want to
+    weight each of the DELTA's differently.
+ 
+    ODRPACK structured arguments exploit this possible symmetry as
+    follows.  If each of the N by M elements of an array describing some
+    property of the independent variable are identically equal, then a
+    single value can be used to specify all N by M elements.  If the
+    values of such an array only vary between columns, then each column
+    of the array can be specified by a single value.  Thus, it is only
+    necessary to supply all N by M elements of the structured argument
+    array when the elements of one or more of the columns must be
+    individually specified.
+ 
+    The use of ODRPACK structured arguments is summarized as follows.
+ 
+    Structure of      Encoding of      Accessed      Resulting
+    property P to     structured       elements of   assignment of
+    be specified      argument A and   structured    property P
+    by structured     its leading      argument A
+    argument A        dimension LDA
+    ---------------   --------------   -----------   -----------------
+    Property P        A(1,1) < zero    A(1,1)        P(I,J) = -A(1,1),
+    constant          with                           I=1,...,N &
+    throughout        LDA = 1 or                     J=1,...,M
+    independent       LDA >= N
+    variable matrix
+ 
+    Property P        A(1,1) >= zero   A(1,J),       P(I,J) = A(1,J),
+    varies only       with             J=1,...,M     I=1,...,N &
+    between columns   LDA = 1                        J=1,...,M
+    of independent
+    variable matrix
+ 
+    Property P        A(1,1) >= zero   A(I,J),       P(I,J) = A(I,J),
+    varies between    with             I=1,...,N &   I=1,...,N &
+    and within        LDA >= N         J=1,...,M     J=1,...,M
+    columns of
+    independent
+    variable matrix
+ 
+    If the first element of the structured argument is negative, then
+    each of the N by M elements described by the argument is set to the
+    absolute value of the first element.  In this case, only the first
+    element of the structured argument is ever referenced, allowing the
+    user to set the N by M elements by inputting only a scalar.  (Note
+    that in this case, setting the first element to a negative value
+    does not necessarily invoke a default value.)  This feature thus
+    saves space and the need to declare the structured argument as an
+    array.
+ 
+    If the first element of the structured argument is positive, then
+    the way the structured argument will be used to designate the N by M
+    values specified by it will depend its leading dimension.  The
+    leading dimension of the structured argument can be either exactly
+    equal to one, or greater than or equal to N.  When the leading
+    dimension is exactly equal to one, the structured argument must be
+    passed to ODRPACK as a one by M row vector containing the M values
+    used to set each of the M columns.  When the leading dimension is
+    greater than or equal to N, the structured argument passed to
+    ODRPACK must contain an N by M array of values.
+ 
+ 
+ 
+1   V.  SUBROUTINE DECLARATION AND CALL STATEMENTS
+        ------------------------------------------
+ 
+    The declaration and call statements for ODRPACK's user-callable
+    routines, SODR, SODRC, DODR and DODRC, are given below.  SODR and
+    SODRC invoke the single precision version of the code and DODR and
+    DODRC invoke the double precision version.
+ 
+    SODR and DODR preset many arguments to their default values and
+    therefore have shorter call statements than SODRC and DODRC.  SODRC
+    and DODRC have expanded call statements that give the user greater
+    control in solving the orthogonal distance regression problem.
+ 
+    The information in this section is provided primarily for reference.
+    Users are directed to section VII for example programs using DODR
+    and DODRC.  These examples, which use Fortran PARAMETER statements
+    to dimension ODRPACK arrays, provide a recommended format for
+    creating an ODRPACK driver which will allow future changes to be
+    made easily.
+ 
+1   SODR:   Single precision subroutine to compute the weighted
+            orthogonal distance regression or ordinary linear or
+            nonlinear least squares solution.  Derivatives are either
+            supplied by the user or numerically approximated by ODRPACK.
+            Control values are preset, and a two-part report of the
+            results is automatically generated.
+ 
+                PROGRAM MAIN
+                .
+                .
+                .
+                EXTERNAL
+               +   FUN,JAC
+                INTEGER
+               +   N,M,NP,
+               +   LDX,
+               +   LDRHO,
+               +   JOB,
+               +   LWORK,IWORK(LIWORK),LIWORK,
+               +   INFO
+                REAL
+               +   X(LDX,M),
+               +   Y(N),
+               +   BETA(NP),
+               +   RHO(LDRHO,M),
+               +   WORK(LWORK)
+                .
+                .
+                .
+                CALL SODR
+               +   (FUN,JAC,
+               +   N,M,NP,
+               +   X,LDX,
+               +   Y,
+               +   BETA,
+               +   RHO,LDRHO,
+               +   JOB,
+               +   WORK,LWORK,IWORK,LIWORK,
+               +   INFO)
+                .
+                .
+                .
+                END
+ 
+1   SODRC:  Single precision subroutine to compute the weighted
+            orthogonal distance regression or ordinary linear or
+            nonlinear least squares solution.  Derivatives are either
+            supplied by the user or numerically approximated by ODRPACK.
+            Control values are supplied by the user, and a three-part
+            report of the results is optionally generated.
+ 
+                PROGRAM MAIN
+                .
+                .
+                .
+                EXTERNAL
+               +   FUN,JAC
+                INTEGER
+               +   N,M,NP,
+               +   LDX,IFIXX(LDIFX,M),LDIFX,LDSCLD,
+               +   IFIXB(NP),
+               +   LDRHO,
+               +   JOB,
+               +   MAXIT,
+               +   IPRINT,LUNRPT,LUNERR,
+               +   LWORK,IWORK(LIWORK),LIWORK,
+               +   INFO
+                REAL
+               +   X(LDX,M),SCLD(LDSCLD,M),
+               +   Y(N),
+               +   BETA(NP),SCLB(NP),
+               +   RHO(LDRHO,M),W(N),
+               +   SSTOL,PARTOL,
+               +   WORK(LWORK)
+                .
+                .
+                .
+                CALL SODRC
+               +   (FUN,JAC,
+               +   N,M,NP,
+               +   X,LDX,IFIXX,LDIFX,SCLD,LDSCLD,
+               +   Y,
+               +   BETA,IFIXB,SCLB,
+               +   RHO,LDRHO,W,
+               +   JOB,TAUFAC,
+               +   SSTOL,PARTOL,MAXIT,
+               +   IPRINT,LUNERR,LUNRPT,
+               +   WORK,LWORK,IWORK,LIWORK,
+               +   INFO)
+                .
+                .
+                .
+                END
+ 
+1   DODR:   Double precision subroutine to compute the weighted
+            orthogonal distance regression or ordinary linear or
+            nonlinear least squares solution.  Derivatives are either
+            supplied by the user or numerically approximated by ODRPACK.
+            Control values are preset, and a two-part report of the
+            results is automatically generated.
+ 
+                PROGRAM MAIN
+                .
+                .
+                .
+                EXTERNAL
+               +   FUN,JAC
+                INTEGER
+               +   N,M,NP,
+               +   LDX,
+               +   LDRHO,
+               +   JOB,
+               +   LWORK,IWORK(LIWORK),LIWORK,
+               +   INFO
+                DOUBLE PRECISION
+               +   X(LDX,M),
+               +   Y(N),
+               +   BETA(NP),
+               +   RHO(LDRHO,M),
+               +   WORK(LWORK)
+                .
+                .
+                .
+                CALL DODR
+               +   (FUN,JAC,
+               +   N,M,NP,
+               +   X,LDX,
+               +   Y,
+               +   BETA,
+               +   RHO,LDRHO,
+               +   JOB,
+               +   WORK,LWORK,IWORK,LIWORK,
+               +   INFO)
+                .
+                .
+                .
+                END
+ 
+1   DODRC:  Double precision subroutine to compute the weighted
+            orthogonal distance regression or ordinary linear or
+            nonlinear least squares solution.  Derivatives are either
+            supplied by the user or numerically approximated by ODRPACK.
+            Control values are supplied by the user, and a three-part
+            report of the results is optionally generated.
+ 
+                PROGRAM MAIN
+                .
+                .
+                .
+                EXTERNAL
+               +   FUN,JAC
+                INTEGER
+               +   N,M,NP,
+               +   LDX,IFIXX(LDIFX,M),LDIFX,LDSCLD,
+               +   IFIXB(NP),
+               +   LDRHO,
+               +   JOB,
+               +   MAXIT,
+               +   IPRINT,LUNRPT,LUNERR,
+               +   LWORK,IWORK(LIWORK),LIWORK,
+               +   INFO
+                DOUBLE PRECISION
+               +   X(LDX,M),SCLD(LDSCLD,M),
+               +   Y(N),
+               +   BETA(NP),SCLB(NP),
+               +   RHO(LDRHO,M),W(N),
+               +   SSTOL,PARTOL,
+               +   WORK(LWORK)
+                .
+                .
+                .
+                CALL DODRC
+               +   (FUN,JAC,
+               +   N,M,NP,
+               +   X,LDX,IFIXX,LDIFX,SCLD,LDSCLD,
+               +   Y,
+               +   BETA,IFIXB,SCLB,
+               +   RHO,LDRHO,W,
+               +   JOB,TAUFAC,
+               +   SSTOL,PARTOL,MAXIT,
+               +   IPRINT,LUNERR,LUNRPT,
+               +   WORK,LWORK,IWORK,LIWORK,
+               +   INFO)
+                .
+                .
+                .
+                END
+ 
+ 
+ 
+1   VI.   SUBROUTINE ARGUMENT DESCRIPTIONS
+          --------------------------------
+ 
+    VI.A  Synopsis
+ 
+    The arguments of the ODRPACK user-callable subroutines are logically
+    grouped as shown below.  Arguments shown in parenthesis (...) are
+    not included in the SODR and DODR call statements; SODR and DODR
+    automatically preset these variables to the default values given in
+    section VI.B.  All other arguments are common to all ODRPACK user-
+    callable subroutines.
+ 
+    Argument
+      Number   Arguments                            Group Description
+    --------   ---------                            -----------------
+      1 to 2   FUN,JAC                              Names of user-
+                                                    supplied subroutines
+                                                    for function and
+                                                    Jacobian matrix
+                                                    computation
+ 
+      3 to 5   N,M,NP                               Problem size
+                                                    specification
+ 
+     6 to 11   X,LDX,(IFIXX,LDIFX,SCLD,LDSCLD)      Independent variable
+                                                    information
+ 
+          12   Y                                    Dependent variable
+ 
+    13 to 15   BETA,(IFIXB,SCLB)                    Function parameter
+                                                    information
+ 
+    16 to 18   RHO,LDRHO,(W)                        Weights
+ 
+    19 to 20   JOB,(TAUFAC)                         Computation and
+                                                    initialization
+                                                    control
+ 
+    21 to 23   (SSTOL,PARTOL,MAXIT)                 Stopping criteria
+ 
+    24 to 26   (IPRINT,LUNERR,LUNRPT)               Print control
+ 
+    27 to 30   WORK,LWORK,IWORK,LIWORK              Work vectors and
+                                                    returned results
+ 
+          31   INFO                                 Stopping condition
+ 
+ 
+ 
+1   VI.B  Detailed Descriptions of
+          ODRPACK User-Callable Subroutine Arguments
+ 
+    The arguments of ODRPACK's user-callable subroutines are described
+    below in order of their occurance in the call statements.
+    Appropriate declaration statements for each argument are shown in
+    brackets [...] following the argument name; the character string
+    <real> denotes REAL when using single precision subroutines SODR and
+    SODRC, and denotes DOUBLE PRECISION when using double precision
+    subroutines DODR and DODRC.  Each argument is numbered as shown in
+    section VI.A, allowing the user to easily find the definition of a
+    specific argument.  In addition, three common characteristics of
+    ODRPACK subroutine arguments are flagged in the left margin by the
+    argument number.  The flags are:
+ 
+    C  which indicates the argument is only included in the call
+       statements for SODRC and DODRC (SODR and DODR will preset these
+       variables to their default values);
+ 
+    D  which indicates the argument has a default value which can be
+       invoked by setting the argument to any negative value; and
+ 
+    S  which indicates the argument exploits possible symmetry in the
+       properties of the independent variables as described in
+       section IV.
+ 
+ 
+                                    NOTE
+ 
+            Substitute REAL for <real> when using SODR and SODRC.
+ 
+      Substitute DOUBLE PRECISION for <real> when using DODR and DODRC.
+ 
+                                    ****
+ 
+ 
+ 
+1       1. FUN [EXTERNAL FUN]
+ 
+           The name of the user-supplied subroutine that computes the
+           predicted values, F, of the dependent variable given the
+           current values of the independent variable, XPLUSD=X+DELTA,
+           and the function parameters, BETA.  The subroutine argument
+           list and declaration statements must be exactly as shown
+           below.
+ 
+                 SUBROUTINE FUN(N,NP,M,BETA,XPLUSD,LDXPD,F,IFLAG)
+           C
+           C  INPUT ARGUMENTS
+           C  (WHICH MUST NOT BE CHANGED BY THIS ROUTINE)
+           C
+                 INTEGER N,NP,M,LDXPD
+                 <real> BETA(NP),XPLUSD(LDXPD,M)
+           C
+           C  OUTPUT ARGUMENTS
+           C
+                 <real> F(N)
+                 INTEGER IFLAG
+ 
+                 < computations for F(I)=FN(XPLUSD;BETA), I=1,...,N >
+ 
+                 RETURN
+                 END
+ 
+           where
+ 
+           INTEGER N
+              is the number of observations, i.e., the number of
+              points (X,Y).
+           INTEGER NP
+              is the number of function parameters, i.e., the number
+              of BETA's.
+           INTEGER M
+              is the number of columns of data in the independent
+              variable matrix XPLUSD.
+           <real> BETA(NP)
+              is the singly subscripted array that contains the
+              current values of the NP function parameters.
+           <real> XPLUSD(LDXPD,M)
+              is the doubly subscripted array that contains the
+              current value of the N by M matrix of the
+              independent variables, XPLUSD = X + DELTA.
+           INTEGER LDXPD
+              is the leading dimension of array XPLUSD.
+           <real> F(N)
+              is the singly subscripted array that contains
+              the N predicted values of the function given the
+              current values of the function parameters and the
+              independent variables, F = FN(XPLUSD;BETA).
+           INTEGER IFLAG
+              is a control value which can be used to stop the
+              computations if the user so desires.
+              If IFLAG < 0 then
+                 upon return from the subroutine INFO will be set
+                 to IFLAG (see argument INFO) and the computations
+                 will be stopped
+              else
+                 the computations will continue.
+ 
+ 
+         2. JAC [EXTERNAL JAC]
+ 
+           The name of the user-supplied subroutine that computes the
+           Jacobian matrices, i.e., the matrices of first partial
+           derivatives of FN with respect to each BETA and each X.  This
+           subroutine must be supplied only when digit C of JOB is
+           nonzero (see subroutine argument JOB) although the external
+           statement must always be used; when digit C of JOB is zero
+           the necessary Jacobian matrices will be computed using
+           finite differences.
+ 
+           Note that the logical argument ISODR, which is passed to
+           subroutine JAC by ODRPACK, can be used to avoid computing the
+           Jacobian matrix with repsect to X.  ISODR will be "false"
+           when the fit is by the method of ordinary least squares and
+           the derivative with respect to X is not needed.
+ 
+           The subroutine argument list and dimension statements must be
+           exactly as shown below.
+ 
+1                SUBROUTINE JAC(N,NP,M,BETA,XPLUSD,LDXPD,
+                +               FJACB,LDFJB,ISODR,FJACX,LDFJX,IFLAG)
+           C
+           C  INPUT ARGUMENTS
+           C  (WHICH MUST NOT BE CHANGED BY THIS ROUTINE)
+           C
+                 INTEGER N,NP,M,LDXPD
+                 <real> BETA(NP),XPLUSD(LDXPD,M)
+                 LOGICAL ISODR
+           C
+           C  OUTPUT ARGUMENTS
+           C
+                 <real> FJACB(LDFJB,NP),FJACX(LDFJX,M)
+                 INTEGER IFLAG
+ 
+                 < computations for FJACB(I,K)=first partial derivative
+                                               of FN with respect to
+                                               BETA(K), K=1,...,NP,
+                                               at each observation
+                                               I=1,...,N >
+ 
+                 IF (ISODR) THEN
+ 
+                 < computations for FJACX(I,J)=first partial derivative
+                                               of FN with respect to
+                                               X(I,J), J=1,...,M
+                                               at each observation
+                                               I=1,...,N >
+ 
+                 END IF
+ 
+                 RETURN
+                 END
+ 
+           where
+ 
+           INTEGER N
+              is the number of observations, i.e., the number of
+              points (X,Y).
+           INTEGER NP
+              is the number of function parameters, i.e., the number
+              of BETA's.
+           INTEGER M
+              is the number of columns of data in the independent
+              variable matrix XPLUSD.
+           <real> BETA(NP)
+              is the singly subscripted array that contains the
+              current values of the NP function parameters.
+           <real> XPLUSD(LDXPD,M)
+              is the doubly subscripted array that contains the
+              current value of the N by M matrix of the
+              independent variables, XPLUSD = X + DELTA.
+           INTEGER LDXPD
+              is the leading dimension of array XPLUSD.
+           <real> FJACB(LDFJB,NP)
+              is the doubly subscripted array that contains
+              the N by NP matrix of derivatives with respect to
+              BETA at the current values of the function
+              parameters and the independent variables.
+           INTEGER LDFJB
+              is the leading dimension of array FJACB.
+           LOGICAL ISODR
+              is a control value which can be used to inhibit the
+              computation of the derivatives with respect to X
+              when the solution is being computed by ordinary
+              least squares and the derivatives with respect to
+              X are not needed.
+              If ISODR is true then
+                 the solution is being computed by ODR and the
+                 derivatives with respect to X must be computed
+              else
+                 the solution is being computed by OLS and the
+                 derivatives with respect to X are not needed.
+           <real> FJACX(LDFJX,M)
+              is the doubly subscripted array that contains
+              the N by M matrix of derivatives with respect to X
+              at the current values of the function parameters
+              and the independent variables, needed only when
+              ISODR = true.
+           INTEGER LDFJX
+              is the leading dimension of array FJACX.
+           INTEGER IFLAG
+              is a control value which can be used to stop the
+              computations if the user so desires.
+              If IFLAG < 0 then
+                 upon return from the subroutine INFO will be set
+                 to IFLAG (see argument INFO) and the computations
+                 will be stopped
+              else
+                 the computations will continue.
+ 
+ 
+        3. N [INTEGER N]
+ 
+           The number of observations, i.e., the number of points (X,Y).
+           (See subroutine arguments X and Y.)
+ 
+ 
+        4. M [INTEGER M]
+ 
+           The number of columns of data in the independent variable
+           matrix X (see subroutine argument X).
+ 
+ 
+1       5. NP [INTEGER NP]
+ 
+           The number of function parameters, i.e., the number of
+           BETA's (see subroutine argument BETA).
+ 
+ 
+        6. X [<real> X(LDX,M)]
+ 
+           The doubly subscripted array that contains the observed
+           values of the N by M matrix of independent variables.
+ 
+ 
+        7. LDX [INTEGER LDX]
+ 
+           The leading dimension of array X.
+ 
+           LDX must equal or exceed N; values of LDX less than N will
+           be treated as an input error.
+ 
+ 
+    CDS 8. IFIXX [INTEGER IFIXX(LDIFX,M)]
+ 
+           The doubly subscripted array that contains the indicator
+           values used to designate whether element X(I,J), I=1,...,N &
+           J=1,...,M, of the independent variable matrix is to treated
+           as without error, i.e., DELTA(I,J) is to be fixed at zero,
+           or whether the error DELTA(I,J) in that observation of the
+           independent variable is to be estimated.
+ 
+           By default, all of the independent variables are treated as
+           "unfixed", i.e.  the errors DELTA(I,J) are estimated for all
+           I=1,...,N & J=1,...,M.  The default value is invoked when
+           IFIXX(1,1) is set to any negative value.  Other options for
+           specifying IFIXX are described below.
+ 
+           If IFIXX(1,1) >= 0 then
+ 
+              the way IFIXX is used depends on the value of the leading
+              dimension of IFIXX, i.e., on LDIFX.
+ 
+              If LDIFX = 1 then
+ 
+                 IFIXX must contain a 1 by M matrix of values, where
+                 for J=1,...,M
+ 
+                    if IFIXX(1,J) = 0 then
+ 
+                       X(I,J), I=1,...,N, is treated as exact and
+                       DELTA(I,J), I=1,...,N, is fixed at zero
+ 
+                    else
+ 
+                       X(I,J), I=1,...,N, is treated as approximate and
+                       DELTA(I,J), I=1,...,N, is estimated.
+ 
+              If LDIFX >= N then
+ 
+                 IFIXX must contain an N by M matrix of values, where
+                 for I=1,...,N & J=1,...,M
+ 
+                    if IFIXX(I,J) = 0 then
+ 
+                       X(I,J) is treated as exact and DELTA(I,J) is
+                       fixed at zero
+ 
+                    else
+ 
+                       X(I,J) is treated as approximate and DELTA(I,J)
+                       is estimated.
+ 
+           If IFIXX(1,1) < 0 then
+ 
+              the default option is invoked, i.e., each observation of
+              the independent variable, X(I,J), is treated as being
+              measured with error DELTA(I,J) which is estimated as
+              described above in section II.  In this case, only the
+              first element of IFIXX is ever referenced and IFIXX can
+              be a scalar.
+ 
+ 
+      C 9. LDIFX [INTEGER LDIFX]
+ 
+           The leading dimension of array IFIXX.
+ 
+           LDIFX must exactly equal one or must equal or exceed N;
+           values of LDIFX less than one or between two and N-1,
+           inclusive, will be treated as an input error.
+ 
+           See subroutine argument IFIXX for further details.
+ 
+ 
+   CDS 10. SCLD [<real> SCLD(LDSCLD,M)]
+ 
+           The doubly subscripted array that contains the scale values,
+           i.e., the expected magnitudes or typical sizes, for
+           DELTA(I,J), I=1,...,N & J=1,...,M.  The scale values
+           specified for each DELTA must be greater than zero; values
+           less than zero will be treated as an input error.
+ 
+           By default, the scale values will be set using the algorithm
+           given in section VIII.B.  The default values are invoked when
+           SCLD(1,1) is set to any negative value.  Other options for
+           specifying SCLD are described below.
+ 
+           If SCLD(1,1) > 0 then
+ 
+              each value of SCLD must be greater than zero and the way
+              SCLD is used depends on the value of the leading dimension
+              of SCLD, i.e., on LDSCLD.
+ 
+              If LDSCLD = 1 then
+ 
+                 SCLD must contain a 1 by M matrix of values, and the
+                 scale of DELTA(I,J), I=1,...,N, is set to SCLD(1,J) for
+                 J=1,...,M.
+ 
+              If LDSCLD >= N then
+ 
+                 SCLD must contain an N by M matrix of values, and the
+                 scale of DELTA(I,J) is set to SCLD(I,J) for I=1,...,N &
+                 J=1,...,M.
+ 
+           If SCLD(1,1) < 0 then
+ 
+              the default option is invoked and each DELTA(I,J) is
+              scaled as described in section VIII.B.  In this case, only
+              the first element of SCLD is ever referenced and SCLD can
+              be a scalar.
+ 
+ 
+      C 9. LDSCLD [INTEGER LDSCLD]
+ 
+           The leading dimension of array SCLD.
+ 
+           LDSCLD must exactly equal one or must equal or exceed N;
+           values of LDSCLD less than one or between two and N-1,
+           inclusive, will be treated as an input error.
+ 
+           See subroutine argument SCLD for further details.
+ 
+ 
+       12. Y [<real> Y(N)]
+ 
+           The singly subscripted array that contains the N observed
+           values of the dependent variable.
+ 
+ 
+       13. BETA [<real> BETA(NP)]
+ 
+           The singly subscripted array that contains the (current)
+           values of the NP function parameters.
+ 
+           On input:   BETA must contain initial approximations for the
+                       function parameters.  Initial approximations
+                       should be chosen with care since poor initial
+                       approximations can significantly increase the
+                       number of iterations required to find a solution
+                       and possibly prevent the solution from being
+                       found at all.
+ 
+                       Users who do not provide scale information are
+                       strongly encouraged not to use zero as an initial
+                       approximation since a zero value can result in
+                       incorrect scale value selection by the scaling
+                       algorithm (see section VIII).  Setting the
+                       initial approximation to the largest magnitude
+                       which, for the user's problem, is effectively
+                       zero rather than the actual value zero will
+                       eliminate scaling problems, possibly producing
+                       faster convergence.  For example, if BETA(1)
+                       represents change in cost in millions of dollars,
+                       then the value 10.0 might be considered
+                       "effectively zero", while if BETA(1) represents
+                       the change in cost in tens of dollars, then the
+                       value 0.01 might be considered "effectively
+                       zero."
+ 
+           On return:  BETA contains the "best" estimate of the solution
+                       at the time the computations stopped.
+ 
+ 
+    CD 14. IFIXB [INTEGER IFIXB(NP)]
+ 
+           The singly subscripted array that contains the indicator
+           values used to designate whether the corresponding value in
+           BETA is to be treated as a fixed constant or is to be
+           estimated.
+ 
+           By default, all of the function parameters, BETA, are
+           treated as "unfixed", i.e.  each of the BETA(K), K=1,...,NP,
+           is estimated.  The default value is invoked when IFIXB(1) is
+           set to any negative value.  Other options for specifying
+           IFIXB are described below.
+ 
+           If IFIXB(1) >= 0 then
+ 
+              IFIXB must contain a vector of NP values, where
+              for K=1,...,NP
+ 
+                 if IFIXB(K) = 0 then
+ 
+                    BETA(K) will be held fixed at its input value
+ 
+                 else
+ 
+                    BETA(K) will be estimated as described above.
+ 
+           If IFIXB(1) < 0 then
+ 
+              the default option is invoked, i.e., all BETA(K),
+              K=1,...,NP, will be estimated as described above in
+              section II.  In this case, only the first element of
+              IFIXB is ever referenced and IFIXB can be a scalar.
+ 
+ 
+    CD 15. SCLB [<real> SCLB(NP)]
+ 
+           The singly subscripted array that contains the scale values,
+           i.e., the expected magnitudes or typical sizes, for BETA(K),
+           K=1,...,NP.  The scale values specified for each BETA must
+           be greater than zero; values less than zero will be treated
+           as an input error.
+ 
+           By default, the scale values will be set using the algorithm
+           given in section VIII.A.  The default values are invoked when
+           SCLB(1) is set to any negative value.  If SCLB(1) >= 0 then
+           SCLB must contain a vector of NP values each greater than
+           zero and the scale of BETA(K) is set to SCLB(K) for
+           K=1,...,NP.
+ 
+ 
+     S 16. RHO [<real> RHO(LDRHO,M)]
+ 
+           The doubly subscripted array that contains the values that
+           specify the DELTA weights, D, which indicate how the
+           DELTA's and EPSILON's of the observation (X,Y) are to be
+           weighted in the weighted orthogonal distance, R (see eq.2).
+           For example, RHO(I,J) might be the the ratio of the precision
+           of the X(I,J) observation to that of the Y(I) observation.
+ 
+           All elements of RHO must be nonzero.
+ 
+           If RHO(1,1) < zero then
+ 
+              only the first element of RHO is ever referenced (in this
+              case, RHO can be a scalar) and
+ 
+                 D(I,J) = ABS(RHO(1,1)) for I=1,...,N & J=1,...,M,
+ 
+              i.e., D(I,J) is constant and every DELTA is weighted
+              equally with respect to each of the EPSILON's.  When
+              ABS(RHO(1,1)) = 1, the DELTA's and EPSILON's are both
+              weighted equally, possibly indicating the X and Y
+              observations are equally precise.
+ 
+           If RHO(1,1) > zero then
+ 
+              then all elements of RHO must be greater than zero and
+              the way RHO is used to specify D depends on the value of
+              the leading dimension of RHO, i.e., on LDRHO.
+ 
+              If LDRHO = 1 then
+ 
+                 RHO must contain a 1 by M matrix of values, where
+                 for J=1,...,M
+ 
+                    D(I,J) = RHO(1,J), I=1,...,N,
+ 
+                 i.e., each column of D is constant.  In this case,
+                 each column of DELTA is weighted equally with respect
+                 to EPSILON, possibly reflecting that each observation
+                 within a given column of X is equally precise, but that
+                 the precision between columns varies.
+ 
+              If LDRHO >= N then
+ 
+                 RHO must contain an N by M matrix of values, where
+ 
+                    D(I,J) = RHO(I,J) for I=1,...,N & J=1,...,M,
+ 
+                 i.e., each element of D is individually specified,
+                 possibly indicating that the individual observations
+                 of X vary significantly in precision both from each
+                 other and from the corresponding observations of Y.
+ 
+ 
+       17. LDRHO [INTEGER LDRHO]
+ 
+           The leading dimension of array RHO.
+ 
+           LDRHO must exactly equal one or must equal or exceed N;
+           values of LDRHO less than one or between two and N-1,
+           inclusive, will be treated as an input error.
+ 
+           See subroutine argument RHO for further details.
+ 
+ 
+    CD 18. W [<real> W(N)]
+ 
+           The singly subscripted array that contains the values that
+           specify the observational error weights, which can be used
+           to compensate for unequal precision in the observational
+           errors (see eq.3).
+ 
+           By default, the observational errors are unweighted, i.e.,
+           all of the weights are assumed to be identically equal to
+           one.  The default value is invoked when W(1) is set to any
+           negative value.  Other options for specifying W are
+           described below.
+ 
+           If W(1) >= zero then
+ 
+              W must contain a vector of N values, where all elements
+              of W must be greater than or equal to zero, and W(I),
+              I=1,...,N, specifies the weight for the observational
+              error R(I).  Zero weights eliminate the corresponding
+              observation from the analysis.
+ 
+           If W(1) < zero then
+ 
+              the default option is invoked, i.e., the observational
+              errors are unweighted.  In this case, only the first
+              element of W is ever referenced and W can be a scalar.
+ 
+ 
+     D 19. JOB [INTEGER JOB]
+ 
+           The value used to specify problem initialization and
+           computational methods.  The user has the option of specifying
+           four different aspects of the problem specification:
+              - whether the fit is to be by orthogonal distance
+                regression (ODR) or by ordinary least squares (OLS);
+              - whether the user has supplied subroutine JAC to compute
+                the necessary Jacobian matrices and whether the user-
+                supplied Jacobian matrices should be checked;
+              - whether the DELTA's have been initialized by the user;
+                and
+              - whether the fit is a restart.
+ 
+           By default:
+              - the solution will be found by ODR;
+              - the derivatives will be computed by finite differences;
+              - the DELTA's will be initialized to zero; and
+              - the fit will not be a restart.
+           The default value is invoked by setting JOB to any value less
+           than zero.
+ 
+           Setting JOB = 1 will have the same consequence as JOB = -1
+           except that the solution will be found by OLS.
+ 
+           If JOB > 0 then
+ 
+              JOB is assumed to be a 4-digit INTEGER with decimal
+              expansion ABCD, where each digit controls a different
+              aspect of the problem specification.
+ 
+              Digit A indicates whether the fit is a restart.
+ 
+                      A = 0 indicates fit is not a restart.
+ 
+                      A > 0 indicates fit is a restart - computations
+                            will continue from where they left off for
+                            another 10 iterations.  If the fit is a
+                            restart then the elements of vector WORK
+                            must be exactly as returned from a previous
+                            call to ODRPACK.
+ 
+              Digit B indicates whether the DELTA's have been
+                      initialized by the user.
+ 
+                      B = 0 indicates DELTA's have not been initialized
+                            by user - DELTA's will be initialized to
+                            zero.
+ 
+                      B > 0 indicates DELTA's have been initialized by
+                            user (see subroutine argument WORK).
+ 
+              Digit C indicates whether the user has supplied subroutine
+                      JAC to compute the necessary Jacobian matrices and
+                      whether the user-supplied Jacobian matrices should
+                      be checked.
+ 
+                      C = 0 indicates that the Jacobian matrices are to
+                            be computed by finite differences and that
+                            subroutine JAC will not be used.
+ 
+                      C = 1 indicates that the user has supplied
+                            subroutine JAC to compute the necessary
+                            Jacobian matrices (see subroutine argument
+                            JAC), and that the results of the user-
+                            supplied routine will be checked for
+                            correctness.
+ 
+                      C > 1 indicates that the user has supplied
+                            subroutine JAC to compute the necessary
+                            Jacobian matrices (see subroutine argument
+                            JAC), and that the results of the user-
+                            supplied routine will not be checked for
+                            correctness.
+ 
+              Digit D indicates whether the fit is to be by orthogonal
+                      distance regression (ODR) or by ordinary least
+                      squares (OLS).
+ 
+                      D = 0 indicates an ODR fit.
+ 
+                      D > 0 indicates an OLS fit.
+ 
+           If JOB < 0 then
+ 
+              the "default" value will be used.
+ 
+ 
+    CD 20. TAUFAC [<real> TAUFAC]
+ 
+           The value used to specify the initializing factor for the
+           trust region radius.  The trust region is the region in
+           which the local approximation to the user's function is
+           considered to be reliable.  The diameter of this region is
+           adaptively chosen at each iteration based on information
+           from the previous iteration.  At the first iteration, the
+           initial diameter is set to the initializing factor times the
+           length of the full Gauss-Newton step at the initial
+           estimates.
+ 
+           By default, the initialization factor for the trust region
+           radius is one, thus allowing the full Gauss-Newton step to
+           be taken at the first iteration if it does, in fact, reduce
+           the weighted sum-of-squares.  The default value is invoked
+           when TAUFAC is set to any value less than or equal to zero.
+ 
+           A value of TAUFAC greater than zero but less than one may be
+           appropriate if, at the first iteration, the computed results
+           overflow, or the function parameters, BETA, leave the region
+           of interest in parameter space.
+ 
+ 
+    CD 21. SSTOL [<real> SSTOL]
+ 
+           The value used to specify the stopping tolerance for the
+           convergence test based on relative change in the sum of the
+           squared weighted observational errors (eq.3).
+ 
+           The "default" sum-of-squares convergence stopping tolerance
+           is the square root of machine precision, where machine
+           precision is defined as the smallest value e such that 1+e>1
+           on the computer being used.  The default value is invoked
+           when the user-supplied value for SSTOL is outside the
+           interval [e,1).
+ 
+ 
+    CD 22. PARTOL [<real> PARTOL]
+ 
+           The value used to specify the stopping tolerance for the
+           convergence test based on relative change in the estimated
+           parameters BETA and DELTA.
+ 
+           By default, the stopping tolerance for parameter convergence
+           is (machine precision)**(2/3), where machine precision is
+           defined as the smallest value e such that 1+e>1 on the
+           computer being used.  The default value is invoked when the
+           user-supplied value for PARTOL is outside the interval [e,1).
+ 
+ 
+    CD 23. MAXIT [INTEGER MAXIT]
+ 
+           The value used to specify the maximum number of iterations
+           allowed.
+ 
+           By default, the maximum number of iterations is 50.  The
+           default value is invoked when the user-supplied value for
+           MAXIT is less than or equal to zero.
+ 
+ 
+    CD 24. IPRINT [INTEGER IPRINT]
+ 
+           The value used to control the generated computation reports,
+           which are divided into three sections:
+              - the initial summary
+              - the iteration summary and
+              - the final summary.
+           The choice of content for each of these sections is described
+           below.
+ 
+           By default, the computation reports include
+              - a "long" initial summary
+              - no iteration summary and
+              - a "short" final summary
+           The default value is invoked when the user-supplied value for
+           IPRINT is less than or equal to zero.
+ 
+           If IPRINT > 0 then
+ 
+              IPRINT is assumed to be a 4-digit INTEGER with decimal
+              expansion ABCD, where each digit controls a different
+              part of the generated reports.
+ 
+              Digit A indicates whether the initial summary will be
+                      generated.
+ 
+                      A = 0 indicates the initial summary will not be
+                            generated.
+ 
+                      A = 1 indicates a "short" initial summary will be
+                            generated which will include
+                            - the values N, M and NP, which indicate the
+                              problem size, and the number of BETA's
+                              actually being estimated;
+                            - the control values JOB, TAUFAC, SSTOL,
+                              PARTOL, and MAXIT; and
+                            - the sum of the squared weighted observa-
+                              tional errors, the sum of the squared
+                              weighted DELTA's and the sum of the
+                              squared weighted EPSILON's at the initial
+                              values of BETA and DELTA.
+ 
+                      A > 1 indicates a "long" initial summary will be
+                            generated, which includes all the
+                            information found in the "short" initial
+                            summary and, in addition, includes
+                            - a summary of the independent variable
+                              data, organized by column;
+                            - the first and last observation of the
+                              dependent variable and the first and last
+                              observational error weight; and
+                            - for each function parameter BETA, the
+                              initial value, whether or not the
+                              parameter is treated as fixed or not,
+                              and the scale value.
+ 
+              Digit B indicates whether the iteration summary will be
+                      generated.
+ 
+                      B = 0 indicates no iteration summary will be
+                            generated.
+ 
+                      B = 1 indicates a "short" 1-line, 68-column
+                            iteration summary will be generated every
+                            Cth iteration beginning with iteration
+                            one.  This summary will list
+                            - the number of function evaluations;
+                            - the sum of the squared weighted observa-
+                              tional errors at the current point;
+                            - the actual relative reduction in the
+                              sum of the squared weighted observa-
+                              tional errors due to the most recently
+                              tried step (used to check for sum-of-
+                              squares convergence);
+                            - the predicted relative reduction in the
+                              sum of the squared weighted observa-
+                              tional errors due to the most recently
+                              tried step (used to check for sum-of-
+                              squares convergence);
+                            - the ratio of the trust region radius to
+                              the norm of the BETA's and DELTA's, which
+                              is an upper bound on the relative change
+                              in the estimated values possible at the
+                              next step (used to check for parameter
+                              convergence); and
+                            - whether the step was a Gauss-Newton step.
+ 
+                      B > 1 indicates an [NP/3]-line, 125-column
+                            iteration summary will be generated every
+                            Cth iteration beginning with iteration 1.
+                            This summary lists all of the information
+                            found in the "short" iteration summary and,
+                            in addition, includes
+                            - current values of the BETA's.  (Note that,
+                              at the last iteration, the values listed
+                              for BETA will be those that produced the
+                              actual and predicted relative reductions
+                              shown only if the most recently tried step
+                              did in fact make the fit better.  If not,
+                              then the values of BETA are those which
+                              produced the best fit.
+ 
+              Digit C indicates the frequency of the iteration summary.
+ 
+                      C = 0 indicates no iteration summary will be
+                            generated, even if the value of digit B is
+                            nonzero.
+ 
+                      C > 0 indicates an iteration summary will be
+                            generated every Cth iteration beginning
+                            with iteration one.
+ 
+              Digit D indicates whether the final summary will be
+                      generated.
+ 
+                      D = 0 indicates the final summary will not be
+                            generated.
+ 
+                      D = 1 indicates a "short" final summary will be
+                            generated, which includes
+                            - the stopping condition;
+                            - the number of iterations and function
+                              evaluations at the time the computations
+                              stopped;
+                            - the condition number of the problem at the
+                              time the computations stopped;
+                            - the rank deficiency of the model at the
+                              time the computations stopped;
+                            - the sum of the squared weighted observa-
+                              tional errors, the sum of the squared
+                              weighted DELTA's and the sum of the
+                              squared weighted EPSILON's at the final
+                              values of BETA and DELTA; and
+                            - the final values of BETA, the first 32
+                              values of EPSILON, and the first 32 values
+                              of each column of DELTA.
+ 
+                      D > 1 indicates a "long" final summary will be
+                            generated, which includes the same
+                            information as the "short" final summary
+                            except that
+                            - the values of all of the EPSILON's and
+                              DELTA's are listed.
+ 
+           If IPRINT < 0 then
+ 
+              the default reports will be generated.
+ 
+ 
+    CD 25. LUNERR [INTEGER LUNERR]
+ 
+           The value used to specify the logical unit number of the
+           file to be used for error messages.
+ 
+           By default, the error messages are generated on unit 6.
+           The default value is invoked when the user-supplied value for
+           LUNERR is less than or equal to zero.
+ 
+           If LUNERR > 0  the error messages will be generated on
+                          unit LUNERR.
+ 
+           If LUNERR = 0  no error messages will be generated.
+ 
+           If LUNERR < 0  the "default" unit number will be used.
+ 
+ 
+    CD 26. LUNRPT [INTEGER LUNRPT]
+ 
+           The value used to specify the logical unit number of the
+           file to be used for computation reports.
+ 
+           By default, the computation reports are generated on unit 6.
+           The default value is invoked when the user-supplied value for
+           LUNRPT is less than or equal to zero.
+ 
+           If LUNRPT > 0  the computation reports will be generated on
+                          unit LUNRPT.
+ 
+           If LUNRPT = 0  no computation reports will be generated.
+ 
+           If LUNRPT < 0  the "default" unit number will be used.
+ 
+ 
+       27. WORK [<real> WORK(LWORK)]
+ 
+           The singly subscripted array used for <real> work space and
+           the array in which various computed values are returned.  The
+           smallest acceptable dimension of WORK is given below in the
+           definition of subroutine argument LWORK.
+ 
+           The work area does not need to be initialized by the user
+           unless the user wishes to initialize the DELTA's.
+ 
+           The first N*M locations of WORK contain the values for DELTA.
+           An easy way to access these values, either for initialization
+           (as indicated by digit B of subroutine argument JOB) or for
+           analysis upon return from ODRPACK, is to include in the
+           user's program the declaration statements
+ 
+              <real> DELTA(<N>,<M>)
+              EQUIVALENCE (WORK(1), DELTA(1,1))
+ 
+           where <N> indicates the first dimension of the array DELTA
+                     must be exactly the number of observations, N; and
+                 <M> indicates the second dimension of the array DELTA
+                     must be exactly the number of columns, M, of the
+                     independent variable, X.
+ 
+           This allows the error associated with observation X(I,J) of
+           the independent variable matrix to be accessed as DELTA(I,J)
+           rather than as WORK(I+(J-1)*N).  The input values of array
+           DELTA will be over written by the final estimates of the
+           errors in the independent variable matrix when this
+           equivalencing method is used.
+ 
+           Other values returned in array WORK can be accessed as
+           described below in section IX.
+ 
+           N.B., if the fit is a restart, i.e., if digit A of subroutine
+           argument JOB is nonzero, then the elements of vector WORK
+           must be exactly as returned from a previous call to ODRPACK.
+ 
+ 
+       28. LWORK [INTEGER LWORK]
+ 
+           The length of array WORK.  LWORK must equal or exceed
+ 
+           9 + 8*N + 10*N*M + 2*N*NP + 8*NP .
+ 
+           Values of LWORK less than this value will be treated as an
+           input error.
+ 
+ 
+       29. IWORK [INTEGER IWORK(LIWORK)]
+ 
+           The singly subscripted array used for INTEGER work space and
+           the array in which various computed values are returned.  The
+           smallest acceptable dimension of IWORK is given below in the
+           definition of subroutine argument LIWORK.
+ 
+           Certain values returned in array IWORK are of general
+           interest and can be accessed as described below in section
+           IX.
+ 
+ 
+       30. LIWORK [INTEGER LIWORK]
+ 
+           The length of array IWORK.  LIWORK must equal or exceed
+ 
+           2*NP + M + 10 .
+ 
+           Values of LIWORK less than this value will be treated as an
+           input error.
+ 
+ 
+       31. INFO [INTEGER INFO]
+ 
+           The argument used to indicate why the computations stopped.
+ 
+           If INFO < 0 then
+ 
+              the computations were stopped by the user in user-supplied
+              subroutine FUN or JAC.
+ 
+           If 1 <= INFO <= 3 then
+ 
+              the program converged satisfactorily.  The convergence
+              condition met is indicated by the value of INFO as
+              follows.
+              INFO = 1 :  sum-of-squares convergence
+              INFO = 2 :  parameter convergence
+              INFO = 3 :  sum-of-squares convergence and
+                          parameter convergence
+ 
+           If INFO = 4 then
+ 
+              the program reached the maximun number of iterations
+              allowed without meeting one of the convergence
+              conditions.
+ 
+           If INFO > 4 and INFO < 10000 then
+ 
+              the results from ODRPACK are questionable.  In this case,
+              INFO is a 3-digit INTEGER with decimal expansion ABC,
+              where digit C indicates the actual stopping condition,
+              and digits A and B are used to indicate what questionable
+              conditions were found.
+ 
+              Digit A = 1 indicates
+ 
+                 the ODRPACK Jacobian matrix checking procedure
+                 determined that the correctness of the user-supplied
+                 Jacobian matrices is questionable.  Errors in user-
+                 supplied subroutine JAC could be adversely affecting
+                 the least squares solution.  Users are encouraged to
+                 examine subroutine JAC and the appropriate ODRPACK
+                 generated reports to insure that there is not an error
+                 in the user-supplied derivatives.
+ 
+              Digit B = 1 indicates
+ 
+                 the results of user-supplied subroutines FUN and/or JAC
+                 are unaffected by changes in the unfixed function
+                 parameters (BETA), indicating a probable error in these
+                 user-supplied subroutines.
+ 
+              Digit C > 0 indicates
+ 
+                 the actual stopping condition, where
+                 if C=1 the program met the sum-of-squares convergence
+                        criteria
+                 if C=2 the program met the parameter convergence
+                        criteria
+                 if C=3 the program met the sum-of-squares convergence
+                        criteria and the parameter convergence criteria
+                 if C=4 the program reached the maximun number of
+                        iterations allowed without meeting one of the
+                        convergence conditions.
+ 
+           If INFO > 9999 then
+ 
+              fatal errors were detected in the user's input.  In this
+              case, INFO is a 5-digit INTEGER with decimal expansion
+              ABCDE, where each digit indicates a different error
+              condition.
+ 
+              Digit A = 1 indicates an error was detected in the
+                          arguments used to specify the problem size.
+ 
+                 When digit A = 1 then
+ 
+                    digit B = 1 indicates N < 1
+ 
+                    digit C = 1 indicates M < 1
+ 
+                    digit D = 1 indicates NP < 1 or NP > N
+ 
+              Digit A = 2 indicates an error was detected in the
+                          arguments used to specify array dimensions.
+ 
+                 When digit A = 2 then
+ 
+                    digit B = 1 indicates LDX < N
+ 
+                    digit C > 0 indicates LDIFX, LDSCLD and/or LDRHO are
+                                unacceptable (see definitions of LDIFX,
+                                LDSCLD and LDRHO for acceptable values)
+                                where
+                                if C=1 LDIFX is bad
+                                if C=2 LDSCLD is bad
+                                if C=3 LDIFX & LDSCLD are bad
+                                if C=4 LDRHO is bad
+                                if C=5 LDIFX & LDRHO are bad
+                                if C=6 LDSCLD & LDRHO are bad
+                                if C=7 LDIFX, LDSCLD & LDRHO are bad
+ 
+                    digit D = 1 indicates LWORK is too small (see
+                                definition of LWORK for smallest
+                                acceptable value)
+ 
+                    digit E = 1 indicates LIWORK is too small (see
+                                definition of LIWORK for smallest
+                                acceptable value)
+ 
+              Digit A = 3 indicates an error was detected in the
+                          arguments used to specify scaling and/or the
+                          in the arguments used to specify the weights.
+ 
+                 When digit A = 3 then
+ 
+                    digit B = 1 indicates an error in SCLD (see defini-
+                                tion of SCLD for reasonable values)
+ 
+                    digit C = 1 indicates an error in SCLB (see defini-
+                                tion of SCLB for reasonable values)
+ 
+                    digit D > 1 indicates an error in W, where
+                                if D=1 one or more of the elements of
+                                       W are invalid (see definition
+                                       of W for reasonable values)
+                                if D=2 the number of non zero values
+                                       in W is less than NP
+ 
+                    digit E = 1 indicates an error in RHO (see defini-
+                                tion of RHO for reasonable values)
+ 
+              Digit A = 4 indicates an error was detected in the
+                          user-supplied Jacobian matrices.
+ 
+                 When digit A = 4 then
+ 
+                    digit B = 1 indicates an error in the Jacobian
+                                matrix with respect to BETA (see the
+                                generated error reports, or section IX
+                                for locations in IWORK that indicate
+                                which derivatives are in error)
+ 
+                    digit C = 1 indicates an error in the Jacobian
+                                matrix with respect to X (see the
+                                generated error reports, or section IX
+                                for locations in IWORK that indicate
+                                which derivatives are in error)
+ 
+ 
+ 
+1   VII.   EXAMPLES
+           --------
+ 
+    The following sample programs use DODR and DODRC to solve exercise I
+    on page 521 and 522 of Draper and Smith (1981).  The program calling
+    DODR uses the default option of computing the derivatives by finite
+    differences, while the program calling DODRC uses analytic
+    derivatives.  Note that the results of these two examples are not
+    identical, primarily because the DODRC example has "fixed" one
+    column of the independent variable.  Finite difference derivatives
+    generally cause very little change in the results from those
+    obtained using analytic derivatives.
+ 
+    Users are encouraged to extract these examples from the online
+    ODRPACK documentation, and to then modify them as necessary to form
+    their own ODRPACK drivers.  (Single precision sample programs can be
+    easily generated from these two programs by changing all REAL
+    variables to DOUBLE PRECISION, and substituting DODR for SODR and
+    DODRC for SODRC.) Note especially that by using MAXN, MAXM and MAXNP
+    to specify the largest problem the program can solve without
+    modification, and by specifying LWORK and LIWORK exactly as shown,
+    the user greatly reduces the number of changes which must be made to
+    the program in order to solve a larger problem.
+ 
+ 
+ 
+1   VII.A  DODR Example Program, Data and ODRPACK Generated Report
+ 
+    User-supplied code for DODR example:
+ 
+          PROGRAM DDRV1
+    C
+    C  SET PARAMETERS FOR MAXIMUM PROBLEM SIZE HANDLED BY THIS DRIVER
+    C  WHERE  MAXN IS THE MAXIMUM NUMBER OF OBSERVATIONS ALLOWED,
+    C         MAXM IS THE MAXIMUM NUMBER OF COLUMNS IN THE
+    C              INDEPENDENT VARIABLE ALLOWED, AND
+    C        MAXNP IS THE MAXIMUM NUMBER OF FUNCTION PARAMETERS
+    C              ALLOWED.
+    C
+          INTEGER MAXN,MAXM,MAXNP
+          PARAMETER (MAXN=15,MAXM=5,MAXNP=5)
+    C
+    C  SET PARAMETERS TO SPECIFY DIMENSIONS OF ARRAYS USED BY DODR
+    C
+          INTEGER LDX,LDRHO,LWORK,LIWORK
+          PARAMETER
+         +   (LDX=MAXN,
+         +   LDRHO=1,
+         +   LWORK = 9 + 8*MAXN + 10*MAXN*MAXM + 2*MAXN*MAXNP + 8*MAXNP,
+         +   LIWORK = 2*MAXNP + MAXM + 10)
+    C
+    C  DECLARE USER-SUPPLIED SUBROUTINES AND
+    C  ALL OTHER NECESSARY VARIABLES AND ARRAYS
+    C
+          EXTERNAL
+         +   FUN,JAC
+          INTEGER
+         +   N,M,NP,
+         +   JOB,
+         +   IWORK(LIWORK),
+         +   INFO
+          DOUBLE PRECISION
+         +   X(LDX,MAXM),
+         +   Y(LDX),
+         +   BETA(MAXNP),
+         +   RHO(LDRHO,MAXM),
+         +   WORK(LWORK)
+    C
+          OPEN(UNIT=5,FILE='DATA1')
+          OPEN(UNIT=6,FILE='REPORT')
+    C
+    C  READ NUMBER OF OBSERVATIONS
+    C       NUMBER OF COLUMNS OF DATA IN THE INDEPENDENT VARIABLE
+    C       NUMBER OF PARAMETERS
+    C       OBSERVED VALUES OF INDEPENDENT AND DEPENDENT VARIABLES
+    C       STARTING VALUES OF FUNCTION PARAMETERS
+    C
+          READ (5,*) N,M,NP
+          READ (5,*) ((X(I,J),I=1,N),J=1,M)
+          READ (5,*) (Y(I),I=1,N)
+          READ (5,*) (BETA(I),I=1,NP)
+    C
+    C  SPECIFY DELTA WEIGHTS
+    C
+          RHO(1,1) = 3.0D0
+          RHO(1,2) = 5.0D0
+    C
+    C  SET CONTROL VALUE TO INVOKE DEFAULT SETTING
+    C
+          JOB = -1
+    C
+    C  COMPUTE ODR SOLUTION USING FINITE-DIFFERENCE DERIVATIVES
+    C
+          CALL DODR
+         +   (FUN,JAC,
+         +   N,M,NP,
+         +   X,LDX,
+         +   Y,
+         +   BETA,
+         +   RHO,LDRHO,
+         +   JOB,
+         +   WORK,LWORK,IWORK,LIWORK,
+         +   INFO)
+    C
+          END
+          SUBROUTINE FUN(N,NP,M,BETA,XPLUSD,LDXPD,F,IFLAG)
+    C
+    C  INPUT ARGUMENTS
+    C  (WHICH MUST NOT BE CHANGED BY THIS ROUTINE)
+    C
+          INTEGER N,NP,M,LDXPD
+          DOUBLE PRECISION BETA(NP),XPLUSD(LDXPD,M)
+    C
+    C  OUTPUT ARGUMENTS
+    C
+          DOUBLE PRECISION F(N)
+          INTEGER IFLAG
+    C
+          DO 10 I = 1, N
+             F(I) = EXP(-BETA(1)*XPLUSD(I,1)*
+         +          EXP(-BETA(2)*
+         +               (1.0D0/XPLUSD(I,2) - 1.0D0/620.0D0)))
+       10 CONTINUE
+    C
+          RETURN
+          END
+ 
+ 
+1   User-supplied data (file DATA1):
+ 
+        8    2    2
+      109.0   65.0 1180.0   66.0
+     1270.0   69.0 1230.0   68.0
+      600.0  640.0  600.0  640.0
+      600.0  640.0  600.0  640.0
+      0.912  0.382  0.397  0.376
+      0.342  0.358  0.348  0.376
+    0.01155 5000.0
+ 
+ 
+1   Report generated by DODR example program, run using a Cyber 180/855
+    under NOS 2.4.2.
+ 
+ 
+ 
+ 
+    ******************************************************
+    * ODRPACK VERSION 1.3 OF 02-04-87 (DOUBLE PRECISION) *
+    ******************************************************
+ 
+ 
+ 
+ 
+ 
+    INITIAL SUMMARY FOR FIT BY METHOD OF ODR
+    ========================================
+ 
+ 
+ 
+    PROBLEM SIZE:
+    -------------
+ 
+    NUMBER OF OBSERVATIONS                                8
+    NUMBER OF COLUMNS OF DATA IN INDEPENDENT VARIABLE     2
+    NUMBER OF FUNCTION PARAMETERS                         2
+    NUMBER OF UNFIXED FUNCTION PARAMETERS                 2
+ 
+ 
+ 
+    INDEPENDENT VARIABLE AND DELTA WEIGHT SUMMARY:
+    ----------------------------------------------
+ 
+                                  COLUMN   1                COLUMN   2
+                              OBS 1        OBS N        OBS 1        OBS N
+                  X -    .10900D+03   .68000D+02   .60000D+03   .64000D+03
+              FIXED -            NO           NO           NO           NO
+      INITIAL DELTA -    .00000D+00   .00000D+00   .00000D+00   .00000D+00
+        DELTA SCALE -    .78740D-03   .78740D-03   .15625D-02   .15625D-02
+      DELTA WEIGHTS -    .30000D+01   .30000D+01   .50000D+01   .50000D+01
+ 
+ 
+ 
+    DEPENDENT VARIABLE AND OBSERVATIONAL ERROR WEIGHT SUMMARY:
+    ----------------------------------------------------------
+ 
+                              OBS 1        OBS N
+                  Y -    .91200D+00   .37600D+00
+    OBS. ERROR WTS. -    .10000D+01   .10000D+01
+ 
+ 
+ 
+    FUNCTION PARAMETER SUMMARY:
+    ---------------------------
+ 
+           INDEX -                1               2
+    INITIAL BETA -    .11550000D-01   .50000000D+04
+           FIXED -               NO              NO
+      BETA SCALE -    .86580087D+02   .20000000D-03
+ 
+ 
+ 
+    CONTROL VALUES AND STOPPING CRITERIA:
+    --------------------------------------
+ 
+          *
+       JOB    TAUFAC     SSTOL    PARTOL  MAXIT
+     -0001   .10D+01   .50D-14   .86D-19     50
+ 
+    *
+     A.  FIT IS NOT A RESTART.
+     B.  DELTAS ARE INITIALIZED TO ZERO.
+     C.  DERIVATIVES ARE COMPUTED BY FINITE DIFFERENCES.
+     D.  FIT IS BY METHOD OF ORTHOGONAL DISTANCE REGRESSION.
+ 
+ 
+ 
+    INITIAL SUMS OF SQUARES:
+    ------------------------
+ 
+    SUM OF SQUARED WEIGHTED OBSERVATIONAL ERRORS     .67662011D+00
+    SUM OF SQUARED WEIGHTED DELTAS                   .00000000D+00
+    SUM OF SQUARED WEIGHTED EPSILONS                 .67662011D+00
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+    FINAL SUMMARY FOR FIT BY METHOD OF ODR
+    ======================================
+ 
+ 
+ 
+    STOPPING CONDITION (INFO =      1):
+    -----------------------------------
+ 
+    THE RELATIVE CHANGE IN THE SUM OF THE SQUARED
+    WEIGHTED OBSERVATIONAL ERRORS IS LESS THAN SSTOL
+ 
+                                CONDITION
+          NUMBER OF  NUMBER OF     NUMBER        RANK
+         ITERATIONS   FN EVALS  (INVERSE)  DEFICIENCY
+                  6         38  .1888D-06           0
+ 
+ 
+ 
+    FINAL SUMS OF SQUARES:
+    ----------------------
+ 
+    SUM OF SQUARED WEIGHTED OBSERVATIONAL ERRORS     .75382323D-03
+    SUM OF SQUARED WEIGHTED DELTAS                   .23542099D-07
+    SUM OF SQUARED WEIGHTED EPSILONS                 .75379969D-03
+ 
+ 
+ 
+    ESTIMATED BETA(I), I = 1, ..., NP:
+    ----------------------------------
+ 
+            INDEX            VALUE -------------->
+        1 TO    2    .36579727D-02   .27627327D+05
+ 
+ 
+ 
+    ESTIMATED EPSILON(I) AND DELTA(I,*), I = 1, ..., N:
+    ---------------------------------------------------
+ 
+        I      EPSILON(I)      DELTA(I,1)      DELTA(I,2)
+        1   .16752445D-02   .14086172D-06   .42418798D-06
+        2   .20434718D-02   .12838222D-05   .20262810D-05
+        3  -.20690085D-01  -.71652291D-06  -.23358824D-04
+        4   .24305832D-02   .15047092D-05   .24114481D-05
+        5   .72777482D-02   .23393281D-06   .82079313D-05
+        6   .40793264D-02   .24162846D-05   .40483552D-05
+        7   .13043071D-01   .43337344D-06   .14726727D-04
+        8  -.85499649D-02  -.51394680D-05  -.84861063D-05
+ 
+ 
+ 
+1   VII.B  DODRC Example Program, Data and ODRPACK Generated Report
+ 
+    User-supplied code for DODRC example:
+ 
+          PROGRAM DDRV2
+    C
+    C  SET PARAMETERS FOR MAXIMUM PROBLEM SIZE HANDLED BY THIS DRIVER
+    C  WHERE  MAXN IS THE MAXIMUM NUMBER OF OBSERVATIONS ALLOWED,
+    C         MAXM IS THE MAXIMUM NUMBER OF COLUMNS IN THE
+    C              INDEPENDENT VARIABLE ALLOWED, AND
+    C        MAXNP IS THE MAXIMUM NUMBER OF FUNCTION PARAMETERS
+    C              ALLOWED.
+    C
+          INTEGER MAXN,MAXM,MAXNP
+          PARAMETER (MAXN=15,MAXM=5,MAXNP=5)
+    C
+    C  SET PARAMETERS TO SPECIFY DIMENSIONS OF ARRAYS USED BY DODR
+    C
+          INTEGER LDX,LDSCLD,LDIFX,LDRHO,LWORK,LIWORK
+          PARAMETER
+         +   (LDX=MAXN,
+         +   LDSCLD = 1,
+         +   LDIFX = 1,
+         +   LDRHO=1,
+         +   LWORK = 9 + 8*MAXN + 10*MAXN*MAXM + 2*MAXN*MAXNP + 8*MAXNP,
+         +   LIWORK = 2*MAXNP + MAXM + 10)
+    C
+    C  DECLARE USER-SUPPLIED SUBROUTINES AND
+    C  ALL OTHER NECESSARY VARIABLES AND ARRAYS
+    C
+          EXTERNAL
+         +   FUN,JAC
+          INTEGER
+         +   N,M,NP,
+         +   IFIXX(LDIFX,MAXM),
+         +   IFIXB(MAXNP),
+         +   JOB,
+         +   MAXIT,
+         +   IPRINT,LUNRPT,LUNERR,
+         +   IWORK(LIWORK),
+         +   INFO
+          DOUBLE PRECISION
+         +   X(LDX,MAXM),SCLD(LDSCLD,MAXM),
+         +   Y(LDX),
+         +   BETA(MAXNP),SCLB(MAXNP),
+         +   RHO(LDRHO,MAXM),W(LDX),
+         +   SSTOL,PARTOL,
+         +   TAUFAC,
+         +   WORK(LWORK)
+    C
+          OPEN(UNIT=5,FILE='DATA1')
+          OPEN(UNIT=6,FILE='REPORT')
+    C
+    C  READ NUMBER OF OBSERVATIONS
+    C       NUMBER OF COLUMNS OF DATA IN THE INDEPENDENT VARIABLE
+    C       NUMBER OF PARAMETERS
+    C       OBSERVED VALUES OF INDEPENDENT AND DEPENDENT VARIABLES
+    C       STARTING VALUES OF FUNCTION PARAMETERS
+    C
+          READ (5,*) N,M,NP
+          READ (5,*) ((X(I,J),I=1,N),J=1,M)
+          READ (5,*) (Y(I),I=1,N)
+          READ (5,*) (BETA(I),I=1,NP)
+    C
+    C  FIX SECOND COLUMN OF INDEPENDENT VARIABLE AT OBSERVED VALUES
+    C
+          IFIXX(1,1) = 1
+          IFIXX(1,2) = 0
+    C
+    C  SPECIFY USE OF DEFAULT SCALING
+    C
+          SCLD(1,1) = -1.0D0
+          SCLB(1) = -1.0D0
+    C
+    C  INDICATE ALL BETA'S ARE TO BE ESTIMATED
+    C
+          IFIXB(1) = -1
+    C
+    C  SPECIFY WEIGHTS
+    C
+          RHO(1,1) = 3.0D0
+          RHO(1,2) = 5.0D0
+          W(1) = -1.0D0
+    C
+    C  SET CONTROL VALUES AND STOPPING CRITERIA
+    C
+          JOB = 10
+          TAUFAC = -1.0D0
+          SSTOL = -1.0D0
+          PARTOL = -1.0D0
+          MAXIT = -1
+          IPRINT = 1111
+          LUNERR = -1
+          LUNRPT = -1
+    C
+    C  COMPUTE ODR SOLUTION USING USER-SUPPLIED ANALYTIC DERIVATIVES
+    C
+          CALL DODRC
+         +   (FUN,JAC,
+         +   N,M,NP,
+         +   X,LDX,IFIXX,LDIFX,SCLD,LDSCLD,
+         +   Y,
+         +   BETA,IFIXB,SCLB,
+         +   RHO,LDRHO,W,
+         +   JOB,TAUFAC,
+         +   SSTOL,PARTOL,MAXIT,
+         +   IPRINT,LUNERR,LUNRPT,
+         +   WORK,LWORK,IWORK,LIWORK,
+         +   INFO)
+    C
+          END
+          SUBROUTINE FUN(N,NP,M,BETA,XPLUSD,LDXPD,F,IFLAG)
+    C
+    C  INPUT ARGUMENTS
+    C  (WHICH MUST NOT BE CHANGED BY THIS ROUTINE)
+    C
+          INTEGER N,NP,M,LDXPD
+          DOUBLE PRECISION BETA(NP),XPLUSD(LDXPD,M)
+    C
+    C  OUTPUT ARGUMENTS
+    C
+          DOUBLE PRECISION F(N)
+          INTEGER IFLAG
+    C
+          DO 10 I = 1, N
+             F(I) = EXP(-BETA(1)*XPLUSD(I,1)*
+         +          EXP(-BETA(2)*
+         +               (1.0D0/XPLUSD(I,2) - 1.0D0/620.0D0)))
+       10 CONTINUE
+    C
+          RETURN
+          END
+          SUBROUTINE JAC(N,NP,M,BETA,XPLUSD,LDXPD,
+         +               FJACB,LDFJB,ISODR,FJACX,LDFJX,IFLAG)
+    C
+    C  INPUT ARGUMENTS
+    C  (WHICH MUST NOT BE CHANGED BY THIS ROUTINE)
+    C
+          INTEGER N,NP,M,LDXPD
+          DOUBLE PRECISION BETA(NP),XPLUSD(LDXPD,M)
+          LOGICAL ISODR
+    C
+    C  OUTPUT ARGUMENTS
+    C
+          DOUBLE PRECISION FJACB(LDFJB,NP),FJACX(LDFJX,M)
+          INTEGER IFLAG
+    C
+    C  INTERNAL VARIABLES
+    C
+          DOUBLE PRECISION FAC1,FAC2,FAC3,FAC4
+    C
+          DO 10 I=1,N
+             FAC1 = 1.0D0/XPLUSD(I,2) - 1.0D0/620.0D0
+             FAC2 = EXP(-BETA(2)*FAC1)
+             FAC3 = BETA(1)*XPLUSD(I,1)
+             FAC4 = EXP(-FAC3*FAC2)
+    C
+             FJACB(I,1) = -FAC4*XPLUSD(I,1)*FAC2
+             FJACB(I,2) = FAC4*FAC3*FAC2*FAC1
+    C
+             IF (ISODR) THEN
+                FJACX(I,1) = -FAC4*BETA(1)*FAC2
+                FJACX(I,2) = -FAC4*FAC3*FAC2*BETA(2)/XPLUSD(I,2)**2
+             END IF
+       10 CONTINUE
+    C
+          RETURN
+          END
+ 
+ 
+1   User-supplied data (file DATA1):
+ 
+        8    2    2
+      109.0   65.0 1180.0   66.0
+     1270.0   69.0 1230.0   68.0
+      600.0  640.0  600.0  640.0
+      600.0  640.0  600.0  640.0
+      0.912  0.382  0.397  0.376
+      0.342  0.358  0.348  0.376
+    0.01155 5000.0
+ 
+ 
+1   Report generated by DODRC example program, run using a Cyber 180/855
+    under NOS 2.4.2:
+ 
+ 
+ 
+ 
+    ******************************************************
+    * ODRPACK VERSION 1.3 OF 02-04-87 (DOUBLE PRECISION) *
+    ******************************************************
+ 
+ 
+ 
+ 
+ 
+    INITIAL SUMMARY FOR FIT BY METHOD OF ODR
+    ========================================
+ 
+ 
+ 
+    PROBLEM SIZE:
+    -------------
+ 
+    NUMBER OF OBSERVATIONS                                8
+    NUMBER OF COLUMNS OF DATA IN INDEPENDENT VARIABLE     2
+    NUMBER OF FUNCTION PARAMETERS                         2
+    NUMBER OF UNFIXED FUNCTION PARAMETERS                 2
+ 
+ 
+ 
+    CONTROL VALUES AND STOPPING CRITERIA:
+    --------------------------------------
+ 
+          *
+       JOB    TAUFAC     SSTOL    PARTOL  MAXIT
+      0010   .10D+01   .50D-14   .86D-19     50
+ 
+    *
+     A.  FIT IS NOT A RESTART.
+     B.  DELTAS ARE INITIALIZED TO ZERO.
+     C.  DERIVATIVES ARE SUPPLIED BY USER.
+         USER-SUPPLIED DERIVATIVES WERE CHECKED.
+         THE DERIVATIVES APPEAR TO BE CORRECT.
+     D.  FIT IS BY METHOD OF ORTHOGONAL DISTANCE REGRESSION.
+ 
+ 
+ 
+    INITIAL SUMS OF SQUARES:
+    ------------------------
+ 
+    SUM OF SQUARED WEIGHTED OBSERVATIONAL ERRORS     .67662011D+00
+    SUM OF SQUARED WEIGHTED DELTAS                   .00000000D+00
+    SUM OF SQUARED WEIGHTED EPSILONS                 .67662011D+00
+ 
+ 
+ 
+ 
+ 
+    ITERATION REPORTS FOR FIT BY METHOD OF ODR
+    ==========================================
+ 
+ 
+            CUM.                 ACT. REL.   PRED. REL.
+     IT.  NO. FN     WEIGHTED   SUM-OF-SQS   SUM-OF-SQS              G-N
+    NUM.   EVALS   SUM-OF-SQS    REDUCTION    REDUCTION  TAU/PNORM  STEP
+    ----  ------  -----------  -----------  -----------  ---------  ----
+ 
+       1       2   .19694D+00    .7089D+00    .4162D+00   .151D+01   YES
+       2       3   .18660D-02    .9905D+00    .9957D+00   .671D+00   YES
+       3       4   .75385D-03    .5960D+00    .5961D+00   .463D-01   YES
+       4       5   .75385D-03    .3659D-06    .3659D-06   .224D-04   YES
+       5       6   .75385D-03    .3889D-13    .3892D-13   .482D-08   YES
+       6       7   .75385D-03    .1675D-19    .1676D-19   .392D-11   YES
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+    FINAL SUMMARY FOR FIT BY METHOD OF ODR
+    ======================================
+ 
+ 
+ 
+    STOPPING CONDITION (INFO =      1):
+    -----------------------------------
+ 
+    THE RELATIVE CHANGE IN THE SUM OF THE SQUARED
+    WEIGHTED OBSERVATIONAL ERRORS IS LESS THAN SSTOL
+ 
+                                CONDITION
+          NUMBER OF  NUMBER OF     NUMBER        RANK
+         ITERATIONS   FN EVALS  (INVERSE)  DEFICIENCY
+                  6          8  .1888D-06           0
+ 
+ 
+ 
+    FINAL SUMS OF SQUARES:
+    ----------------------
+ 
+    SUM OF SQUARED WEIGHTED OBSERVATIONAL ERRORS     .75384644D-03
+    SUM OF SQUARED WEIGHTED DELTAS                   .33248273D-09
+    SUM OF SQUARED WEIGHTED EPSILONS                 .75384611D-03
+ 
+ 
+ 
+    ESTIMATED BETA(I), I = 1, ..., NP:
+    ----------------------------------
+ 
+            INDEX            VALUE -------------->
+        1 TO    2    .36579727D-02   .27627326D+05
+ 
+ 
+ 
+    ESTIMATED EPSILON(I) AND DELTA(I,*), I = 1, ..., N:
+    ---------------------------------------------------
+ 
+        I      EPSILON(I)      DELTA(I,1)      DELTA(I,2)
+        1   .16752465D-02   .14086189D-06   .00000000D+00
+        2   .20435276D-02   .12838572D-05   .00000000D+00
+        3  -.20690747D-01  -.71654588D-06   .00000000D+00
+        4   .24306485D-02   .15047496D-05   .00000000D+00
+        5   .72779764D-02   .23394016D-06   .00000000D+00
+        6   .40794324D-02   .24163474D-05   .00000000D+00
+        7   .13043483D-01   .43338715D-06   .00000000D+00
+        8  -.85501699D-02  -.51395912D-05   .00000000D+00
+ 
+ 
+ 
+1   VIII.   SCALING ALGORITHMS
+            ------------------
+ 
+    Poorly scaled problems, i.e., problems in which the unknowns BETA
+    and DELTA vary over several orders of magnitude, can cause least
+    squares procedures difficulty.  ODRPACK's scaling algorithms
+    (discussed below) attempt to overcome these difficulties
+    automatically , although it is preferable for the user to choose the
+    units of the variable space so that the estimated parameters will
+    have roughly the same magnitude [Dennis and Schnabel (1983)].  When
+    the variables have roughly the same magnitude, the ODRPACK scaling
+    algorithm will select scale values which are roughly equal, and the
+    resulting computations will be the same (except for the effect of
+    finite precision arithmetic) as an unscaled analysis, i.e., an
+    analysis in which all of the scale values are set to one.  If the
+    user does not do this, the ODRPACK scaling algorithm will select
+    varying scale values.  This will not change the optimal solution,
+    but it may affect the number of iterations required, or, in some
+    cases, whether the algorithm is or is not successful.
+ 
+    Users may substitute their own scaling values using subroutine
+    arguments SCLD and SCLB (see section VI).
+ 
+ 
+ 
+1   VIII.A  BETA Scaling
+ 
+    ODRPACK chooses the scale values for the estimated BETA's as
+    follows.
+ 
+    If some of the starting values of BETA are nonzero then
+       let BETA_max = the largest absolute value
+                      of the nonzero starting values of BETA,
+           BETA_min = the smallest absolute value
+                      of the nonzero starting values of BETA, and
+             epsmac = the value of machine precision, where machine
+                      precision is defined as the smallest value e such
+                      that 1 + e > 1 on the computer being used.
+ 
+       For K = 1 to NP do
+          if BETA(K) = zero then
+             scale_BETA(K) = one/(SQRT(epsmac)*BETA_min)
+          else
+             if LOG10(BETA_max)-LOG10(BETA_min) > two then
+                scale_BETA(K) = one/ABS(BETA(K))
+             else
+                scale_BETA(K) = one/BETA_max.
+ 
+    If all of the starting values of BETA are zero then
+       for K = 1 to NP do
+           scale_BETA(K) = one.
+ 
+    Users may substitute their own BETA scaling values via subroutine
+    argument SCLB.
+ 
+ 
+ 
+1   VIII.B  DELTA Scaling
+ 
+    ODRPACK chooses scale values for the estimated errors in the
+    independent variables, i.e., for the DELTA's, as follows.
+ 
+    For J = 1 to M do
+       let  X_max = the largest nonzero absolute value in the J-th
+                    column of array X, and
+            X_min = the smallest nonzero absolute value in the J-th
+                    column of array X.
+ 
+       For I = 1 to N do
+          if X(I,J) = zero then
+             scale_X(I,J) = one
+          else
+             if LOG10(X_max)-LOG10(X_min) < two then
+                scale_X(I,J) = one/X_max
+             else
+                scale_X(I,J) = one/ABS(X(I,J)).
+ 
+    Users may substitute their own DELTA scaling values via subroutine
+    argument SCLD.
+ 
+ 
+ 
+1   IX.   EXTRACTING INFORMATION FROM THE WORK VECTORS
+          --------------------------------------------
+ 
+    IX.A  Extracting Information from Vector WORK
+ 
+    Upon return from a call to ODRPACK, array WORK contains various
+    values, some of which may be of interest to the user.
+ 
+    To extract information from WORK, the following declaration
+    statement must be added to the user's program:
+ 
+       INTEGER
+      +   N,M,NP,
+      +   DELTAI,EPSI,RNORMI,PARTLI,SSTOLI,TAUFCI,EPSMAI,OLMAVI,
+      +   FJACBI,FJACXI,XPLUSI,BETACI,BETASI,BETANI,
+      +   DELTSI,DELTNI,DDELTI,FSI,FNI,SI,SSSI,SSI,SSFI,TI,TTI,
+      +   TAUI,ALPHAI,TFJACI,OMEGAI,YTI,UI,QRAUXI,WRK1I,WRK2I,STPI,
+      +   RCONDI
+ 
+    where the variables DELTAI through RCONDI indicate the starting
+    locations within WORK of the stored values.  The appropriate values
+    of DELTAI through RCONDI are obtained by invoking subroutine SWINF
+    when using either of the single precision ODRPACK subroutines, SODR
+    or SODRC, and by invoking DWINF when using either of the double
+    precision subroutines, DODR or DODRC.  The call statements for SWINF
+    and DWINF are as follows.
+ 
+    When using single precision subroutines SODR and SODRC:
+ 
+       CALL SWINF
+      +   (N,M,NP,
+      +   DELTAI,EPSI,RNORMI,PARTLI,SSTOLI,TAUFCI,EPSMAI,OLMAVI,
+      +   FJACBI,FJACXI,XPLUSI,BETACI,BETASI,BETANI,
+      +   DELTSI,DELTNI,DDELTI,FSI,FNI,SI,SSSI,SSI,SSFI,TI,TTI,
+      +   TAUI,ALPHAI,TFJACI,OMEGAI,YTI,UI,QRAUXI,WRK1I,WRK2I,STPI,
+      +   RCONDI)
+ 
+    When using double precision subroutines DODR and DODRC:
+ 
+       CALL DWINF
+      +   (N,M,NP,
+      +   DELTAI,EPSI,RNORMI,PARTLI,SSTOLI,TAUFCI,EPSMAI,OLMAVI,
+      +   FJACBI,FJACXI,XPLUSI,BETACI,BETASI,BETANI,
+      +   DELTSI,DELTNI,DDELTI,FSI,FNI,SI,SSSI,SSI,SSFI,TI,TTI,
+      +   TAUI,ALPHAI,TFJACI,OMEGAI,YTI,UI,QRAUXI,WRK1I,WRK2I,STPI,
+      +   RCONDI)
+ 
+    Users should extract these declaration and call statements from
+    online ODRPACK documentation, if possible, to avoid typographical
+    errors.
+ 
+    In the following descriptions of the information returned in WORK,
+    (*) indicates values which are likely to be of greatest interest.
+ 
+    (*) WORK(DELTAI)  is the first element of the N by M matrix, DELTA,
+                      containing the estimated errors in the independent
+                      variables,
+                         DELTA(I,J) = WORK(DELTAI-1+I+(J-1)*N)
+                      for I=1,...,N & J=1,...,M.
+ 
+    (*) WORK(EPSI)    is the first element of the N vector, EPSILON,
+                      containing the estimated errors in the dependent
+                      variable,
+                         EPSILON(I) = WORK(EPSI-1+I)
+                      for I=1,...,N.
+ 
+    (*) WORK(RNORMI)  is the square root of the sum of the squared
+                      weighted observational errors (eq.3) at the
+                      time the computations stopped.
+ 
+        WORK(PARTLI)  is the value of the stopping tolerance used to
+                      detect parameter convergence.
+ 
+        WORK(SSTOLI)  is the value of the stopping tolerance used to
+                      detect sum-of-squares convergence.
+ 
+        WORK(TAUFCI)  is the value of the factor used to compute the
+                      initial trust region radius.
+ 
+        WORK(EPSMAI)  is the value of machine precision, which is the
+                      smallest value e such that 1+e>1.
+ 
+        WORK(OLMAVI)  is the average number of Levenberg-Marquardt steps
+                      per iteration.
+ 
+        WORK(FJACBI)  is the first element of the N by NP matrix, FJACB,
+                      containing the weighted Jacobian with respect to
+                      BETA,
+                         FJACB(I,J) = WORK(FJACBI-1+I+(J-1)*N)
+                      for I=1,...,N & J=1,...,NP.
+ 
+        WORK(FJACXI)  is the first element of the N by M matrix, FJACX,
+                      containing the weighted Jacobian with respect to
+                      X,
+                         FJACX(I,J) = WORK(FJACXI-1+I+(J-1)*N)
+                      for I=1,...,N & J=1,...,M.
+ 
+    (*) WORK(XPLUSI)  is the first element of the N by M matrix, XPLUSD,
+                      containing the final values of X + DELTA,
+                         XPLUSD(I,J) = WORK(XPLUSI-1+I+(J-1)*N)
+                      for I=1,...,N & J=1,...,M.
+ 
+        WORK(BETACI)  is the first element of the NP vector, BETAC,
+                      containing the current estimates of the unknown
+                      function parameters,
+                         BETAC(I) = WORK(BETACI-1+I)
+                      for I=1,...,NP.
+ 
+        WORK(BETASI)  is the first element of the NP vector, BETAS,
+                      containing the saved estimates of the unknown
+                      function parameters,
+                         BETAS(I) = WORK(BETASI-1+I)
+                      for I=1,...,NP.
+ 
+        WORK(BETANI)  is the first element of the NP vector, BETAN,
+                      containing the new estimates of the unknown
+                      function parameters,
+                         BETAN(I) = WORK(BETANI-1+I)
+                      for I=1,...,NP.
+ 
+        WORK(DELTSI)  is the first element of the N by M matrix, DELTAS,
+                      containing the saved estimated errors in the
+                      independent variables,
+                         DELTAS(I,J) = WORK(DELTASI-1+I+(J-1)*N)
+                      for I=1,...,N & J=1,...,M.
+ 
+        WORK(DELTNI)  is the first element of the N by M matrix, DELTAN,
+                      containing the new estimated errors in the
+                      independent variables,
+                         DELTAN(I,J) = WORK(DELTANI-1+I+(J-1)*N)
+                      for I=1,...,N & J=1,...,M.
+ 
+        WORK(DDELTI)  is the first element of the N by M matrix, DDELTA,
+                      containing the weighted estimated errors in the
+                      independent variables (W*D)**2 * DELTA,
+                         DDELTA(I,J) = WORK(DDELTI-1+I+(J-1)*N)
+                      for I=1,...,N & J=1,...,M.
+ 
+        WORK(FSI)     is the first element of the N vector, FS,
+                      containing the saved weighted estimated errors in
+                      the dependent variable,
+                         FS(I) = WORK(FSI-1+I)
+                      for I=1,...,N.
+ 
+        WORK(FNI)     is the first element of the N vector, FN,
+                      containing the new weighted estimated errors in
+                      the dependent variable,
+                         FN(I) = WORK(FNI-1+I)
+                      for I=1,...,N.
+ 
+        WORK(SI)      is the first element of the NP vector, S,
+                      containing the step in the estimated function
+                      parameters,
+                         S(I) = WORK(SI-1+I)
+                      for I=1,...,NP.
+ 
+        WORK(SSSI)    is the first element of the N + N*M vector, SSS,
+                      used for computing sums of squares of various
+                      quantities,
+                         SSS(I) = WORK(SSSI-1+I)
+                      for I=1,...,N + N*M.
+ 
+        WORK(SSI)     is the first element of the NP vector, SS,
+                      containing the scale of the estimated function
+                      parameters,
+                         SS(I) = WORK(SSI-1+I)
+                      for I=1,...,NP.
+ 
+        WORK(SSFI)    is the first element of the NP vector, SSF,
+                      containing the scale of each of the function
+                      parameters,
+                         SSF(I) = WORK(SSFI-1+I)
+                      for I=1,...,NP.
+ 
+        WORK(TI)      is the first element of the N by M array, T,
+                      containing the step in the estimated errors in
+                      the independent variable,
+                         T(I,J) = WORK(TI-1+I+(J-1)*N)
+                      for I=1,...,N & J=1,...,M.
+ 
+        WORK(TTI)     is the first element of the N by M array, TT,
+                      containing the scale of each the estimated errors
+                      in the independent variable,
+                         TT(I,J) = WORK(TTI-1+I+(J-1)*N)
+                      for I=1,...,N & J=1,...,M.
+ 
+        WORK(TAUI)    is the trust region radius at the time the
+                      computations stopped.
+ 
+        WORK(ALPHAI)  is the Levenburg-Marquardt parameter at the time
+                      the computations stopped.
+ 
+        WORK(TFJACI)  is the first element of the N by M array, TFJACB,
+                      containing scaled Jacobian matrix
+                      inv(diag(sqrt(OMEGA(I),I=1,...,N)) * FJACB,
+                         TFJACB(I,J) = WORK(TFJACB-1+I+(J-1)*N)
+                      for I=1,...,N & J=1,...,M.
+ 
+        WORK(OMEGAI)  is the first element of the N vector, OMEGA,
+                      containing the diagonal matrix
+                      (I-JFACX*inv(P)*trans(FJACX)**(-1/2) where
+                      P=trans(FJACX)*FJACX + D**2 + ALPHA*TT**2,
+                         OMEGA(I) = WORK(OMEGAI-1+I)
+                      for I=1,...,N.
+ 
+        WORK(YTI)     is the first element of the N vector, YTI,
+                      containing the array
+                      -diag(sqrt(OMEGA(I),I=1,...,N)*(G1-V*inv(E)*D*G2)
+                         YT(I) = WORK(YTI-1+I)
+                      for I=1,...,N.
+ 
+        WORK(UI)      is the first element of the N vector, UI,
+                      containing the approximate null vector for TFJACB,
+                         U(I) = WORK(UI-1+I)
+                      for I=1,...,N.
+ 
+        WORK(QRAUXI)  is the first element of the NP vector, QRAUX,
+                      required to recover the Q-R decomposition of
+                      TFJACB,
+                         QRAUX(I) = WORK(QRAUXI-1+I)
+                      for I=1,...,NP.
+ 
+        WORK(WRK1I)   is the first element of the N by M matrix, WRK1,
+                      required for work space,
+                         WRK1(I,J) = WORK(WRK1I-1+I+(J-1)*N)
+                      for I=1,...,N & J=1,...,M.
+ 
+        WORK(WRK2I)   is the first element of the NP vector, WRK2,
+                      required for work space,
+                         WRK2(I) = WORK(WRK2I-1+I)
+                      for I=1,...,NP.
+ 
+        WORK(STPI)    is the first element of the N vector, STP,
+                      containing the step used for computing finite
+                      difference derivatives,
+                         STP(I) = WORK(STPI-1+I)
+                      for I=1,...,N.
+ 
+    (*) WORK(RCONDI)  is the reciprocal condition number at the time
+                      the computations stopped.
+ 
+ 
+ 
+1   IX.B  Extracting Information from Vector IWORK
+ 
+    Upon return from a call to ODRPACK, array IWORK contains various
+    values, some of which may be of interest to the user.
+ 
+    To extract information from IWORK, the following declaration
+    statement must be added to the user's program
+ 
+       INTEGER
+      +   M,NP,
+      +   MSGB,MSGX,JPVTI,MAXITI,IPRINI,NFEVI,NJEVI,INT2I,IRANKI,
+      +   LUNERI,LUNRPI
+ 
+    where the variables MSGB through LUNRPI indicate the starting
+    locations within IWORK of the stored values.  The appropriate values
+    of MSGB through LUNRPI are obtained by invoking subroutine SIWINF
+    when using either of the single precision ODRPACK subroutines, SODR
+    or SODRC, and by invoking DIWINF when using either of the double
+    precision subroutines, DODR or DODRC.  The call statements for
+    SIWINF and DIWINF are as follows.
+ 
+    When using single precision subroutines SODR and SODRC:
+ 
+       CALL SIWINF
+      +   (M,NP,
+      +   MSGB,MSGX,JPVTI,MAXITI,IPRINI,NFEVI,NJEVI,INT2I,IRANKI,
+      +   LUNERI,LUNRPI)
+ 
+    When using double precision subroutines DODR and DODRC:
+ 
+       CALL DIWINF
+      +   (M,NP,
+      +   MSGB,MSGX,JPVTI,MAXITI,IPRINI,NFEVI,NJEVI,INT2I,IRANKI,
+      +   LUNERI,LUNRPI)
+ 
+    Users should extract these declaration and call statements from
+    online ODRPACK documentation, if possible, to avoid typographical
+    errors.
+ 
+    In the following descriptions of the information returned in IWORK,
+    (*) indicates values which are likely to be of greatest interest.
+ 
+    (*) IWORK(MSGB)   is the first element of the NP+1 vector, MSGB,
+                      used to indicate the results of checking the
+                      partial derivatives with respect to BETA.
+ 
+                      The value of IWORK(MSGB) summarizes the results
+                      over all of the BETA's.
+ 
+                      If IWORK(MSGB) < 0, the partial derivatives with
+                                          respect to each of the BETA's
+                                          were not checked.
+ 
+                      If IWORK(MSGB) = 0, the partial derivatives with
+                                          respect to each of the BETA's
+                                          appear to be correct.
+ 
+                      If IWORK(MSGB) = 1, the partial derivative with
+                                          respect to at least one of the
+                                          BETA's appears to be
+                                          incorrect.
+ 
+                      If IWORK(MSGB) = 2, the partial derivative with
+                                          respect to at least one of the
+                                          BETA's is questionable.
+ 
+                      The value of IWORK(MSGB+K), K=1,...,NP, indicates
+                      the individual results for the partial derivative
+                      with respect to BETA(K), K=1,...,NP.
+ 
+                      If IWORK(MSGB+K) = 0, the partial derivative with
+                                            respect to BETA(K) appears
+                                            to be correct.
+ 
+                      If IWORK(MSGB+K) = 1, the partial derivative with
+                                            respect to BETA(K) appears
+                                            to be incorrect, i.e., the
+                                            user-supplied derivative and
+                                            the finite difference value
+                                            it is checked against do not
+                                            agree to within the required
+                                            tolerance and there is no
+                                            reason to question the
+                                            results.
+ 
+                      If IWORK(MSGB+K) = 2, the partial derivative with
+                                            respect to BETA(K) appears
+                                            to be questionable because
+                                            the user-supplied derivative
+                                            and the finite difference
+                                            value it is checked against
+                                            are both zero.
+ 
+                      If IWORK(MSGB+K) = 3, the partial derivative with
+                                            respect to BETA(K) appears
+                                            to be questionable because
+                                            the user-supplied derivative
+                                            is exactly zero and the
+                                            finite difference value it
+                                            is checked against is only
+                                            approximately zero.
+ 
+                      If IWORK(MSGB+K) = 4, the partial derivative with
+                                            respect to BETA(K) appears
+                                            to be questionable because
+                                            the user-supplied derivative
+                                            is exactly zero and the
+                                            finite difference value it
+                                            is checked against is not
+                                            even approximately zero.
+ 
+                      If IWORK(MSGB+K) = 5, the partial derivative with
+                                            respect to BETA(K) appears
+                                            to be questionable because
+                                            the finite difference value
+                                            it is being checked against
+                                            is questionable due to a
+                                            high ratio of relative
+                                            curvature to relative slope
+                                            or to an incorrect scale
+                                            value.
+ 
+                      If IWORK(MSGB+K) = 6, the partial derivative with
+                                            respect to BETA(K) appears
+                                            to be questionable because
+                                            the finite difference value
+                                            it is being checked against
+                                            is questionable due to a
+                                            high ratio of relative
+                                            curvature to relative slope.
+ 
+    (*) IWORK(MSGX)   is the first element of the M+1 vector, MSGX,
+                      used to indicate the results of checking the
+                      partial derivatives with respect to X.
+ 
+                      The value of IWORK(MSGX) summarizes the results
+                      over all of the X's.
+ 
+                      If IWORK(MSGX) < 0, the partial derivatives with
+                                          respect to each of the X's
+                                          were not checked.
+ 
+                      If IWORK(MSGX) = 0, the partial derivatives with
+                                          respect to each of the X's
+                                          appear to be correct.
+ 
+                      If IWORK(MSGX) = 1, the partial derivative with
+                                          respect to at least one of the
+                                          X's appears to be incorrect.
+ 
+                      If IWORK(MSGX) = 2, the partial derivative with
+                                          respect to at least one of the
+                                          X's is questionable.
+ 
+                      The value of IWORK(MSGX+J), J=1,...,M, indicates
+                      the individual results for the partial derivative
+                      with respect to the Jth column of X, J=1,...,M.
+ 
+                      If IWORK(MSGX+J) = 0, the partial derivative with
+                                            respect to the J-th column
+                                            of X appears to be correct.
+ 
+                      If IWORK(MSGX+J) = 1, the partial derivative with
+                                            respect to the J-th column
+                                            of X to be incorrect, i.e.,
+                                            the user-supplied derivative
+                                            and the finite difference
+                                            value it is checked against
+                                            do not agree to within the
+                                            required tolerance and there
+                                            is no reason to question the
+                                            results.
+ 
+                      If IWORK(MSGX+J) = 2, the partial derivative with
+                                            respect to the J-th column
+                                            of X appears to be
+                                            questionable because the
+                                            user-supplied derivative and
+                                            the finite difference value
+                                            it is checked against are
+                                            both zero.
+ 
+                      If IWORK(MSGX+J) = 3, the partial derivative with
+                                            respect to the J-th column
+                                            of X appears to be
+                                            questionable because the
+                                            user-supplied derivative is
+                                            exactly zero and the finite
+                                            difference value it is
+                                            checked against is only
+                                            approximately zero.
+ 
+                      If IWORK(MSGX+J) = 4, the partial derivative with
+                                            respect to the J-th column
+                                            of X appears to be
+                                            questionable because the
+                                            user-supplied derivative is
+                                            exactly zero and the finite
+                                            difference value it is
+                                            checked against is not even
+                                            approximately zero.
+ 
+                      If IWORK(MSGX+J) = 5, the partial derivative with
+                                            respect to the J-th column
+                                            of X appears to be
+                                            questionable because the
+                                            finite difference value it
+                                            is being checked against is
+                                            questionable due to a high
+                                            ratio of relative curvature
+                                            to relative slope or to an
+                                            incorrect scale value.
+ 
+                      If IWORK(MSGX+J) = 6, the partial derivative with
+                                            respect to the J-th column
+                                            of X appears to be
+                                            questionable because the
+                                            finite difference value it
+                                            is being checked against is
+                                            questionable due to a high
+                                            ratio of relative curvature
+                                            to relative slope.
+ 
+        IWORK(JPVTI)  is the first element of the NP vector, JPVT,
+                      containing the pivot vector,
+                         JPVT(I) = WORK(JPVTI-1+I)
+                      for I=1,...,NP.
+ 
+        IWORK(MAXITI) is the maximum number of iterations allowed.
+ 
+        IWORK(IPRINI) is the print control value used.
+ 
+    (*) IWORK(NFEVI)  is the number of function evaluations at the time
+                      the computations stopped.
+ 
+    (*) IWORK(NJEVI)  is the number of Jacobian matrix evaluations, and,
+                      equivalently, the number of iterations, at the
+                      time the computations stopped.
+ 
+        IWORK(INT2I)  is the number of internal doubling steps taken at
+                      the time the computations stopped.
+ 
+    (*) IWORK(IRANKI) is the rank deficiency at the solution.
+ 
+        IWORK(LUNERI) is the logical unit number used for error reports.
+ 
+        IWORK(LUNRPI) is the logical unit number used for computation
+                      reports.
+ 
+ 
+ 
+1   X.  ACKNOWLEDGMENTS
+        ---------------
+ 
+    Code for ODRPACK has been developed at the National Bureau of
+    Standards, Gaithersburg, MD.  The subroutine that supplies the value
+    of machine precision has been modeled after subroutines R1MACH and
+    D1MACH from the Bell Laboratories "Framework for a Portable Library"
+    [Fox et al.  1978].  We have also used subroutines from LINPACK
+    [Dongarra et al.  1979] and from the "Basic Linear Algebra
+    Subprograms for Fortran Usage (BLAS)" [Lawson et al.  1979].  The
+    code used to check user-supplied derivatives was adapted from
+    STARPAC [Donaldson and Tryon (1986)] using algorithms developed by
+    Schnabel (1982).
+ 
+ 
+ 
+1   XI.  REFERENCES
+         ----------
+ 
+    Boggs, P. T., R. H. Byrd, and R. B. Schnabel (1985),
+      "A stable and efficient algorithm for nonlinear orthogonal
+      distance regression," University of Colorado Department of
+      Computer Science Technical Report Number CU-CS-317-85.
+ 
+    Dennis, J. E., and R. B. Schnabel (1983),
+      Numerical Methods for Unconstrained Optimization and Nonlinear
+      Equations, Prentice-Hall, Englewood Cliffs, NJ.
+ 
+    Donaldson, J. R., and P. V. Tryon (1986),
+      "STARPAC - the standards time series and regression package,"
+      National Bureau of Standards (U.S.) Interim Report 86-3448.
+ 
+    Dongarra, J. J., C. B. Moler, J. R. Bunch, and G. W. Stewart (1979),
+      Linpack Users' Guide, Siam, Philadelphia, PA.
+ 
+    Draper, N. R., and H. Smith (1981),
+      Applied Regression Analysis, Second Edition, John Wiley and Sons,
+      New York, NY.
+ 
+    Fox, P. A., A. D. Hall and N. L. Schryer (1978),
+      "Algorithm 528:  framework for a portable library [z]," ACM Trans.
+      Math.  Software, 4(2):177-188.
+ 
+    Himmelblau, D. M. (1970),
+      Process Analysis by Statistical Methods, John Wiley and Sons, New
+      York, NY.
+ 
+    Lawson, C., R. Hanson, D. Kincaid, and F. Krogh (1979),
+      "Basic linear algebra subprograms for fortran usage", ACM Trans.
+      Math.  Software, 5(3):308-371.
+ 
+    Schnabel, R. B. (1982),
+      "Finite difference derivatives - theory and practice",
+      (unpublished, available from author).
+ 
+ 

@@ -1,0 +1,13 @@
+ 
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+C
+C                           A D A P T
+C
+C     ADAPT is a Subroutine for the evaluation of multidimensional
+C     integrals on a hyper rectangle of dimension 2 through 20.
+C     ADAPT was written by A. C. Genz, of Washington State University,
+C      Pullman, WA.
+C
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+ 
+ 

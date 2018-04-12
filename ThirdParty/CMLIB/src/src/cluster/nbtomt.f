@@ -1,0 +1,155 @@
+      SUBROUTINE NBTOMT(M, K, DMNB, NB, KT, MT, IERR, OUNIT)
+C
+C<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+C
+C   PURPOSE
+C   -------
+C
+C      CONVERTS A REGULAR TREE DESCRIPTION OF OBJECTS TO A LINKED LIST
+C      DESCRIPTION
+C
+C   DESCRIPTION
+C   -----------
+C
+C   1.  THE LINKED LIST IS AN ARRAY OF SIZE BETWEEN M AND 2*M.  EACH
+C       ENTRY IN THE ARRAY CORRESPONDS TO A NODE IN THE TREE AND THE
+C       VALUE FOR NODE I IS THE NODE THAT IS THE DIRECT ANCESTOR OF
+C       NODE I.
+C
+C   INPUT PARAMETERS
+C   ----------------
+C
+C   M     INTEGER SCALAR (UNCHANGED ON OUTPUT).
+C         THE NUMBER OF OBJECTS.
+C
+C   K     INTEGER SCALAR (UNCHANGED ON OUTPUT).
+C         THE NUMBER OF CLUSTERS.
+C
+C   DMNB  INTEGER SCALAR (UNCHANGED ON OUTPUT).
+C         THE FIRST DIMENSION OF THE MATRIX NB.  MUST BE AT LEAST 3.
+C
+C   NB    INTEGER MATRIX WHOSE FIRST DIMENSION MUST BE DMNB AND SECOND
+C            DIMENSION MUST BE AT LEAST K (UNCHANGED ON OUTPUT).
+C         STORES REGULAR DESCRIPTION OF TREE.
+C
+C          NB(1,K) = FIRST OBJECT IN CLUSTER K
+C          NB(2,K) = LAST OBJECT IN CLUSTER K
+C          NB(3,K) = CLUSTER DIAMETER
+C
+C   KT    INTEGER SCALAR (UNCHANGED ON OUTPUT).
+C         THE NUMBER OF NODES IN TREE.
+C
+C   OUNIT INTEGER SCALAR (UNCHANGED ON OUTPUT).
+C         UNIT NUMBER FOR ERROR MESSAGES.
+C
+C   OUTPUT PARAMETERS
+C   -----------------
+C
+C   MT    INTEGER VECTOR DIMENSIONED AT LEAST KT.
+C         THE VECTOR OF POINTERS FOR THE TREE.
+C
+C         MT(I) IS THE ANCESTOR NODE FOR NODE I.
+C
+C   IERR  INTEGER SCALAR.
+C         ERROR FLAG.
+C
+C         IERR = 0, NO ERRORS WERE DETECTED DURING EXECUTION
+C
+C         IERR = 2, A CLUSTER BOUNDARY IS ILLEGAL.  THE CLUSTER AND THE
+C                   BOUNDARY ARE PRINTED ON UNIT OUNIT.  EXECUTION WILL
+C                   CONTINUE WITH QUESTIONABLE RESULTS FOR THAT CLUSTER.
+C
+C         IERR = 3, TWO CLUSTERS OVERLAP.  THE NUMBERS OF THE TWO
+C                   CLUSTERS ARE PRINTED ON UNIT 6.  EXECUTION WILL
+C                   CONTINUE WITH QUESTIONABLE RESULTS FOR THAT CLUSTER.
+C
+C   REFERENCE
+C   ---------
+C
+C     HARTIGAN, J. A. (1975).  CLUSTERING ALGORITHMS, JOHN WILEY &
+C        SONS, INC., NEW YORK.  PAGE 166.
+C
+C<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+C
+      INTEGER DMNB, OUNIT
+      DIMENSION NB(DMNB,*), MT(*)
+C
+C     CHECK NB ARRAY
+C
+      DO 10 I=1,K
+         NB(1,I) = NB(1,I) - 1
+         NB(2,I) = NB(2,I) - 1
+         IF(NB(1,I).LT.1) THEN
+            IF (OUNIT .GT. 0) WRITE(OUNIT,1) I
+            IERR = 2
+         ENDIF
+         IF(NB(2,I).LT.NB(1,I)) THEN
+            IF (OUNIT .GT. 0) WRITE(OUNIT,2) I
+            IERR = 2
+         ENDIF
+         IF(NB(2,I).GT.M) THEN
+            IF (OUNIT .GT. 0) WRITE(OUNIT,3) I, M
+            IERR = 2
+         ENDIF
+  10  CONTINUE
+    1 FORMAT(' CLUSTER',I5,' HAS BOUNDARY LESS THAN 1')
+    2 FORMAT(' CLUSTER',I5,' HAS FIRST BOUNDARY EXCEEDING SECOND BOUNDAR
+     *Y')
+    3 FORMAT(' CLUSTER',I5,' HAS BOUNDARY GREATER THAN',I5)
+C
+C     CHECK NB ARRAY FOR OVERLAPS
+C
+      DO 20 I=1,K
+         DO 20 J=1,I
+            I1=NB(1,I)
+            I2=NB(2,I)
+            J1=NB(1,J)
+            J2=NB(2,J)
+            IF((I1-J1)*(I1-J2)*(I2-J1)*(I2-J2).LT.0) THEN
+               IF (OUNIT .GT. 0) WRITE(OUNIT,4) I, J
+               IERR = 3
+            ENDIF
+   20 CONTINUE
+    4 FORMAT(' CLUSTERS',I5,' AND',I5,' OVERLAP')
+C
+C     CONSTRUCT MT
+C
+      DO 30 I=1,KT
+   30    MT(I)=0
+      DO 70 I=M,KT
+C
+C     FIND CLUSTER UNASSIGNED, WITH MINIMUM NUMBER OF ELEMENTS
+C
+         IM=I
+         MIN=M
+         DO 40 J=1,K
+            IF(NB(1,J).GE.0) THEN
+               MM=NB(2,J)-NB(1,J)+1
+               IF(MM.LE.MIN) THEN
+                  IM=J
+                  MIN=MM
+               ENDIF
+            ENDIF
+   40    CONTINUE
+         IF(MIN.NE.M) THEN
+C
+C     FIND SMALLEST CLUSTER INCLUDED IN I, NOT YET ASSIGNED
+C
+            JL=NB(1,IM)
+            JU=NB(2,IM)
+            NB(1,IM)=-JL
+            DO 60 J=JL,JU
+               L=J
+   50          IF(MT(L).NE.0) THEN
+                  L=MT(L)
+                  IF(MT(L).EQ.L) GO TO 60
+                  GO TO 50
+               ENDIF
+   60          MT(L)=I
+         ENDIF
+   70 CONTINUE
+      MT(KT)=KT
+      DO 80 I=1,K
+   80    IF(NB(1,I).LT.0) NB(1,I)=-NB(1,I)
+      RETURN
+      END

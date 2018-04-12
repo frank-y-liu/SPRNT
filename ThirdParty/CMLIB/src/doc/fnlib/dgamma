@@ -1,0 +1,25 @@
+ 
+      DOUBLE PRECISION FUNCTION DGAMMA(X)
+C***BEGIN PROLOGUE  DGAMMA
+C***DATE WRITTEN   770601   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C7A
+C***KEYWORDS  COMPLETE GAMMA FUNCTION,DOUBLE PRECISION,GAMMA FUNCTION,
+C             SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the d.p. complete Gamma function.
+C***DESCRIPTION
+C
+C DGAMMA(X) calculates the double precision complete gamma function
+C for double precision argument X.
+C
+C Series for GAM        on the interval  0.          to  1.00000E+00
+C                                        with weighted error   5.79E-32
+C                                         log weighted error  31.24
+C                               significant figures required  30.00
+C                                    decimal places required  32.05
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D1MACH,D9LGMC,DCSEVL,DGAMLM,DINT,INITDS,XERROR
+C***END PROLOGUE  DGAMMA
+ 
+ 

@@ -1,0 +1,96 @@
+#
+#  Copyright (C) 2011, 2014 International Business Machines
+#
+#  Author:  Frank Liu, IBM
+#
+#  All Rights Reserved. This program and the accompanying materials
+#  are made available under the terms of the Eclipse Public License v1.0
+#  which accompanies this distribution, and is available at
+#  http://www.eclipse.org/legal/epl-v10.html
+#
+
+#
+# top level switches 
+
+CC = gcc
+CXX = g++
+FC = gfortran
+
+AR = ar
+RANLIB = ranlib
+CXX_STDCXX_0X_FLAG = -std=c++0x
+LOC_HAVE_LIBZ = -DHAVE_LIBZ
+
+# where to find the libraries
+LIBHOME := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
+
+# optimization flags
+OPT_FLAG = -O3
+
+# Debug
+MYDEBUG =
+
+# bits info
+ifeq ("$(shell uname -m)","i686")
+  BITS = -m32
+else
+  BITS = -m64
+endif
+
+# arch type
+ARCH := $(shell uname )
+
+## gfortran libs
+LIBFORTRAN = -L/usr/local/gfortran/lib -lgfortran
+
+## where to find blas, returned by ax_loc_blas
+ifeq (${ARCH},Darwin)
+  BLAS = -L${LIBHOME}/ThirdParty/BLAS -lblas
+else
+  BLAS = -lblas
+endif
+
+# where to find required libraries
+SPLINE_HOME=$(LIBHOME)/ThirdParty/CMLIB
+UF_HOME=$(LIBHOME)/ThirdParty/UF
+BLAS_HOME=$(LIBHOME)/ThirdParty/BLAS
+
+# sprnt library
+SRC_HOME=${LIBHOME}/src
+SPT_HOME=${LIBHOME}/spt
+UTL_HOME=${LIBHOME}/util
+
+# test
+TEST_HOME=${LIBHOME}/examples
+
+## get git hash
+GET_GIT_HASH := $(shell git rev-parse --short=8 HEAD 1>&2 >/dev/null; echo $$?)
+ifneq ($(GET_GIT_HASH),0)
+  GIT_HASH := "xxxxxxxx"
+else
+  GIT_HASH := $(shell git rev-parse --short=8 HEAD)
+endif
+
+# detect number of cores, works only on linux and mac os
+# detect the number of cores
+# OS flag only works for Linux and Mac
+OS := $(shell uname -s)
+ifeq ($(OS),Linux)
+	NPROC := $(shell grep -c ^processor /proc/cpuinfo)
+else
+# need to handle mac OS
+	NPROC := $(shell sysctl -n hw.ncpu)
+endif
+
+# x86 assumption: 2 thread per core, minimal 1
+NPROC := $(shell echo "$(NPROC)/2"|bc)
+ifeq ($(NPROC),0)
+	NPROC := 1
+endif
+
+# we are done
+
+# Local Variables:
+# mode: makefile
+# End:
+

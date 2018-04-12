@@ -1,0 +1,19 @@
+ 
+      COMPLEX FUNCTION CASIN(ZINP)
+C***BEGIN PROLOGUE  CASIN
+C***DATE WRITTEN   770701   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C4A
+C***KEYWORDS  ARC SINE,COMPLEX,ELEMENTARY FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the complex arc Sine.
+C***DESCRIPTION
+C
+C CASIN(ZINP) calculates the complex trigonometric arc sine of ZINP.
+C The result is in units of radians, and the real part is in the first
+C or fourth quadrant.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  R1MACH
+C***END PROLOGUE  CASIN
+ 
+ 

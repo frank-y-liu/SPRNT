@@ -1,0 +1,28 @@
+ 
+      DOUBLE PRECISION FUNCTION DBESK1(X)
+C***BEGIN PROLOGUE  DBESK1
+C***DATE WRITTEN   770701   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C10B1
+C***KEYWORDS  BESSEL FUNCTION,DOUBLE PRECISION,MODIFIED BESSEL FUNCTION,
+C             ORDER ONE,SPECIAL FUNCTION,THIRD KIND
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the dp modified Bessel function of the third kind
+C            of order one.
+C***DESCRIPTION
+C
+C DBESK1(X) calculates the double precision modified (hyperbolic)
+C Bessel function of the third kind of order one for double precision
+C argument X.  The argument must be large enough that the result does
+C not overflow and small enough that the result does not underflow.
+C
+C Series for BK1        on the interval  0.          to  4.00000E+00
+C                                        with weighted error   9.16E-32
+C                                         log weighted error  31.04
+C                               significant figures required  30.61
+C                                    decimal places required  31.64
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D1MACH,DBESI1,DBSK1E,DCSEVL,INITDS,XERROR
+C***END PROLOGUE  DBESK1
+ 
+ 

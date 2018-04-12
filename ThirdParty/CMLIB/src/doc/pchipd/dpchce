@@ -1,0 +1,79 @@
+ 
+      SUBROUTINE DPCHCE(IC,VC,N,X,H,SLOPE,D,INCFD,IERR)
+C***BEGIN PROLOGUE  DPCHCE
+C***REFER TO  DPCHIC
+C***ROUTINES CALLED  DPCHDF,DPCHST,XERROR
+C***REVISION DATE  870707   (YYMMDD)
+C***DESCRIPTION
+C
+C          DPCHCE:  DPCHIC End Derivative Setter.
+C
+C    Called by DPCHIC to set end derivatives as requested by the user.
+C    It must be called after interior derivative values have been set.
+C                      -----
+C
+C    To facilitate two-dimensional applications, includes an increment
+C    between successive values of the D-array.
+C
+C ----------------------------------------------------------------------
+C
+C  Calling sequence:
+C
+C        PARAMETER  (INCFD = ...)
+C        INTEGER  IC(2), N, IERR
+C        DOUBLE PRECISION  VC(2), X(N), H(N), SLOPE(N), D(INCFD,N)
+C
+C        CALL  DPCHCE (IC, VC, N, X, H, SLOPE, D, INCFD, IERR)
+C
+C   Parameters:
+C
+C     IC -- (input) integer array of length 2 specifying desired
+C           boundary conditions:
+C           IC(1) = IBEG, desired condition at beginning of data.
+C           IC(2) = IEND, desired condition at end of data.
+C           ( see prologue to DPCHIC for details. )
+C
+C     VC -- (input) real*8 array of length 2 specifying desired boundary
+C           values.  VC(1) need be set only if IC(1) = 2 or 3 .
+C                    VC(2) need be set only if IC(2) = 2 or 3 .
+C
+C     N -- (input) number of data points.  (assumes N.GE.2)
+C
+C     X -- (input) real*8 array of independent variable values.  (the
+C           elements of X are assumed to be strictly increasing.)
+C
+C     H -- (input) real*8 array of interval lengths.
+C     SLOPE -- (input) real*8 array of data slopes.
+C           If the data are (X(I),Y(I)), I=1(1)N, then these inputs are:
+C                  H(I) =  X(I+1)-X(I),
+C              SLOPE(I) = (Y(I+1)-Y(I))/H(I),  I=1(1)N-1.
+C
+C     D -- (input) real*8 array of derivative values at the data points.
+C           The value corresponding to X(I) must be stored in
+C                D(1+(I-1)*INCFD),  I=1(1)N.
+C          (output) the value of D at X(1) and/or X(N) is changed, if
+C           necessary, to produce the requested boundary conditions.
+C           no other entries in D are changed.
+C
+C     INCFD -- (input) increment between successive values in D.
+C           This argument is provided primarily for 2-D applications.
+C
+C     IERR -- (output) error flag.
+C           Normal return:
+C              IERR = 0  (no errors).
+C           Warning errors:
+C              IERR = 1  if IBEG.LT.0 and D(1) had to be adjusted for
+C                        monotonicity.
+C              IERR = 2  if IEND.LT.0 and D(1+(N-1)*INCFD) had to be
+C                        adjusted for monotonicity.
+C              IERR = 3  if both of the above are true.
+C
+C    -------
+C    WARNING:  This routine does no validity-checking of arguments.
+C    -------
+C
+C  Fortran intrinsics used:  DABS, IABS.
+C
+C***END PROLOGUE  DPCHCE
+ 
+ 

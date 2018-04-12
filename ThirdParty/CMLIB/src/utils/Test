@@ -1,0 +1,33 @@
+#! /bin/csh -f
+
+#  Test host compiler fflags dir
+
+#  Runs a cmlib test (possibly remotely)
+
+set pgm = $1
+set compiler = $2
+set fflags = "$3"
+set dir = $4
+set input = "$5"
+set libname = "$6"
+set testdir = ../../test
+
+if ("$compiler" == "")  set compiler = f77
+if ("$dir" == "")  set dir = $cwd
+
+set arch = `../../utils/itl-arch`
+rm -f test.$arch.$pgm.out
+echo `date` | tee test.$arch.$pgm.out
+
+#if ( $libname == 'libcm.so' ) then
+#   setenv LD_LIBRARY_PATH /itl/apps/spro-5.0/SUNWspro/lib
+#endif
+
+$compiler -o $pgm $fflags $testdir/$pgm.f $dir/$libname
+echo "  "|tee -a test.$arch.$pgm.out
+echo " Processing test $pgm on `hostname` ... "|tee -a test.$arch.$pgm.out
+echo "  "|tee -a test.$arch.$pgm.out
+echo $input | ./$pgm |tee -a test.$arch.$pgm.out
+rm -f $pgm.o
+
+if (! -e core) rm -f $pgm

@@ -1,0 +1,26 @@
+ 
+      DOUBLE PRECISION FUNCTION DBESY1(X)
+C***BEGIN PROLOGUE  DBESY1
+C***DATE WRITTEN   770701   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C10A1
+C***KEYWORDS  BESSEL FUNCTION,DOUBLE PRECISION,ORDER ONE,SECOND KIND,
+C             SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the d.p. Bessel function of the second kind of
+C            order one.
+C***DESCRIPTION
+C
+C DBESY1(X) calculates the double precision Bessel function of the
+C second kind of order for double precision argument X.
+C
+C Series for BY1        on the interval  0.          to  1.60000E+01
+C                                        with weighted error   8.65E-33
+C                                         log weighted error  32.06
+C                               significant figures required  32.17
+C                                    decimal places required  32.71
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D1MACH,D9B1MP,DBESJ1,DCSEVL,INITDS,XERROR
+C***END PROLOGUE  DBESY1
+ 
+ 

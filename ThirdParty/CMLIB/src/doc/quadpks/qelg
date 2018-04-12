@@ -1,0 +1,52 @@
+ 
+      SUBROUTINE QELG(N,EPSTAB,RESULT,ABSERR,RES3LA,NRES)
+C***BEGIN PROLOGUE  QELG
+C***REFER TO  QAGIE,QAGOE,QAGPE,QAGSE
+C***ROUTINES CALLED  R1MACH
+C***REVISION DATE  830518   (YYMMDD)
+C***KEYWORDS  CONVERGENCE ACCELERATION,EPSILON ALGORITHM,EXTRAPOLATION
+C***AUTHOR  PIESSENS, ROBERT, APPLIED MATH. AND PROGR. DIV. -
+C             K. U. LEUVEN
+C           DE DONCKER, ELISE, APPLIED MATH. AND PROGR. DIV. -
+C             K. U. LEUVEN
+C***PURPOSE  The routine determines the limit of a given sequence of
+C            approximations, by means of the Epsilon algorithm of
+C            P. Wynn. An estimate of the absolute error is also given.
+C            The condensed Epsilon table is computed. Only those
+C            elements needed for the computation of the next diagonal
+C            are preserved.
+C***DESCRIPTION
+C
+C           Epsilon algorithm
+C           Standard fortran subroutine
+C           Real version
+C
+C           PARAMETERS
+C              N      - Integer
+C                       EPSTAB(N) contains the new element in the
+C                       first column of the epsilon table.
+C
+C              EPSTAB - Real
+C                       Vector of dimension 52 containing the elements
+C                       of the two lower diagonals of the triangular
+C                       epsilon table. The elements are numbered
+C                       starting at the right-hand corner of the
+C                       triangle.
+C
+C              RESULT - Real
+C                       Resulting approximation to the integral
+C
+C              ABSERR - Real
+C                       Estimate of the absolute error computed from
+C                       RESULT and the 3 previous results
+C
+C              RES3LA - Real
+C                       Vector of dimension 3 containing the last 3
+C                       results
+C
+C              NRES   - Integer
+C                       Number of calls to the routine
+C                       (should be zero at first call)
+C***END PROLOGUE  QELG
+ 
+ 

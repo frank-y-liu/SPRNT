@@ -1,0 +1,6 @@
+FORTRAN = /usr/bin/f77
+OPTS = -O -K -w
+NOPTS = -g -K -w
+RANLIB = echo
+MACHCON = IEEE.MOST-SIG-BYTE-FIRST
+LIBRARY = libcm.a

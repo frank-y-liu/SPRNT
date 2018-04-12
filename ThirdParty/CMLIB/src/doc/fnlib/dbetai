@@ -1,0 +1,29 @@
+ 
+      DOUBLE PRECISION FUNCTION DBETAI(X,PIN,QIN)
+C***BEGIN PROLOGUE  DBETAI
+C***DATE WRITTEN   770701   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C7F
+C***KEYWORDS  BETA,BETA FUNCTION,DOUBLE PRECISION,
+C             INCOMPLETE BETA FUNCTION,SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Calculates the d.p. incomplete Beta function.
+C***DESCRIPTION
+C
+C DBETAI(X,PIN,QIN) calculates the double precision incomplete beta
+C function ratio for double precision arguments X, PIN, and QIN.  It is
+C based on Bosten and Battiste, Remark on Algorithm 179, Comm. ACM,
+C V 17, P 153, (1974).
+C
+C             Input Arguments --
+C X      upper limit of integration.  X must be in (0,1) inclusive.
+C PIN    first beta distribution parameter.  PIN must be .GT. 0.0.
+C QIN    second beta distribution parameter.  QIN must be .GT. 0.0.
+C DBETAI the incomplete beta function ratio is the probability that a
+C        random variable from a beta distribution having parameters
+C        PIN and QIN will be less than or equal to X.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D1MACH,DINT,DLBETA,XERROR
+C***END PROLOGUE  DBETAI
+ 
+ 

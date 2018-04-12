@@ -1,0 +1,39 @@
+ 
+      SUBROUTINE LPDP(A,MDA,M,N1,N2,PRGOPT,X,WNORM,MODE,WS,IS)
+C***BEGIN PROLOGUE  LPDP
+C***REFER TO  LSEI
+C
+C     DIMENSION A(MDA,N+1),PRGOPT(*),X(N),WS((M+2)*(N+7)),IS(M+N+1),
+C     where N=N1+N2.  This is a slight overestimate for WS(*).
+C
+C     Written by R. J. Hanson and K. H. Haskell, Sandia Labs
+C     Revised Oct. 1, 1981.
+C
+C     Determine an N1-vector W, and
+C               an N2-vector Z
+C     which minimizes the Euclidean length of W
+C     subject to G*W+H*Z .GE. Y.
+C     This is the least projected distance problem, LPDP.
+C     The matrices G and H are of respective
+C     dimensions M by N1 and M by N2.
+C
+C     Called by subprogram LSI( ).
+C
+C     The matrix
+C                (G H Y)
+C
+C     occupies rows 1,...,M and cols 1,...,N1+N2+1 of A(*,*).
+C
+C     The solution (W) is returned in X(*).
+C                  (Z)
+C
+C     The value of MODE indicates the status of
+C     the computation after returning to the user.
+C
+C          MODE=1  The solution was successfully obtained.
+C
+C          MODE=2  The inequalities are inconsistent.
+C***ROUTINES CALLED  SCOPY,SDOT,SNRM2,SSCAL,WNNLS
+C***END PROLOGUE  LPDP
+ 
+ 

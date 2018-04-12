@@ -1,0 +1,34 @@
+      SUBROUTINE MVMLTU(NR,N,A,X,Y)
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+C
+C PURPOSE
+C -------
+C COMPUTE Y=(L+)X
+C WHERE L IS A LOWER TRIANGULAR MATRIX STORED IN A
+C (L-TRANSPOSE (L+) IS TAKEN IMPLICITLY)
+C
+C PARAMETERS
+C ----------
+C NR           --> ROW DIMENSION OF MATRIX
+C N            --> DIMENSION OF PROBLEM
+C A(NR,1)       --> LOWER TRIANGULAR (N*N) MATRIX
+C X(N)         --> OPERAND VECTOR
+C Y(N)        <--  RESULT VECTOR
+C
+C NOTE
+C ----
+C X AND Y CANNOT SHARE STORAGE
+C
+C***REVISION HISTORY  (YYMMDD)
+C   000330  Modified array declarations.  (JEC)
+C
+      DIMENSION A(NR,*),X(N),Y(N)
+      DO 30 I=1,N
+        SUM=0.
+        DO 10 J=I,N
+          SUM=SUM+A(J,I)*X(J)
+   10   CONTINUE
+        Y(I)=SUM
+   30 CONTINUE
+      RETURN
+      END

@@ -1,0 +1,55 @@
+ 
+      SUBROUTINE QK15(F,A,B,RESULT,ABSERR,RESABS,RESASC)
+C***BEGIN PROLOGUE  QK15
+C***DATE WRITTEN   800101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  H2A1A2
+C***KEYWORDS  15-POINT GAUSS-KRONROD RULES
+C***AUTHOR  PIESSENS, ROBERT, APPLIED MATH. AND PROGR. DIV. -
+C             K. U. LEUVEN
+C           DE DONCKER, ELISE, APPLIED MATH. AND PROGR. DIV. -
+C             K. U. LEUVEN
+C***PURPOSE  To compute I = Integral of F over (A,B), with error
+C                           estimate
+C                       J = integral of ABS(F) over (A,B)
+C***DESCRIPTION
+C
+C           Integration rules
+C           Standard fortran subroutine
+C           Real version
+C
+C           PARAMETERS
+C            ON ENTRY
+C              F      - Real
+C                       Function subprogram defining the integrand
+C                       FUNCTION F(X). The actual name for F needs to be
+C                       Declared E X T E R N A L in the calling program.
+C
+C              A      - Real
+C                       Lower limit of integration
+C
+C              B      - Real
+C                       Upper limit of integration
+C
+C            ON RETURN
+C              RESULT - Real
+C                       Approximation to the integral I
+C                       Result is computed by applying the 15-POINT
+C                       KRONROD RULE (RESK) obtained by optimal addition
+C                       of abscissae to the7-POINT GAUSS RULE(RESG).
+C
+C              ABSERR - Real
+C                       Estimate of the modulus of the absolute error,
+C                       which should not exceed ABS(I-RESULT)
+C
+C              RESABS - Real
+C                       Approximation to the integral J
+C
+C              RESASC - Real
+C                       Approximation to the integral of ABS(F-I/(B-A))
+C                       over (A,B)
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  R1MACH
+C***END PROLOGUE  QK15
+ 
+ 

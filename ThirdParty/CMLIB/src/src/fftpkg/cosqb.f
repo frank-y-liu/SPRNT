@@ -1,0 +1,72 @@
+      SUBROUTINE COSQB(N,X,WSAVE)
+C***BEGIN PROLOGUE  COSQB
+C***DATE WRITTEN   790601   (YYMMDD)
+C***REVISION DATE  830401   (YYMMDD)
+C***REVISION HISTORY  (YYMMDD)
+C   000330  Modified array declarations.  (JEC)
+C
+C***CATEGORY NO.  J1A3
+C***KEYWORDS  FOURIER TRANSFORM
+C***AUTHOR  SWARZTRAUBER, P. N., (NCAR)
+C***PURPOSE  Unnormalized inverse of COSQF.
+C***DESCRIPTION
+C
+C  Subroutine COSQB computes the fast Fourier transform of quarter
+C  wave data. That is, COSQB computes a sequence from its
+C  representation in terms of a cosine series with odd wave numbers.
+C  The transform is defined below at output parameter X.
+C
+C  COSQB is the unnormalized inverse of COSQF since a call of COSQB
+C  followed by a call of COSQF will multiply the input sequence X
+C  by 4*N.
+C
+C  The array WSAVE which is used by subroutine COSQB must be
+C  initialized by calling subroutine COSQI(N,WSAVE).
+C
+C
+C  Input Parameters
+C
+C  N       the length of the array X to be transformed.  The method
+C          is most efficient when N is a product of small primes.
+C
+C  X       an array which contains the sequence to be transformed
+C
+C  WSAVE   a work array that must be dimensioned at least 3*N+15
+C          in the program that calls COSQB.  The WSAVE array must be
+C          initialized by calling subroutine COSQI(N,WSAVE), and a
+C          different WSAVE array must be used for each different
+C          value of N.  This initialization does not have to be
+C          repeated so long as N remains unchanged.  Thus subsequent
+C          transforms can be obtained faster than the first.
+C
+C  Output Parameters
+C
+C  X       For I=1,...,N
+C
+C               X(I)= the sum from K=1 to K=N of
+C
+C                 4*X(K)*COS((2*K-1)*(I-1)*PI/(2*N))
+C
+C               A call of COSQB followed by a call of
+C               COSQF will multiply the sequence X by 4*N.
+C               Therefore COSQF is the unnormalized inverse
+C               of COSQB.
+C
+C  WSAVE   contains initialization calculations which must not
+C          be destroyed between calls of COSQB or COSQF.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  COSQB1
+C***END PROLOGUE  COSQB
+      DIMENSION       X(*)       ,WSAVE(*)
+      DATA TSQRT2 /2.82842712474619/
+C***FIRST EXECUTABLE STATEMENT  COSQB
+      IF (N-2) 101,102,103
+  101 X(1) = 4.*X(1)
+      RETURN
+  102 X1 = 4.*(X(1)+X(2))
+      X(2) = TSQRT2*(X(1)-X(2))
+      X(1) = X1
+      RETURN
+  103 CALL COSQB1 (N,X,WSAVE,WSAVE(N+1))
+      RETURN
+      END

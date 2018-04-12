@@ -1,0 +1,96 @@
+ 
+      SUBROUTINE SGBFA(ABD,LDA,N,ML,MU,IPVT,INFO)
+C***BEGIN PROLOGUE  SGBFA
+C***DATE WRITTEN   780814   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D2A2
+C***KEYWORDS  BANDED,FACTOR,LINEAR ALGEBRA,LINPACK,MATRIX
+C***AUTHOR  MOLER, C. B., (U. OF NEW MEXICO)
+C***PURPOSE  Factors a real BAND matrix by elimination.
+C***DESCRIPTION
+C
+C     SGBFA factors a real band matrix by elimination.
+C
+C     SGBFA is usually called by SBGCO, but it can be called
+C     directly with a saving in time if  RCOND  is not needed.
+C
+C     On Entry
+C
+C        ABD     REAL(LDA, N)
+C                contains the matrix in band storage.  The columns
+C                of the matrix are stored in the columns of  ABD  and
+C                the diagonals of the matrix are stored in rows
+C                ML+1 through 2*ML+MU+1 of  ABD .
+C                See the comments below for details.
+C
+C        LDA     INTEGER
+C                the leading dimension of the array  ABD .
+C                LDA must be .GE. 2*ML + MU + 1 .
+C
+C        N       INTEGER
+C                the order of the original matrix.
+C
+C        ML      INTEGER
+C                number of diagonals below the main diagonal.
+C                0 .LE. ML .LT. N .
+C
+C        MU      INTEGER
+C                number of diagonals above the main diagonal.
+C                0 .LE. MU .LT. N .
+C                More efficient if  ML .LE. MU .
+C     On Return
+C
+C        ABD     an upper triangular matrix in band storage and
+C                the multipliers which were used to obtain it.
+C                The factorization can be written  A = L*U , where
+C                L  is a product of permutation and unit lower
+C                triangular matrices and  U  is upper triangular.
+C
+C        IPVT    INTEGER(N)
+C                an integer vector of pivot indices.
+C
+C        INFO    INTEGER
+C                = 0  normal value.
+C                = K  if  U(K,K) .EQ. 0.0 .  This is not an error
+C                     condition for this subroutine, but it does
+C                     indicate that SGBSL will divide by zero if
+C                     called.  Use  RCOND  in SBGCO for a reliable
+C                     indication of singularity.
+C
+C     Band Storage
+C
+C           If  A  is a band matrix, the following program segment
+C           will set up the input.
+C
+C                   ML = (band width below the diagonal)
+C                   MU = (band width above the diagonal)
+C                   M = ML + MU + 1
+C                   DO 20 J = 1, N
+C                      I1 = MAX0(1, J-MU)
+C                      I2 = MIN0(N, J+ML)
+C                      DO 10 I = I1, I2
+C                         K = I - J + M
+C                         ABD(K,J) = A(I,J)
+C                10    CONTINUE
+C                20 CONTINUE
+C
+C           This uses rows  ML+1  through  2*ML+MU+1  of  ABD .
+C           In addition, the first  ML  rows in  ABD  are used for
+C           elements generated during the triangularization.
+C           The total number of rows needed in  ABD  is  2*ML+MU+1 .
+C           The  ML+MU by ML+MU  upper left triangle and the
+C           ML by ML  lower right triangle are not referenced.
+C
+C     LINPACK.  This version dated 08/14/78 .
+C     Cleve Moler, University of New Mexico, Argonne National Lab.
+C
+C     Subroutines and Functions
+C
+C     BLAS SAXPY,SSCAL,ISAMAX
+C     Fortran MAX0,MIN0
+C***REFERENCES  DONGARRA J.J., BUNCH J.R., MOLER C.B., STEWART G.W.,
+C                 *LINPACK USERS  GUIDE*, SIAM, 1979.
+C***ROUTINES CALLED  ISAMAX,SAXPY,SSCAL
+C***END PROLOGUE  SGBFA
+ 
+ 

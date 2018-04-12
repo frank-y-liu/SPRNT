@@ -1,0 +1,102 @@
+ 
+ 
+P A C K A G E      LINPAKS
+ 
+(Version 1978 )
+ 
+Analyse and solve various systems of linear algebraic equations. (Single
+precision version of LINPACK).
+ 
+ 
+SCHDC.........Compute Cholesky decomposition of real  positive  definite
+              matrix with optional pivoting.
+SCHDD.........Downdates Cholesky factorization of real positive definite
+              matrix.
+SCHEX.........Updates Cholesky factorization of real  positive  definite
+              matrix.
+SCHUD.........Updates Cholesky factorization of real  positive  definite
+              matrix.
+SGBCO.........Computes  LU  factorization  of  real  band   matrix   and
+              estimates its condition.
+SGBDI.........Uses LU factorization of real band matrix to  compute  its
+              determinant. (No provision for computing matrix inverse.)
+SGBFA.........Computes LU factorization of real band matrix.
+SGBSL.........Uses  LU  factorization  of  real  band  matrix  to  solve
+              systems.
+SGECO.........Computes LU  factorization  of  real  general  matrix  and
+              estimates its condition.
+SGEDI.........Uses LU factorization of real general  matrix  to  compute
+              its determinant and/or inverse.
+SGEFA.........Computes LU factorization of real general matrix.
+SGESL.........Uses LU factorization of  real  general  matrix  to  solve
+              systems.
+SGTSL.........Factors  a  real  tridiagonal  matrix  and  simultaneously
+              solves a system.
+SPBCO.........Uses Cholesky algorithm to compute factorization  of  real
+              positive definite band matrix and estimates its condition.
+SPBDI.........Uses factorization of real positive definite  band  matrix
+              to compute  its  determinant.  (No  provision  for  matrix
+              inverse.)
+SPBFA.........Uses Cholesky algorithm to compute factorization  of  real
+              positive definite band matrix.
+SPBSL.........Uses factorization of real positive definite  band  matrix
+              to solve systems.
+SPOCO.........Uses Cholesky algorithm to factor real  positive  definite
+              matrix and estimate its condition.
+SPODI.........Uses factorization of real  positive  definite  matrix  to
+              compute its determinant and/or inverse.
+SPOFA.........Uses Cholesky algorithm to factor real  positive  definite
+              matrix.
+SPOSL.........Uses factorization of real  positive  definite  matrix  to
+              solve systems.
+SPPCO.........Uses Cholesky algorithm to factor real  positive  definite
+              matrix stored in packed form and estimate its condition.
+SPPDI.........Uses factorization of real positive definite matrix stored
+              in packed form to compute its determinant and/or inverse.
+SPPFA.........Uses Cholesky algorithm to factor real  positive  definite
+              matrix stored in packed form.
+SPPSL.........Uses factorization of real positive definite matrix stored
+              in packed form to solve systems.
+SPTSL.........Decomposes real symmetric  positive  definite  tridiagonal
+              matrix and simultaneously solves a system.
+SQRDC.........Computes QR decomposition of real general matrix.
+SQRSL.........Manipulates a truncated QR decomposition of  real  general
+              matrix which is output from SQRDC.
+SSICO.........Computes factorization of real symmetric indefinite matrix
+              and estimates its condition.
+SSIDI.........Uses factorization of real symmetric indefinite matrix  to
+              compute its determinant and/or inverse.
+SSIFA.........Computes  factorization  of  real   symmetric   indefinite
+              matrix.
+SSISL.........Uses factorization of real symmetric indefinite matrix  to
+              solve systems.
+SSPCO.........Computes factorization of real symmetric indefinite matrix
+              stored in packed form and estimates its condition.
+SSPDI.........Uses factorization of  real  symmetric  indefinite  matrix
+              stored in packed form to compute  its  determinant  and/or
+              inverse.
+SSPFA.........Computes factorization of real symmetric indefinite matrix
+              stored in packed form.
+SSPSL.........Uses factorization of  real  symmetric  indefinite  matrix
+              stored in packed form to solve systems.
+SSVDC.........Computes Singular  Value  Decomposition  of  real  general
+              matrix.
+STRCO.........Estimates the condition of real triangular matrix.
+STRDI.........Computes determinant and/or  inverse  of  real  triangular
+              matrix.
+STRSL.........Solves systems with real triangular matrix.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 

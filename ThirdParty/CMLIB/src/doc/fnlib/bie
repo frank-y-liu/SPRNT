@@ -1,0 +1,54 @@
+ 
+      FUNCTION BIE(X)
+C***BEGIN PROLOGUE  BIE
+C***DATE WRITTEN   770701   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C10D
+C***KEYWORDS  BAIRY FUNCTION,EXPONENTIALLY SCALED,SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the exponentially scaled Bairy function.
+C***DESCRIPTION
+C
+C Evaluate BI(X) for X .LE. 0  and  BI(X)*EXP(ZETA)  where
+C ZETA = 2/3 * X**(3/2)  for X .GE. 0.0
+C
+C Series for BIF        on the interval -1.00000D+00 to  1.00000D+00
+C                                        with weighted error   1.88E-19
+C                                         log weighted error  18.72
+C                               significant figures required  17.74
+C                                    decimal places required  19.20
+C
+C Series for BIG        on the interval -1.00000D+00 to  1.00000D+00
+C                                        with weighted error   2.61E-17
+C                                         log weighted error  16.58
+C                               significant figures required  15.17
+C                                    decimal places required  17.03
+C
+C Series for BIF2       on the interval  1.00000D+00 to  8.00000D+00
+C                                        with weighted error   1.11E-17
+C                                         log weighted error  16.95
+C                        approx significant figures required  16.5
+C                                    decimal places required  17.45
+C
+C Series for BIG2       on the interval  1.00000D+00 to  8.00000D+00
+C                                        with weighted error   1.19E-18
+C                                         log weighted error  17.92
+C                        approx significant figures required  17.2
+C                                    decimal places required  18.42
+C
+C Series for BIP        on the interval  1.25000D-01 to  3.53553D-01
+C                                        with weighted error   1.91E-17
+C                                         log weighted error  16.72
+C                               significant figures required  15.35
+C                                    decimal places required  17.41
+C
+C Series for BIP2       on the interval  0.          to  1.25000D-01
+C                                        with weighted error   1.05E-18
+C                                         log weighted error  17.98
+C                               significant figures required  16.74
+C                                    decimal places required  18.71
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  CSEVL,INITS,R1MACH,R9AIMP
+C***END PROLOGUE  BIE
+ 
+ 

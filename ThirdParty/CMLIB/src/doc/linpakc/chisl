@@ -1,0 +1,63 @@
+ 
+      SUBROUTINE CHISL(A,LDA,N,KPVT,B)
+C***BEGIN PROLOGUE  CHISL
+C***DATE WRITTEN   780814   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D2D1A
+C***KEYWORDS  COMPLEX,HERMITIAN,LINEAR ALGEBRA,LINPACK,MATRIX,SOLVE
+C***AUTHOR  BUNCH, J., (UCSD)
+C***PURPOSE  CHISL solves the COMPLEX HERMITIAN system A*X=B using
+C            factors of CHIFA
+C***DESCRIPTION
+C
+C     CHISL solves the complex Hermitian system
+C     A * X = B
+C     using the factors computed by CHIFA.
+C
+C     On Entry
+C
+C        A       COMPLEX(LDA,N)
+C                the output from CHIFA.
+C
+C        LDA     INTEGER
+C                the leading dimension of the array  A .
+C
+C        N       INTEGER
+C                the order of the matrix  A .
+C
+C        KVPT    INTEGER(N)
+C                the pivot vector from CHIFA.
+C
+C        B       COMPLEX(N)
+C                the right hand side vector.
+C
+C     On Return
+C
+C        B       the solution vector  X .
+C
+C     Error Condition
+C
+C        A division by zero may occur if  CHICO  has set RCOND .EQ. 0.0
+C        or  CHIFA  has set INFO .NE. 0  .
+C
+C     To compute  INVERSE(A) * C  where  C  is a matrix
+C     with  P  columns
+C           CALL CHIFA(A,LDA,N,KVPT,INFO)
+C           IF (INFO .NE. 0) GO TO ...
+C           DO 10 J = 1, p
+C              CALL CHISL(A,LDA,N,KVPT,C(1,J))
+C        10 CONTINUE
+C
+C     LINPACK.  This version dated 08/14/78 .
+C     James Bunch, Univ. Calif. San Diego, Argonne Nat. Lab.
+C
+C     Subroutines and Functions
+C
+C     BLAS CAXPY,CDOTC
+C     Fortran CONJG,IABS
+C***REFERENCES  DONGARRA J.J., BUNCH J.R., MOLER C.B., STEWART G.W.,
+C                 *LINPACK USERS  GUIDE*, SIAM, 1979.
+C***ROUTINES CALLED  CAXPY,CDOTC
+C***END PROLOGUE  CHISL
+ 
+ 

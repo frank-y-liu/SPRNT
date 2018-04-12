@@ -1,0 +1,25 @@
+ 
+ 
+ 
+P A C K A G E      LICEPAK
+ 
+(Version 1980 )
+ 
+Solves  various  linear  algebraic  eigenvalue  problems.  (Provides  an
+interface to the EISPACK package).
+ 
+ 
+CGEEV.........Computes the eigenvalues and, optionally, the eigenvectors
+              of a general complex matrix.
+CHIEV.........Computes the eigenvalues and, optionally, the eigenvectors
+              of a complex hermitian matrix.
+SGEEV.........Computes the eigenvalues and, optionally, the eigenvectors
+              of a general real matrix.
+SSIEV.........Computes the eigenvalues and, optionally, the eigenvectors
+              of a real symmetric matrix.
+SSPEV.........Computes eigenvalues and, optionally eigenvectors of  real
+              symmetric matrix stored in packed form.
+ 
+ 
+ 
+ 

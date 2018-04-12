@@ -1,0 +1,79 @@
+      SUBROUTINE COVOUT(MM, M, N, A, CLAB, RLAB, TITLE, K, DMWORK,
+     *                  WORK1, DMC1, DMC2, C, WORK, OUNIT)
+C
+C<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+C
+C   PURPOSE
+C   -------
+C
+C      PRINTS RESULTS OF MIX
+C
+C   DESCRIPTION
+C   -----------
+C
+C   1.  SEE DESCRIPTION OF MIX FOR DESCRIPTION OF OUTPUT.
+C
+C   INPUT PARAMETERS
+C   ----------------
+C
+C   SEE SUBROUTINE MIX FOR PARAMETERS
+C
+C   REFERENCE
+C   ---------
+C
+C     HARTIGAN, J. A. (1975).  CLUSTERING ALGORITHMS, JOHN WILEY &
+C        SONS, INC., NEW YORK.  PAGE 127.
+C
+C<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+C
+      INTEGER DMWORK, P, U, PMIX, DMC1, DMC2, OUNIT
+      DIMENSION A(MM,*), WORK1(DMWORK,*), C(DMC1,DMC2,*), WORK(*)
+      CHARACTER*4 CLAB(*), RLAB(*)
+      CHARACTER*10 TITLE
+C
+      P = 0
+      U = P + M
+      PMIX = U + N + 1
+      WRITE(OUNIT,1) TITLE,K
+    1 FORMAT('1 MIXTURE MODEL FOR ',A10,' WITH',I5,' CLUSTERS')
+      WRITE(OUNIT,2)(KK,KK=1,K)
+    2 FORMAT('0 CLUSTER',3X,9(6X,I4,3X))
+C
+C     PRINT CLUSTER PROBABILITIES
+C
+      WRITE(OUNIT,3)(WORK1(PMIX,KK),KK=1,K)
+    3 FORMAT('0 MIXTURE PROBABILITIES',/(12X,10F12.6))
+C
+C     PRINT MEANS
+C
+      WRITE(OUNIT,4)
+    4 FORMAT('0 CLUSTER MEANS')
+      DO 10 J=1,N
+   10    WRITE(OUNIT,5)CLAB(J),(WORK1(U+J,KK),KK=1,K)
+    5 FORMAT(1X,A4,5X,10F12.4)
+      WRITE(OUNIT,6)(C(1,N+1,J),J=1,K)
+    6 FORMAT('0 DETERMINANTS',/(12X,10E12.4))
+      WRITE(OUNIT,7)
+    7 FORMAT('0 WITHIN CLUSTER VARIANCES AND CORRELATIONS')
+      DO 30 I=1,N
+         DO 30 J=I,N
+            DO 20 KK=1,K
+               Z=C(I,I,KK)*C(J,J,KK)
+               WORK(KK)=C(I,J,KK)
+               IF(I.EQ.J) Z=0.
+   20          IF(Z.NE.0.) WORK(KK)=C(I,J,KK)*Z**(-0.5)
+            IF(I.EQ.J) WRITE(OUNIT,8)
+    8       FORMAT(' ')
+            WRITE(OUNIT,9) CLAB(I),CLAB(J),(WORK(KK),KK=1,K)
+    9       FORMAT(1X,A4,2X,A4,10F12.4)
+   30 CONTINUE
+C
+C     PRINT PROBABILITIES
+C
+      WRITE(OUNIT,11)
+   11 FORMAT('0 BELONGING PROBABILITIES')
+      DO 40 I=1,M
+   40    WRITE(OUNIT,12) RLAB(I),(WORK1(P+I,KK),KK=1,K)
+   12 FORMAT(1X,A4,2X,10F12.6)
+      RETURN
+      END

@@ -1,0 +1,42 @@
+  
+  
+    ----------------------------------------------------------------------
+         N I S T   C O R E   M A T H   L I B R A R Y   ( C M L I B )
+    ----------------------------------------------------------------------
+  
+                    ( Version 3.0  ---  April 1988 )
+  
+    A  collection  of  non-proprietary,   easily   transportable   Fortran
+    subprogram packages solving a variety of mathematical and  statistical
+    problems.
+  
+         Compiled by   Ronald F. Boisvert
+                       Sally E. Howe
+                       David K. Kahaner
+  
+                       Computing and Applied Mathematics Laboratory
+                       National Institute of Standards and Technology
+                       Gaithersburg, MD 20899
+  
+    Although most applications will only  use  a  small  number  of  CMLIB
+    modules, there are no name conflicts within the library and  thus  all
+    of CMLIB can easily be installed. All  the  documentation  is  machine
+    readable.  For a summary of its contents see ./doc/Summary.
+  
+  
+   ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+   +                                                                        +
+   +  DISCLAIMER                                                            +
+   +                                                                        +
+   +  Inclusion of computer programs in the NIST Core Math Library (CMLIB)  +
+   +  does not imply certification, recommendation, or endorsement by the   +
+   +  National Institute of Standards and Technology, nor does it imply     +
+   +  that the programs are necessarily the best available for the purpose. +
+   +                                                                        +
+   ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+   For installation information read the INSTALL file.
+
+   For further information on CMLIB, contact Ron Boisvert (boisvert@nist.gov)
+   of the NIST ITL Mathematical and Computational Sciences Division.
+

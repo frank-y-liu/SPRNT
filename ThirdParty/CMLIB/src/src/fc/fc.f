@@ -1,0 +1,438 @@
+      SUBROUTINE FC(NDATA,XDATA,YDATA,SDDATA,NORD,NBKPT,BKPT,NCONST,
+     1   XCONST,YCONST,NDERIV,MODE,COEFF,W,IW)
+C***BEGIN PROLOGUE  FC
+C***DATE WRITTEN   780801   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***REVISION HISTORY  (YYMMDD)
+C   000330  Modified array declarations.  (JEC)
+C
+C***CATEGORY NO.  K1A1A1,K1A2A,L8A3
+C***KEYWORDS  B-SPLINES,CONSTRAINED LEAST SQUARES,CURVE FITTING,
+C             LEAST SQUARES
+C***AUTHOR  HANSON, R. J., (SNLA)
+C***PURPOSE  Fits a piece-wise polynomial curve to discrete data.
+C            The piece-wise polynomials are represented as B-splines.
+C            The fitting is done in a least squares sense.  Equality
+C            and inequality constraints can be imposed on the fitted
+C            curve.
+C***DESCRIPTION
+C
+C      This subprogram fits a piece-wise polynomial curve
+C      to discrete data.  The piece-wise polynomials are
+C      represented as B-splines.
+C      The fitting is done in a weighted least squares sense.
+C      Equality and inequality constraints can be imposed on the
+C      fitted curve.  For a description of the B-splines and
+C      usage instructions and software for evaluating them, see
+C
+C      C. W. de Boor, Package for Calculating with B-Splines.
+C                     SIAM J. Numer. Anal., p. 441, (June, 1977).
+C
+C      For further documentation and discussion of constrained
+C      curve fitting using B-splines, see
+C
+C      R. J. Hanson, Constrained Least Squares Curve Fitting
+C                   to Discrete Data Using B-Splines, a User's
+C                   Guide. Sandia Labs. Tech. Rept. SAND-78-1291,
+C                   December, (1978).
+C
+C  Input..
+C      NDATA,XDATA(*),
+C      YDATA(*),
+C      SDDATA(*)
+C                         The NDATA discrete (X,Y) pairs and
+C                         the Y value standard deviation or
+C                         uncertainty, SD, are in the respective
+C                         arrays XDATA(*), YDATA(*), and SDDATA(*).
+C                         No sorting of XDATA(*) is required.  Any
+C                         non-negative value of NDATA is allowed.  A
+C                         negative value of NDATA is an error.
+C                         A zero value for any entry of SDDATA(*)
+C                         will weight that data point as 1.
+C                         Otherwise the weight of that data point is
+C                         the reciprocal of this entry.
+C
+C      NORD,NBKPT,
+C      BKPT(*)
+C                         The NBKPT knots of the B-spline of order
+C                         NORD are in the array BKPT(*).  Normally
+C                         the problem data interval will be included
+C                         between the limits BKPT(NORD) and
+C                         BKPT(NBKPT-NORD+1).  The additional end knots
+C                         BKPT(I),I=1,...,NORD-1 and I=NBKPT-NORD+2,...,
+C                         NBKPT, are required to compute the functions
+C                         used to fit the data.
+C                         No sorting of BKPT(*) is required.
+C                         Internal to FC( ) the extreme end knots
+C                         may be slightly reduced and increased
+C                         respectively to accommodate any data
+C                         values that are exterior to the given knot
+C                         values.  The array BKPT(*) is not altered.
+C                         The value of NORD must satisfy 1 < NORD < 20 .
+C                         The value of NBKPT must satisfy NBKPT .GE.
+C                         2*NORD.  Other values are considered errors.
+C
+C                         (The order of the spline is one more
+C                         than the degree of the piece-wise polynomial
+C                         defined on each interval.  This is consistent
+C                         with the B-spline package convention.  For
+C                         example, NORD=4 when we are using piece-wise
+C                         cubics.)
+C
+C      NCONST,XCONST(*),
+C      YCONST(*),NDERIV(*)
+C                         The number of conditions that constrain
+C                         the B-spline is NCONST.  A constraint is
+C                         specified by an (X,Y) pair in the arrays
+C                         XCONST(*) and YCONST(*), and by the type
+C                         of constraint and derivative value encoded
+C                         in the array NDERIV(*).  No sorting
+C                         of XCONST(*) is required.  The value of
+C                         NDERIV(*) is determined as follows.
+C                         Suppose the I-th constraint applies to the
+C                         J-th derivative of the B-spline.  (Any
+C                         non-negative value of J < NORD is permitted.
+C                         In particular the value J=0 refers to the
+C                         B-spline itself.)
+C                         For this I-th constraint, set
+C                          XCONST(I)=X,
+C                          YCONST(I)=Y, and
+C                          NDERIV(I)=ITYPE+4*J, where
+C
+C                          ITYPE = 0,      if (J-th deriv. at X) .LE. Y.
+C                                = 1,      if (J-th deriv. at X) .GE. Y.
+C                                = 2,      if (J-th deriv. at X) .EQ. Y.
+C                                = 3,      if (J-th deriv. at X) .EQ.
+C                                             (J-th deriv. at Y).
+C                          (A value of NDERIV(I)=-1 will cause this
+C                          constraint to be ignored.  This subprogram
+C                          feature is often useful when temporarily
+C                          suppressing a constraint while still
+C                          retaining the source code of the calling
+C                          program.)
+C
+C        MODE
+C                         An input flag that directs the least
+C                         squares solution method used by FC( ).
+C
+C                         The variance function, referred to below,
+C                         defines the square of the probable error
+C                         of the fitted curve at any point, XVAL.
+C                         This feature of FC( ) allows one to
+C                         use the square root of this variance
+C                         function to determine a probable error
+C                         band around the fitted curve.
+C
+C                         =1  a new problem.  No variance function.
+C
+C                         =2  a new problem.  Want variance function.
+C
+C                         =3  an old problem.  No variance function.
+C
+C                         =4  an old problem.  Want variance function.
+C
+C                         Any value of MODE other than 1-4 is an error.
+C
+C                         The user with a new problem can skip
+C                         directly to the description of the
+C                         input parameters IW(1), IW(2).
+C
+C
+C                         If the user correctly specifies the new or old
+C                         problem status, the subprogram FC( ) will
+C                         perform more efficiently.
+C                         By an old problem it is meant that subprogram
+C                         FC( ) was last called with this same set
+C                         of knots, data points and weights.
+C
+C                         Another often useful deployment of this
+C                         old problem designation can occur when one
+C                         has previously obtained a Q-R orthogonal
+C                         decomposition of the matrix resulting
+C                         from B-spline fitting of data (without
+C                         constraints) at the breakpoints BKPT(I),
+C                         I=1,...,NBKPT.  For example, this matrix
+C                         could be the result of sequential
+C                         accumulation of the least squares
+C                         equations for a very large data set.
+C                         The user writes this code in a manner
+C                         convenient for the application.  For the
+C                         discussion here let
+C
+C                                      N=NBKPT-NORD, and K=N+3
+C
+C                         Let us assume that an equivalent least
+C                         squares system
+C
+C                                      RC=D
+C
+C                         has been obtained.  Here R is an N+1
+C                         by N matrix and D is a vector with
+C                         N+1 components.  The last row of R
+C                         is zero.  The matrix R is upper triangular
+C                         and banded.  At most NORD of the diagonals are
+C                         nonzero.
+C                         The contents of R and D can be copied to
+C                         the working array W(*) as follows.
+C
+C                         The I-th diagonal of R, which has
+C                         N-I+1 elements, is copied to W(*) starting at
+C
+C                                      W((I-1)*K+1),
+C
+C                         for I=1,...,NORD.
+C                         The vector D is copied to W(*) starting at
+C
+C                                      W(NORD*K+1)
+C
+C                         The input value used for NDATA is arbitrary
+C                         when an old problem is designated.  Because
+C                         of the feature of FC( ) that checks the
+C                         working storage array lengths, a value
+C                         not exceeding NBKPT should be used.
+C                         For example, use NDATA=0.
+C
+C                         (The constraints or variance function
+C                         request can change in each call to FC( ).)
+C                         A new problem is anything other than an old
+C                         problem.
+C
+C
+C      IW(1),IW(2)
+C                         The amounts of working storage actually
+C                         allocated for the working arrays W(*) and
+C                         IW(*).  These quantities are compared with the
+C                         actual amounts of storage needed in FC( ).
+C                         Insufficient storage allocated for
+C                         either W(*) or IW(*) is an error.
+C                         This feature was included in FC( )
+C                         because misreading the storage formulas
+C                         for W(*) and IW(*) might very well
+C                         lead to subtle and hard-to-find
+C                         programming bugs.
+C
+C                         Length of W(*) must be at least
+C
+C                           NB=(NBKPT-NORD+3)*(NORD+1)+
+C                               2*MAX0(NDATA,NBKPT)+NBKPT+NORD**2
+C
+C                         Whenever possible the code uses banded matrix
+C                         processors BNDACC( ) and BNDSOL( ).  These
+C                         are utilized if there are no constraints,
+C                         no variance function is required, and there
+C                         is sufficient data to uniquely determine
+C                         the B-spline coefficents.
+C                         If the band processors cannot be used to
+C                         determine the solution, then the constrained
+C                         least squares code LSEI( ) is used.
+C                         In this case the subprogram requires an
+C                         additional block of storage in W(*).  For the
+C                         discussion here define the integers
+C                         NEQCON and NINCON respectively as the
+C                         number of equality (ITYPE=2,3) and
+C                         inequality (ITYPE=0,1) constraints
+C                         imposed on the fitted curve.  Define
+C
+C                           L=NBKPT-NORD+1
+C
+C                         and note that
+C
+C                           NCONST=NEQCON+NINCON.
+C
+C                         When the subprogram FC( ) uses LSEI( ) the
+C                         length of the working array W(*) must be at
+C                         least
+C
+C                           LW=NB+(L+NCONST)*L+
+C                              2*(NEQCON+L)+(NINCON+L)+(NINCON+2)*(L+6)
+C
+C                         The length of the array IW(*) must be at least
+C
+C                           IW1=NINCON+2*L
+C
+C                         in any case.
+C  Output..
+C      MODE
+C                         An output flag that indicates the status
+C                         of the constrained curve fit.
+C
+C                         =-1  a usage error of FC( ) occurred.  The
+C                              offending condition is noted with the
+C                              SLATEC library error processor,
+C                              XERROR( ).  In case the working
+C                              arrays W(*) or IW(*) are not long
+C                              enough, the minimal acceptable
+C                              length is printed using the SLATEC
+C                              error processing subprogram, XERRWV( ).
+C
+C                         = 0  successful constrained curve fit.
+C
+C                         = 1  the requested equality constraints
+C                              are contradictory.
+C
+C                         = 2  the requested inequality constraints
+C                              are contradictory.
+C
+C                         = 3  both equality and inequality constraints
+C                              are contradictory.
+C
+C      COEFF(*)
+C                         If the output value of MODE=0 or 1, this array
+C                         contains the unknowns obtained from the least
+C                         squares fitting process.  These N=NBKPT-NORD
+C                         parameters are the B-spline coefficients.
+C                         For MODE=1, the equality constraints are
+C                         contradictory.  To make the fitting process
+C                         more robust, the equality constraints are
+C                         satisfied in a least squares sense.  In
+C                         this case the array COEFF(*) contains
+C                         B-spline coefficients for this extended
+C                         concept of a solution.
+C                         If MODE=-1,2 or 3 on output, the array
+C                         COEFF(*) is undefined.
+C
+C  Working Arrays..
+C      W(*),IW(*)
+C                         These arrays are respectively typed
+C                         real and integer.  Their required
+C                         lengths are specified as input parameters
+C                         in IW(1), IW(2) noted above.
+C                         The contents of W(*) must not be modified
+C                         by the user if the variance function
+C                         is desired.
+C
+C  Evaluating the
+C  Variance Function..
+C                         To evaluate the variance function
+C                         (assuming that the uncertainties of the
+C                         Y values were provided to FC( ) and an
+C                         input value of MODE=2 or 4 was used), use the
+C                         function subprogram CV( )
+C
+C                           VAR=CV(XVAL,NDATA,NCONST,NORD,NBKPT,
+C                                  BKPT,W)
+C
+C                         Here XVAL is the point where the variance
+C                         is desired.  The other arguments have the
+C                         same meaning as in the usage of FC( ).
+C
+C                         For those users employing the old problem
+C                         designation, let MDATA be the number of
+C                         data points in the problem.  (This
+C                         may be different from NDATA if the
+C                         old problem designation feature was
+C                         used.)  The value, VAR, should be multiplied
+C                         by the quantity
+C
+C                         FLOAT(MAX0(NDATA-N,1))/FLOAT(MAX0(MDATA-N,1))
+C
+C                         The output of this subprogram is not
+C                         defined if an input value of MODE=1 or 3
+C                         was used in FC( ) or if an output value of
+C                         MODE=-1, 2, or 3 was obtained.
+C                         The variance function, except for the
+C                         scaling factor noted above, is given by
+C
+C                           VAR=(transpose of B(XVAL))*C*B(XVAL)
+C
+C                         The vector B(XVAL) is the B-spline basis
+C                         function values at X=XVAL.
+C                         The covariance matrix, C, of the
+C                         solution coefficients accounts only
+C                         for the least squares equations and
+C                         the explicitly stated equality constraints.
+C                         This fact must be considered when
+C                         interpreting the variance function from
+C                         a data fitting problem that has
+C                         inequality constraints on the fitted curve.
+C
+C  Evaluating the
+C  Fitted Curve..
+C                         To evaluate derivative number IDER at XVAL,
+C                         use the function subprogram BVALU( )
+C
+C                           F = BVALU(BKPT,COEFF,NBKPT-NORD,NORD,IDER,
+C                                      XVAL,INBV,WORKB)
+C
+C                         The output of this subprogram will not be
+C                         defined unless an output value of MODE=0 or 1
+C                         was obtained from FC( ), XVAL is in the data
+C                         interval, and IDER is nonnegative and .LT.
+C                         NORD.
+C
+C                         The first time BVALU( ) is called, INBV=1
+C                         must be specified.  This value of INBV is the
+C                         overwritten by BVALU( ).  The array WORKB(*)
+C                         must be of length at least 3*NORD, and must
+C                         not be the same as the W(*) array used in
+C                         the call to FC( ).
+C
+C                         BVALU( ) expects the breakpoint array BKPT(*)
+C                         to be sorted.
+C***REFERENCES  HANSON R.J., *CONSTRAINED LEAST SQUARES CURVE FITTING
+C                 TO DISCRETE DATA USING B-SPLINES, A USERS
+C                 GUIDE*, SAND78-1291, DECEMBER,1978.
+C***ROUTINES CALLED  FCMN
+C***END PROLOGUE  FC
+C END OF ABSTRACT
+C
+C      SUBROUTINE           FUNCTION/REMARKS
+C
+C      BSPLVD( ),         COMPUTE DERIVATIVE AND FUNCTION VALUES
+C      BSPLVN( )          OF B-SPLINES.  FROM THE B-SPLINE PACKAGE
+C                         OF DE BOOR NOTED ABOVE.
+C
+C      BNDACC( ),         BANDED LEAST SQUARES MATRIX PROCESSORS.
+C      BNDSOL( )          FROM LAWSON-HANSON, SOLVING LEAST
+C                         SQUARES PROBLEMS.
+C
+C      SSORT( )           DATA SORTING SUBROUTINE, FROM THE
+C                         SANDIA MATH. LIBRARY, SAND77-1441.
+C      XERROR( ),         PROPOSED ERROR HANDLING ROUTINES
+C      XERRWV( )          FOR THE SLATEC MATH. LIBRARY.
+C                         SEE SAND78-1189, BY R. E. JONES.
+C
+C      LSEI( )            CONSTRAINED LEAST SQUARES SOLVER.  FROM
+C                         HASKELL-HANSON, SAND78-1290.
+C
+C      SCOPY( ),SSCAL( ), SUBROUTINES FROM THE BLAS PACKAGE.
+C      SAXPY( ),SDOT( )   LOCATED ON SANDIA. MATH. LIBRARY. SEE
+C                         SAND77-0898 FOR DESCRIPTION.
+C
+C                         WRITTEN BY R. HANSON, SANDIA LABS.,
+C                         ALB., N. M., JUNE-AUGUST, 1978.
+C     REVISED FEB. 14, 1979.
+C
+      DIMENSION XDATA(*), YDATA(*), SDDATA(*), BKPT(*), XCONST(*),
+     1 YCONST(*), NDERIV(*)
+      DIMENSION COEFF(*), W(*), IW(*)
+C***FIRST EXECUTABLE STATEMENT  FC
+      MDG = NBKPT - NORD + 3
+      MDW = NBKPT - NORD + 1 + NCONST
+C                         USAGE IN FCMN( ) OF W(*)..
+C      I1,...,I2-1      G(*,*)
+C
+C      I2,...,I3-1      XTEMP(*)
+C
+C      I3,...,I4-1      PTEMP(*)
+C
+C      I4,...,I5-1      BKPT(*) (LOCAL TO FCMN( ))
+C
+C      I5,...,I6-1      BF(*,*)
+C
+C      I6,...,I7-1      W(*,*)
+C
+C      I7,...           WORK(*) FOR LSEI( )
+C
+      I1 = 1
+      I2 = I1 + MDG*(NORD+1)
+      I3 = I2 + MAX0(NDATA,NBKPT)
+      I4 = I3 + MAX0(NDATA,NBKPT)
+      I5 = I4 + NBKPT
+      I6 = I5 + NORD*NORD
+      I7 = I6 + MDW*(NBKPT-NORD+1)
+      CALL FCMN(NDATA, XDATA, YDATA, SDDATA, NORD, NBKPT, BKPT, NCONST,
+     1 XCONST, YCONST, NDERIV, MODE, COEFF, W(I5), W(I2), W(I3), W(I4),
+     2 W(I1), MDG, W(I6), MDW, W(I7), IW)
+      RETURN
+      END

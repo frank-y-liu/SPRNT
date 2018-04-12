@@ -1,0 +1,68 @@
+ 
+      SUBROUTINE DPPFA(AP,N,INFO)
+C***BEGIN PROLOGUE  DPPFA
+C***DATE WRITTEN   780814   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D2B1B
+C***KEYWORDS  DOUBLE PRECISION,FACTOR,LINEAR ALGEBRA,LINPACK,MATRIX,
+C             PACKED,POSITIVE DEFINITE
+C***AUTHOR  MOLER, C. B., (U. OF NEW MEXICO)
+C***PURPOSE  Factors a d.p. SYMMETRIC POSITIVE DEFINITE matrix (packed
+C            form)
+C***DESCRIPTION
+C
+C     DPPFA factors a double precision symmetric positive definite
+C     matrix stored in packed form.
+C
+C     DPPFA is usually called by DPPCO, but it can be called
+C     directly with a saving in time if  RCOND  is not needed.
+C     (time for DPPCO) = (1 + 18/N)*(time for DPPFA) .
+C
+C     On Entry
+C
+C        AP      DOUBLE PRECISION (N*(N+1)/2)
+C                the packed form of a symmetric matrix  A .  The
+C                columns of the upper triangle are stored sequentially
+C                in a one-dimensional array of length  N*(N+1)/2 .
+C                See comments below for details.
+C
+C        N       INTEGER
+C                the order of the matrix  A .
+C
+C     On Return
+C
+C        AP      an upper triangular matrix  R , stored in packed
+C                form, so that  A = TRANS(R)*R .
+C
+C        INFO    INTEGER
+C                = 0  for normal return.
+C                = K  if the leading minor of order  K  is not
+C                     positive definite.
+C
+C
+C     Packed Storage
+C
+C          The following program segment will pack the upper
+C          triangle of a symmetric matrix.
+C
+C                K = 0
+C                DO 20 J = 1, N
+C                   DO 10 I = 1, J
+C                      K = K + 1
+C                      AP(K) = A(I,J)
+C             10    CONTINUE
+C             20 CONTINUE
+C
+C     LINPACK.  This version dated 08/14/78 .
+C     Cleve Moler, University of New Mexico, Argonne National Lab.
+C
+C     Subroutines and Functions
+C
+C     BLAS DDOT
+C     Fortran DSQRT
+C***REFERENCES  DONGARRA J.J., BUNCH J.R., MOLER C.B., STEWART G.W.,
+C                 *LINPACK USERS  GUIDE*, SIAM, 1979.
+C***ROUTINES CALLED  DDOT
+C***END PROLOGUE  DPPFA
+ 
+ 

@@ -1,0 +1,65 @@
+ 
+      SUBROUTINE HTRID3(NM,N,A,D,E,E2,TAU)
+C***BEGIN PROLOGUE  HTRID3
+C***DATE WRITTEN   760101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  D4C1B1
+C***KEYWORDS  EIGENVALUES,EIGENVECTORS,EISPACK
+C***AUTHOR  SMITH, B. T., ET AL.
+C***PURPOSE  Reduces complex Hermitian (packed) matrix to real
+C            symmetric tridiagonal matrix by unitary similarity
+C            transformations.
+C***DESCRIPTION
+C
+C     This subroutine is a translation of a complex analogue of
+C     the ALGOL procedure TRED3, NUM. MATH. 11, 181-195(1968)
+C     by Martin, Reinsch, and Wilkinson.
+C     HANDBOOK FOR AUTO. COMP., VOL.II-LINEAR ALGEBRA, 212-226(1971).
+C
+C     This subroutine reduces a COMPLEX HERMITIAN matrix, stored as
+C     a single square array, to a real symmetric tridiagonal matrix
+C     using unitary similarity transformations.
+C
+C     On INPUT
+C
+C        NM must be set to the row dimension of two-dimensional
+C          array parameters as declared in the calling program
+C          dimension statement.
+C
+C        N is the order of the matrix.
+C
+C        A contains the lower triangle of the complex hermitian input
+C          matrix.  The real parts of the matrix elements are stored
+C          in the full lower triangle of A, and the imaginary parts
+C          are stored in the transposed positions of the strict upper
+C          triangle of A.  No storage is required for the zero
+C          imaginary parts of the diagonal elements.
+C
+C     On OUTPUT
+C
+C        A contains information about the unitary transformations
+C          used in the reduction.
+C
+C        D contains the diagonal elements of the the tridiagonal matrix.
+C
+C        E contains the subdiagonal elements of the tridiagonal
+C          matrix in its last N-1 positions.  E(1) is set to zero.
+C
+C        E2 contains the squares of the corresponding elements of E.
+C          E2 may coincide with E if the squares are not needed.
+C
+C        TAU contains further information about the transformations.
+C
+C     Calls PYTHAG(A,B) for sqrt(A**2 + B**2).
+C
+C     Questions and comments should be directed to B. S. Garbow,
+C     APPLIED MATHEMATICS DIVISION, ARGONNE NATIONAL LABORATORY
+C     ------------------------------------------------------------------
+C***REFERENCES  B. T. SMITH, J. M. BOYLE, J. J. DONGARRA, B. S. GARBOW,
+C                 Y. IKEBE, V. C. KLEMA, C. B. MOLER, *MATRIX EIGEN-
+C                 SYSTEM ROUTINES - EISPACK GUIDE*, SPRINGER-VERLAG,
+C                 1976.
+C***ROUTINES CALLED  PYTHAG
+C***END PROLOGUE  HTRID3
+ 
+ 

@@ -1,0 +1,55 @@
+ 
+      SUBROUTINE SROTM(N,SX,INCX,SY,INCY,SPARAM)
+C***BEGIN PROLOGUE  SROTM
+C***DATE WRITTEN   791001   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D1A8
+C***KEYWORDS  BLAS,LINEAR ALGEBRA,MODIFIED GIVENS ROTATION,VECTOR
+C***AUTHOR  LAWSON, C. L., (JPL)
+C           HANSON, R. J., (SNLA)
+C           KINCAID, D. R., (U. OF TEXAS)
+C           KROGH, F. T., (JPL)
+C***PURPOSE  Apply s.p. modified Givens transformation
+C***DESCRIPTION
+C
+C                B L A S  Subprogram
+C    Description of Parameters
+C
+C     --Input--
+C        N  number of elements in input vector(s)
+C       SX  single precision vector with N elements
+C     INCX  storage spacing between elements of SX
+C       SY  single precision vector with N elements
+C     INCY  storage spacing between elements of SY
+C   SPARAM  5-element vector. SPARAM(1) is SFLAG described below.
+C             Locations 2-5 of SPARAM contain elements of the
+C              transformation matrix H described below.
+C
+C     --Output--
+C       SX  rotated vector (unchanged if N .LE. 0)
+C       SY  rotated vector (unchanged if N .LE. 0)
+C
+C     Apply the modified Givens transformation, H, to the 2 by N matrix
+C
+C     (SX**T) , where **T indicates transpose.  The elements of SX are
+C     in (SY**T)
+C
+C     SX(LX+I*INCX), I = 0 to N-1, where LX = 1 if INCX .GE. 0, else
+C     LX = (-INCX)*N, and similarly for SY using using LY and INCY.
+C     With SPARAM(1)=SFLAG, H has one of the following forms..
+C
+C     SFLAG=-1.E0     SFLAG=0.E0        SFLAG=1.E0     SFLAG=-2.E0
+C
+C       (SH11  SH12)    (1.E0  SH12)    (SH11  1.E0)    (1.E0  0.E0)
+C     H=(          )    (          )    (          )    (          )
+C       (SH21  SH22),   (SH21  1.E0),   (-1.E0 SH22),   (0.E0  1.E0).
+C
+C     See SROTMG for a description of data storage in SPARAM.
+C***REFERENCES  LAWSON C.L., HANSON R.J., KINCAID D.R., KROGH F.T.,
+C                 *BASIC LINEAR ALGEBRA SUBPROGRAMS FOR FORTRAN USAGE*,
+C                 ALGORITHM NO. 539, TRANSACTIONS ON MATHEMATICAL
+C                 SOFTWARE, VOLUME 5, NUMBER 3, SEPTEMBER 1979, 308-323
+C***ROUTINES CALLED  (NONE)
+C***END PROLOGUE  SROTM
+ 
+ 

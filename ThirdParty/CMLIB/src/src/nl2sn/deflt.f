@@ -1,0 +1,111 @@
+      SUBROUTINE DEFLT(ALG, IV, LIV, LV, V)
+C
+C  ***  SUPPLY ***SOL (VERSION 2.3) DEFAULT VALUES TO IV AND V  ***
+C
+C  ***  ALG = 1 MEANS REGRESSION CONSTANTS.
+C  ***  ALG = 2 MEANS GENERAL UNCONSTRAINED OPTIMIZATION CONSTANTS.
+C
+      INTEGER LIV, LV
+      INTEGER ALG, IV(LIV)
+      REAL V(LV)
+C
+      EXTERNAL  VDFLT
+C VDFLT.... PROVIDES DEFAULT VALUES TO V.
+C
+      INTEGER MIV, MV
+      INTEGER MINIV(2), MINV(2)
+C
+C  ***  SUBSCRIPTS FOR IV  ***
+C
+      INTEGER ALGSAV, COVPRT, COVREQ, DTYPE, HC, IERR, INITH, INITS,
+     1        IPIVOT, IVNEED, LASTIV, LASTV, LMAT, MXFCAL, MXITER,
+     2        NFCOV, NGCOV, NVDFLT, OUTLEV, PARPRT, PARSAV, PERM,
+     3        PRUNIT, QRTYP, RDREQ, RMAT, SOLPRT, STATPR, VNEED,
+     4        VSAVE, X0PRT
+C
+C  ***  IV SUBSCRIPT VALUES  ***
+C
+C/6
+      DATA ALGSAV/51/, COVPRT/14/, COVREQ/15/, DTYPE/16/, HC/71/,
+     1     IERR/75/, INITH/25/, INITS/25/, IPIVOT/76/, IVNEED/3/,
+     2     LASTIV/44/, LASTV/45/, LMAT/42/, MXFCAL/17/, MXITER/18/,
+     3     NFCOV/52/, NGCOV/53/, NVDFLT/50/, OUTLEV/19/, PARPRT/20/,
+     4     PARSAV/49/, PERM/58/, PRUNIT/21/, QRTYP/80/, RDREQ/57/,
+     5     RMAT/78/, SOLPRT/22/, STATPR/23/, VNEED/4/, VSAVE/60/,
+     6     X0PRT/24/
+C/7
+C     PARAMETER (ALGSAV=51, COVPRT=14, COVREQ=15, DTYPE=16, HC=71,
+C    1           IERR=75, INITH=25, INITS=25, IPIVOT=76, IVNEED=3,
+C    2           LASTIV=44, LASTV=45, LMAT=42, MXFCAL=17, MXITER=18,
+C    3           NFCOV=52, NGCOV=53, NVDFLT=50, OUTLEV=19, PARPRT=20,
+C    4           PARSAV=49, PERM=58, PRUNIT=21, QRTYP=80, RDREQ=57,
+C    5           RMAT=78, SOLPRT=22, STATPR=23, VNEED=4, VSAVE=60,
+C    6           X0PRT=24)
+C/
+      DATA MINIV(1)/80/, MINIV(2)/59/, MINV(1)/98/, MINV(2)/71/
+C
+C-------------------------------  BODY  --------------------------------
+C
+      IF (ALG .LT. 1 .OR. ALG .GT. 2) GO TO 40
+      MIV = MINIV(ALG)
+      IF (LIV .LT. MIV) GO TO 20
+      MV = MINV(ALG)
+      IF (LV .LT. MV) GO TO 30
+      CALL VDFLT(ALG, LV, V)
+      IV(1) = 12
+      IV(ALGSAV) = ALG
+      IV(IVNEED) = 0
+      IV(LASTIV) = MIV
+      IV(LASTV) = MV
+      IV(LMAT) = MV + 1
+      IV(MXFCAL) = 200
+      IV(MXITER) = 150
+      IV(OUTLEV) = 1
+      IV(PARPRT) = 1
+      IV(PERM) = MIV + 1
+      IV(PRUNIT) = I1MACH(2)
+      IV(SOLPRT) = 1
+      IV(STATPR) = 1
+      IV(VNEED) = 0
+      IV(X0PRT) = 1
+C
+      IF (ALG .GE. 2) GO TO 10
+C
+C  ***  REGRESSION  VALUES
+C
+      IV(COVPRT) = 3
+      IV(COVREQ) = 1
+      IV(DTYPE) = 1
+      IV(HC) = 0
+      IV(IERR) = 0
+      IV(INITS) = 0
+      IV(IPIVOT) = 0
+      IV(NVDFLT) = 32
+      IV(PARSAV) = 67
+      IV(QRTYP) = 1
+      IV(RDREQ) = 3
+      IV(RMAT) = 0
+      IV(VSAVE) = 58
+      GO TO 999
+C
+C  ***  GENERAL OPTIMIZATION VALUES
+C
+ 10   IV(DTYPE) = 0
+      IV(INITH) = 1
+      IV(NFCOV) = 0
+      IV(NGCOV) = 0
+      IV(NVDFLT) = 25
+      IV(PARSAV) = 47
+      GO TO 999
+C
+ 20   IV(1) = 15
+      GO TO 999
+C
+ 30   IV(1) = 16
+      GO TO 999
+C
+ 40   IV(1) = 67
+C
+ 999  RETURN
+C  ***  LAST CARD OF DEFLT FOLLOWS  ***
+      END

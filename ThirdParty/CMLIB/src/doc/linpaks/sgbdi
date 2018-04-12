@@ -1,0 +1,58 @@
+ 
+      SUBROUTINE SGBDI(ABD,LDA,N,ML,MU,IPVT,DET)
+C***BEGIN PROLOGUE  SGBDI
+C***DATE WRITTEN   780814   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D3A2
+C***KEYWORDS  BANDED,DETERMINANT,FACTOR,INVERSE,LINEAR ALGEBRA,LINPACK,
+C             MATRIX
+C***AUTHOR  MOLER, C. B., (U. OF NEW MEXICO)
+C***PURPOSE  Computes the determinant of a BAND matrix
+C            using the factors computed by SGBCO or SGBFA.
+C            If the inverse is needed, use SGBSL  N  times.
+C***DESCRIPTION
+C
+C     SGBDI computes the determinant of a band matrix
+C     using the factors computed by SBGCO or SGBFA.
+C     If the inverse is needed, use SGBSL  N  times.
+C
+C     On Entry
+C
+C        ABD     REAL(LDA, N)
+C                the output from SBGCO or SGBFA.
+C
+C        LDA     INTEGER
+C                the leading dimension of the array  ABD .
+C
+C        N       INTEGER
+C                the order of the original matrix.
+C
+C        ML      INTEGER
+C                number of diagonals below the main diagonal.
+C
+C        MU      INTEGER
+C                number of diagonals above the main diagonal.
+C
+C        IPVT    INTEGER(N)
+C                the pivot vector from SBGCO or SGBFA.
+C
+C     On Return
+C
+C        DET     REAL(2)
+C                determinant of original matrix.
+C                Determinant = DET(1) * 10.0**DET(2)
+C                with  1.0 .LE. ABS(DET(1)) .LT. 10.0
+C                or  DET(1) = 0.0 .
+C
+C     LINPACK.  This version dated 08/14/78 .
+C     Cleve Moler, University of New Mexico, Argonne National Lab.
+C
+C     Subroutines and Functions
+C
+C     Fortran ABS
+C***REFERENCES  DONGARRA J.J., BUNCH J.R., MOLER C.B., STEWART G.W.,
+C                 *LINPACK USERS  GUIDE*, SIAM, 1979.
+C***ROUTINES CALLED  (NONE)
+C***END PROLOGUE  SGBDI
+ 
+ 

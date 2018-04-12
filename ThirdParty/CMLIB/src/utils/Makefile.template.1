@@ -1,0 +1,21 @@
+
+#  This makefile maintains cmlib for a specific architecture.
+
+#  The maintainence is done locally, but all compilations take place
+#  on a remote host with a designated compiler and options.  The library
+#  is then suitable for use on such remote hosts. 
+
+# --------------------------------------------------------------------------
+
+
+#  ... Macros pertaining to remote compilation host
+
+#      ARCH     == type of architecture
+#      HOST     == remote host where compilations are done
+#      COMPILER == name of the Fortran compiler on remote host
+#      FFLAGS   == flags for Fortran compiler on remote host
+#      RANLIB   == the ranlib command on the remote host
+#      THISDIR  == location of current directory on remote host
+#      MACHCON  == floating-point type from ../src/machcon
+#      SPECIALS == sublibraries requiring special processing 
+

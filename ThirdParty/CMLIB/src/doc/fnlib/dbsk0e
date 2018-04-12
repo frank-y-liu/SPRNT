@@ -1,0 +1,40 @@
+ 
+      DOUBLE PRECISION FUNCTION DBSK0E(X)
+C***BEGIN PROLOGUE  DBSK0E
+C***DATE WRITTEN   770701   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C10B1
+C***KEYWORDS  BESSEL FUNCTION,DOUBLE PRECISION,EXPONENTIALLY SCALED,
+C             MODIFIED BESSEL FUNCTION,ORDER ZERO,SPECIAL FUNCTION,
+C             THIRD KIND
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the d.p. exponentially scaled modified (hyper-
+C            bolic) Bessel function of the third kind of order zero.
+C***DESCRIPTION
+C
+C DBSK0E(X) computes the double precision exponentially scaled
+C modified (hyperbolic) Bessel function of the third kind of
+C order zero for positive double precision argument X.
+C
+C Series for BK0        on the interval  0.          to  4.00000E+00
+C                                        with weighted error   3.08E-33
+C                                         log weighted error  32.51
+C                               significant figures required  32.05
+C                                    decimal places required  33.11
+C
+C Series for AK0        on the interval  1.25000E-01 to  5.00000E-01
+C                                        with weighted error   2.85E-32
+C                                         log weighted error  31.54
+C                               significant figures required  30.19
+C                                    decimal places required  32.33
+C
+C Series for AK02       on the interval  0.          to  1.25000E-01
+C                                        with weighted error   2.30E-32
+C                                         log weighted error  31.64
+C                               significant figures required  29.68
+C                                    decimal places required  32.40
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D1MACH,DBESI0,DCSEVL,INITDS,XERROR
+C***END PROLOGUE  DBSK0E
+ 
+ 

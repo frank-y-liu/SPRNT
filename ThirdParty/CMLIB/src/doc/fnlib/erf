@@ -1,0 +1,23 @@
+ 
+      FUNCTION ERF (X)
+C***BEGIN PROLOGUE  ERF
+C***DATE WRITTEN   770401   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C8A,L5A1E
+C***KEYWORDS  ERF,ERROR FUNCTION,SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the error function, ERF.
+C***DESCRIPTION
+C ERF(X) calculates the single precision error function for
+C single precision argument X.
+C
+C Series for ERF        on the interval  0.          to  1.00000D+00
+C                                        with weighted error   7.10E-18
+C                                         log weighted error  17.15
+C                               significant figures required  16.31
+C                                    decimal places required  17.71
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  CSEVL,ERFC,INITS,R1MACH
+C***END PROLOGUE  ERF
+ 
+ 

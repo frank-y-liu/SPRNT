@@ -1,0 +1,304 @@
+ 
+      SUBROUTINE HWSPLR(A,B,M,MBDCND,BDA,BDB,C,D,N,NBDCND,BDC,BDD,
+     1   ELMBDA,F,IDIMF,PERTRB,IERROR,W)
+C***BEGIN PROLOGUE  HWSPLR
+C***DATE WRITTEN   801001   (YYMMDD)
+C***REVISION DATE  830415   (YYMMDD)
+C***CATEGORY NO.  I2B1A1A
+C***KEYWORDS  ELLIPTIC,FISHPACK,HELMHOLTZ,PDE,POLAR
+C***AUTHOR  ADAMS, J., (NCAR)
+C           SWARZTRAUBER, P., (NCAR)
+C           SWEET, R., (NCAR)
+C***PURPOSE  Subroutine HWSPLR solves a finite difference approximation
+C            to the Helmholtz equation in polar coordinates.
+C***DESCRIPTION
+C
+C     Subroutine HWSPLR solves a finite difference approximation to the
+C     Helmholtz equation in polar coordinates:
+C
+C          (1/R)(d/dR)(R(dU/dR)) + (1/R**2)(d/dTHETA)(dU/dTHETA)
+C
+C                                + LAMBDA*U = F(R,THETA).
+C
+C
+C
+C
+C     * * * * * * * *    Parameter Description     * * * * * * * * * *
+C
+C             * * * * * *   On Input    * * * * * *
+C
+C     A,B
+C       The range of R, i.e., A .LE. R .LE. B.  A must be less than B
+C       and A must be non-negative.
+C
+C     M
+C       The number of panels into which the interval (A,B) is
+C       subdivided.  Hence, there will be M+1 grid points in the
+C       R-direction given by R(I) = A+(I-1)DR, for I = 1,2,...,M+1,
+C       where DR = (B-A)/M is the panel width. M must be greater than 3.
+C
+C     MBDCND
+C       Indicates the type of boundary condition at R = A and R = B.
+C
+C       = 1  If the solution is specified at R = A and R = B.
+C       = 2  If the solution is specified at R = A and the derivative of
+C            the solution with respect to R is specified at R = B.
+C       = 3  If the derivative of the solution with respect to R is
+C            specified at R = A (see note below) and R = B.
+C       = 4  If the derivative of the solution with respect to R is
+C            specified at R = A (see note below) and the solution is
+C            specified at R = B.
+C       = 5  If the solution is unspecified at R = A = 0 and the
+C            solution is specified at R = B.
+C       = 6  If the solution is unspecified at R = A = 0 and the
+C            derivative of the solution with respect to R is specified
+C            at R = B.
+C
+C       NOTE:  If A = 0, do not use MBDCND = 3 or 4, but instead use
+C              MBDCND = 1,2,5, or 6  .
+C
+C     BDA
+C       A one-dimensional array of length N+1 that specifies the values
+C       of the derivative of the solution with respect to R at R = A.
+C       When MBDCND = 3 or 4,
+C
+C            BDA(J) = (d/dR)U(A,THETA(J)), J = 1,2,...,N+1  .
+C
+C       When MBDCND has any other value, BDA is a dummy variable.
+C
+C     BDB
+C       A one-dimensional array of length N+1 that specifies the values
+C       of the derivative of the solution with respect to R at R = B.
+C       When MBDCND = 2,3, or 6,
+C
+C            BDB(J) = (d/dR)U(B,THETA(J)), J = 1,2,...,N+1  .
+C
+C       When MBDCND has any other value, BDB is a dummy variable.
+C
+C     C,D
+C       The range of THETA, i.e., C .LE. THETA .LE. D.  C must be less
+C       than D.
+C
+C     N
+C       The number of panels into which the interval (C,D) is
+C       subdivided.  Hence, there will be N+1 grid points in the
+C       THETA-direction given by THETA(J) = C+(J-1)DTHETA for
+C       J = 1,2,...,N+1, where DTHETA = (D-C)/N is the panel width.  N
+C       must be greater than 3.
+C
+C     NBDCND
+C       Indicates the type of boundary conditions at THETA = C and
+C       at THETA = D.
+C
+C       = 0  If the solution is periodic in THETA, i.e.,
+C            U(I,J) = U(I,N+J).
+C       = 1  If the solution is specified at THETA = C and THETA = D
+C            (see note below).
+C       = 2  If the solution is specified at THETA = C and the
+C            derivative of the solution with respect to THETA is
+C            specified at THETA = D (see note below).
+C       = 4  If the derivative of the solution with respect to THETA is
+C            specified at THETA = C and the solution is specified at
+C            THETA = D (see note below).
+C
+C       NOTE:  When NBDCND = 1,2, or 4, do not use MBDCND = 5 or 6
+C              (the former indicates that the solution is specified at
+C              R = 0, the latter indicates the solution is unspecified
+C              at R = 0).  Use instead MBDCND = 1 or 2  .
+C
+C     BDC
+C       A one-dimensional array of length M+1 that specifies the values
+C       of the derivative of the solution with respect to THETA at
+C       THETA = C.  When NBDCND = 3 or 4,
+C
+C            BDC(I) = (d/dTHETA)U(R(I),C), I = 1,2,...,M+1  .
+C
+C       When NBDCND has any other value, BDC is a dummy variable.
+C
+C     BDD
+C       A one-dimensional array of length M+1 that specifies the values
+C       of the derivative of the solution with respect to THETA at
+C       THETA = D.  When NBDCND = 2 or 3,
+C
+C            BDD(I) = (d/dTHETA)U(R(I),D), I = 1,2,...,M+1  .
+C
+C       When NBDCND has any other value, BDD is a dummy variable.
+C
+C     ELMBDA
+C       The constant LAMBDA in the Helmholtz equation.  If
+C       LAMBDA .LT. 0, a solution may not exist.  However, HWSPLR will
+C       attempt to find a solution.
+C
+C     F
+C       A two-dimensional array that specifies the values of the right
+C       side of the Helmholtz equation and boundary values (if any).
+C       For I = 2,3,...,M and J = 2,3,...,N
+C
+C            F(I,J) = F(R(I),THETA(J)).
+C
+C       On the boundaries F is defined by
+C
+C            MBDCND   F(1,J)            F(M+1,J)
+C            ------   -------------     -------------
+C
+C              1      U(A,THETA(J))     U(B,THETA(J))
+C              2      U(A,THETA(J))     F(B,THETA(J))
+C              3      F(A,THETA(J))     F(B,THETA(J))
+C              4      F(A,THETA(J))     U(B,THETA(J))   J = 1,2,...,N+1
+C              5      F(0,0)            U(B,THETA(J))
+C              6      F(0,0)            F(B,THETA(J))
+C
+C            NBDCND   F(I,1)            F(I,N+1)
+C            ------   ---------         ---------
+C
+C              0      F(R(I),C)         F(R(I),C)
+C              1      U(R(I),C)         U(R(I),D)
+C              2      U(R(I),C)         F(R(I),D)   I = 1,2,...,M+1
+C              3      F(R(I),C)         F(R(I),D)
+C              4      F(R(I),C)         U(R(I),D)
+C
+C       F must be dimensioned at least (M+1)*(N+1).
+C
+C       NOTE
+C
+C       If the table calls for both the solution U and the right side F
+C       at a corner then the solution must be specified.
+C
+C
+C     IDIMF
+C       The row (or first) dimension of the array F as it appears in the
+C       program calling HWSPLR.  This parameter is used to specify the
+C       variable dimension of F.  IDIMF must be at least M+1  .
+C
+C     W
+C       A one-dimensional array that must be provided by the user for
+C       work space.  W may require up to 4*(N+1) +
+C       (13 + INT(log2(N+1)))*(M+1) locations.  The actual number of
+C       locations used is computed by HWSPLR and is returned in location
+C       W(1).
+C
+C
+C             * * * * * *   On Output     * * * * * *
+C
+C     F
+C       Contains the solution U(I,J) of the finite difference
+C       approximation for the grid point (R(I),THETA(J)),
+C       I = 1,2,...,M+1, J = 1,2,...,N+1  .
+C
+C     PERTRB
+C       If a combination of periodic, derivative, or unspecified
+C       boundary conditions is specified for A poisson equation
+C       (LAMBDA = 0), a solution may not exist.  PERTRB is a constant,
+C       calculated and subtracted from F, which ensures that a solution
+C       exists.  HWSPLR then computes this solution, which is a least
+C       squares solution to the original approximation.  This solution
+C       plus any constant is also a solution.  Hence, the solution is
+C       not unique.  PERTRB should be small compared to the right side.
+C       Otherwise, a solution is obtained to an essentially different
+C       problem.  This comparison should always be made to insure that a
+C       meaningful solutin has been obtained.
+C
+C     IERROR
+C       An error flag that indicates invalid input parameters.  Except
+C       for numbers 0 and 11, a solution is not attempted.
+C
+C       =  0  No error.
+C       =  1  A .LT. 0  .
+C       =  2  A .GE. B.
+C       =  3  MBDCND .LT. 1 or MBDCND .GT. 6  .
+C       =  4  C .GE. D.
+C       =  5  N .LE. 3
+C       =  6  NBDCND .LT. 0 or .GT. 4  .
+C       =  7  A = 0, MBDCND = 3 or 4  .
+C       =  8  A .GT. 0, MBDCND .GE. 5  .
+C       =  9  MBDCND .GE. 5, NBDCND .NE. 0 and NBDCND .NE. 3  .
+C       = 10  IDIMF .LT. M+1  .
+C       = 11  LAMBDA .GT. 0  .
+C       = 12  M .LE. 3
+C
+C       Since this is the only means of indicating a possibly incorrect
+C       call to HWSPLR, the user should test IERROR after the call.
+C
+C     W
+C       W(1) contains the required length of W.
+C***LONG DESCRIPTION
+C
+C     * * * * * * *   Program Specifications    * * * * * * * * * * * *
+C
+C     Dimension of   BDA(N+1),BDB(N+1),BDC(M+1),BDD(M+1),F(IDIMF,N+1),
+C     Arguments      W(see argument list)
+C
+C     Latest         June 1, 1976
+C     Revision
+C
+C     Subprograms    HWSPLR,GENBUN,POISD2,POISN2,POISP2,COSGEN,MERGE,
+C     Required       TRIX,TRI3,PIMACH
+C
+C     Special        None
+C     Conditions
+C
+C     Common         NONE
+C     Blocks
+C
+C     I/O
+C
+C     Precision      Single
+C
+C     Specialist     Roland Sweet
+C
+C     Language       FORTRAN
+C
+C     History        Standardized April 1, 1973
+C                    Revised January 1, 1976
+C
+C     Algorithm      The routine defines the finite difference
+C                    equations, incorporates boundary data, and adjusts
+C                    the right side of singular systems and then calls
+C                    GENBUN to solve the system.
+C
+C     Space          13430(octal) = 5912(decimal)  locations on the NCAR
+C     Required       Control Data 7600
+C
+C     Timing and        The execution time T on the NCAR Control Data
+C     Accuracy       7600 for subroutine HWSPLR is roughly proportional
+C                    to M*N*log2(N), but also depends on the input
+C                    parameters NBDCND and MBDCND.  Some typical values
+C                    are listed in the table below.
+C                       The solution process employed results in a loss
+C                    of no more than three significant digits for N and
+C                    M as large as 64.  More detailed information about
+C                    accuracy can be found in the documentation for
+C                    subroutine GENBUN which is the routine that
+C                    solves the finite difference equations.
+C
+C
+C                       M(=N)    MBDCND    NBDCND    T(MSECS)
+C                       -----    ------    ------    --------
+C
+C                        32        1         0          31
+C                        32        1         1          23
+C                        32        3         3          36
+C                        64        1         0         128
+C                        64        1         1          96
+C                        64        3         3         142
+C
+C     Portability    American National Standards Institute FORTRAN.
+C                    All machine dependent constants are located in the
+C                    function PIMACH.
+C
+C     Required       COS
+C     Resident
+C     Routines
+C
+C     Reference      Swarztrauber, P. and R. Sweet, 'Efficient FORTRAN
+C                    Subprograms For The Solution Of Elliptic Equations'
+C                    NCAR TN/IA-109, July, 1975, 138 pp.
+C
+C     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+C***REFERENCES  SWARZTRAUBER, P. AND R. SWEET, 'EFFICIENT FORTRAN
+C                 SUBPROGRAMS FOR THE SOLUTION OF ELLIPTIC EQUATIONS'
+C                 NCAR TN/IA-109, JULY, 1975, 138 PP.
+C***ROUTINES CALLED  GENBUN
+C***END PROLOGUE  HWSPLR
+ 
+ 

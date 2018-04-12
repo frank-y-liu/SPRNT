@@ -1,0 +1,62 @@
+ 
+      SUBROUTINE CPPDI(AP,N,DET,JOB)
+C***BEGIN PROLOGUE  CPPDI
+C***DATE WRITTEN   780814   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D2D1B,D3D1B
+C***KEYWORDS  COMPLEX,DETERMINANT,FACTOR,INVERSE,LINEAR ALGEBRA,LINPACK,
+C             MATRIX,PACKED,POSITIVE DEFINITE
+C***AUTHOR  MOLER, C. B., (U. OF NEW MEXICO)
+C***PURPOSE  Computes the determinant and inverse of a COMPLEX HERMITIAN
+C            POSITIVE DEFINITE matrix using factors from CPPCO or CPPFA.
+C***DESCRIPTION
+C
+C     CPPDI computes the determinant and inverse
+C     of a complex Hermitian positive definite matrix
+C     using the factors computed by CPPCO or CPPFA .
+C
+C     On Entry
+C
+C        AP      COMPLEX (N*(N+1)/2)
+C                the output from CPPCO or CPPFA.
+C
+C        N       INTEGER
+C                the order of the matrix  A .
+C
+C        JOB     INTEGER
+C                = 11   both determinant and inverse.
+C                = 01   inverse only.
+C                = 10   determinant only.
+C
+C     On Return
+C
+C        AP      the upper triangular half of the inverse .
+C                The strict lower triangle is unaltered.
+C
+C        DET     REAL(2)
+C                determinant of original matrix if requested.
+C                Otherwise not referenced.
+C                Determinant = DET(1) * 10.0**DET(2)
+C                with  1.0 .LE. DET(1) .LT. 10.0
+C                or  DET(1) .EQ. 0.0 .
+C
+C     Error Condition
+C
+C        A division by zero will occur if the input factor contains
+C        a zero on the diagonal and the inverse is requested.
+C        It will not occur if the subroutines are called correctly
+C        and if CPOCO or CPOFA has set INFO .EQ. 0 .
+C
+C     LINPACK.  This version dated 08/14/78 .
+C     Cleve Moler, University of New Mexico, Argonne National Lab.
+C
+C     Subroutines and Functions
+C
+C     BLAS CAXPY,CSCAL
+C     Fortran CONJG,MOD,REAL
+C***REFERENCES  DONGARRA J.J., BUNCH J.R., MOLER C.B., STEWART G.W.,
+C                 *LINPACK USERS  GUIDE*, SIAM, 1979.
+C***ROUTINES CALLED  CAXPY,CSCAL
+C***END PROLOGUE  CPPDI
+ 
+ 

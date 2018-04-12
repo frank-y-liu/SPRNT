@@ -1,0 +1,59 @@
+ 
+      SUBROUTINE SGEFA(A,LDA,N,IPVT,INFO)
+C***BEGIN PROLOGUE  SGEFA
+C***DATE WRITTEN   780814   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D2A1
+C***KEYWORDS  FACTOR,LINEAR ALGEBRA,LINPACK,MATRIX
+C***AUTHOR  MOLER, C. B., (U. OF NEW MEXICO)
+C***PURPOSE  Factors a real matrix by Gaussian elimination.
+C***DESCRIPTION
+C
+C     SGEFA factors a real matrix by Gaussian elimination.
+C
+C     SGEFA is usually called by SGECO, but it can be called
+C     directly with a saving in time if  RCOND  is not needed.
+C     (Time for SGECO) = (1 + 9/N)*(Time for SGEFA) .
+C
+C     On Entry
+C
+C        A       REAL(LDA, N)
+C                the matrix to be factored.
+C
+C        LDA     INTEGER
+C                the leading dimension of the array  A .
+C
+C        N       INTEGER
+C                the order of the matrix  A .
+C
+C     On Return
+C
+C        A       an upper triangular matrix and the multipliers
+C                which were used to obtain it.
+C                The factorization can be written  A = L*U , where
+C                L  is a product of permutation and unit lower
+C                triangular matrices and  U  is upper triangular.
+C
+C        IPVT    INTEGER(N)
+C                an integer vector of pivot indices.
+C
+C        INFO    INTEGER
+C                = 0  normal value.
+C                = K  if  U(K,K) .EQ. 0.0 .  This is not an error
+C                     condition for this subroutine, but it does
+C                     indicate that SGESL or SGEDI will divide by zero
+C                     if called.  Use  RCOND  in SGECO for a reliable
+C                     indication of singularity.
+C
+C     LINPACK.  This version dated 08/14/78 .
+C     Cleve Moler, University of New Mexico, Argonne National Lab.
+C
+C     Subroutines and Functions
+C
+C     BLAS SAXPY,SSCAL,ISAMAX
+C***REFERENCES  DONGARRA J.J., BUNCH J.R., MOLER C.B., STEWART G.W.,
+C                 *LINPACK USERS  GUIDE*, SIAM, 1979.
+C***ROUTINES CALLED  ISAMAX,SAXPY,SSCAL
+C***END PROLOGUE  SGEFA
+ 
+ 

@@ -1,0 +1,37 @@
+ 
+      FUNCTION BESY1(X)
+C***BEGIN PROLOGUE  BESY1
+C***DATE WRITTEN   770401   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C10A1
+C***KEYWORDS  BESSEL FUNCTION,ORDER ONE,SECOND KIND,SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the Bessel function of the second kind of order
+C            one.
+C***DESCRIPTION
+C
+C BESY1(X) calculates the Bessel function of the second kind of
+C order one for real argument X.
+C
+C Series for BY1        on the interval  0.          to  1.60000D+01
+C                                        with weighted error   1.87E-18
+C                                         log weighted error  17.73
+C                               significant figures required  17.83
+C                                    decimal places required  18.30
+C
+C Series for BM1        on the interval  0.          to  6.25000D-02
+C                                        with weighted error   5.61E-17
+C                                         log weighted error  16.25
+C                               significant figures required  14.97
+C                                    decimal places required  16.91
+C
+C Series for BTH1       on the interval  0.          to  6.25000D-02
+C                                        with weighted error   4.10E-17
+C                                         log weighted error  16.39
+C                               significant figures required  15.96
+C                                    decimal places required  17.08
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  BESJ1,CSEVL,INITS,R1MACH,XERROR
+C***END PROLOGUE  BESY1
+ 
+ 

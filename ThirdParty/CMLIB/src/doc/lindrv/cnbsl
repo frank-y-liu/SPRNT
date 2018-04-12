@@ -1,0 +1,79 @@
+ 
+      SUBROUTINE CNBSL(ABE,LDA,N,ML,MU,IPVT,B,JOB)
+C***BEGIN PROLOGUE  CNBSL
+C***DATE WRITTEN   800730   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D2C2
+C***KEYWORDS  BAND,COMPLEX,LINEAR EQUATIONS,NONSYMMETRIC
+C***AUTHOR  VOORHEES, E., (LANL)
+C***PURPOSE  Solves a COMPLEX BAND system using factors computed by
+C            CNBCO or CNBFA.
+C***DESCRIPTION
+C
+C     CNBSL solves the complex band system
+C     A * X = B  or  CTRANS(A) * X = B
+C     using the factors computed by CNBCO or CNBFA.
+C
+C     On Entry
+C
+C        ABE     COMPLEX(LDA, NC)
+C                the output from CNBCO or CNBFA.
+C                NC must be .GE. 2*ML+MU+1 .
+C
+C        LDA     INTEGER
+C                the leading dimension of the array  ABE .
+C
+C        N       INTEGER
+C                the order of the original matrix.
+C
+C        ML      INTEGER
+C                number of diagonals below the main diagonal.
+C
+C        MU      INTEGER
+C                number of diagonals above the main diagonal.
+C
+C        IPVT    INTEGER(N)
+C                the pivot vector from CNBCO or CNBFA.
+C
+C        B       COMPLEX(N)
+C                the right hand side vector.
+C
+C        JOB     INTEGER
+C                = 0         to solve  A*X = B .
+C                = nonzero   to solve  CTRANS(A)*X = B , where
+C                            CTRANS(A)  is the conjugate transpose.
+C
+C     On Return
+C
+C        B       the solution vector  X .
+C
+C     Error Condition
+C
+C        A division by zero will occur if the input factor contains a
+C        zero on the diagonal.  Technically this indicates singularity
+C        but it is often caused by improper arguments or improper
+C        setting of LDA.  It will not occur if the subroutines are
+C        called correctly and if CNBCO has set RCOND .GT. 0.0
+C        or CNBFA has set INFO .EQ. 0 .
+C
+C     To compute  INVERSE(A) * C  where  C  is a matrix
+C     with  P  columns
+C           CALL CNBCO(ABE,LDA,N,ML,MU,IPVT,RCOND,Z)
+C           IF (RCOND is too small) GO TO ...
+C           DO 10 J = 1, P
+C             CALL CNBSL(ABE,LDA,N,ML,MU,IPVT,C(1,J),0)
+C        10 CONTINUE
+C
+C     SLATEC.  This version dated 07/30/80 .
+C     E. A. Voorhees, Los Alamos Scientific Laboratory
+C
+C     Subroutines and Functions
+C
+C     BLAS CAXPY,CDOTC
+C     Fortran  CONJG,MIN0
+C***REFERENCES  SUBROUTINE CNBSL WAS DEVELOPED BY GROUP C-3, LOS ALAMOS
+C                 SCIENTIFIC LABORATORY, LOS ALAMOS, NM 87545.
+C***ROUTINES CALLED  CAXPY,CDOTC
+C***END PROLOGUE  CNBSL
+ 
+ 

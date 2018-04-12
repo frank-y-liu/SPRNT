@@ -1,0 +1,392 @@
+ 
+      SUBROUTINE BVSUP(Y,NROWY,NCOMP,XPTS,NXPTS,A,NROWA,ALPHA,NIC,B,
+     1   NROWB,BETA,NFC,IGOFX,RE,AE,IFLAG,WORK,NDW,IWORK,NDIW,NEQIVP)
+C***BEGIN PROLOGUE  BVSUP
+C***DATE WRITTEN   750601   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  I1B1
+C***KEYWORDS  BOUNDARY VALUE,ORTHONORMALIZATION,SHOOTING,TWO POINT
+C***AUTHOR  SCOTT, M. R., SNLA
+C           WATTS, H. A., SNLA
+C***PURPOSE  Subroutine BVSUP solves a LINEAR two-point boundary
+C            value problem using superposition coupled with an
+C            orthonormalization procedure and a variable-step
+C            integration scheme.
+C***DESCRIPTION
+C
+C **********************************************************************
+C     Subroutine BVSUP solves a LINEAR two-point boundary-value problem
+C     of the form
+C                        dY/dX = MATRIX(X,U)*Y(X) + G(X,U)
+C                A*Y(Xinitial) = ALPHA ,  B*Y(Xfinal) = BETA
+C
+C     Coupled with the solution of the initial value problem
+C
+C                        dU/dX = F(X,U)
+C                      U(Xinitial) = ETA
+C
+C **********************************************************************
+C     Abstract
+C        The method of solution uses superposition coupled with an
+C     orthonormalization procedure and a variable-step integration
+C     scheme.  Each time the superposition solutions start to
+C     lose their numerical linear independence, the vectors are
+C     reorthonormalized before integration proceeds.  The underlying
+C     principle of the algorithm is then to piece together the
+C     intermediate (orthogonalized) solutions, defined on the various
+C     subintervals, to obtain the desired solutions.
+C
+C **********************************************************************
+C     INPUT to BVSUP
+C **********************************************************************
+C
+C     NROWY = Actual row dimension of Y in calling program.
+C             NROWY must be .GE. NCOMP
+C
+C     NCOMP = Number of components per solution vector.
+C             NCOMP is equal to number of original differential
+C             equations.  NCOMP = NIC + NFC.
+C
+C     XPTS = Desired output points for solution. They must be monotonic.
+C            Xinitial = XPTS(1)
+C            Xfinal = XPTS(NXPTS)
+C
+C     NXPTS = Number of output points
+C
+C     A(NROWA,NCOMP) = Boundary condition matrix at Xinitial,
+C                      must be contained in (NIC,NCOMP) sub-matrix.
+C
+C     NROWA = Actual row dimension of A in calling program,
+C             NROWA must be .GE. NIC.
+C
+C     ALPHA(NIC+NEQIVP) = Boundary conditions at Xinitial.
+C                         If NEQIVP .GT. 0 (see below), the boundary
+C                         conditions at Xinitial for the initial value
+C                         equations must be stored starting in
+C                         position (NIC + 1) of ALPHA.
+C                         Thus,  ALPHA(NIC+K) = ETA(K).
+C
+C     NIC = Number of boundary conditions at Xinitial.
+C
+C     B(NROWB,NCOMP) = Boundary condition matrix at Xfinal,
+C                      must be contained in (NFC,NCOMP) sub-matrix.
+C
+C     NROWB = Actual row dimension of B in calling program,
+C             NROWB must be .GE. NFC.
+C
+C     BETA(NFC) = Boundary conditions at Xfinal.
+C
+C     NFC = Number of boundary conditions at Xfinal
+C
+C     IGOFX =0 -- The inhomogeneous term G(X) is identically zero.
+C           =1 -- The inhomogeneous term G(X) is not identically zero.
+C                 (if IGOFX=1, then subroutine GVEC (or UVEC) must be
+C                  supplied).
+C
+C     RE = Relative error tolerance used by the integrator
+C          (see one of the integrators)
+C
+C     AE = Absolute error tolerance used by the integrator
+C          (see one of the integrators)
+C **NOTE-  RE and AE should not both be zero.
+C
+C     IFLAG = A status parameter used princpally for output.
+C             However,for efficient solution of problems which
+C             are originally defined as complex valued (but
+C             converted to real systems to use this code),
+C             the user must set IFLAG=13 on input. See the comment below
+C             for more information on solving such problems.
+C
+C     WORK(NDW) = Floating point array used for internal storage.
+C
+C     NDW = Actual dimension of WORK array allocated by user.
+C           An estimate for NDW can be computed from the following
+C            NDW = 120 + NCOMP**2 * (6 + NXPTS/2 + expected number of
+C                                                orthonormalizations/8)
+C             For the DISK or TAPE storage mode,
+C            NDW = 6 * NCOMP**2 + 10 * NCOMP + 120
+C  However, when the ADAMS integrator is to be used, the estimates are
+C            NDW = 120 + NCOMP**2 * (13 + NXPTS/2 + expected number of
+C                                                orthonormalizations/8)
+C    and     NDW = 13 * NCOMP**2 + 22 * NCOMP + 120   , respectively.
+C
+C     IWORK(NDIW) = Integer array used for internal storage.
+C
+C     NDIW = Actual dimension of IWORK array allocated by user.
+C            An estimate for NDIW can be computed from the following
+C            NDIW = 50 + NCOMP * (1 + expected number of
+C                                        orthonormalizations)
+C **NOTE --  The amount of storage required is problem dependent and may
+C            be difficult to predict in advance. Experience has shown
+C            that for most problems 20 or fewer orthonormalizations
+C            should suffice. If the problem cannot be completed with the
+C            allotted storage, then a message will be printed which
+C            estimates the amount of storage necessary. In any case,the
+C            user can examine the IWORK array for the actual storage
+C            requirements,as described in the output information below.
+C
+C     NEQIVP = Number of auxiliary initial value equations being added
+C              to the boundary value problem.
+C **NOTE -- Occasionally the coefficients  MATRIX  and/or  G  may be
+C           functions which depend on the independent variable  X  and
+C           on  U, the solution of an auxiliary initial value problem.
+C           In order to avoid the difficulties associated with
+C           interpolation, the auxiliary equations may be solved
+C           simultaneously with the given boundary value problem.
+C           This initial value problem may be LINEAR or NONLINEAR.
+C                 See SAND77-1328 for an example.
+C
+C
+C     The user must supply subroutines FMAT, GVEC, UIVP and UVEC, when
+C     needed (they MUST be so named), to evaluate the derivatives
+C     as follows
+C
+C        A. FMAT must be supplied.
+C
+C              SUBROUTINE FMAT(X,Y,YP)
+C              X = Independent variable (input to FMAT)
+C              Y = Dependent variable vector (input to FMAT)
+C              YP = dY/dX = Derivative vector (output from FMAT)
+C
+C            Compute the derivatives for the HOMOGENEOUS problem
+C              YP(I) = dY(I)/dX = MATRIX(X) * Y(I)  , I = 1,...,NCOMP
+C
+C            When (NEQIVP .GT. 0) and  MATRIX  is dependent on  U  as
+C            well as on  X, the following common statement must be
+C            included in FMAT
+C                    COMMON /MLIVP/ NOFST
+C            For convenience, the  U  vector is stored at the bottom
+C            of the  Y  array.  Thus, during any call to FMAT,
+C            U(I) is referenced by  Y(NOFST + I).
+C
+C
+C            Subroutine BVDER calls FMAT NFC times to evaluate the
+C            homogeneous equations and, if necessary, it calls FMAT once
+C            in evaluating the particular solution. Since X remains
+C            unchanged in this sequence of calls it is possible to
+C            realize considerable computational savings for complicated
+C            and expensive evaluations of the MATRIX entries. To do this
+C            the user merely passes a variable, say XS, via COMMON where
+C            XS is defined in the main program to be any value except
+C            the initial X. Then the non-constant elements of MATRIX(X)
+C            appearing in the differential equations need only be
+C            computed if X is unequal to XS, whereupon XS is reset to X.
+C
+C
+C        B. If  NEQIVP .GT. 0 ,  UIVP must also be supplied.
+C
+C              SUBROUTINE UIVP(X,U,UP)
+C              X = Independent variable (input to UIVP)
+C              U = Dependent variable vector (input to UIVP)
+C              UP = dU/dX = Derivative vector (output from UIVP)
+C
+C            Compute the derivatives for the auxiliary initial value eqs
+C              UP(I) = dU(I)/dX, I = 1,...,NEQIVP.
+C
+C            Subroutine BVDER calls UIVP once to evaluate the
+C            derivatives for the auxiliary initial value equations.
+C
+C
+C        C. If  NEQIVP = 0  and  IGOFX = 1 ,  GVEC must be supplied.
+C
+C              SUBROUTINE GVEC(X,G)
+C              X = Independent variable (input to GVEC)
+C              G = Vector of inhomogeneous terms G(X) (output from GVEC)
+C
+C            Compute the inhomogeneous terms G(X)
+C                G(I) = G(X) values for I = 1,...,NCOMP.
+C
+C            Subroutine BVDER calls GVEC in evaluating the particular
+C            solution provided G(X) is NOT identically zero. Thus, when
+C            IGOFX=0, the user need NOT write a GVEC subroutine. Also,
+C            the user does not have to bother with the computational
+C            savings scheme for GVEC as this is automatically achieved
+C            via the BVDER subroutine.
+C
+C
+C        D. If  NEQIVP .GT. 0  and  IGOFX = 1 ,  UVEC must be supplied.
+C
+C              SUBROUTINE UVEC(X,U,G)
+C              X = Independent variable (input to UVEC)
+C              U = Dependent variable vector from the auxiliary initial
+C                  value problem    (input to UVEC)
+C              G = Array of inhomogeneous terms G(X,U)(output from UVEC)
+C
+C            Compute the inhomogeneous terms G(X,U)
+C                G(I) = G(X,U) values for I = 1,...,NCOMP.
+C
+C            Subroutine BVDER calls UVEC in evaluating the particular
+C            solution provided G(X,U) is NOT identically zero.  Thus,
+C            when IGOFX=0, the user need NOT write a UVEC subroutine.
+C
+C
+C
+C     The following is optional input to BVSUP to give the user more
+C     flexibility in use of the code.  See SAND75-0198 , SAND77-1328 ,
+C     SAND77-1690,SAND78-0522, and SAND78-1501 for more information.
+C
+C ****CAUTION -- The user MUST zero out IWORK(1),...,IWORK(15)
+C                prior to calling BVSUP. These locations define optional
+C                input and MUST be zero UNLESS set to special values by
+C                the user as described below.
+C
+C     IWORK(1) -- Number of orthonormalization points.
+C                 A value need be set only if IWORK(11) = 1
+C
+C     IWORK(9) -- Integrator and orthonormalization parameter
+C                 (default value is 1)
+C                 1 = RUNGE-KUTTA-FEHLBERG code using GRAM-SCHMIDT test.
+C                 2 = ADAMS code using GRAM-SCHMIDT TEST.
+C
+C     IWORK(11) -- Orthonormalization points parameter
+C                  (default value is 0)
+C                  0 - Orthonormalization points not pre-assigned.
+C                  1 - Orthonormalization points pre-assigned in
+C                      the first IWORK(1) positions of WORK.
+C
+C     IWORK(12) -- Storage parameter
+C                  (default value is 0)
+C                  0 - All storage IN CORE
+C                LUN - Homogeneous and inhomogeneous solutions at
+C                     output points and orthonormalization information
+C                     are stored on DISK.  The logical unit number to be
+C                     used for DISK I/O (NTAPE) is set to IWORK(12).
+C
+C     WORK(1),... -- Pre-assigned orthonormalization points, stored
+C                    monotonically, corresponding to the direction
+C                    of integration.
+C
+C
+C
+C                 ******************************
+C                 *** COMPLEX VALUED PROBLEM ***
+C                 ******************************
+C **NOTE***
+C       Suppose the original boundary value problem is NC equations
+C     of the form
+C                   dW/dX = MAT(X,U)*W(X) + H(X,U)
+C                 R*W(Xinitial)=GAMMA , S*W(Xfinal)=DELTA
+C
+C     where all variables are complex valued. The BVSUP code can be
+C     used by converting to a real system of size 2*NC. To solve the
+C     larger dimensioned problem efficiently,the user must initialize
+C     IFLAG=13 on input and order the vector components according to
+C     Y(1)=real(W(1)),...,Y(NC)=real(W(NC)),Y(NC+1)=imag(W(1)),....,
+C     Y(2*NC)=imag(W(NC)). Then define
+C                        ...........................
+C                        . real(MAT)    -imag(MAT) .
+C            MATRIX  =   .                         .
+C                        . imag(MAT)     real(MAT) .
+C                        ...........................
+C
+C     The matrices A,B and vectors G,ALPHA,BETA must be defined
+C     similarly. Further details can be found in SAND78-1501.
+C
+C
+C **********************************************************************
+C     OUTPUT from BVSUP
+C **********************************************************************
+C
+C     Y(NROWY,NXPTS) = Solution at specified output points.
+C
+C     IFLAG output values
+C            =-5 Algorithm ,for obtaining starting vectors for the
+C                special complex problem structure, was unable to obtain
+C                the initial vectors satisfying the necessary
+C                independence criteria.
+C            =-4 Rank of boundary condition matrix A is less than NIC,
+C                as determined by LSSUDS.
+C            =-2 Invalid input parameters.
+C            =-1 Insufficient number of storage locations allocated for
+C                WORK or IWORK.
+C
+C            =0 Indicates successful solution
+C
+C            =1 A computed solution is returned but UNIQUENESS of the
+C               solution of the boundary-value problem is questionable.
+C               For an eigenvalue problem,this should be treated as a
+C               successful execution since this is the expected mode
+C               of return.
+C            =2 A computed solution is returned but the EXISTENCE of the
+C               solution to the boundary-value problem is questionable.
+C            =3 A nontrivial solution approximation is returned although
+C               the boundary condition matrix B*Y(Xfinal) is found to be
+C               nonsingular (to the desired accuracy level) while the
+C               right hand side vector is zero. To eliminate this type
+C               of return, the accuracy of the eigenvalue parameter
+C               must be improved.
+C           ***NOTE- We attempt to diagnose the correct problem behavior
+C               and report possible difficulties by the appropriate
+C               error flag. However,the user should probably resolve the
+C               problem using smaller error tolerances and/or
+C               perturbations in the boundary conditions or other
+C               parameters. This will often reveal the correct
+C               interpretation for the problem posed.
+C
+C            =13 Maximum number of orthonormalizations attained before
+C                reaching Xfinal.
+C            =20-flag from integrator (DERKF or DEABM) values can range
+C                from 21 to 25.
+C            =30 Solution vectors form a dependent set.
+C
+C     WORK(1),...,WORK(IWORK(1)) = Orthonormalization points
+C                                  determined by BVPOR.
+C
+C     IWORK(1) = Number of orthonormalizations performed by BVPOR.
+C
+C     IWORK(2) = Maximum number of orthonormalizations allowed as
+C                calculated from storage allocated by user.
+C
+C     IWORK(3),IWORK(4),IWORK(5),IWORK(6)   Give information about
+C                actual storage requirements for WORK and IWORK
+C                arrays.  In particular,
+C                       required storage for  WORK array is
+C        IWORK(3) + IWORK(4)*(expected number of orthonormalizations)
+C
+C                       required storage for IWORK array is
+C        IWORK(5) + IWORK(6)*(expected number of orthonormalizations)
+C
+C     IWORK(8) = Final value of exponent parameter used in tolerance
+C                test for orthonormalization.
+C
+C     IWORK(16) = Number of independent vectors returned from MGSBV.
+C                 It is only of interest when IFLAG=30 is obtained.
+C
+C     IWORK(17) = Numerically estimated rank of the boundary
+C                 condition matrix defined from B*Y(Xfinal)
+C
+C **********************************************************************
+C
+C     Necessary machine constants are defined in the function
+C     routine R1MACH. The user must make sure that the values
+C     set in R1MACH are relevant to the computer being used.
+C
+C **********************************************************************
+C***REFERENCES  M.R. SCOTT AND H.A. WATTS, SUPORT - A COMPUTER CODE FOR
+C                 TWO-POINT BOUNDARY-VALUE PROBLEMS VIA
+C                 ORTHONORMALIZATION, SAND75-0198, SANDIA LABS.,
+C                 ALBUQUERQUE, NEW MEXICO, 1975.  ALSO IN
+C                 SIAM J. NUMER. ANAL., 14(1977), PP. 40-70.
+C               B.L. DARLOW, M.R. SCOTT AND H.A. WATTS, MODIFICATIONS OF
+C                 SUPORT, A LINEAR BOUNDARY VALUE PROBLEM SOLVER
+C                 PART I - PRE-ASSIGNING ORTHONORMALIZATION POINTS,
+C                 AUXILIARY INITIAL VALUE PROBLEM, DISK OR TAPE STORAGE,
+C                 SAND77-1328, SANDIA LABORATORIES,
+C                 ALBUQUERQUE, NEW MEXICO, 1977.
+C               B.L. DARLOW, M.R. SCOTT AND H.A. WATTS, MODIFICATIONS OF
+C                 SUPORT, A LINEAR BOUNDARY VALUE PROBLEM SOLVER
+C                 PART II - INCLUSION OF AN ADAMS INTEGRATOR
+C                 SAND77-1690, SANDIA LABORATORIES,
+C                 ALBUQUERQUE, NEW MEXICO, 1977.
+C               M.E. LORD AND H.A. WATTS, MODIFICATIONS OF SUPORT,
+C                 A LINEAR BOUNDARY VALUE PROBLEM SOLVER
+C                 PART III - ORTHONORMALIZATION IMPROVEMENTS
+C                 SAND78-0522, SANDIA LABORATORIES,
+C                 ALBUQUERQUE, NEW MEXICO, 1978.
+C               H.A. WATTS, M.R. SCOTT AND M.E. LORD, COMPUTATIONAL
+C                 SOLUTION OF COMPLEX VALUED BOUNDARY PROBLEMS
+C                 SAND78-1501, SANDIA LABORATORIES,
+C                 ALBUQUERQUE, NEW MEXICO, 1978.
+C***ROUTINES CALLED  EXBVP,MACON,XERRWV
+C***COMMON BLOCKS    ML15TO,ML17BW,ML18JR,ML5MCO,ML8SZ
+C***END PROLOGUE  BVSUP

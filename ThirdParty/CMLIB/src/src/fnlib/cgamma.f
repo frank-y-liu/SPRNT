@@ -1,0 +1,23 @@
+      COMPLEX FUNCTION CGAMMA(Z)
+C***BEGIN PROLOGUE  CGAMMA
+C***DATE WRITTEN   770701   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C7A
+C***KEYWORDS  COMPLETE GAMMA FUNCTION,COMPLEX,GAMMA FUNCTION,
+C             SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the Gamma function of complex argument.
+C***DESCRIPTION
+C
+C CGAMMA(Z) calculates the complete gamma function for COMPLEX
+C argument Z.  This is a preliminary version that is portable
+C but not accurate.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  CLNGAM
+C***END PROLOGUE  CGAMMA
+      COMPLEX Z, CLNGAM, CEXP
+C***FIRST EXECUTABLE STATEMENT  CGAMMA
+      CGAMMA = CEXP (CLNGAM(Z))
+C
+      RETURN
+      END

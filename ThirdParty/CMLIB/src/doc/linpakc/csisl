@@ -1,0 +1,63 @@
+ 
+      SUBROUTINE CSISL(A,LDA,N,KPVT,B)
+C***BEGIN PROLOGUE  CSISL
+C***DATE WRITTEN   780814   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D2D1A
+C***KEYWORDS  COMPLEX,LINEAR ALGEBRA,LINPACK,MATRIX,SOLVE,SYMMETRIC
+C***AUTHOR  BUNCH, J., (UCSD)
+C***PURPOSE  Solves the COMPLEX SYMMETRIC SYSTEM  A*X=B  using factors
+C            from CSIFA.
+C***DESCRIPTION
+C
+C     CSISL solves the complex symmetric system
+C     A * X = B
+C     using the factors computed by CSIFA.
+C
+C     On Entry
+C
+C        A       COMPLEX(LDA,N)
+C                the output from CSIFA.
+C
+C        LDA     INTEGER
+C                the leading dimension of the array  A .
+C
+C        N       INTEGER
+C                the order of the matrix  A .
+C
+C        KVPT    INTEGER(N)
+C                the pivot vector from CSIFA.
+C
+C        B       COMPLEX(N)
+C                the right hand side vector.
+C
+C     On Return
+C
+C        B       the solution vector  X .
+C
+C     Error Condition
+C
+C        A division by zero may occur if  CSICO  has set RCOND .EQ. 0.0
+C        or  CSIFA  has set INFO .NE. 0  .
+C
+C     To compute  INVERSE(A) * C  where  C  is a matrix
+C     with  P  columns
+C           CALL CSIFA(A,LDA,N,KVPT,INFO)
+C           If (INFO .NE. 0) GO TO ...
+C           DO 10 J = 1, P
+C              CALL CSISL(A,LDA,N,KVPT,C(1,j))
+C        10 CONTINUE
+C
+C     LINPACK.  This version dated 08/14/78 .
+C     James Bunch, Univ. Calif. San Diego, Argonne Nat. Lab.
+C
+C     Subroutines and Functions
+C
+C     BLAS CAXPY,CDOTU
+C     Fortran IABS
+C***REFERENCES  DONGARRA J.J., BUNCH J.R., MOLER C.B., STEWART G.W.,
+C                 *LINPACK USERS  GUIDE*, SIAM, 1979.
+C***ROUTINES CALLED  CAXPY,CDOTU
+C***END PROLOGUE  CSISL
+ 
+ 

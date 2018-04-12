@@ -1,0 +1,104 @@
+ 
+ 
+ 
+   P A C K A G E      XERROR
+ 
+   (Version 1982 )
+ 
+ 
+   A package of Fortran subprograms  for  the  processing  of  error
+   messages.  It  is  used  by  many  of  the   prewritten   library
+   subroutines in CMLIB.
+ 
+       A typical user of these library programs may  never  need  to
+   call any of the subroutines or functions in  the  XERROR  package
+   itself. Rather, these routines  will  make  themselves  known  by
+   their actions. These actions include printouts, dumps, tables and
+   tracebacks. The subroutine user may on occasion  want  to  change
+   the volume of this output, alter the file it goes to,  etc.  This
+   requires callling one or more modules in the XERROR package.  The
+   effect of these calls may be immediate or they  may  be  delayed.
+   Delayed  effects  are  caused  by  setting  flags  and  typically
+   consists  of  increasing/decreasing   frequency   of   subsequent
+   printout.
+ 
+       From a user's point of view there are only  a  few  important
+   things to know about XERROR. When a library  routine  detects  an
+   error situation XERROR will  be  called.  This  call  includes  a
+   message which describes the difficulty, an  error  number  and  a
+   seriousness  level.  The  XERROR  package  (usually)  prints  the
+   message, records the error number in a table  for  later  summary
+   and  then  may  take  additional  action   depending   upon   the
+   seriousness level. By convention, the error message  contains  in
+   its first few characters the name  of  the  routine  causing  the
+   error.
+ 
+       The seriousness level can be FATAL, RECOVERABLE, or  WARNING.
+   A FATAL error causes a program abort and in this situation XERROR
+   never returns to the subroutine which called it.  Thus  the  math
+   library subroutine writer who calls XERROR  with  a  FATAL  error
+   does not need to deal with what to  do  next.  For  example,  not
+   dimensioning an array large enough is a typical  FATAL  error.  A
+   RECOVERABLE error is something that the user  might  be  able  to
+   correct. For example, a data value out of range. By declaring  an
+   error RECOVERABLE, the library subroutine writer must  anticipate
+   that XERROR will return and must code for  the  possibility  that
+   the computation should be able to proceed. Actually,  XERROR  may
+   or may not return depending upon the user's choice.  (More  about
+   this shortly.) A WARNING error is just like a  RECOVERABLE  error
+   except that only unusual action by the user will  prevent  XERROR
+   from returning to the library routine. In  practice  most  errors
+   are declared either FATAL or WARNING.
+ 
+       Two things happen when XERROR receives a message. The message
+   is written out to a file, a traceback of where the call was  made
+   from is initiated and ultimately an abort may occur. The  default
+   output for error messages is the user's terminal. This is  almost
+   always the correct place for these messages  but  sometimes  they
+   can be annoying because they interrupt the normal flow of output.
+   This is especially  true  of  WARNING  messages  which  generally
+   require no action on the user's  part.  A  user  can  change  the
+   destination of these messages by inserting a call to
+ 
+                            CALL XSETUN(N)
+ 
+   This  diverts  all  messages  to  logical  unit  N  and   remains
+   operational until changed again or until the program ends.
+ 
+       The traceback process can also be  annoying.  Its  effect  is
+   system dependent but commonly it will drop the user into  a  dump
+   routine. If you do not want a traceback call
+ 
+                            CALL XSETF(-1)
+ 
+   Again, this remains operational until reset to +1  or  until  the
+   program ends.
+ 
+       These calls are only  two  examples  of  a  great  many  user
+   callable routines in the XERROR package, but they  are  the  most
+   useful. The individual  routines  describe  their  function  more
+   exactly. They are
+ 
+      CALL XERROR to process an error message
+      CALL XERRWV to process an error message with numeric values
+      CALL XSETF  to set the control variable, KONTRL (default=2)
+      CALL XGETF  to get the current value of KONTRL
+      CALL XERMAX to set limit on the number of times to print
+                  a message
+      CALL XERDMP to print error summary and clear tables
+      NER= NUMXER to get most recent message number
+      CALL XERCLR to clear current message number
+      CALL XSETUA to set up to 5 output unit numbers
+      CALL XGETUA to get current output unit numbers
+      CALL XSETUN to set one output unit for all messages
+      CALL XGETUN to get the one output unit
+      CALL XERABT to terminate and print a traceback
+      CALL XERCTL to perform special processing
+ 
+       The XERROR package is described in the  report  "XERROR,  The
+   SLATEC Error-Handling Package", by  R.E. Jones and D.K.  Kahaner,
+   Sandia  National  Laboratories,  Albuquerque,  New  Mexico  87185
+   (Sandia Report SAND82-0800 UC-32).
+ 
+ 
+ 

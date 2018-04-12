@@ -1,0 +1,31 @@
+ 
+***************************************************************************
+                             U N C M I N
+***************************************************************************
+ 
+    The package UNCMIN contains the following two portable, user-callable
+ FORTRAN subroutines designed to solve the unconstrained nonlinear
+ optimization problem. This problem involves finding the minima of a
+ twice continuously differentiable real-valued function F of n variables
+ from a given starting point x(0). They were supplied by Robert Schnabel
+ of the Scientific Computing Division, National Bureau of Standards,
+ Boulder, Colorado 80303.
+   The UNCMIN User's Guide is available in the National Bureau of Standards
+ library, along with the other two references. Questions should be directed
+ to Richard Jackson, Scientific Computing Division:
+ 
+                      A151, Technology Building
+                      National Bureau of Standards
+                      Gaithersburg, MD 20899
+                      (301)921-3395
+ 
+***************************************************************************
+ 
+ OPTIF0 ..........Provide simplest interface to minimization package. User
+                  has no control over options.
+ 
+ OPTIF9 ..........Provide complete interface to minimization package.
+                  user has full control over options.
+ 
+ 
+ 

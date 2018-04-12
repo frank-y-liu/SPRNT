@@ -1,0 +1,70 @@
+      DOUBLE PRECISION FUNCTION DBESK0(X)
+C***BEGIN PROLOGUE  DBESK0
+C***DATE WRITTEN   770701   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C10B1
+C***KEYWORDS  BESSEL FUNCTION,DOUBLE PRECISION,MODIFIED BESSEL FUNCTION,
+C             ORDER ZERO,SPECIAL FUNCTION,THIRD KIND
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes  d.p. modified (hyperbolic) Bessel function of
+C            the third kind of order zero.
+C***DESCRIPTION
+C
+C DBESK0(X) calculates the double precision modified (hyperbolic)
+C Bessel function of the third kind of order zero for double
+C precision argument X.  The argument must be greater than zero
+C but not so large that the result underflows.
+C
+C Series for BK0        on the interval  0.          to  4.00000E+00
+C                                        with weighted error   3.08E-33
+C                                         log weighted error  32.51
+C                               significant figures required  32.05
+C                                    decimal places required  33.11
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D1MACH,DBESI0,DBSK0E,DCSEVL,INITDS,XERROR
+C***END PROLOGUE  DBESK0
+      DOUBLE PRECISION X, BK0CS(16), XMAX,  XSML, Y,
+     1  D1MACH, DCSEVL, DBESI0, DBSK0E
+      DATA BK0 CS(  1) / -.3532739323 3902768720 1140060063 153 D-1    /
+      DATA BK0 CS(  2) / +.3442898999 2462848688 6344927529 213 D+0    /
+      DATA BK0 CS(  3) / +.3597993651 5361501626 5721303687 231 D-1    /
+      DATA BK0 CS(  4) / +.1264615411 4469259233 8479508673 447 D-2    /
+      DATA BK0 CS(  5) / +.2286212103 1194517860 8269830297 585 D-4    /
+      DATA BK0 CS(  6) / +.2534791079 0261494573 0790013428 354 D-6    /
+      DATA BK0 CS(  7) / +.1904516377 2202088589 7214059381 366 D-8    /
+      DATA BK0 CS(  8) / +.1034969525 7633624585 1008317853 089 D-10   /
+      DATA BK0 CS(  9) / +.4259816142 7910825765 2445327170 133 D-13   /
+      DATA BK0 CS( 10) / +.1374465435 8807508969 4238325440 000 D-15   /
+      DATA BK0 CS( 11) / +.3570896528 5083735909 9688597333 333 D-18   /
+      DATA BK0 CS( 12) / +.7631643660 1164373766 7498666666 666 D-21   /
+      DATA BK0 CS( 13) / +.1365424988 4407818590 8053333333 333 D-23   /
+      DATA BK0 CS( 14) / +.2075275266 9066680831 9999999999 999 D-26   /
+      DATA BK0 CS( 15) / +.2712814218 0729856000 0000000000 000 D-29   /
+      DATA BK0 CS( 16) / +.3082593887 9146666666 6666666666 666 D-32   /
+      DATA NTK0, XSML, XMAX / 0, 2*0.D0 /
+C***FIRST EXECUTABLE STATEMENT  DBESK0
+      IF (NTK0.NE.0) GO TO 10
+      NTK0 = INITDS (BK0CS, 16, 0.1*SNGL(D1MACH(3)))
+      XSML = DSQRT (4.0D0*D1MACH(3))
+      XMAX = -DLOG(D1MACH(1))
+      XMAX = XMAX - 0.5D0*XMAX*DLOG(XMAX)/(XMAX+0.5D0)
+C
+ 10   IF (X.LE.0.D0) CALL XERROR ( 'DBESK0  X IS ZERO OR NEGATIVE',
+     1  29, 2, 2)
+      IF (X.GT.2.0D0) GO TO 20
+C
+      Y = 0.D0
+      IF (X.GT.XSML) Y = X*X
+      DBESK0 = -DLOG(0.5D0*X)*DBESI0(X) - 0.25D0 + DCSEVL (.5D0*Y-1.D0,
+     1  BK0CS, NTK0)
+      RETURN
+C
+ 20   DBESK0 = 0.D0
+      IF (X.GT.XMAX) CALL XERROR ( 'DBESK0  X SO BIG K0 UNDERFLOWS',
+     1  30, 1, 1)
+      IF (X.GT.XMAX) RETURN
+C
+      DBESK0 = DEXP(-X) * DBSK0E(X)
+C
+      RETURN
+      END

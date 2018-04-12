@@ -1,0 +1,48 @@
+ 
+      DOUBLE PRECISION FUNCTION DAIE(X)
+C***BEGIN PROLOGUE  DAIE
+C***DATE WRITTEN   770701   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C10D
+C***KEYWORDS  AIRY FUNCTION,DOUBLE PRECISION,EXPONENTIALLY SCALED,
+C             SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Calculates the d.p. Airy function for negative X and an
+C            exponentially scaled Airy function for positive X.
+C***DESCRIPTION
+C
+C DAIE(X) calculates the Airy function or the exponentially scaled
+C Airy function depending on the value of the argument.  The function
+C and argument are both double precision.
+C
+C Evaluate AI(X) for X .LE. 0.0 and AI(X)*EXP(ZETA) where
+C ZETA = 2/3 * X**(3/2)  for X .GE. 0.0
+C
+C Series for AIF        on the interval -1.00000E+00 to  1.00000E+00
+C                                        with weighted error   8.37E-33
+C                                         log weighted error  32.08
+C                               significant figures required  30.87
+C                                    decimal places required  32.63
+C
+C Series for AIG        on the interval -1.00000E+00 to  1.00000E+00
+C                                        with weighted error   7.47E-34
+C                                         log weighted error  33.13
+C                               significant figures required  31.50
+C                                    decimal places required  33.68
+C
+C Series for AIP1       on the interval  1.25000E-01 to  1.00000E+00
+C                                        with weighted error   3.69E-32
+C                                         log weighted error  31.43
+C                               significant figures required  29.55
+C                                    decimal places required  32.31
+C
+C Series for AIP2       on the interval  0.          to  1.25000E-01
+C                                        with weighted error   3.48E-32
+C                                         log weighted error  31.46
+C                               significant figures required  28.74
+C                                    decimal places required  32.24
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D1MACH,D9AIMP,DCSEVL,INITDS
+C***END PROLOGUE  DAIE
+ 
+ 

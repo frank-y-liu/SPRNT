@@ -1,0 +1,61 @@
+ 
+      SUBROUTINE DPCHCS(SWITCH,N,H,SLOPE,D,INCFD,IERR)
+C***BEGIN PROLOGUE  DPCHCS
+C***REFER TO  DPCHIC
+C***ROUTINES CALLED  DPCHST,PCHSW
+C***REVISION DATE  870707   (YYMMDD)
+C***DESCRIPTION
+C
+C         DPCHCS:  DPCHIC Monotonicity Switch Derivative Setter.
+C
+C     Called by  DPCHIC  to adjust the values of D in the vicinity of a
+C     switch in direction of monotonicity, to produce a more "visually
+C     pleasing" curve than that given by  DPCHIM .
+C
+C ----------------------------------------------------------------------
+C
+C  Calling sequence:
+C
+C        PARAMETER  (INCFD = ...)
+C        INTEGER  N, IERR
+C        DOUBLE PRECISION  SWITCH, H(N), SLOPE(N), D(INCFD,N)
+C
+C        CALL  DPCHCS (SWITCH, N, H, SLOPE, D, INCFD, IERR)
+C
+C   Parameters:
+C
+C     SWITCH -- (input) indicates the amount of control desired over
+C           local excursions from data.
+C
+C     N -- (input) number of data points.  (assumes N.GT.2 .)
+C
+C     H -- (input) real*8 array of interval lengths.
+C     SLOPE -- (input) real*8 array of data slopes.
+C           If the data are (X(I),Y(I)), I=1(1)N, then these inputs are:
+C                  H(I) =  X(I+1)-X(I),
+C              SLOPE(I) = (Y(I+1)-Y(I))/H(I),  I=1(1)N-1.
+C
+C     D -- (input) real*8 array of derivative values at the data points,
+C           as determined by DPCHCI.
+C          (output) derivatives in the vicinity of switches in direction
+C           of monotonicity may be adjusted to produce a more "visually
+C           pleasing" curve.
+C           The value corresponding to X(I) is stored in
+C                D(1+(I-1)*INCFD),  I=1(1)N.
+C           No other entries in D are changed.
+C
+C     INCFD -- (input) increment between successive values in D.
+C           This argument is provided primarily for 2-D applications.
+C
+C     IERR -- (output) error flag.  should be zero.
+C           If negative, trouble in DPCHSW.  (should never happen.)
+C
+C    -------
+C    WARNING:  This routine does no validity-checking of arguments.
+C    -------
+C
+C  Fortran intrinsics used:  DABS, DMAX1, DMIN1.
+C
+C***END PROLOGUE  DPCHCS
+ 
+ 

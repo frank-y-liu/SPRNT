@@ -1,0 +1,88 @@
+      SUBROUTINE EXBVP(Y,NROWY,XPTS,A,NROWA,ALPHA,B,NROWB,BETA,IFLAG,
+     1   WORK,IWORK)
+C***BEGIN PROLOGUE  EXBVP
+C***REVISION HISTORY  (YYMMDD)
+C   000330  Modified array declarations.  (JEC)
+C
+C***REFER TO  BVSUP
+C
+C  This subroutine is used to execute the basic technique for solving
+C  the two-point boundary value problem
+C***ROUTINES CALLED  BVPOR,XERRWV
+C***COMMON BLOCKS    ML15TO,ML17BW,ML18JR,ML5MCO,ML8SZ
+C***END PROLOGUE  EXBVP
+C
+      DIMENSION Y(NROWY,*),A(NROWA,*),ALPHA(*),B(NROWB,*),BETA(*),
+     1         WORK(*),IWORK(*),XPTS(*)
+C
+C     ****************************************************************
+C
+      COMMON /ML8SZ/ NFC,NCOMP,INHOMO,IGOFX,XSAV,C,IVP
+      COMMON /ML18JR/NXPTS,NIC,RE,AE,NOPG,MXNON,NDISK,NTAPE,NEQ,
+     1              INDPVT,INTEG,TOL,NPS,NTP,NEQIVP,NUMORT,NFCC,ICOCO
+      COMMON /ML15TO/XBEG,X,INFO(15),KOP,XOP,ISTKOP,MNSWOT,
+     1               NSWOT,KNSWOT,LOTJP,PWCND,TND,XOT,PX,XEND
+      COMMON /ML17BW/ KKKZPW,NEEDW,NEEDIW,K1,K2,K3,K4,K5,K6,K7,K8,K9,
+     1                K10,K11,L1,L2,KKKINT,LLLINT
+C
+      COMMON /ML5MCO/URO,SRU,EPS,LPAR,SQOVFL,TWOU,FOURU
+C
+C***FIRST EXECUTABLE STATEMENT  EXBVP
+      KOTC = 1
+      IEXP = 0
+      IF(IWORK(7) .EQ. -1) IEXP = IWORK(8)
+C
+C     COMPUTE ORTHONORMALIZATION TOLERANCES.
+C
+   60 TOL = 10.0**((-LPAR-IEXP)*2)
+C
+      IWORK(8) = IEXP
+      MXNON = IWORK(2)
+C
+C **********************************************************************
+C **********************************************************************
+C
+      CALL BVPOR(Y,NROWY,NCOMP,XPTS,NXPTS,A,NROWA,ALPHA,NIC,
+     1            B,NROWB,BETA,NFC,IFLAG,WORK(1),MXNON,WORK(K1),
+     2            NTP,IWORK(18),WORK(K2),IWORK(16),WORK(K3),WORK(K4),
+     3            WORK(K5),WORK(K6),WORK(K7),WORK(K8),WORK(K9),
+     4            WORK(K10),IWORK(L1),NFCC)
+C
+C **********************************************************************
+C **********************************************************************
+C     IF MGSBV RETURNS WITH MESSAGE OF DEPENDENT VECTORS, WE REDUCE
+C     ORTHONORMALIZATION TOLERANCE AND TRY AGAIN. THIS IS DONE
+C     A MAXIMUM OF 2 TIMES.
+C
+      IF (IFLAG .NE. 30)  GO TO 70
+      IF (KOTC .EQ. 3  .OR.  NOPG .EQ. 1)  GO TO 80
+      KOTC = KOTC + 1
+      IEXP = IEXP - 2
+      GO TO 60
+C
+C **********************************************************************
+C     IF BVPOR RETURNS MESSAGE THAT THE MAXIMUM NUMBER OF
+C     ORTHONORMALIZATIONS HAS BEEN ATTAINED AND WE CANNOT CONTINUE, THEN
+C     WE ESTIMATE THE NEW STORAGE REQUIREMENTS IN ORDER TO SOLVE PROBLEM
+C
+   70 IF (IFLAG .NE. 13)  GO TO 80
+      XL = ABS(XEND-XBEG)
+      ZQUIT = ABS(X-XBEG)
+      INC = 1.5 * XL/ZQUIT * FLOAT(MXNON+1)
+      IF (NDISK .EQ. 1)  GO TO 74
+      NSAFW = INC * KKKZPW  +  NEEDW
+      NSAFIW = INC * NFCC  +  NEEDIW
+      GO TO 77
+   74 NSAFW = NEEDW + INC
+      NSAFIW = NEEDIW
+   77 CONTINUE
+      NI=2
+      NERR=1
+      IOPT=0
+      CALL XERRWV ( 'BVSUP -- PREDICTED STORAGE ALLOCATION FOR WORK ARRA
+     1Y IS I1, PREDICTED STORAGE ALLOCATION FOR IWORK ARRAY IS I2 ',111,
+     2NERR,IOPT,NI,NSAFW,NSAFIW,0,DUMMY,DUMMY)
+C
+   80 IWORK(1) = MXNON
+      RETURN
+      END

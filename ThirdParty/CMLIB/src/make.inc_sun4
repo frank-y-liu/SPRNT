@@ -1,0 +1,6 @@
+FORTRAN=f77 
+OPTS=-O3 
+NOPTS=-g 
+RANLIB=ranlib
+MACHCON=SUN
+LIBRARY=libcm.a

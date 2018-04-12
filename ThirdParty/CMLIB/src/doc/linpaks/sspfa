@@ -1,0 +1,78 @@
+ 
+      SUBROUTINE SSPFA(AP,N,KPVT,INFO)
+C***BEGIN PROLOGUE  SSPFA
+C***DATE WRITTEN   780814   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D2B1A
+C***KEYWORDS  FACTOR,LINEAR ALGEBRA,LINPACK,MATRIX,PACKED,SYMMETRIC
+C***AUTHOR  BUNCH, J., (UCSD)
+C***PURPOSE  Factors a real SYMMETRIC matrix stored in packed form by
+C            elimination with symmetric pivoting.
+C***DESCRIPTION
+C
+C     SSPFA factors a real symmetric matrix stored in
+C     packed form by elimination with symmetric pivoting.
+C
+C     To solve  A*X = B , follow SSPFA by SSPSL.
+C     To compute  INVERSE(A)*C , follow SSPFA by SSPSL.
+C     To compute  DETERMINANT(A) , follow SSPFA by SSPDI.
+C     To compute  INERTIA(A) , follow SSPFA by SSPDI.
+C     To compute  INVERSE(A) , follow SSPFA by SSPDI.
+C
+C     On Entry
+C
+C        AP      REAL (N*(N+1)/2)
+C                the packed form of a symmetric matrix  A .  The
+C                columns of the upper triangle are stored sequentially
+C                in a one-dimensional array of length  N*(N+1)/2 .
+C                See comments below for details.
+C
+C        N       INTEGER
+C                the order of the matrix  A .
+C
+C     Output
+C
+C        AP      a block diagonal matrix and the multipliers which
+C                were used to obtain it stored in packed form.
+C                The factorization can be written  A = U*D*TRANS(U)
+C                where  U  is a product of permutation and unit
+C                upper triangular matrices , TRANS(U) is the
+C                transpose of  U , and  D  is block diagonal
+C                with 1 by 1 and 2 by 2 blocks.
+C
+C        KPVT    INTEGER(N)
+C                an integer vector of pivot indices.
+C
+C        INFO    INTEGER
+C                = 0  normal value.
+C                = K  if the K-th pivot block is singular.  This is
+C                     not an error condition for this subroutine,
+C                     but it does indicate that SSPSL or SSPDI may
+C                     divide by zero if called.
+C
+C     Packed Storage
+C
+C          The following program segment will pack the upper
+C          triangle of a symmetric matrix.
+C
+C                K = 0
+C                DO 20 J = 1, N
+C                   DO 10 I = 1, J
+C                      K = K + 1
+C                      AP(K)  = A(I,J)
+C             10    CONTINUE
+C             20 CONTINUE
+C
+C     LINPACK.  This version dated 08/14/78 .
+C     James Bunch, Univ. Calif. San Diego, Argonne Nat. Lab.
+C
+C     Subroutines and Functions
+C
+C     BLAS SAXPY,SSWAP,ISAMAX
+C     Fortran ABS,AMAX1,SQRT
+C***REFERENCES  DONGARRA J.J., BUNCH J.R., MOLER C.B., STEWART G.W.,
+C                 *LINPACK USERS  GUIDE*, SIAM, 1979.
+C***ROUTINES CALLED  ISAMAX,SAXPY,SSWAP
+C***END PROLOGUE  SSPFA
+ 
+ 

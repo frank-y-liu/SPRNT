@@ -1,0 +1,207 @@
+#!/bin/sh
+ITLDIR=$HOME/cmlib
+SRCDIR=$HOME/itl/apps/cmlib
+rm -r -f $ITLDIR
+$SRCDIR/utils/mkarchdir $ITLDIR
+rm -f $SRCDIR/[A,H,I,L,S]*/lib*/make.inc
+ 
+echo Copying libraries, executables '...' this will take approx. 15 minutes
+echo please wait
+cd $SRCDIR;tar cf - ./AIX* ./HP* ./IRIX* ./Linux* ./SunOS* ./doc ./docs ./src|(cd $ITLDIR; tar xpf -)
+
+cd $ITLDIR
+rm -f [A,H,I,L,S]*/Version
+
+echo Fixing IRIX '...' please wait
+Idirs=`cd $ITLDIR;ls -ld IRIX* 2>/dev/null|grep drwx|cut -c55-`
+#echo $Idirs
+for dir in $Idirs ; do
+   libdirs=`cd $dir;ls -ld lib*|grep drwx|cut -c55-`
+#   echo $libdirs
+   if [ `echo $dir|grep -c 5\.3` -eq 1 ]; then
+      mkdir -p $ITLDIR/$dir/lib/mips2
+      mkdir $ITLDIR/$dir/bin 
+      mkdir -p $ITLDIR/$dir/man/manl
+      cp -p $SRCDIR/nist.scripts/cmdoc $ITLDIR/$dir/bin
+      cp -p $SRCDIR/nist.scripts/cmsrc $ITLDIR/$dir/bin
+      cp -p $SRCDIR/nist.scripts/cmsrcx.irix $ITLDIR/$dir/bin/cmsrcx
+      cp -p $SRCDIR/nist.man/cmlib.irix5.3.l $ITLDIR/$dir/man/manl/cmlib.l
+   else
+      mkdir -p $ITLDIR/$dir/lib32/mips3
+      mkdir -p $ITLDIR/$dir/lib32/mips4
+      mkdir -p $ITLDIR/$dir/lib64/mips4
+      mkdir $ITLDIR/$dir/bin 
+      mkdir -p $ITLDIR/$dir/man/manl
+      cp -p $SRCDIR/nist.scripts/cmdoc $ITLDIR/$dir/bin
+      cp -p $SRCDIR/nist.scripts/cmsrc $ITLDIR/$dir/bin
+      cp -p $SRCDIR/nist.scripts/cmsrcx.irix64 $ITLDIR/$dir/bin/cmsrcx
+      if [ `echo $dir|grep -c 6\.2` -eq 1 ]; then
+         cp -p $SRCDIR/nist.man/cmlib.irix64.6.2.l $ITLDIR/$dir/man/manl/cmlib.l
+      else
+         cp -p $SRCDIR/nist.man/cmlib.irix64.6.5.l $ITLDIR/$dir/man/manl/cmlib.l
+      fi
+   fi
+   for ldir in $libdirs ; do
+       if [ `echo $ldir|grep -c mips1` -eq 1 ]; then
+          odir=lib
+          lname=`echo $ldir|sed -e "s/_mips1//"`
+          lname=`echo $lname|sed -e "s/lib/libcmlib/"`
+          lname=$lname\.a
+#          echo $odir  $lname
+       elif [ `echo $ldir|grep -c mips2` -eq 1 ]; then
+          odir=lib/mips2
+          lname=`echo $ldir|sed -e "s/_mips2//"`
+          lname=`echo $lname|sed -e "s/lib/libcmlib/"`
+          lname=$lname\.a
+#          echo $odir  $lname
+       elif [ `echo $ldir|grep -c mips3` -eq 1 ]; then
+          lname=`echo $ldir|sed -e "s/_mips3//"`
+          odir='lib32/mips3'
+          lname=`echo $lname|sed -e "s/_n32//" -e "s/f90n32/f90/"`
+          lname=`echo $lname|sed -e "s/lib/libcmlib/"`
+          lname=$lname\.a
+#          echo $odir  $lname
+       elif [ `echo $ldir|grep -c mips4` -eq 1 ]; then
+          lname=`echo $ldir|sed -e "s/_mips4//"`
+          if [ `echo $lname|grep -c n32` -eq 1 ]; then
+            odir='lib32/mips4'
+            lname=`echo $lname|sed -e "s/_n32//" -e "s/f90n32/f90/"`
+          else
+            odir='lib64/mips4'
+          fi
+          lname=`echo $lname|sed -e "s/lib/libcmlib/"`
+          lname=$lname\.a
+#          echo $odir  $lname
+
+       fi
+       mv $ITLDIR/$dir/$ldir/libcm.a $ITLDIR/$dir/$odir/$lname
+       rm -r -f $ITLDIR/$dir/$ldir
+   done
+done
+#
+#  Create compatibility links for older versions of CMLIB
+#  Eventually these commands should be removed
+#
+if [ -d $ITLDIR/IRIX-IP22-5.3/lib ]; then
+   cd $ITLDIR/IRIX-IP22-5.3/lib
+   ln -s libcmlib.a libcm.a
+   ln -s mips2/libcmlib.a libcm_mips2.a
+   cd $ITLDIR
+fi
+
+if [ -d $ITLDIR/IRIX64-IP25-6.2/lib64 ]; then
+   cd $ITLDIR/IRIX64-IP25-6.2/lib64
+   ln -s mips4/libcmlib.a libcm_64.a
+   ln -s mips4/libcmlib.a libcm90_64.a
+   cd $ITLDIR
+fi
+
+if [ -d $ITLDIR/IRIX64-IP25-6.2/lib32 ]; then
+   cd $ITLDIR/IRIX64-IP25-6.2/lib32
+   ln -s mips3/libcmlib_f90.a libcm90.a
+   cd $ITLDIR
+fi
+#
+echo Fixing SunOS '...' please wait
+Sdirs=`cd $ITLDIR;ls -ld SunO* 2>/dev/null|grep drwx|cut -c55- 2>/dev/null`
+#echo $Sdirs
+for sdir in $Sdirs ; do
+   mv $ITLDIR/$sdir/lib $ITLDIR/$sdir/lib.tmp
+   mkdir $ITLDIR/$sdir/lib
+   mkdir $ITLDIR/$sdir/bin 
+   mkdir -p $ITLDIR/$sdir/man/manl
+   cp -p $SRCDIR/nist.scripts/cmdoc $ITLDIR/$sdir/bin
+   cp -p $SRCDIR/nist.scripts/cmsrc $ITLDIR/$sdir/bin
+   if [ `echo $sdir|grep -c 4\.1` -eq 1 ]; then
+       cp -p $SRCDIR/nist.scripts/cmsrcx.sun4 $ITLDIR/$sdir/bin/cmsrcx
+       cp -p $SRCDIR/nist.man/cmlib.sun4.l $ITLDIR/$sdir/man/manl/cmlib.l
+   else
+       cp -p $SRCDIR/nist.scripts/cmsrcx.solaris2 $ITLDIR/$sdir/bin/cmsrcx
+       cp -p $SRCDIR/nist.man/cmlib.solaris2.l $ITLDIR/$sdir/man/manl/cmlib.l
+   fi
+   libdirs=`cd $sdir;ls -ld lib*|grep drwx|cut -c55-`
+#   echo $libdirs
+   for ldir in $libdirs ; do
+     ext=''
+     if [ "$ldir" != "lib" ]; then
+       if [ `echo $ldir|grep -c r8` -eq 1 ]; then
+        ext='8'
+       elif [ `echo $ldir|grep -c f90` -eq 1 ]; then
+        ext='_f90'
+       fi
+       if [ `ls $sdir/$ldir|grep -c libcm\.so` -eq 1 ]; then
+          mv $ITLDIR/$sdir/$ldir/libcm.so $ITLDIR/$sdir/lib/libcm"$ext".so
+       fi
+       if [ `ls $ITLDIR/$sdir/$ldir|grep -c libcm\.a` -eq 1 ]; then
+          mv $ITLDIR/$sdir/$ldir/libcm.a $ITLDIR/$sdir/lib/libcm"$ext".a
+       fi
+       rm -r -f $ITLDIR/$sdir/$ldir
+     fi
+   done
+done
+#
+echo Fixing AIX '...' please wait
+Adirs=`cd $ITLDIR;ls -ld AIX* 2>/dev/null|grep drwx|cut -c55-`
+#echo $Adirs
+for dir in $Adirs ; do
+   mv $ITLDIR/$dir/lib $ITLDIR/$dir/lib.tmp
+   mkdir $ITLDIR/$dir/bin 
+   mkdir -p $ITLDIR/$dir/man/manl
+   cp -p $SRCDIR/nist.scripts/cmdoc $ITLDIR/$dir/bin
+   cp -p $SRCDIR/nist.scripts/cmsrc $ITLDIR/$dir/bin
+   cp -p $SRCDIR/nist.scripts/cmsrcx.aix $ITLDIR/$dir/bin/cmsrcx
+   cp -p $SRCDIR/nist.man/cmlib.aix.l $ITLDIR/$dir/man/manl/cmlib.l
+   mkdir $ITLDIR/$dir/lib
+   libdirs=`cd $dir;ls -ld lib*|grep drwx|cut -c55-`
+#   echo $libdirs
+   for ldir in $libdirs ; do
+     ext1=''
+     ext2=''
+     if [ "$ldir" != "lib" ]; then
+       if [ `echo $ldir|grep -c autodbl` -eq 1 ]; then
+        ext2='_autodbl'
+       fi
+       if [ `echo $ldir|grep -c f90` -eq 1 ]; then
+        ext1='_f90'
+       fi
+       mv $ITLDIR/$dir/$ldir/libcm.a $ITLDIR/$dir/lib/libcmlib"$ext1""$ext2".a
+       rm -r -f $ITLDIR/$dir/$ldir
+     fi
+   done
+done
+echo Fixing HP-UX '...' please wait
+Hdirs=`cd $ITLDIR;ls -ld HP* 2>/dev/null|grep drwx|cut -c55-`
+#
+#  Currently there is only one HP-UX version of the library
+#  this will need to be modified similar to AIX loops above
+#  if more versions are added
+#echo $Hdirs
+for dir in $Hdirs ; do
+    mv $ITLDIR/$dir/lib/libcm.a $ITLDIR/$dir/lib/libcmlib.a
+    mkdir $ITLDIR/$dir/bin 
+    mkdir -p $ITLDIR/$dir/man/manl
+    cp -p $SRCDIR/nist.scripts/cmdoc $ITLDIR/$dir/bin
+    cp -p $SRCDIR/nist.scripts/cmsrc $ITLDIR/$dir/bin
+    cp -p $SRCDIR/nist.scripts/cmsrcx.hpux $ITLDIR/$dir/bin/cmsrcx
+    cp -p $SRCDIR/nist.man/cmlib.hpux.l $ITLDIR/$dir/man/manl/cmlib.l
+    rm -f $ITLDIR/$dir/lib/test*
+    rm -r $ITLDIR/$dir/lib/src
+    rm -r $ITLDIR/$dir/epg
+done
+echo Fixing Linux '...' please wait
+Ldirs=`cd $ITLDIR;ls -ld Linux* 2>/dev/null|grep drwx|cut -c55-`
+#
+#  Currently there is only one Linux version of the library
+#  this will need to be modified similar to AIX loops above
+#  if more versions are added
+#echo $Hdirs
+for dir in $Ldirs ; do
+    mkdir $ITLDIR/$dir/bin 
+    mkdir -p $ITLDIR/$dir/man/manl
+    cp -p $SRCDIR/nist.scripts/cmdoc $ITLDIR/$dir/bin
+    cp -p $SRCDIR/nist.scripts/cmsrc $ITLDIR/$dir/bin
+    cp -p $SRCDIR/nist.scripts/cmsrcx.linux $ITLDIR/$dir/bin/cmsrcx
+    cp -p $SRCDIR/nist.man/cmlib.linux.l $ITLDIR/$dir/man/manl/cmlib.l
+    rm -f $ITLDIR/$dir/lib/test*
+    rm -r $ITLDIR/$dir/lib/src
+done

@@ -1,0 +1,42 @@
+ 
+      INTEGER FUNCTION CHFMC(D1,D2,DELTA)
+C***BEGIN PROLOGUE  CHFMC
+C***REFER TO  PCHMC
+C***ROUTINES CALLED  R1MACH
+C***REVISION DATE  870707   (YYMMDD)
+C***DESCRIPTION
+C
+C          CHFMC:  Cubic Hermite Function Monotonicity Checker.
+C
+C    Called by  PCHMC  to determine the monotonicity properties of the
+C    cubic with boundary derivative values D1,D2 and chord slope DELTA.
+C
+C ----------------------------------------------------------------------
+C
+C  Calling sequence:
+C
+C        REAL  D1, D2, DELTA
+C        INTEGER  ISMON, CHFMC
+C
+C        ISMON = CHFMC (D1, D2, DELTA)
+C
+C   Parameters:
+C
+C     D1,D2 -- (input) derivative values at the ends of an interval.
+C
+C     DELTA -- (input) data slope over that interval.
+C
+C     ISMON -- (output) integer function value, indicating the monoto-
+C           nicity of the cubic segment:
+C             ISMON = -1  if function is strictly decreasing;
+C             ISMON =  0  if function is constant;
+C             ISMON =  1  if function is strictly increasing;
+C             ISMON =  2  if function is non-monotonic;
+C             ISMON =  3  if unable to determine.
+C
+C  Fortran intrinsics used:  SIGN.
+C  Other routines used:  R1MACH.
+C
+C***END PROLOGUE  CHFMC
+ 
+ 

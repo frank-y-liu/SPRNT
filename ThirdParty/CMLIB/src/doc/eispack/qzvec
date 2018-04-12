@@ -1,0 +1,83 @@
+ 
+      SUBROUTINE QZVEC(NM,N,A,B,ALFR,ALFI,BETA,Z)
+C***BEGIN PROLOGUE  QZVEC
+C***DATE WRITTEN   760101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  D4C3
+C***KEYWORDS  EIGENVALUES,EIGENVECTORS,EISPACK
+C***AUTHOR  SMITH, B. T., ET AL.
+C***PURPOSE  The optional fourth step of the QZ algorithm for
+C            generalized eigenproblems. Accepts a matrix in
+C            quasi-triangular form and another in upper triangular
+C            and computes the eigenvectors of the triangular problem
+C            and transforms them back to the original coordinates
+C            Ususally preceded by QZHES, QZIT, QZVAL.
+C***DESCRIPTION
+C
+C     This subroutine is the optional fourth step of the QZ algorithm
+C     for solving generalized matrix eigenvalue problems,
+C     SIAM J. NUMER. ANAL. 10, 241-256(1973) by MOLER and STEWART.
+C
+C     This subroutine accepts a pair of REAL matrices, one of them in
+C     quasi-triangular form (in which each 2-by-2 block corresponds to
+C     a pair of complex eigenvalues) and the other in upper triangular
+C     form.  It computes the eigenvectors of the triangular problem and
+C     transforms the results back to the original coordinate system.
+C     It is usually preceded by  QZHES,  QZIT, and  QZVAL.
+C
+C     On Input
+C
+C        NM must be set to the row dimension of two-dimensional
+C          array parameters as declared in the calling program
+C          dimension statement.
+C
+C        N is the order of the matrices.
+C
+C        A contains a real upper quasi-triangular matrix.
+C
+C        B contains a real upper triangular matrix.  In addition,
+C          location B(N,1) contains the tolerance quantity (EPSB)
+C          computed and saved in  QZIT.
+C
+C        ALFR, ALFI, and BETA  are vectors with components whose
+C          ratios ((ALFR+I*ALFI)/BETA) are the generalized
+C          eigenvalues.  They are usually obtained from  QZVAL.
+C
+C        Z contains the transformation matrix produced in the
+C          reductions by  QZHES,  QZIT, and  QZVAL, if performed.
+C          If the eigenvectors of the triangular problem are
+C          desired, Z must contain the identity matrix.
+C
+C     On Output
+C
+C        A is unaltered.  Its subdiagonal elements provide information
+C           about the storage of the complex eigenvectors.
+C
+C        B has been destroyed.
+C
+C        ALFR, ALFI, and BETA are unaltered.
+C
+C        Z contains the real and imaginary parts of the eigenvectors.
+C          If ALFI(I) .EQ. 0.0, the I-th eigenvalue is real and
+C            the I-th column of Z contains its eigenvector.
+C          If ALFI(I) .NE. 0.0, the I-th eigenvalue is complex.
+C            If ALFI(I) .GT. 0.0, the eigenvalue is the first of
+C              a complex pair and the I-th and (I+1)-th columns
+C              of Z contain its eigenvector.
+C            If ALFI(I) .LT. 0.0, the eigenvalue is the second of
+C              a complex pair and the (I-1)-th and I-th columns
+C              of Z contain the conjugate of its eigenvector.
+C          Each eigenvector is normalized so that the modulus
+C          of its largest component is 1.0 .
+C
+C     Questions and comments should be directed to B. S. Garbow,
+C     APPLIED MATHEMATICS DIVISION, ARGONNE NATIONAL LABORATORY
+C     ------------------------------------------------------------------
+C***REFERENCES  B. T. SMITH, J. M. BOYLE, J. J. DONGARRA, B. S. GARBOW,
+C                 Y. IKEBE, V. C. KLEMA, C. B. MOLER, *MATRIX EIGEN-
+C                 SYSTEM ROUTINES - EISPACK GUIDE*, SPRINGER-VERLAG,
+C                 1976.
+C***ROUTINES CALLED  (NONE)
+C***END PROLOGUE  QZVEC
+ 
+ 

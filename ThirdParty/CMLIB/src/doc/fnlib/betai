@@ -1,0 +1,23 @@
+ 
+      FUNCTION BETAI(X,PIN,QIN)
+C***BEGIN PROLOGUE  BETAI
+C***DATE WRITTEN   770401   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C7F
+C***KEYWORDS  BETA FUNCTION,INCOMPLETE BETA FUNCTION,SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the incomplete Beta function.
+C***DESCRIPTION
+C
+C BETAI(X,PIN,QIN) calculates the incomplete beta function
+C ratio based on Bosten and Battiste, Remark on Algorithm 179,
+C Comm. ACM, Vol. 17, p. 153, (1974).
+C
+C X     value to which function is to be integrated.  X must be in (0,1)
+C PIN   input (1st) parameter (must be greater than 0)
+C QIN   input (2nd) parameter (must be greater than 0)
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  ALBETA,R1MACH,XERROR
+C***END PROLOGUE  BETAI
+ 
+ 

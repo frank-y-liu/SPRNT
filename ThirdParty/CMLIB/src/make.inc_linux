@@ -1,0 +1,6 @@
+FORTRAN = g77
+OPTS = -g
+NOPTS = -g3 -fno-automatic
+RANLIB = ranlib
+MACHCON = IEEE.LEAST-SIG-BYTE-FIRST
+LIBRARY = libcm.a

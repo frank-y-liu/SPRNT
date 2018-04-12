@@ -1,0 +1,51 @@
+ 
+      SUBROUTINE DPPQAD(LDC,C,XI,LXI,K,X1,X2,PQUAD)
+C***BEGIN PROLOGUE  DPPQAD
+C***DATE WRITTEN   800901   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  H2A2A1,E3,K6
+C***KEYWORDS  B-SPLINE,DATA FITTING,DOUBLE PRECISION,INTERPOLATION,
+C             QUADRATURE,SPLINE
+C***AUTHOR  AMOS, D. E., (SNLA)
+C***PURPOSE  Computes the integral on (X1,X2) of a K-th order B-spline
+C            using the piecewise polynomial representation.
+C***DESCRIPTION
+C
+C     Written by D. E. Amos, June, 1979.
+C
+C     Reference SAND-79-1825
+C
+C     Abstract    **** a double precision routine ****
+C
+C         DPPQAD computes the integral on (X1,X2) of a K-th order
+C         B-spline using the piecewise polynomial representation
+C         (C,XI,LXI,K).  Here the Taylor expansion about the left
+C         end point XI(J) of the J-th interval is integrated and
+C         evaluated on subintervals of (X1,X2) which are formed by
+C         included break points.  Integration outside (XI(1),XI(LXI+1))
+C         is permitted.
+C
+C         DPPQAD calls DINTRV
+C
+C     Description of Arguments
+C         Input      C,XI,X1,X2 are double precision
+C           LDC    - leading dimension of matrix C, LDC .GE. K
+C           C(I,J) - right Taylor derivatives at XI(J), I=1,K , J=1,LXI
+C           XI(*)  - break point array of length LXI+1
+C           LXI    - number of polynomial pieces
+C           K      - order of B-spline, K .GE. 1
+C           X1,X2  - end points of quadrature interval, normally in
+C                    XI(1) .LE. X .LE. XI(LXI+1)
+C
+C         Output     PQUAD is double precision
+C           PQUAD  - integral of the PP representation over (X1,X2)
+C
+C     Error Conditions
+C         Improper input is a fatal error
+C***REFERENCES  D.E. AMOS, *QUADRATURE SUBROUTINES FOR SPLINES AND
+C                 B-SPLINES*, SAND79-1825, SANDIA LABORATORIES,
+C                 DECEMBER 1979.
+C***ROUTINES CALLED  DINTRV,XERROR
+C***END PROLOGUE  DPPQAD
+ 
+ 

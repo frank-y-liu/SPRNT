@@ -1,0 +1,6 @@
+These versions of the fnlib routines inits.f and initds.f relax
+the accuracy requirement for versions of CMLIB created with
+a compiler's auto-doubling option.  They are necessary because the
+polynomial approximation in use is only good to Cray double
+precision accuracy.  Quad precision gives one a few more decimal
+digits, which makes the original versions fail.
