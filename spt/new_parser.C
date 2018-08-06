@@ -146,7 +146,8 @@ Descriptor Op_Descriptor[] = {
   { "PRTCOORD",    no,  ft_ascii }, 
   { "VERBOSE",     no,  ft_ascii }, // 18
   { "EPOCH",       no,  ft_ascii }, // 19
-  { "SPINUPTIME", no,  ft_real  }  // 20
+  { "SPINUPTIME", no,  ft_real  },  // 20
+  { "STEADYONLY", no,  ft_ascii }   // 21
 };
 
 
@@ -679,6 +680,12 @@ int read_spt_from_file(sptFile F, Subcatchment *SUB, NameStore *NODE_NAMES, SMap
 	if (out) fprintf(out,"[WW]: negative spin-up time specified on line %d. Use zero instead (disabled)\n",
 			 Prime->LineNumber());
 	spinuptime = 0.0;
+      }
+
+      tmp = Prime->Find_Value( Op_Descriptor[21]._key); // steadyonly
+      if (tmp) {
+	OPT.SteadyOnly() = atoi(tmp) > 0 ? 1 : 0;
+	if (out) fprintf(out, "[II]: SteadyOnly set to %1d\n", OPT.SteadyOnly() );
       }
       
     }

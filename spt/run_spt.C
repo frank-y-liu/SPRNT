@@ -37,7 +37,7 @@ char* get_basename(char*);
 
 int main(int argc, char** argv) {
   const int buf_len = 512;
-  int   rc, docheck, print_flag;
+  int   rc, docheck, steadyonly, print_flag;
   char fname[buf_len], outname[buf_len];
   sptFile F;
   sptFile outF;
@@ -52,14 +52,19 @@ int main(int argc, char** argv) {
   if ( argc < 2 ) {
     printf("Usage: %s <netlistfile>\n", argv[0]);
     printf("       %s -checkonly <netlistfile>\n", argv[0]);
+    printf("       %s -steadyonly <netlistfile>\n", argv[0]);
     return (-1);
   }
   
   docheck = 0;
+  steadyonly = 0;
   if ( argc == 3 && strcmp(argv[1],"-checkonly")==0 ) {
     docheck = 1;
     strncpy(fname, argv[2], buf_len);
-  } else {
+  } else if ( argc == 3 && strcmp(argv[1],"-steadyonly")==0 ) {
+    steadyonly = 1;
+    strncpy(fname, argv[2], buf_len);
+  } else  {
     docheck = 0;
     strncpy(fname, argv[1], buf_len);
   }
@@ -114,7 +119,6 @@ int main(int argc, char** argv) {
     goto out;
   }
 
-
   //  SUB->InitSolutions();
   FS = NULL;
   if ( STAT.SSFile() ) FS = fopen(STAT.SSFile(),"r");
@@ -145,6 +149,7 @@ int main(int argc, char** argv) {
     fprintf(stdout, "[II]: Saved steady state to file \"%s\"\n", STAT.SSFile());
   }
 
+  
   // run unsteady
   print_flag = 0;
   if (OPT.PrintQ()==1) print_flag |= PRT_Q;
@@ -162,7 +167,7 @@ int main(int argc, char** argv) {
     if ( outF == NULL ) {
       fprintf(stdout,"[II]: Unable to open output file %s. Request ignored\n", outname);
     } else {
-      fprintf(stdout,"[II]: Unsteady results will be stored in \"%s\"\n", outname);
+      fprintf(stdout,"[II]: %s results will be stored in \"%s\"\n", (OPT.SteadyOnly()==1||steadyonly==1)?"Steady":"Unsteady", outname);
     }
     if (OPT.PrintXY()==1) print_flag |= PRT_XY;   // XY printing is only turned on when
 						  // others are enabled
@@ -171,6 +176,23 @@ int main(int argc, char** argv) {
     outF = NULL;
   }
 
+  // store the unsteady and terminate if requested
+  if ( print_flag && (OPT.SteadyOnly() == 1 || steadyonly == 1 ) ) {
+    fprintf(stdout,"[II]: Only steady solve is done.\n" );
+    const int steadyonly = 1;
+    SUB->PrintHeader(outF, steadyonly);  // headers for steady and unsteady are different
+
+    // need to compute the depth and elevation if requested
+    if ( (print_flag & PRT_D) || (print_flag & PRT_Z) ) SUB->ComputeDepthAndElevation(print_flag);
+
+    // print steady only, we pass a few arbitrary values
+    SUB->PrintOnDemand(outF, 0., 0., print_flag, NODE_NAMES->Store());
+    
+    if ( outF ) sptClose( outF );
+    goto out;
+  }
+
+  
   TM.start();
   rc = SUB->UnsteadySolve(OPT.StopTime(), 1, 25, OPT.Tol(), NULL, outF, print_flag, OPT.PrintStart(), NODE_NAMES->Store() ); 
 

@@ -35,22 +35,22 @@
 Subcatchment::~Subcatchment() {
   if (_num_nodes > 0 ) {
     for (int j=0; j<_num_nodes; j++) {
-      if (_NS[j] > 0 ) delete _NS[j];
-      _NS[j] = 0;
+      if (_NS[j] ) delete _NS[j];
+      _NS[j] = NULL;
     }
   }
 
   if (_num_eqns > 0 ) {
     for (int j=0; j<_num_eqns; j++) {
-      if ( _EQ[j] > 0 ) delete _EQ[j];
-      _EQ[j] = 0;
+      if ( _EQ[j] ) delete _EQ[j];
+      _EQ[j] = NULL;
     }
   }
 
   if ( _num_src > 0 ) {
     for (int jj=0; jj<_num_src; jj++) {
       if ( _SRC[jj] ) delete _SRC[jj];
-      _SRC[jj]=0;
+      _SRC[jj] = NULL;
     }
   }
 
@@ -809,6 +809,27 @@ inline double lin_interp(double t1, double x1, double t2, double x2, double tt) 
   return ( x1 + (tt-t1)*(x2-x1)/(t2-t1) );
 }
 
+// print the header for the final output
+// pass the "steadyonly" flag
+//  no checking on the filehandle F
+void Subcatchment::PrintHeader(sptFile F, int steadyonly) {
+
+  sptFprintf(F,"*** SPRNt Results. Netlist: \"%s\" Epoch: \"%s\"",STAT.InFile(), STAT.Epoch() );
+  if (! steadyonly ) {
+    sptFprintf(F, " Reqested Tstop: " );
+  
+    if ( (((int)OPT.StopTime())/3600) > 0 ) {
+      sptFprintf(F, "%d hr %d min\n", ((int)OPT.StopTime())/3600, (((int)OPT.StopTime())/60)%60 );
+    }  else  {
+      sptFprintf(F, "%d min\n",((int)OPT.StopTime())/60);
+    }
+  } else {
+    sptFprintf(F, "\n");
+  }
+  
+}
+
+// print simulation result for one time point only
 // what to print:
 //    four bits 
 //    0x08         Q
@@ -1361,18 +1382,8 @@ int Subcatchment::UnsteadySolve(double final_t, int jac_num, int max_iter, doubl
   memcpy(&_Xp[0], &_Xtm1[0], _num_eqns*sizeof(double));
 
   // print a header
-  if (OUT!=NULL) {
-
-    sptFprintf(OUT,"*** SPRNt Results. Netlist: \"%s\" Epoch: \"%s\" Reqested Tstop: ", STAT.InFile(), STAT.Epoch() );
-
-    if ( (((int)OPT.StopTime())/3600) > 0 ) {
-      sptFprintf(OUT,"%d hr %d min\n", ((int)OPT.StopTime())/3600, (((int)OPT.StopTime())/60)%60 );
-    }  else  {
-      sptFprintf(OUT,"%d min\n",((int)OPT.StopTime())/60);
-    }
-
-  }
-
+  if ( OUT != NULL ) PrintHeader(OUT, 0); // header for unsteady
+  
   while ( 1 ) {
     
     /* determine the time step we should use */
@@ -1439,7 +1450,7 @@ int Subcatchment::UnsteadySolve(double final_t, int jac_num, int max_iter, doubl
     // compute depth and elevation when needed
     if ( (what2print & PRT_D) || (what2print & PRT_Z) || WV ) ComputeDepthAndElevation(what2print);
 
-    if ( WV ) {
+    if ( WV ) {  // not sure if we need to store the data 
       int rc= WV->Advance();
       if ( rc < 0 ) {
 	fprintf(stdout,"[WW]: Error allocating waveform storage, no more results stored.\n");

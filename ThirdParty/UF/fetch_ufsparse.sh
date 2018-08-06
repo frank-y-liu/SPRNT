@@ -8,12 +8,13 @@
 #  The repository at UF is gone
 
 echo " "
-echo "Fetching SuiteSparse from Texas A&M University CSE webpage,"
-echo " may take a few minutes depending on the speed of the internet connection ...."
+echo "Fetching cached SuiteSparse .... "
 echo " "
 
 if [ ! -f SuiteSparse-3.0.0.tar.gz ]; then
-curl http://faculty.cse.tamu.edu/davis/SuiteSparse/SuiteSparse-3.0.0.tar.gz -o SuiteSparse-3.0.0.tar.gz
+## original location
+##curl http://faculty.cse.tamu.edu/davis/SuiteSparse/SuiteSparse-3.0.0.tar.gz -o SuiteSparse-3.0.0.tar.gz
+cp ../Repositories/UF/SuiteSparse-3.0.0.tar.gz ./.
 fi
 
 echo " "
