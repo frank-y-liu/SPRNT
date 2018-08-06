@@ -35,22 +35,22 @@
 Subcatchment::~Subcatchment() {
   if (_num_nodes > 0 ) {
     for (int j=0; j<_num_nodes; j++) {
-      if (_NS[j] > 0 ) delete _NS[j];
-      _NS[j] = 0;
+      if (_NS[j] ) delete _NS[j];
+      _NS[j] = NULL;
     }
   }
 
   if (_num_eqns > 0 ) {
     for (int j=0; j<_num_eqns; j++) {
-      if ( _EQ[j] > 0 ) delete _EQ[j];
-      _EQ[j] = 0;
+      if ( _EQ[j] ) delete _EQ[j];
+      _EQ[j] = NULL;
     }
   }
 
   if ( _num_src > 0 ) {
     for (int jj=0; jj<_num_src; jj++) {
       if ( _SRC[jj] ) delete _SRC[jj];
-      _SRC[jj]=0;
+      _SRC[jj] = NULL;
     }
   }
 
