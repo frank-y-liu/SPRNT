@@ -2,3 +2,11 @@
 
 2. introduce "reach" into overall data structure
 
+Aug 2019
+1. Check and correct the computation of critical depth, as well as the computation
+   of the Froude number
+
+2. Experiment: make a small case of transcritical (sub->super) and visualize the 
+   directions of Jacobian
+
+3
