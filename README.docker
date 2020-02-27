@@ -1,0 +1,48 @@
+Feb 2020
+
+Now you can run SPRNT in container. You can pull the docker image at this link:
+
+https://hub.docker.com/r/frankliu1/sprnt
+
+You will need to use the script util/run_sprnt_docker.sh. Another script util/run_docker.sh
+allows you to specify other commands.
+
+In order to use the container, make sure docker desktop is installed (Mac or Windows, x86_64 only). Details
+can be found at https://docs.docker.com/.
+
+Below is the screen output of running "run_sprnt_docker.sh m1.spt". Note the docker desktop automatically downloaded
+the image from dockerhub:
+
+
+Unable to find image 'frankliu1/sprnt:latest' locally
+latest: Pulling from frankliu1/sprnt
+423ae2b273f4: Already exists 
+de83a2304fa1: Already exists 
+f9a83bce3af0: Already exists 
+b6b53be908de: Already exists 
+96202af5f851: Pull complete 
+a9f5f5de79d0: Pull complete 
+9aebcee99c7e: Pull complete 
+Digest: sha256:0f8dc3e8023ed57e4fee8e1419eb39692c3a21f6fcf80a58083482a28dee156c
+Status: Downloaded newer image for frankliu1/sprnt:latest
+  
+   SPRNT: Simulation Program for River Networks
+      version 1.3.7 (3c4133d9) : Feb 26 2020  20:01:11
+      compiled with 7.4.0
+  
+[II]: Found 6 nodes, 5 segmetns, 0 junctions, 1 q_sources, 0 lateral sources, 1 bdn condtions, 4 options in the netlist
+[II]: Metric set to 1
+[II]: PrtDepth set to 1
+[II]: PrtSurfElev set to 1
+[II]: PrtQ set to 1
+[II]: PrtA set to 1
+[II]: TimeStep set to 6.000e+01 second.
+[II]: StopTime set to 9.600e+04 second
+[II]: successfully allocated solver, type = 1, size = 12
+[II]: Steady state solve converged in 4 steps
+[II]: Number of nodes = 6, size of matrix = 12
+[II]: SteadyState phase II converged in 8 steps with 10 iterations.
+[II]: Unsteady results will be stored in "m1.spt.output.dat.gz"
+[II]: UnsteadyState finished w/ 1600 time points, 3176 iterations.
+[II]: Simulation of the 1600-min event took 0.048 seconds.
+

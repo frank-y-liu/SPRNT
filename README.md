@@ -23,6 +23,9 @@ under Eclipse Public License. IBM owns the copyright.
 ## Install
 See INSTALL on how to build and install the software
 
+## Docker Image
+Now you can run SPRNT in container. See README.docker for details. Follow this link to pull the image from dockerhub: https://hub.docker.com/r/frankliu1/sprnt.
+
 ## Contact
 For bugs/questions/comments/critiques, please send email through GitHub.
 
