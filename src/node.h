@@ -63,6 +63,9 @@ class Node {
 
   // whether print
   int                _print;
+  
+  // Justin add, super critical flag to decided whether turn on Fread Method
+  int               _superC_flag;
 
   // debug flag
   static int        _debug;
@@ -76,6 +79,7 @@ class Node {
     _zr = 0.0;
     _hr = 0.0;
     _print = 0;
+    _superC_flag = 0;
   };
 
   Node(unsigned int id, double sr, double n, XSection *xs,
@@ -132,6 +136,9 @@ class Node {
   double GetAbyDepth(double a) { return _xs->GetAbyDepth(a); }
   double GetDepthdA(double a) { return _xs->GetDepthdA(a); }
 
+  // if super critical flag ==1 -> suppress inertia term
+  int GetSuperC_Flag() {return _superC_flag; }
+  void RaiseSuperC_Flag() { _superC_flag = 1; }
   // determine whether to print
   void SetPrint() { _print = 1; }
   void UnsetPrint() { _print = 0; }

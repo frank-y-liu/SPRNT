@@ -1,2 +1,0 @@
-      subroutine fmat
-      end

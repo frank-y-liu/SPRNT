@@ -23,6 +23,7 @@
 class Options {
  private:
   double    _g;          // gravity
+  double    _Fr_Criteria;// Froude Number Criteria, when Fr > criteria, turn off interia term
   double    _sqrt_g;     // sqrt of g
   double    _ftom;       // feet to meters
   double    _f3tom3;     // cubic feet to cubic meters
@@ -65,6 +66,8 @@ class Options {
   double    _lmin;       // L min for checking only
   double    _min_n;      // minimal manning's N, for checking only
   char      _buf[512];    // for others to copy the content to
+
+
   // char      _ssfile[512]; // steady state file
   // char      _chksum[10];  // stores the checksum for both node names and Q/A/lateral
   // 			  // sources
@@ -72,6 +75,7 @@ class Options {
 
   void _defaults() {
     _g = 9.80665;
+    _Fr_Criteria = 1.0; // A hardcoded thershold for suppressing inertia terms, Justin 20200430
     _sqrt_g = 3.13156;
     _ftom = 0.3048;
     _f3tom3 = 0.028317;
@@ -128,6 +132,7 @@ class Options {
   double FtoM() const { return _ftom; }
   double F2toM2() const { return _f2tom2; }
   double F3toM3() const { return _f3tom3; }
+  double Froude_Criteria() const { return _Fr_Criteria; }
 
   /* coefficients, can be changed */
   int& UseMetric() { return _use_metric; }
@@ -197,8 +202,11 @@ class Stats {
   long int      _ss_steps;
   long int      _dy_steps;
 
+  int           _sc_counter;
+
   GrowVec<Behavior, 2048>   _steady_stats;
   GrowVec<Behavior, 8192>   _dynamic_stats;
+ 
 
   // stats related to a particular netlist
   char           _ssfile[512];
@@ -214,6 +222,7 @@ class Stats {
     _in_file[0] = 0;
     _chksum[0] = 0;
     strcpy(_epoch, "1970-01-01T00:00:00Z");
+    _sc_counter=0;
   }
   
   ~Stats() {}

@@ -24,6 +24,7 @@
 #include "options.h"
 
 #define USEDIFF 0
+#define SUPRESSOR 1
 
 /* we need some place to hold the initializer for the class */
 int Node::_debug = 0;
@@ -544,9 +545,11 @@ void QrDepEqn::CreateEntry(SparseMatrix *w, Node** nn) {
 // The issue with this implementation is that each node is evaluated TWICE!!!
 int MomStvEqn::Evaluate(Node **n, double *X, double *Xp, double *RHS, SparseMatrix *M) {
   double half_g = OPT.Gravity()/2.0;
+  double Fr_C = OPT.Froude_Criteria();
 
   Node *UP = n[_up_idx];
   Node *DN = n[_dn_idx];
+
 
   int idx_up_a = UP->AIdx();
   int idx_up_q = UP->QIdx();
@@ -568,6 +571,11 @@ int MomStvEqn::Evaluate(Node **n, double *X, double *Xp, double *RHS, SparseMatr
   double up_a = X[idx_up_a];
   double dn_a = X[idx_dn_a];
 
+  double Fr_up = UP->GetFroude(X[idx_up_q], X[idx_up_a]);
+  double Fr_dn = UP->GetFroude(X[idx_dn_q], X[idx_dn_a]);
+
+  double suppress;
+
   if ( OPT.HT() > 0 && up_a < 2.0*OPT.HT() ) {
     up_n_corr = OPT.HT()/up_a;
     if (up_n_corr<10) up_n_corr = 1 + (log(1+exp(12.0*(up_n_corr-1))))/12.0;
@@ -586,7 +594,15 @@ int MomStvEqn::Evaluate(Node **n, double *X, double *Xp, double *RHS, SparseMatr
     }
   }
 
-  RHS[_row]= (OPT.Beta()/_dx) * (Qdnsqdiva - Qupsqdiva) + 
+  if (UP->GetSuperC_Flag()== 0 && Fr_up > Fr_C ) UP->RaiseSuperC_Flag();
+  if (DN->GetSuperC_Flag()== 0 && Fr_dn > Fr_C ) DN->RaiseSuperC_Flag();
+  
+  if (UP->GetSuperC_Flag() || DN->GetSuperC_Flag()) {
+    suppress=0;}
+  else {
+    suppress=1;}
+
+  RHS[_row]= suppress*(OPT.Beta()/_dx) * (Qdnsqdiva - Qupsqdiva) + 
     (half_g/_dx)* (X[idx_dn_a] + X[idx_up_a])*( DN->GetDepth(X[idx_dn_a])
 					       -UP->GetDepth(X[idx_up_a]) )
     - half_g * (DN->GetSR()*(X[idx_dn_a]) + UP->GetSR()*(X[idx_up_a]) )
@@ -597,13 +613,13 @@ int MomStvEqn::Evaluate(Node **n, double *X, double *Xp, double *RHS, SparseMatr
   double dn_fric_da = DN->XS()->GetEqFrictiondA(X[idx_dn_a] + OPT.EpsilonA() );
 
 
-  double dmdaup = (OPT.Beta()/_dx) * Qupsqdiva/(X[idx_up_a]) 
+  double dmdaup = suppress*(OPT.Beta()/_dx) * Qupsqdiva/(X[idx_up_a]) 
     + (half_g/_dx) * (DN->GetDepth(X[idx_dn_a]) - UP->GetDepth(X[idx_up_a])
 		      - (X[idx_up_a]+X[idx_dn_a])*UP->GetDepthdA(X[idx_up_a])   ) 
     - half_g*UP->GetSR()
     + half_g*UP->Nsq()*up_n_corr*Qupsq * up_fric_da;
 
-  double dmdadn = (-OPT.Beta()/_dx)*Qdnsqdiva/(X[idx_dn_a]) 
+  double dmdadn = suppress*(-OPT.Beta()/_dx)*Qdnsqdiva/(X[idx_dn_a]) 
     + (half_g/_dx) * (DN->GetDepth(X[idx_dn_a]) - UP->GetDepth(X[idx_up_a])
 		      + (X[idx_up_a]+X[idx_dn_a])*DN->GetDepthdA(X[idx_dn_a]) ) 
     - half_g*DN->GetSR()
@@ -624,6 +640,8 @@ int MomStvEqn::EvaluateRHS(Node **n, double *X, double *Xp, double *RHS) {
   Node *UP = n[_up_idx];
   Node *DN = n[_dn_idx];
 
+  double Fr_C = OPT.Froude_Criteria();
+
   int idx_up_a = UP->AIdx();
   int idx_up_q = UP->QIdx();
   int idx_dn_a = DN->AIdx();
@@ -644,6 +662,11 @@ int MomStvEqn::EvaluateRHS(Node **n, double *X, double *Xp, double *RHS) {
   double up_a = X[idx_up_a];
   double dn_a = X[idx_dn_a];
 
+  double Fr_up = UP->GetFroude(X[idx_up_q], X[idx_up_a]);
+  double Fr_dn = UP->GetFroude(X[idx_dn_q], X[idx_dn_a]);
+
+  double suppress;
+
   if ( OPT.HT() > 0 && up_a < 2.0*OPT.HT() ) {
     up_n_corr = OPT.HT()/up_a;
     if (up_n_corr<10) up_n_corr = 1 + (log(1+exp(12.0*(up_n_corr-1))))/12.0;
@@ -662,7 +685,15 @@ int MomStvEqn::EvaluateRHS(Node **n, double *X, double *Xp, double *RHS) {
     }
   }
 
-  RHS[_row]= (OPT.Beta()/_dx)* (Qdnsqdiva - Qupsqdiva) + 
+  if (UP->GetSuperC_Flag()== 0 && Fr_up > Fr_C ) UP->RaiseSuperC_Flag();
+  if (DN->GetSuperC_Flag()== 0 && Fr_dn > Fr_C ) DN->RaiseSuperC_Flag();
+  
+  if (UP->GetSuperC_Flag() || DN->GetSuperC_Flag()) {
+    suppress=0;}
+  else {
+    suppress=1;}
+
+  RHS[_row]= suppress*(OPT.Beta()/_dx)* (Qdnsqdiva - Qupsqdiva) + 
     (half_g/_dx)* (X[idx_dn_a] + X[idx_up_a])*( DN->GetDepth(X[idx_dn_a])
 					       -UP->GetDepth(X[idx_up_a]) )
     - half_g* (DN->GetSR()*(X[idx_dn_a]) + UP->GetSR()*(X[idx_up_a]) )
@@ -679,6 +710,7 @@ int MomStvEqn::EvaluateJac(double t, double dt, Node **n, double *X, double *Xp,
 int MomStvEqn::EvaluateRHS(double t, double dt, Node **n, double *X, double *Xp, double *RHS) {
   double lambda2 = 2.0*dt/_dx;
   double gdt = OPT.Gravity()*dt;
+  double Fr_C = OPT.Froude_Criteria();
 
   Node *UP = n[_up_idx];
   Node *DN = n[_dn_idx];
@@ -701,6 +733,11 @@ int MomStvEqn::EvaluateRHS(double t, double dt, Node **n, double *X, double *Xp,
   double dn_n_corr = 1.0;
   double up_a, dn_a;
 
+  double Fr_up = UP->GetFroude(X[idx_up_q], X[idx_up_a]);
+  double Fr_dn = UP->GetFroude(X[idx_dn_q], X[idx_dn_a]);
+  
+  double suppress;
+  
   up_a = X[idx_up_a];
   dn_a = X[idx_dn_a];
 
@@ -725,7 +762,15 @@ int MomStvEqn::EvaluateRHS(double t, double dt, Node **n, double *X, double *Xp,
     }
     
   }
+  if (UP->GetSuperC_Flag()== 0 && Fr_up > Fr_C ) UP->RaiseSuperC_Flag();
+  if (DN->GetSuperC_Flag()== 0 && Fr_dn > Fr_C ) DN->RaiseSuperC_Flag();
   
+  if (UP->GetSuperC_Flag() || DN->GetSuperC_Flag()) {
+    suppress=0;}
+  else {
+    suppress=1;}
+
+
   // experimenting diffusive 
   if ( up_a < 1.5*UP->XS()->GetMinA() ) {
     
@@ -741,14 +786,25 @@ int MomStvEqn::EvaluateRHS(double t, double dt, Node **n, double *X, double *Xp,
     - gdt*( DN->GetSR()*(X[idx_dn_a]) + UP->GetSR()*(X[idx_up_a]) )
     + gdt*( DN->Nsq()*dn_n_corr*Qdnsq*Efdn + UP->Nsq()*up_n_corr*Qupsq*Efup );
 #else
-  RHS[_row]= X[idx_dn_q] + X[idx_up_q] - Xp[idx_dn_q] - Xp[idx_up_q]
-    + lambda2*(  OPT.Beta()* (Qdnsqdiva - Qupsqdiva) + 
-		 0.5*OPT.Gravity()*(X[idx_dn_a]+X[idx_up_a])*(  DN->GetDepth(X[idx_dn_a])
-							       -UP->GetDepth(X[idx_up_a]) ) 
-		)
+  #if SUPRESSOR
+    // Write a condition statement here, if froude number >= certain threshold -> suppress advection term
+    // Justin Yu_20200430
+    RHS[_row]= suppress*(X[idx_dn_q] + X[idx_up_q] - Xp[idx_dn_q] - Xp[idx_up_q]
+    + lambda2* OPT.Beta()* (Qdnsqdiva - Qupsqdiva)) + 
+    lambda2*0.5*OPT.Gravity()*(X[idx_dn_a]+X[idx_up_a])*(  DN->GetDepth(X[idx_dn_a])
+    -UP->GetDepth(X[idx_up_a]) ) 
     - gdt*( DN->GetSR()*(X[idx_dn_a]) + UP->GetSR()*(X[idx_up_a]) )
     + gdt*( DN->Nsq()*dn_n_corr*Qdnsq*Efdn + UP->Nsq()*up_n_corr*Qupsq*Efup );
 
+    // Justin made change here 20200426
+  #else
+    RHS[_row]= X[idx_dn_q] + X[idx_up_q] - Xp[idx_dn_q] - Xp[idx_up_q]
+      + lambda2*(  OPT.Beta()* (Qdnsqdiva - Qupsqdiva) + 
+		  0.5*OPT.Gravity()*(X[idx_dn_a]+X[idx_up_a])*(  DN->GetDepth(X[idx_dn_a])
+			  				       -UP->GetDepth(X[idx_up_a]) ) )
+      - gdt*( DN->GetSR()*(X[idx_dn_a]) + UP->GetSR()*(X[idx_up_a]) )
+      + gdt*( DN->Nsq()*dn_n_corr*Qdnsq*Efdn + UP->Nsq()*up_n_corr*Qupsq*Efup );
+  #endif
 #endif
   return OK;
 
@@ -757,8 +813,12 @@ int MomStvEqn::EvaluateRHS(double t, double dt, Node **n, double *X, double *Xp,
 // The issue with this implementation is that each node is evaluated TWICE!!!
 int MomStvEqn::Evaluate(double t, double dt, Node **n, double *X, double *Xp, double *RHS, SparseMatrix *M) {
   // this function can be CPU intensive, some optimization should be done!!!
+  // This function is for generating Jacobian Matrix in unsteady simulation.
+  // Jacobian terms are hardcoded.
   double lambda2 = 2.0*dt/_dx;
   double gdt = OPT.Gravity()*dt;
+  double Fr_C = OPT.Froude_Criteria();
+
   Node *UP = n[_up_idx];
   Node *DN = n[_dn_idx];
 
@@ -782,6 +842,12 @@ int MomStvEqn::Evaluate(double t, double dt, Node **n, double *X, double *Xp, do
   double dn_n_corr = 1.0;
   double up_a, dn_a;
 
+  double Fr_up = UP->GetFroude(X[idx_up_q], X[idx_up_a]);
+  double Fr_dn = UP->GetFroude(X[idx_dn_q], X[idx_dn_a]);
+
+  double suppress; // A dummy parameter to turn off inertia terms
+
+
   up_a = X[idx_up_a];
   dn_a = X[idx_dn_a];
 
@@ -804,6 +870,17 @@ int MomStvEqn::Evaluate(double t, double dt, Node **n, double *X, double *Xp, do
       fprintf(stdout,"   HT invoked for a=%.2e, correction = %.2e\n", dn_a, dn_n_corr); 
     }
   }
+
+  if (UP->GetSuperC_Flag()== 0 && Fr_up > Fr_C ) UP->RaiseSuperC_Flag();
+  if (DN->GetSuperC_Flag()== 0 && Fr_dn > Fr_C ) DN->RaiseSuperC_Flag();
+  
+  if (UP->GetSuperC_Flag() || DN->GetSuperC_Flag()) {
+    suppress=0;}
+  else {
+    suppress=1;}
+
+
+
 #if USEDIFF
   double ff = 1/(1 + exp(-75.0*(X[idx_dn_a]-0.1)));  // hard coded, threshold=0.1, rate-75
   RHS[_row]= ff*(X[idx_dn_q] + X[idx_up_q] - Xp[idx_dn_q] - Xp[idx_up_q])
@@ -814,20 +891,38 @@ int MomStvEqn::Evaluate(double t, double dt, Node **n, double *X, double *Xp, do
     - gdt*( DN->GetSR()*(X[idx_dn_a]) + UP->GetSR()*(X[idx_up_a]) )
     + gdt*( DN->Nsq()*dn_n_corr*Qdnsq*Efdn + UP->Nsq()*up_n_corr*Qupsq*Efup );
 #else
-  RHS[_row]= X[idx_dn_q] + X[idx_up_q] - Xp[idx_dn_q] - Xp[idx_up_q]
-    + lambda2*(  OPT.Beta() * (Qdnsqdiva - Qupsqdiva) + 
-		 0.5*OPT.Gravity()*(X[idx_dn_a] + X[idx_up_a])*( DN->GetDepth(X[idx_dn_a]) 
-		 					        -UP->GetDepth(X[idx_up_a]) )
-		)
-    - gdt*( DN->GetSR()*(X[idx_dn_a]) + UP->GetSR()*(X[idx_up_a]) )
-    + gdt*( DN->Nsq()*dn_n_corr*Qdnsq*Efdn + UP->Nsq()*up_n_corr*Qupsq*Efup );
+  #if SUPRESSOR
+    // Write a condition statement here, if froude number >= certain threshold -> suppress advection term
+    // Justin Yu_20200430
+    RHS[_row]= suppress*(X[idx_dn_q] + X[idx_up_q] - Xp[idx_dn_q] - Xp[idx_up_q] + 
+      lambda2*(OPT.Beta()* (Qdnsqdiva - Qupsqdiva) ))+
+      lambda2*(0.5*OPT.Gravity()*(X[idx_dn_a]+X[idx_up_a])*(  DN->GetDepth(X[idx_dn_a])-UP->GetDepth(X[idx_up_a]) ) )
+      - gdt*( DN->GetSR()*(X[idx_dn_a]) + UP->GetSR()*(X[idx_up_a]) )
+      + gdt*( DN->Nsq()*dn_n_corr*Qdnsq*Efdn + UP->Nsq()*up_n_corr*Qupsq*Efup );
+    
+    // Justin made change here 20200426
+  #else
+    RHS[_row]= X[idx_dn_q] + X[idx_up_q] - Xp[idx_dn_q] - Xp[idx_up_q]
+      + lambda2*(  OPT.Beta()* (Qdnsqdiva - Qupsqdiva) + 
+		  0.5*OPT.Gravity()*(X[idx_dn_a]+X[idx_up_a])*(  DN->GetDepth(X[idx_dn_a])
+			  				       -UP->GetDepth(X[idx_up_a]) ) )
+      - gdt*( DN->GetSR()*(X[idx_dn_a]) + UP->GetSR()*(X[idx_up_a]) )
+      + gdt*( DN->Nsq()*dn_n_corr*Qdnsq*Efdn + UP->Nsq()*up_n_corr*Qupsq*Efup );
+  #endif
 #endif
 
   double up_fric_da = UP->XS()->GetEqFrictiondA(X[idx_up_a] + OPT.EpsilonA() );
   double dn_fric_da = DN->XS()->GetEqFrictiondA(X[idx_dn_a] + OPT.EpsilonA() );
 
+// If SUPRESSOR on -> Use LPI from Fread (1986)
+#if SUPRESSOR
+  double dmdqup = suppress*(1.0 - 2.0*lambda2*OPT.Beta()*(X[idx_up_q])/(X[idx_up_a])) + 2.0*gdt*UP->Nsq()*up_n_corr*Efup*ABS(X[idx_up_q]);
+  double dmdqdn = suppress*(1.0 + 2.0*lambda2*OPT.Beta()*(X[idx_dn_q])/(X[idx_dn_a])) + 2.0*gdt*DN->Nsq()*dn_n_corr*Efdn*ABS(X[idx_dn_q]);
+#else
   double dmdqup = 1.0 - 2.0*lambda2*OPT.Beta()*(X[idx_up_q])/(X[idx_up_a]) + 2.0*gdt*UP->Nsq()*up_n_corr*Efup*ABS(X[idx_up_q]);
   double dmdqdn = 1.0 + 2.0*lambda2*OPT.Beta()*(X[idx_dn_q])/(X[idx_dn_a]) + 2.0*gdt*DN->Nsq()*dn_n_corr*Efdn*ABS(X[idx_dn_q]);
+#endif
+
 
 #if USEDIFF
   double dmdaup = lambda2*(ff*OPT.Beta()*Qupsqdiva/(X[idx_up_a]) 
@@ -842,18 +937,27 @@ int MomStvEqn::Evaluate(double t, double dt, Node **n, double *X, double *Xp, do
     - gdt*DN->GetSR()
     + gdt*DN->Nsq()*dn_n_corr*Qdnsq* dn_fric_da;
 #else
+  #if SUPRESSOR
+    double dmdaup;
+    double dmdadn;
+    dmdaup = suppress*lambda2*OPT.Beta()*Qupsqdiva/(X[idx_up_a]) 
+			  + lambda2*0.5*OPT.Gravity()*(DN->GetDepth(X[idx_dn_a]) - UP->GetDepth(X[idx_up_a])
+				- (X[idx_up_a]+X[idx_dn_a])*UP->GetDepthdA(X[idx_up_a])  ) 
+        - gdt*UP->GetSR() + gdt*UP->Nsq()*up_n_corr*Qupsq* up_fric_da;
+      
+    dmdadn = suppress*lambda2*-OPT.Beta()*Qdnsqdiva/(X[idx_dn_a]) 
+          + lambda2*0.5*OPT.Gravity()*(DN->GetDepth(X[idx_dn_a]) - UP->GetDepth(X[idx_up_a])
+					+ (X[idx_up_a]+X[idx_dn_a])*DN->GetDepthdA(X[idx_dn_a]) ) 
+          - gdt*DN->GetSR() + gdt*DN->Nsq()*dn_n_corr*Qdnsq* dn_fric_da;
+  #else
+    double dmdaup = lambda2*(OPT.Beta()*Qupsqdiva/(X[idx_up_a]) + 0.5*OPT.Gravity()*(DN->GetDepth(X[idx_dn_a]) - UP->GetDepth(X[idx_up_a])
+           - (X[idx_up_a]+X[idx_dn_a])*UP->GetDepthdA(X[idx_up_a]))) - gdt*UP->GetSR()
+           + gdt*UP->Nsq()*up_n_corr*Qupsq* up_fric_da;
 
-  double dmdaup = lambda2*(OPT.Beta()*Qupsqdiva/(X[idx_up_a]) 
-			   + 0.5*OPT.Gravity()*(DN->GetDepth(X[idx_dn_a]) - UP->GetDepth(X[idx_up_a])
-					    - (X[idx_up_a]+X[idx_dn_a])*UP->GetDepthdA(X[idx_up_a])   )) 
-    - gdt*UP->GetSR()
-    + gdt*UP->Nsq()*up_n_corr*Qupsq* up_fric_da;
-
-  double dmdadn = lambda2*(-OPT.Beta()*Qdnsqdiva/(X[idx_dn_a]) 
-			   + 0.5*OPT.Gravity()*(DN->GetDepth(X[idx_dn_a]) - UP->GetDepth(X[idx_up_a])
-					    + (X[idx_up_a]+X[idx_dn_a])*DN->GetDepthdA(X[idx_dn_a]) ) )
-    - gdt*DN->GetSR()
-    + gdt*DN->Nsq()*dn_n_corr*Qdnsq* dn_fric_da;
+    double dmdadn = lambda2*(-OPT.Beta()*Qdnsqdiva/(X[idx_dn_a]) + 0.5*OPT.Gravity()*(DN->GetDepth(X[idx_dn_a]) - UP->GetDepth(X[idx_up_a])
+            + (X[idx_up_a]+X[idx_dn_a])*DN->GetDepthdA(X[idx_dn_a])))- gdt*DN->GetSR()
+            + gdt*DN->Nsq()*dn_n_corr*Qdnsq* dn_fric_da;
+  #endif
 #endif
 
   M->CreateEntryNC(_row, UP->AIdx(), dmdaup);

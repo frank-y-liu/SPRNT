@@ -701,11 +701,11 @@ int Subcatchment::Evaluate(double t, double dt) {
 
   _s->Clear();
 
-  if ( dt > 0 ) {  
+  if ( dt > 0 ) {  // Unsteady phase
     for (int j=0; j<_num_eqns; j++) {
       _EQ[j]->Evaluate(t, dt, (Node**)_NS, (double*)_X, (double*)_Xp, (double*)_RHS, &_M);
     }
-  } else {
+  } else { // Steady Phase
     for (int j=0; j<_num_eqns; j++) {
       _EQ[j]->Evaluate((Node**)_NS, (double*)_X, (double*)_Xp, (double*)_RHS, &_M);
     }
@@ -716,11 +716,11 @@ int Subcatchment::Evaluate(double t, double dt) {
 }
 
 int Subcatchment::EvaluateRHS(double t, double dt) {
-  if ( dt > 0 ) {
+  if ( dt > 0 ) { // Assigning unsteady RHS
     for (int j=0; j<_num_eqns; j++) {
       _EQ[j]->EvaluateRHS(t, dt, (Node**)_NS, (double*)_X, (double*)_Xp, (double*)_RHS);
     }
-  } else {
+  } else { // Steady RHS
     for (int j=0; j<_num_eqns; j++) {
       _EQ[j]->EvaluateRHS((Node**)_NS, (double*)_X, (double*)_Xp, (double*)_RHS);
     }
@@ -1404,7 +1404,7 @@ int Subcatchment::UnsteadySolve(double final_t, int jac_num, int max_iter, doubl
 
 	STAT.Add_dy_step(current_t, dtused, num_iter, -1);
 
-	dtused *= 0.5;
+	dtused *= 0.5; // Half the timestep
 	negcounter++;
 	if ( OPT.DebugLevel() >= 2) {
 	  fprintf(stdout,"   reduce time step to %.2e\n", dtused);
@@ -1427,7 +1427,7 @@ int Subcatchment::UnsteadySolve(double final_t, int jac_num, int max_iter, doubl
     if (OPT.DebugLevel() >= 1 ) {
       int nbk = CheckBankFull();
       int nmn = CheckMinimalA();
-      fprintf(stdout,"  U time=%.4e (%6.2f out of %5.2f hrs), num_iter=%2d, falter=%d, dt=%.2e, n_sc=%3d, max_f=%5.2f, n_bk=%3d, n_mn=%3d\n", 
+      fprintf(stdout,"  U time=%.4e (%6.2f out of %5.2f hrs), num_iter=%2d, falter=%d, dt=%.2e, n_SuperCr=%3d, max_Fr=%5.2f, n_bk=%3d, n_mn=%3d\n", 
 	      _t, _t/3600, tf_hr, niter_here, negcounter, dtused, GetNumSuperC(), GetMaxFroude(), nbk, nmn );
     }
 

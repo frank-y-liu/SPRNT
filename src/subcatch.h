@@ -88,7 +88,7 @@ class Subcatchment {
 
   // evaluation methods
   // dt > 0 : unsteady
-  // dt > 0 : steady, ignore entries related to Q.
+  // dt < 0 : steady, ignore entries related to Q.
   int EvaluateRHS(double t, double dt);
   int Evaluate(double t, double dt);
 
