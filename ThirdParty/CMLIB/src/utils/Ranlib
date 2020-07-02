@@ -1,0 +1,20 @@
+#! /bin/csh -f
+#
+#  Ranlib host ranlib file
+#
+#  Performs a ranlib operation on a file on a remote machine.
+#  The other parameters indicate how this is to be done.
+#
+#     host    == the host where the ranlib is done
+#     ranlib  == the name of the ranlib command on host
+#     file    == the file on host to ranlib
+#
+
+set echo
+
+set ranlib = "$1"
+set file = $2
+
+if ("$ranlib" == "")  set ranlib  = ranlib
+
+$ranlib $file

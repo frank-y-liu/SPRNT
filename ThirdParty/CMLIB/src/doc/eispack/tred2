@@ -1,0 +1,54 @@
+ 
+      SUBROUTINE TRED2(NM,N,A,D,E,Z)
+C***BEGIN PROLOGUE  TRED2
+C***DATE WRITTEN   760101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  D4C1B1
+C***KEYWORDS  EIGENVALUES,EIGENVECTORS,EISPACK
+C***AUTHOR  SMITH, B. T., ET AL.
+C***PURPOSE  Reduce real symmetric matrix to symmetric tridiagonal
+C            matrix using and accumulating orthogonal transformation
+C***DESCRIPTION
+C
+C     This subroutine is a translation of the ALGOL procedure TRED2,
+C     NUM. MATH. 11, 181-195(1968) by Martin, Reinsch, and Wilkinson.
+C     HANDBOOK FOR AUTO. COMP., VOL.II-LINEAR ALGEBRA, 212-226(1971).
+C
+C     This subroutine reduces a REAL SYMMETRIC matrix to a
+C     symmetric tridiagonal matrix using and accumulating
+C     orthogonal similarity transformations.
+C
+C     On Input
+C
+C        NM must be set to the row dimension of two-dimensional
+C          array parameters as declared in the calling program
+C          dimension statement.
+C
+C        N is the order of the matrix.
+C
+C        A contains the real symmetric input matrix.  Only the
+C          lower triangle of the matrix need be supplied.
+C
+C     On Output
+C
+C        D contains the diagonal elements of the tridiagonal matrix.
+C
+C        E contains the subdiagonal elements of the tridiagonal
+C          matrix in its last N-1 positions.  E(1) is set to zero.
+C
+C        Z contains the orthogonal transformation matrix
+C          produced in the reduction.
+C
+C        A and Z may coincide.  If distinct, A is unaltered.
+C
+C     Questions and comments should be directed to B. S. Garbow,
+C     APPLIED MATHEMATICS DIVISION, ARGONNE NATIONAL LABORATORY
+C     ------------------------------------------------------------------
+C***REFERENCES  B. T. SMITH, J. M. BOYLE, J. J. DONGARRA, B. S. GARBOW,
+C                 Y. IKEBE, V. C. KLEMA, C. B. MOLER, *MATRIX EIGEN-
+C                 SYSTEM ROUTINES - EISPACK GUIDE*, SPRINGER-VERLAG,
+C                 1976.
+C***ROUTINES CALLED  (NONE)
+C***END PROLOGUE  TRED2
+ 
+ 

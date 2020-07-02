@@ -1,0 +1,30 @@
+ 
+ 
+ 
+P A C K A G E      FC
+ 
+(Version 1980 )
+ 
+Solves constrained least squares problems.
+ 
+ 
+BNDACC........Introduce new blocks of  data  for  banded  least  squares
+              problems. See SUBROUTINE BNDSOL.
+BNDSOL........Solves least squares problem AX=B for banded matrices.
+CV............Evaluate  variance  function  of  curve  obtained  by  the
+              constrained B-spline fitting program FC.
+FC............Fits piecewise polynomial to discrete data  with  equality
+EFC...........An EASY to use version of FC.
+              and in- equality constraints.
+H12...........Construction   or   application   of   single   Housholder
+              transformation.
+HFTI..........Solves linear least squares problem AX=B.
+LPDP..........Solves least projected distance problem.
+LSEI..........Solves linearly constrained  least  squares  problem  with
+              equality and inequality constraints. Covariance matrix opt
+              output.
+WNNLS.........Solves linearly  constrained  non-negative  least  squares
+              problem.
+ 
+ 
+ 

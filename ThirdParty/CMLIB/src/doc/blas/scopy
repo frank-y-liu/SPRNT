@@ -1,0 +1,39 @@
+ 
+      SUBROUTINE SCOPY(N,SX,INCX,SY,INCY)
+C***BEGIN PROLOGUE  SCOPY
+C***DATE WRITTEN   791001   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D1A5
+C***KEYWORDS  BLAS,COPY,LINEAR ALGEBRA,VECTOR
+C***AUTHOR  LAWSON, C. L., (JPL)
+C           HANSON, R. J., (SNLA)
+C           KINCAID, D. R., (U. OF TEXAS)
+C           KROGH, F. T., (JPL)
+C***PURPOSE  Copy s.p. vector y = x
+C***DESCRIPTION
+C
+C                B L A S  Subprogram
+C    Description of Parameters
+C
+C     --Input--
+C        N  number of elements in input vector(s)
+C       SX  single precision vector with N elements
+C     INCX  storage spacing between elements of SX
+C       SY  single precision vector with N elements
+C     INCY  storage spacing between elements of SY
+C
+C     --Output--
+C       SY  copy of vector SX (unchanged if N .LE. 0)
+C
+C     Copy single precision SX to single precision SY.
+C     For I = 0 to N-1, copy  SX(LX+I*INCX) to SY(LY+I*INCY),
+C     where LX = 1 if INCX .GE. 0, else LX = (-INCX)*N, and LY is
+C     defined in a similar way using INCY.
+C***REFERENCES  LAWSON C.L., HANSON R.J., KINCAID D.R., KROGH F.T.,
+C                 *BASIC LINEAR ALGEBRA SUBPROGRAMS FOR FORTRAN USAGE*,
+C                 ALGORITHM NO. 539, TRANSACTIONS ON MATHEMATICAL
+C                 SOFTWARE, VOLUME 5, NUMBER 3, SEPTEMBER 1979, 308-323
+C***ROUTINES CALLED  (NONE)
+C***END PROLOGUE  SCOPY
+ 
+ 

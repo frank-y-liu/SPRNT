@@ -1,0 +1,27 @@
+ 
+ 
+ 
+P A C K A G E      XBLAS
+ 
+(Version 1980 )
+ 
+Extended basic linear algebra subroutines. Perform  various  matrix  and
+vector operations not found in the BLAS.
+ 
+ 
+CDCDOT........computes complex precision dot product and adds a  scalar.
+              Uses double precision accumulation.
+CSROT.........Applies Givens plane rotation to complex matrix.
+DCDOT.........computes a complex  precision  dot  product  using  double
+              precision accumulation
+ISAMIN........Find the smallest index of the minimum magnitude component
+              of a real vector.
+ISMAX.........Find the smallest index of the maximum component of a real
+              vector.
+ISMIN.........Find the smallest index of the minimum component of a real
+              vector.
+SCOPYM........Copies  negative  of  array  SX  into   array   SY,   with
+              corresponding increments INCX and INCY.
+ 
+ 
+ 

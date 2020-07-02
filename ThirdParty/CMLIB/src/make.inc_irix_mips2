@@ -1,0 +1,6 @@
+FORTRAN = /usr/bin/f77
+OPTS = -mips2 -O2  -static
+NOPTS = -mips2  -static
+RANLIB = ar tsl
+MACHCON = IEEE.MOST-SIG-BYTE-FIRST
+LIBRARY = libcm.a

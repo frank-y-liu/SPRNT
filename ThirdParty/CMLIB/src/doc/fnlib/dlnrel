@@ -1,0 +1,28 @@
+ 
+      DOUBLE PRECISION FUNCTION DLNREL(X)
+C***BEGIN PROLOGUE  DLNREL
+C***DATE WRITTEN   770601   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C4B
+C***KEYWORDS  DOUBLE PRECISION,ELEMENTARY FUNCTION,LOGARITHM,
+C             RELATIVE ERROR
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Evaluates d.p. LN(1+X) accurate in the relative error sense
+C***DESCRIPTION
+C
+C DLNREL(X) calculates the double precision natural logarithm of
+C (1.0+X) for double precision argument X.  This routine should
+C be used when X is small and accurate to calculate the logarithm
+C accurately (in the relative error sense) in the neighborhood
+C of 1.0.
+C
+C Series for ALNR       on the interval -3.75000E-01 to  3.75000E-01
+C                                        with weighted error   6.35E-32
+C                                         log weighted error  31.20
+C                               significant figures required  30.93
+C                                    decimal places required  32.01
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D1MACH,DCSEVL,INITDS,XERROR
+C***END PROLOGUE  DLNREL
+ 
+ 

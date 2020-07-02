@@ -1,0 +1,22 @@
+ 
+      FUNCTION ALBETA(A,B)
+C***BEGIN PROLOGUE  ALBETA
+C***DATE WRITTEN   770701   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C7B
+C***KEYWORDS  BETA FUNCTION,COMLETE BETA FUNCTION,LOGARITHM,
+C             SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the natural log of the complete Beta function.
+C***DESCRIPTION
+C
+C ALBETA computes the natural log of the complete beta function.
+C
+C Input Parameters:
+C       A   real and positive
+C       B   real and positive
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  ALNGAM,ALNREL,GAMMA,R9LGMC,XERROR
+C***END PROLOGUE  ALBETA
+ 
+ 

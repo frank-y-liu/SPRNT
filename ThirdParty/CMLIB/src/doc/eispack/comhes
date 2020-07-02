@@ -1,0 +1,62 @@
+ 
+      SUBROUTINE COMHES(NM,N,LOW,IGH,AR,AI,INT)
+C***BEGIN PROLOGUE  COMHES
+C***DATE WRITTEN   760101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  D4C1B2
+C***KEYWORDS  EIGENVALUES,EIGENVECTORS,EISPACK
+C***AUTHOR  SMITH, B. T., ET AL.
+C***PURPOSE  Reduces complex general matrix to complex upper Hess
+C            form using stabilized elementary similarity
+C            transformations.
+C***DESCRIPTION
+C
+C     This subroutine is a translation of the ALGOL procedure COMHES,
+C     NUM. MATH. 12, 349-368(1968) by Martin and Wilkinson.
+C     HANDBOOK FOR AUTO. COMP., VOL.II-LINEAR ALGEBRA, 339-358(1971).
+C
+C     Given a COMPLEX GENERAL matrix, this subroutine
+C     reduces a submatrix situated in rows and columns
+C     LOW through IGH to upper Hessenberg form by
+C     stabilized elementary similarity transformations.
+C
+C     On INPUT
+C
+C        NM must be set to the row dimension of two-dimensional
+C          array parameters as declared in the calling program
+C          dimension statement.
+C
+C        N is the order of the matrix.
+C
+C        LOW and IGH ARE integers determined by the balancing
+C          subroutine  CBAL.  If  CBAL  has not been used,
+C          set LOW=1, IGH=N.
+C
+C        AR and AI contain the real and imaginary parts,
+C          respectively, of the complex input matrix.
+C
+C     On OUTPUT
+C
+C        AR and AI contain the real and imaginary parts,
+C          respectively, of the Hessenberg matrix.  The
+C          multipliers which were used in the reduction
+C          are stored in the remaining triangles under the
+C          Hessenberg matrix.
+C
+C        INT contains information on the rows and columns
+C          interchanged in the reduction.
+C          Only elements LOW through IGH are used.
+C
+C     Calls CDIV for complex division.
+C
+C     Questions and comments should be directed to B. S. Garbow,
+C     APPLIED MATHEMATICS DIVISION, ARGONNE NATIONAL LABORATORY
+C     ------------------------------------------------------------------
+C***REFERENCES  B. T. SMITH, J. M. BOYLE, J. J. DONGARRA, B. S. GARBOW,
+C                 Y. IKEBE, V. C. KLEMA, C. B. MOLER, *MATRIX EIGEN-
+C                 SYSTEM ROUTINES - EISPACK GUIDE*, SPRINGER-VERLAG,
+C                 1976.
+C***ROUTINES CALLED  CDIV
+C***END PROLOGUE  COMHES
+ 
+ 

@@ -1,0 +1,69 @@
+ 
+      SUBROUTINE STRDI(T,LDT,N,DET,JOB,INFO)
+C***BEGIN PROLOGUE  STRDI
+C***DATE WRITTEN   780814   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D2A3,D3A3
+C***KEYWORDS  DETERMINANT,INVERSE,LINEAR ALGEBRA,LINPACK,MATRIX,
+C             TRIANGULAR
+C***AUTHOR  MOLER, C. B., (U. OF NEW MEXICO)
+C***PURPOSE  Computes the determinant and inverse of a real TRIANGULAR
+C            matrix
+C***DESCRIPTION
+C
+C     STRDI computes the determinant and inverse of a real
+C     triangular matrix.
+C
+C     On Entry
+C
+C        T       REAL(LDT,N)
+C                T contains the triangular matrix.  The zero
+C                elements of the matrix are not referenced, and
+C                the corresponding elements of the array can be
+C                used to store other information.
+C
+C        LDT     INTEGER
+C                LDT is the leading dimension of the array T.
+C
+C        N       INTEGER
+C                N is the order of the system.
+C
+C        JOB     INTEGER
+C                = 010       no det, inverse of lower triangular.
+C                = 011       no det, inverse of upper triangular.
+C                = 100       det, no inverse.
+C                = 110       det, inverse of lower triangular.
+C                = 111       det, inverse of upper triangular.
+C
+C     On Return
+C
+C        T       inverse of original matrix if requested.
+C                Otherwise unchanged.
+C
+C        DET     REAL(2)
+C                determinant of original matrix if requested.
+C                Otherwise not referenced.
+C                Determinant = DET(1) * 10.0**DET(2)
+C                with  1.0 .LE. ABS(DET(1)) .LT. 10.0
+C                or  DET(1) .EQ. 0.0 .
+C
+C        INFO    INTEGER
+C                INFO contains zero if the system is nonsingular
+C                and the inverse is requested.
+C                Otherwise INFO contains the index of
+C                a zero diagonal element of T.
+C
+C
+C     LINPACK.  This version dated 08/14/78 .
+C     Cleve Moler, University of New Mexico, Argonne National Lab.
+C
+C     Subroutines and Functions
+C
+C     BLAS SAXPY,SSCAL
+C     Fortran ABS,MOD
+C***REFERENCES  DONGARRA J.J., BUNCH J.R., MOLER C.B., STEWART G.W.,
+C                 *LINPACK USERS  GUIDE*, SIAM, 1979.
+C***ROUTINES CALLED  SAXPY,SSCAL
+C***END PROLOGUE  STRDI
+ 
+ 

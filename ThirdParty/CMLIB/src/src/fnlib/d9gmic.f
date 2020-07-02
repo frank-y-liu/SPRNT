@@ -1,0 +1,82 @@
+      DOUBLE PRECISION FUNCTION D9GMIC(A,X,ALX)
+C***BEGIN PROLOGUE  D9GMIC
+C***DATE WRITTEN   770701   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C7E
+C***KEYWORDS  COMPLEMENTARY,COMPLEMENTARY INCOMPLETE GAMMA FUNCTION,
+C             DOUBLE PRECISION,GAMMA,GAMMA FUNCTION,SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Calculates the d.p. incomplete Gamma function for A near a
+C            negative integer and X small.
+C***DESCRIPTION
+C
+C Compute the complementary incomplete gamma function for A near
+C a negative integer and for small X.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D1MACH,DLNGAM,XERROR
+C***END PROLOGUE  D9GMIC
+      DOUBLE PRECISION A, X, ALX, ALNG, BOT, EPS, EULER, FK, FKP1, FM,
+     1  S, SGNG, T, TE, D1MACH, DLNGAM
+      DATA EULER / 0.5772156649 0153286060 6512090082 40 D0 /
+      DATA EPS, BOT / 2*0.D0 /
+C***FIRST EXECUTABLE STATEMENT  D9GMIC
+      IF (EPS.NE.0.D0) GO TO 10
+      EPS = 0.5D0*D1MACH(3)
+      BOT = DLOG (D1MACH(1))
+C
+ 10   IF (A.GT.0.D0) CALL XERROR ( 'D9GMIC  A MUST BE NEAR A NEGATIVE IN
+     1TEGER', 41, 2, 2)
+      IF (X.LE.0.D0) CALL XERROR ( 'D9GMIC  X MUST BE GT ZERO', 25, 3,2)
+C
+      M = -(A - 0.5D0)
+      FM = M
+C
+      TE = 1.0D0
+      T = 1.0D0
+      S = T
+      DO 20 K=1,200
+        FKP1 = K + 1
+        TE = -X*TE/(FM+FKP1)
+        T = TE/FKP1
+        S = S + T
+        IF (DABS(T).LT.EPS*S) GO TO 30
+ 20   CONTINUE
+      CALL XERROR ( 'D9GMIC  NO CONVERGENCE IN 200 TERMS OF CONTINUED FR
+     1ACTION', 57, 4, 2)
+C
+ 30   D9GMIC = -ALX - EULER + X*S/(FM+1.0D0)
+      IF (M.EQ.0) RETURN
+C
+      IF (M.EQ.1) D9GMIC = -D9GMIC - 1.D0 + 1.D0/X
+      IF (M.EQ.1) RETURN
+C
+      TE = FM
+      T = 1.D0
+      S = T
+      MM1 = M - 1
+      DO 40 K=1,MM1
+        FK = K
+        TE = -X*TE/FK
+        T = TE/(FM-FK)
+        S = S + T
+        IF (DABS(T).LT.EPS*DABS(S)) GO TO 50
+ 40   CONTINUE
+C
+ 50   DO 60 K=1,M
+        D9GMIC = D9GMIC + 1.0D0/DBLE(FLOAT(K))
+ 60   CONTINUE
+C
+      SGNG = 1.0D0
+      IF (MOD(M,2).EQ.1) SGNG = -1.0D0
+      ALNG = DLOG(D9GMIC) - DLNGAM(FM+1.D0)
+C
+      D9GMIC = 0.D0
+      IF (ALNG.GT.BOT) D9GMIC = SGNG * DEXP(ALNG)
+      IF (S.NE.0.D0) D9GMIC = D9GMIC +
+     1  DSIGN (DEXP(-FM*ALX+DLOG(DABS(S)/FM)), S)
+C
+      IF (D9GMIC.EQ.0.D0 .AND. S.EQ.0.D0) CALL XERROR (  'D9GMIC  RESULT
+     1 UNDERFLOWS', 25, 1, 1)
+      RETURN
+C
+      END

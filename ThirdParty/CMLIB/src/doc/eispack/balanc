@@ -1,0 +1,68 @@
+ 
+      SUBROUTINE BALANC(NM,N,A,LOW,IGH,SCALE)
+C***BEGIN PROLOGUE  BALANC
+C***DATE WRITTEN   760101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  D4C1A
+C***KEYWORDS  EIGENVALUES,EIGENVECTORS,EISPACK
+C***AUTHOR  SMITH, B. T., ET AL.
+C***PURPOSE  Balances a general real matrix and isolates eigenvalue
+C            whenever possible.
+C***DESCRIPTION
+C
+C     This subroutine is a translation of the ALGOL procedure BALANCE,
+C     NUM. MATH. 13, 293-304(1969) by Parlett and Reinsch.
+C     HANDBOOk FOR AUTO. COMP., Vol.II-LINEAR ALGEBRA, 315-326(1971).
+C
+C     This subroutine balances a REAL matrix and isolates
+C     eigenvalues whenever possible.
+C
+C     On INPUT
+C
+C        NM must be set to the row dimension of two-dimensional
+C          array parameters as declared in the calling program
+C          dimension statement.
+C
+C        N is the order of the matrix.
+C
+C        A contains the input matrix to be balanced.
+C
+C     On OUTPUT
+C
+C        A contains the balanced matrix.
+C
+C        LOW and IGH are two integers such that A(I,J)
+C          is equal to zero if
+C           (1) I is greater than J and
+C           (2) J=1,...,LOW-1 or I=IGH+1,...,N.
+C
+C        SCALE contains information determining the
+C           permutations and scaling factors used.
+C
+C     Suppose that the principal submatrix in rows LOW through IGH
+C     has been balanced, that P(J) denotes the index interchanged
+C     with J during the permutation step, and that the elements
+C     of the diagonal matrix used are denoted by D(I,J).  Then
+C        SCALE(J) = P(J),    for J = 1,...,LOW-1
+C                 = D(J,J),      J = LOW,...,IGH
+C                 = P(J)         J = IGH+1,...,N.
+C     The order in which the interchanges are made is N to IGH+1,
+C     then 1 TO LOW-1.
+C
+C     Note that 1 is returned for IGH if IGH is zero formally.
+C
+C     The ALGOL procedure EXC contained in BALANCE appears in
+C     BALANC  in line.  (Note that the ALGOL roles of identifiers
+C     K,L have been reversed.)
+C
+C     Questions and comments should be directed to B. S. Garbow,
+C     Applied Mathematics Division, ARGONNE NATIONAL LABORATORY
+C     ------------------------------------------------------------------
+C***REFERENCES  B. T. SMITH, J. M. BOYLE, J. J. DONGARRA, B. S. GARBOW,
+C                 Y. IKEBE, V. C. KLEMA, C. B. MOLER, *MATRIX EIGEN-
+C                 SYSTEM ROUTINES - EISPACK GUIDE*, SPRINGER-VERLAG,
+C                 1976.
+C***ROUTINES CALLED  (NONE)
+C***END PROLOGUE  BALANC
+ 
+ 

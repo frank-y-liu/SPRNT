@@ -1,0 +1,197 @@
+ 
+    subroutine rgm (n, x, y, output, ier)
+ 
+------------------------------------------------------------------------
+ 
+    Package:  SLRPACK
+ 
+    Version:  October, 1985
+ 
+------------------------------------------------------------------------
+ 
+    PURPOSE
+    -------
+ 
+    This subroutine computes estimates of simple linear regression
+    parameters for geometric mean regression.
+ 
+    DESCRIPTION
+    -----------
+ 
+    1.  The input data are observations (x(i), y(i)), i = 1,...,n.
+ 
+    2.  This technique is appropriate for fitting a straight line
+ 
+                           Y  =  A  +  B * X
+ 
+        to observations  (x(i),y(i)),i=1,...,n  where
+ 
+            x(i) = X(i) + e(i)   and   y(i) = Y(i) + d(i),
+ 
+            X(i) and Y(i) are unknown population means, and
+ 
+            e(i) and d(i) are random error terms distributed normally
+            with zero mean and variances s**2 = s(e)**2 = s(d)**2.
+ 
+    3.  The name geometric mean alludes to the fact that if B(OLS-y)
+        denotes the estimated slope from conventional least squares
+        regression (with the y-observations but not the x-observations
+        subject to error) and if B(OLS-x) denotes the converse, then
+        the geometric mean slope estimate is the geometric mean of
+        B(OLS-y) and B(OLS-x).  This technique for estimating the
+        regression parameters is preferable to OLS-y and to OLS-x
+        for the above type of data because the OLS-y technique is
+        known to give under-estimates of the magnitude of the true
+        slope and over-estimates of the magnitude of the true intercept
+        while OLS-x results have the opposite characteristics (Riggs
+        et al (1978)).
+ 
+    4.  This subroutine straightforwardly implements the calculations
+        described in the first reference.  The regression line is
+        given by equation (2), the standard deviations of the
+        estimated slope is given by equation (11), and the standard
+        deviation of the estimated intercept is given by equation (14)
+        all in the first reference.  The correlation coefficient is
+        the Pearson product-moment correlation coefficient.
+ 
+    INPUT PARAMETERS
+    ----------------
+ 
+    N      Integer scalar (unchanged on output)
+           Number of observations.
+ 
+           N must be greater than 2.
+ 
+    X      Real vector dimensioned at least N (unchanged on output)
+           X-observations.
+ 
+    Y      Real vector dimensioned at least N (unchanged on output)
+           Y-observations.
+ 
+    OUTPUT PARAMETERS
+    -----------------
+ 
+    OUTPUT Real vector dimensioned at least 7 -- output
+ 
+           OUTPUT(1) = Slope of geometric mean regression line
+ 
+           OUTPUT(2) = y-intercept of geometric mean regression line
+ 
+           OUTPUT(3) = Standard deviation of the slope
+ 
+           OUTPUT(4) = Standard deviation of the intercept
+ 
+           OUTPUT(5) = Average of the x-observations
+ 
+           OUTPUT(6) = Average of the y-observations
+ 
+           OUTPUT(7) = Pearson product-moment correlation coefficient
+ 
+    IER    Integer scalar -- output
+           Execution error indicator.
+ 
+           IER = 0   No errors
+ 
+           IER = 1   Cannot compute parameters by geometric mean technique
+                     because data set is too small
+ 
+                     Cannot compute OUTPUT(I) for I = 1,...,7
+ 
+           IER = 2   Geometric mean results cannot be computed because
+                     all x-values are equal
+ 
+                     Cannot compute OUTPUT(I) for I = 1,2,3,4,7
+ 
+           IER = 3   Cannot compute standard deviations of slope and intercept
+                     estimates by geometric mean technique or correlation
+                     coefficient because all y-values are equal
+ 
+                     Cannot comput OUTPUT(I) for I = 3, 4, 7
+ 
+    EXAMPLE
+    -------
+ 
+    INPUT:
+ 
+         N = 10
+ 
+         I          X(I)          Y(I)
+         1          0.0           5.9
+         2          0.9           5.4
+         3          1.8           4.4
+         4          2.6           4.6
+         5          3.3           3.5
+         6          4.4           3.7
+         7          5.2           2.8
+         8          6.1           2.8
+         9          6.5           2.4
+        10          7.4           1.5
+ 
+    CALL SEQUENCE:
+ 
+    call rgm (n, x, y, output, ier)
+ 
+    OUTPUT:
+ 
+          IER = 0
+ 
+          OUTPUT(1) = -0.5526
+          OUTPUT(2) =  5.8108
+          OUTPUT(3) =  0.0377
+          OUTPUT(4) =  0.2465
+          OUTPUT(5) =  3.8200
+          OUTPUT(6) =  3.7000
+          OUTPUT(7) = -0.9765
+ 
+    See documentation of SLRPACK subroutines RYORK and RWILL for
+       continuations of this example.
+ 
+    PRECISION
+    ---------
+ 
+    All calculations are done in single precision.
+ 
+    LANGUAGE
+    --------
+ 
+    The routine is coded in standard Fortran 77.
+ 
+    OTHER SUBROUTINES USED
+    ----------------------
+ 
+    PORT  subroutine  R1MACH
+ 
+    REFERENCES
+    ----------
+ 
+    Kermack, K. A. and Haldane, J. B. S. (1950).  Organic Correlation
+       and Allometry.  Biometrika, 37, 30-41.
+ 
+    Pearson, K. (1901).  On lines and planes of closest fit to systems
+       of points in space.  Phil. Mag. (6), 2, 559.
+ 
+    Riggs, D. S., Guarnieri, J. A., and Addelman, S.  (1978).  Fitting
+       straight lines when both variables are subject to error.  Life
+       Sciences, 22, 1305-1360.
+ 
+    NBS CONTACT
+    -----------
+ 
+    Sally E. Howe
+    Scientific Computing Division
+ 
+    CONTRIBUTORS
+    ------------
+ 
+    Sally E. Howe
+    Kathryn Rensenbrink
+    Gregory S. Rhoads
+    Scientific Computing Division
+    Center for Applied Mathematics
+    National Bureau of Standards
+    Gaithersburg, MD  20899
+ 
+------------------------------------------------------------------------
+ 
+ 
+ 

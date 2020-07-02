@@ -1,0 +1,19 @@
+ 
+      SUBROUTINE CDPST (EL,F,FA,H,IMPL,JACOBN,MATDIM,MITER,ML,MU,N,NDE,
+     8   NQ,SAVE2,T,Y,YH,YWT,UROUND,NFE,NJE,A,DFDY,IER,IPVT,SAVE1,
+     8   ISWFLG,BND)
+C***BEGIN PROLOGUE  CDPST
+C***REFER TO  CDRIV3
+C  Subroutine CDPST is called to reevaluate the partials.
+C  If MITER is 1, 2, 4, or 5, the matrix
+C  P = I - L(0)*H*Jacobian is stored in DFDY and subjected to LU
+C  decomposition, with the results also stored in DFDY.
+C***ROUTINES CALLED  CGEFA,CGBFA,SCNRM2
+C***DATE WRITTEN   790601   (YYMMDD)
+C***REVISION DATE  850320   (YYMMDD)
+C***CATEGORY NO.  I1A2,I1A1B
+C***AUTHOR  KAHANER, D. K., NATIONAL BUREAU OF STANDARDS,
+C           SUTHERLAND, C. D., LOS ALAMOS NATIONAL LABORATORY
+C***END PROLOGUE  CDPST
+ 
+ 

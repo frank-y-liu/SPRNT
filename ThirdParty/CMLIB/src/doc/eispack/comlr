@@ -1,0 +1,68 @@
+ 
+      SUBROUTINE COMLR(NM,N,LOW,IGH,HR,HI,WR,WI,IERR)
+C***BEGIN PROLOGUE  COMLR
+C***DATE WRITTEN   760101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  D4C2B
+C***KEYWORDS  EIGENVALUES,EIGENVECTORS,EISPACK
+C***AUTHOR  SMITH, B. T., ET AL.
+C***PURPOSE  Computes eigenvalues of a complex upper Hessenberg m
+C            using the modified LR method.
+C***DESCRIPTION
+C
+C     This subroutine is a translation of the ALGOL procedure COMLR,
+C     NUM. MATH. 12, 369-376(1968) by Martin and Wilkinson.
+C     HANDBOOK FOR AUTO. COMP., VOL.II-LINEAR ALGEBRA, 396-403(1971).
+C
+C     This subroutine finds the eigenvalues of a COMPLEX
+C     UPPER Hessenberg matrix by the modified LR method.
+C
+C     On INPUT
+C
+C        NM must be set to the row dimension of two-dimensional
+C          array parameters as declared in the calling program
+C          dimension statement.
+C
+C        N is the order of the matrix.
+C
+C        LOW and IGH are integers determined by the balancing
+C          subroutine  CBAL.  If  CBAL  has not been used,
+C          set LOW=1, IGH=N.
+C
+C        HR and HI contain the real and imaginary parts,
+C          respectively, of the complex upper Hessenberg matrix.
+C          Their lower triangles below the subdiagonal contain the
+C          multipliers which were used in the reduction by  COMHES,
+C          if performed.
+C
+C     On OUTPUT
+C
+C        The upper Hessenberg portions of HR and HI have been
+C          destroyed.  Therefore, they must be saved before
+C          calling  COMLR  if subsequent calculation of
+C          eigenvectors is to be performed.
+C
+C        WR and WI contain the real and imaginary parts,
+C          respectively, of the eigenvalues.  If an error
+C          exit is made, the eigenvalues should be correct
+C          for indices IERR+1,...,N.
+C
+C        IERR is set to
+C          Zero       for normal return,
+C          J          if the J-th eigenvalue has not been
+C                     determined after a total of 30*N iterations.
+C
+C     Calls CSROOT for complex square root.
+C     Calls CDIV for complex division.
+C
+C     Questions and comments should be directed to B. S. Garbow,
+C     APPLIED MATHEMATICS DIVISION, ARGONNE NATIONAL LABORATORY
+C     ------------------------------------------------------------------
+C***REFERENCES  B. T. SMITH, J. M. BOYLE, J. J. DONGARRA, B. S. GARBOW,
+C                 Y. IKEBE, V. C. KLEMA, C. B. MOLER, *MATRIX EIGEN-
+C                 SYSTEM ROUTINES - EISPACK GUIDE*, SPRINGER-VERLAG,
+C                 1976.
+C***ROUTINES CALLED  CDIV,CSROOT
+C***END PROLOGUE  COMLR
+ 
+ 

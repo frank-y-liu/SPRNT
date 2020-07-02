@@ -1,0 +1,63 @@
+ 
+C
+C                      * * * * * * * * * * * * *
+C                      *                       *
+C                      *          VHS3         *
+C                      *                       *
+C                      * * * * * * * * * * * * *
+C
+C
+C                       (VERSION 1, AUGUST 1985)
+C
+C     A VECTORIZED PACKAGE OF FORTRAN SUBPROGRAMS FOR THE SOLUTION
+C     OF A THREE-DIMENSIONAL HELMHOLTZ EQUATION ON A STAGGERED GRID
+C
+C                                  BY
+C
+C                           ROLAND A. SWEET
+C                    SCIENTIFIC COMPUTING DIVISION
+C                     NATIONAL BUREAU OF STANDARDS
+C                       BOULDER, COLORADO 80303
+C
+C
+C                       * * * * * * * * * * * * *
+C                       *                       *
+C                       *       PURPOSE         *
+C                       *                       *
+C                       * * * * * * * * * * * * *
+C
+C
+C     THIS PACKAGE SOLVES THE STANDARD SEVEN-POINT FINITE DIFFERENCE
+C  APPROXIMATION ON A STAGGERED GRID TO THE HELMHOLTZ EQUATION IN
+C  CARTESIAN COORDINATES
+C
+C     (D/DX)(DU/DX)+(D/DY)(DU/DY)+(D/DZ)(DU/DZ) + LAMBDA*U = F(X,Y,Z)
+C
+C  WITH A VARIETY OF POSSIBLE BOUNDARY CONDITIONS.
+C
+C
+C                * * * * * * * * * * * * * * * * * * * *
+C                *                                     *
+C                *       DESCRIPTION OF PACKAGE        *
+C                *                                     *
+C                * * * * * * * * * * * * * * * * * * * *
+C
+C
+C     THIS PACKAGE CONSISTS OF FOUR USER-CALLABLE FORTRAN SUBROUTINES
+C  FOR THE SOLUTION OF FINITE DIFFERENCE APPROXIMATIONS ON A STAGGERED
+C  (CELL-CENTERED) GRID TO THREE-DIMENSIONAL HELMHOLTZ EQUATIONS.
+C
+C     THE USER-CALLABLE SUBROUTINES ARE:
+C
+C     1.  HS3CRI     INITIALIZATION ROUTINE FOR HS3CRT
+C     2.  HS3CRT     GENERATES A FINITE DIFFERENCE APPROXIMATION ON
+C                    A STAGGERED GRID FOR THE HELMHOLTZ EQUATION IN
+C                    THREE DIMENSIONS AND SOLVES IT BY CALLING PSTG3D
+C     3.  PSTG3I     INITIALIZATION ROUTINE FOR PSTG3D
+C     4.  PSTG3D     SOLVES CERTAIN BLOCK TRIDIAGONAL SYSTEMS OF LINEAR
+C                    ALGEBRAIC EQUATIONS ARISING FROM THE DISCRETIZATION
+C                    OF THE THREE-DIMENSIONAL HELMHOLTZ EQUATION ON A
+C                    STAGGERED GRID
+C
+ 
+ 

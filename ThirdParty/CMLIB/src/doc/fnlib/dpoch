@@ -1,0 +1,23 @@
+ 
+      DOUBLE PRECISION FUNCTION DPOCH(A,X)
+C***BEGIN PROLOGUE  DPOCH
+C***DATE WRITTEN   770701   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C1,C7A
+C***KEYWORDS  DOUBLE PRECISION,POCHHAMMER,SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes d.p. generalized Pochhammer's symbol.
+C***DESCRIPTION
+C
+C Evaluate a double precision generalization of Pochhammer's symbol
+C (A)-sub-X = GAMMA(A+X)/GAMMA(A) for double precision A and X.
+C For X a non-negative integer, POCH(A,X) is just Pochhammer's symbol.
+C This is a preliminary version that does not handle wrong arguments
+C properly and may not properly handle the case when the result is
+C computed to less than half of double precision.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D9LGMC,DCOT,DFAC,DGAMMA,DGAMR,DINT,DLGAMS,DLNREL,
+C                    XERROR
+C***END PROLOGUE  DPOCH
+ 
+ 

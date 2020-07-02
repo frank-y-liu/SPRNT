@@ -1,0 +1,101 @@
+ 
+      SUBROUTINE DQC25F(F,A,B,OMEGA,INTEGR,NRMOM,MAXP1,KSAVE,RESULT,
+     1   ABSERR,NEVAL,RESABS,RESASC,MOMCOM,CHEBMO)
+C***BEGIN PROLOGUE  DQC25F
+C***DATE WRITTEN   810101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  H2A2A2
+C***KEYWORDS  CLENSHAW-CURTIS,GAUSS-KRONROD,
+C             INTEGRATION RULES FOR FUNCTIONS WITH COS OR SIN FACTOR
+C***AUTHOR  PIESSENS, ROBERT, APPLIED MATH. AND PROGR. DIV. -
+C             K. U. LEUVEN
+C           DE DONCKER, ELISE, APPLIED MATH. AND PROGR. DIV. -
+C             K. U. LEUVEN
+C***PURPOSE  To compute the integral I=Integral of F(X) over (A,B)
+C            Where W(X) = COS(OMEGA*X) or W(X)=SIN(OMEGA*X) and to
+C            compute J = Integral of ABS(F) over (A,B). For small value
+C            of OMEGA or small intervals (A,B) the 15-point GAUSS-KRONRO
+C            Rule is used. Otherwise a generalized CLENSHAW-CURTIS
+C            method is used.
+C***DESCRIPTION
+C
+C        Integration rules for functions with COS or SIN factor
+C        Standard fortran subroutine
+C        Double precision version
+C
+C        PARAMETERS
+C         ON ENTRY
+C           F      - Double precision
+C                    Function subprogram defining the integrand
+C                    function F(X). The actual name for F needs to
+C                    be declared E X T E R N A L in the calling program.
+C
+C           A      - Double precision
+C                    Lower limit of integration
+C
+C           B      - Double precision
+C                    Upper limit of integration
+C
+C           OMEGA  - Double precision
+C                    Parameter in the WEIGHT function
+C
+C           INTEGR - Integer
+C                    Indicates which WEIGHT function is to be used
+C                       INTEGR = 1   W(X) = COS(OMEGA*X)
+C                       INTEGR = 2   W(X) = SIN(OMEGA*X)
+C
+C           NRMOM  - Integer
+C                    The length of interval (A,B) is equal to the length
+C                    of the original integration interval divided by
+C                    2**NRMOM (we suppose that the routine is used in an
+C                    adaptive integration process, otherwise set
+C                    NRMOM = 0). NRMOM must be zero at the first call.
+C
+C           MAXP1  - Integer
+C                    Gives an upper bound on the number of Chebyshev
+C                    moments which can be stored, i.e. for the
+C                    intervals of lengths ABS(BB-AA)*2**(-L),
+C                    L = 0,1,2, ..., MAXP1-2.
+C
+C           KSAVE  - Integer
+C                    Key which is one when the moments for the
+C                    current interval have been computed
+C
+C         ON RETURN
+C           RESULT - Double precision
+C                    Approximation to the integral I
+C
+C           ABSERR - Double precision
+C                    Estimate of the modulus of the absolute
+C                    error, which should equal or exceed ABS(I-RESULT)
+C
+C           NEVAL  - Integer
+C                    Number of integrand evaluations
+C
+C           RESABS - Double precision
+C                    Approximation to the integral J
+C
+C           RESASC - Double precision
+C                    Approximation to the integral of ABS(F-I/(B-A))
+C
+C         ON ENTRY AND RETURN
+C           MOMCOM - Integer
+C                    For each interval length we need to compute the
+C                    Chebyshev moments. MOMCOM counts the number of
+C                    intervals for which these moments have already been
+C                    computed. If NRMOM.LT.MOMCOM or KSAVE = 1, the
+C                    Chebyshev moments for the interval (A,B) have
+C                    already been computed and stored, otherwise we
+C                    compute them and we increase MOMCOM.
+C
+C           CHEBMO - Double precision
+C                    Array of dimension at least (MAXP1,25) containing
+C                    the modified Chebyshev moments for the first MOMCOM
+C                    MOMCOM interval lengths
+C
+C ......................................................................
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D1MACH,DGTSL,DQCHEB,DQK15W,DQWGTF
+C***END PROLOGUE  DQC25F
+ 
+ 

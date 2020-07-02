@@ -1,0 +1,26 @@
+ 
+      DOUBLE PRECISION FUNCTION DCSEVL(X,A,N)
+C***BEGIN PROLOGUE  DCSEVL
+C***DATE WRITTEN   770401   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C3A2
+C***KEYWORDS  CHEBYSHEV,FNLIB,SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Evaluate the double precision N-term Chebyshev series A
+C            at X.
+C***DESCRIPTION
+C
+C Evaluate the N-term Chebyshev series A at X.  Adapted from
+C R. Broucke, Algorithm 446, C.A.C.M., 16, 254 (1973).
+C W. Fullerton, C-3, Los Alamos Scientific Laboratory.
+C
+C       Input Arguments --
+C X    double precision value at which the series is to be evaluated.
+C A    double precision array of N terms of a Chebyshev series.  In
+C      evaluating A, only half of the first coefficient is summed.
+C N    number of terms in array A.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  XERROR
+C***END PROLOGUE  DCSEVL
+ 
+ 

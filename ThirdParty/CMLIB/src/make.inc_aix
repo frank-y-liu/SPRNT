@@ -1,0 +1,6 @@
+FORTRAN = /usr/bin/xlf
+OPTS = -O -qtune=pwr -qmaxmem=8192
+NOPTS = -qtune=pwr
+RANLIB = ranlib
+MACHCON = IEEE.MOST-SIG-BYTE-FIRST
+LIBRARY = libcm.a

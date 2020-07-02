@@ -1,0 +1,37 @@
+ 
+      DOUBLE PRECISION FUNCTION DERFC(X)
+C***BEGIN PROLOGUE  DERFC
+C***DATE WRITTEN   770701   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C8A,L5A1E
+C***KEYWORDS  COMPLEMENTARY ERROR FUNCTION,DOUBLE PRECISION,
+C             SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the d.p. complementary error function, ERFC.
+C***DESCRIPTION
+C
+C DERFC(X) calculates the double precision complementary error function
+C for double precision argument X.
+C
+C Series for ERF        on the interval  0.          to  1.00000E+00
+C                                        with weighted Error   1.28E-32
+C                                         log weighted Error  31.89
+C                               significant figures required  31.05
+C                                    decimal places required  32.55
+C
+C Series for ERC2       on the interval  2.50000E-01 to  1.00000E+00
+C                                        with weighted Error   2.67E-32
+C                                         log weighted Error  31.57
+C                               significant figures required  30.31
+C                                    decimal places required  32.42
+C
+C Series for ERFC       on the interval  0.          to  2.50000E-01
+C                                        with weighted error   1.53E-31
+C                                         log weighted error  30.82
+C                               significant figures required  29.47
+C                                    decimal places required  31.70
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D1MACH,DCSEVL,INITDS,XERROR
+C***END PROLOGUE  DERFC
+ 
+ 

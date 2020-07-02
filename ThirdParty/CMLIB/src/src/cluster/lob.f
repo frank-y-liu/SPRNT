@@ -1,0 +1,111 @@
+      SUBROUTINE LOB(MM, M, N, A, NDIAGS, DMB, B, XLL, V)
+C
+C<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+C
+C   PURPOSE
+C   -------
+C
+C      COMPUTES THE LOG LIKELIHOOD FIT FOR A GIVEN SET OF BLOCKS
+C
+C   INPUT PARAMETERS
+C   ----------------
+C
+C   MM    INTEGER SCALAR (UNCHANGED ON OUTPUT).
+C         THE FIRST DIMENSION OF THE MATRIX A.  MUST BE AT LEAST M.
+C
+C   M     INTEGER SCALAR (UNCHANGED ON OUTPUT).
+C         THE NUMBER OF CASES.
+C
+C   N     INTEGER SCALAR (UNCHANGED ON OUTPUT).
+C         THE NUMBER OF VARIABLES.
+C
+C   A     REAL MATRIX WHOSE FIRST DIMENSION MUST BE MM AND WHOSE SECOND
+C            DIMENSION MUST BE AT LEAST N (UNCHANGED ON OUTPUT).
+C         THE MATRIX OF DATA VALUES.
+C
+C   NDIAGS INTEGER SCALAR (UNCHANGED ON OUTPUT).
+C         THE NUMBER OF DIAGRAMS.
+C
+C   DMB   INTEGER SCALAR (UNCHANGED ON OUTPUT).
+C         THE LEADING DIMENSION OF THE MATRIX B.  MUST BE AT LEAST
+C             2*NDIAGS.
+C
+C   V     REAL VECTOR DIMENSIONED AT LEAST 2*NDIAGS.
+C         WORK VECTOR.
+C
+C   OUTPUT PARAMETERS
+C   -----------------
+C
+C   B     REAL MATRIX WHOSE FIRST DIMENSION MUST BE DMB AND WHOSE SECOND
+C            DIMENSION MUST BE N.
+C         THE MATRIX WHICH DEFINES THE BLOCKS.
+C
+C         B(J,I) IS THE MINIMUM VALUE FOR THE I-TH VARIABLE IN THE J-TH
+C                      BLOCK.
+C         B(NDIAGS+J,I) IS THE MAXIMUM VALUE FOR THE I-TH VARIABLE IN
+C                      THE J-TH BLOCK.
+C
+C   XLL   REAL SCALAR.
+C         THE LOG LIKELIHOOD OF THE FINAL BLOCKS.
+C
+C   REFERENCE
+C   ---------
+C
+C     HARTIGAN, J. A. (1975).  CLUSTERING ALGORITHMS, JOHN WILEY &
+C        SONS, INC., NEW YORK.  PAGE 53.
+C
+C<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+C
+      INTEGER DMB
+      DIMENSION A(MM,*), B(DMB,*), V(*)
+C
+      DO 10 K=1,NDIAGS
+   10    V(K)=0.
+      DO 40 I=1,M
+         DO 30 K=1,NDIAGS
+            DO 20 J=1,N
+               IF(A(I,J).GT.B(NDIAGS+K,J).OR.A(I,J).LT.B(K,J)) GO TO 30
+   20       CONTINUE
+            V(K)=V(K)+1.
+            GO TO 40
+   30    CONTINUE
+   40 CONTINUE
+C
+C     COUNT VOLUME IN EACH BLOCK
+C
+      DO 100 K=1,NDIAGS
+         V(NDIAGS+K)=1.
+         DO 50 J=1,N
+   50       V(NDIAGS+K)=V(NDIAGS+K)*(B(NDIAGS+K,J)-B(K,J))
+C
+C     ADJUST FOR TWO BLOCKS OVERLAPPING
+C
+         DO 90 K1=1,K-1
+            XV=1.
+            DO 60 J=1,N
+               XL=AMAX1(B(K,J),B(K1,J))
+               XU=AMIN1(B(NDIAGS+K,J),B(NDIAGS+K1,J))
+               IF(XL.GE.XU) GO TO 90
+   60       XV=XV*(XU-XL)
+            V(NDIAGS+K)=V(NDIAGS+K)-XV
+            DO 80 KK1=1,K1-1
+               XV=1.
+               DO 70 J=1,N
+                  XL=AMAX1(B(K,J),B(K1,J),B(KK1,J))
+                  XU=AMIN1(B(NDIAGS+K,J),B(NDIAGS+K1,J),B(NDIAGS+KK1,J))
+                  IF(XL.GE.XU) GO TO 80
+   70             XV=XV*(XU-XL)
+               V(NDIAGS+K)=V(NDIAGS+K)+XV
+   80       CONTINUE
+   90    CONTINUE
+  100 CONTINUE
+C
+C     COMPUTE LOG LIKELIHOOD
+C
+      XLL=0.
+      DO 110 K=1,NDIAGS
+         IF(V(K).NE.0..AND.V(NDIAGS+K).NE.0.)
+     *       XLL=XLL+V(K)*ALOG(V(K)/V(NDIAGS+K))
+  110 CONTINUE
+      RETURN
+      END

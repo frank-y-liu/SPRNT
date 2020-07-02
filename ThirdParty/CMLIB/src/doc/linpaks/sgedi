@@ -1,0 +1,70 @@
+ 
+      SUBROUTINE SGEDI(A,LDA,N,IPVT,DET,WORK,JOB)
+C***BEGIN PROLOGUE  SGEDI
+C***DATE WRITTEN   780814   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D2A1,D3A1
+C***KEYWORDS  DETERMINANT,FACTOR,INVERSE,LINEAR ALGEBRA,LINPACK,MATRIX
+C***AUTHOR  MOLER, C. B., (U. OF NEW MEXICO)
+C***PURPOSE  Computes the determinant and inverse of a matrix
+C            using the factors computed by SGECO or SGEFA.
+C***DESCRIPTION
+C
+C     SGEDI computes the determinant and inverse of a matrix
+C     using the factors computed by SGECO or SGEFA.
+C
+C     On Entry
+C
+C        A       REAL(LDA, N)
+C                the output from SGECO or SGEFA.
+C
+C        LDA     INTEGER
+C                the leading dimension of the array  A .
+C
+C        N       INTEGER
+C                the order of the matrix  A .
+C
+C        IPVT    INTEGER(N)
+C                the pivot vector from SGECO or SGEFA.
+C
+C        WORK    REAL(N)
+C                work vector.  Contents destroyed.
+C
+C        JOB     INTEGER
+C                = 11   both determinant and inverse.
+C                = 01   inverse only.
+C                = 10   determinant only.
+C
+C     On Return
+C
+C        A       inverse of original matrix if requested.
+C                Otherwise unchanged.
+C
+C        DET     REAL(2)
+C                determinant of original matrix if requested.
+C                Otherwise not referenced.
+C                Determinant = DET(1) * 10.0**DET(2)
+C                with  1.0 .LE. ABS(DET(1)) .LT. 10.0
+C                or  DET(1) .EQ. 0.0 .
+C
+C     Error Condition
+C
+C        A division by zero will occur if the input factor contains
+C        a zero on the diagonal and the inverse is requested.
+C        It will not occur if the subroutines are called correctly
+C        and if SGECO has set RCOND .GT. 0.0 or SGEFA has set
+C        INFO .EQ. 0 .
+C
+C     LINPACK.  This version dated 08/14/78 .
+C     Cleve Moler, University of New Mexico, Argonne National Lab.
+C
+C     Subroutines and Functions
+C
+C     BLAS SAXPY,SSCAL,SSWAP
+C     Fortran ABS,MOD
+C***REFERENCES  DONGARRA J.J., BUNCH J.R., MOLER C.B., STEWART G.W.,
+C                 *LINPACK USERS  GUIDE*, SIAM, 1979.
+C***ROUTINES CALLED  SAXPY,SSCAL,SSWAP
+C***END PROLOGUE  SGEDI
+ 
+ 

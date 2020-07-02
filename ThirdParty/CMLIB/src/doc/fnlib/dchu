@@ -1,0 +1,24 @@
+ 
+      DOUBLE PRECISION FUNCTION DCHU(A,B,X)
+C***BEGIN PROLOGUE  DCHU
+C***DATE WRITTEN   770801   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C11
+C***KEYWORDS  CONFLUENT HYPERGEOMETRIC FUNCTION,DOUBLE PRECISION,
+C             LOGARITHMIC,SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Calculates the d.p. logarithmic confluent hypergeometric
+C            function.
+C***DESCRIPTION
+C
+C DCHU(A,B,X) calculates the double precision logarithmic confluent
+C hypergeometric function U(A,B,X) for double precision arguments
+C A, B, and X.
+C
+C This routine is not valid when 1+A-B is close to zero if X is small.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D1MACH,D9CHU,DEXPRL,DGAMMA,DGAMR,DINT,DPOCH,DPOCH1,
+C                    XERROR
+C***END PROLOGUE  DCHU
+ 
+ 

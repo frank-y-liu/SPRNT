@@ -1,0 +1,73 @@
+ 
+      SUBROUTINE BANDR(NM,N,MB,A,D,E,E2,MATZ,Z)
+C***BEGIN PROLOGUE  BANDR
+C***DATE WRITTEN   760101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  D4C1B1
+C***KEYWORDS  EIGENVALUES,EIGENVECTORS,EISPACK
+C***AUTHOR  SMITH, B. T., ET AL.
+C***PURPOSE  Reduces real symmetric band matrix to symmetric
+C            tridiagonal matrix and, optionally, accumulates
+C            orthogonal similarity transformations.
+C***DESCRIPTION
+C
+C     This subroutine is a translation of the ALGOL procedure BANDRD,
+C     NUM. MATH. 12, 231-241(1968) by Schwarz.
+C     HANDBOOK FOR AUTO. COMP., VOL.II-lINEAR ALGEBRA, 273-283(1971).
+C
+C     This subroutine reduces a REAL SYMMETRIC BAND matrix
+C     to a symmetric tridiagonal matrix using and optionally
+C     accumulating orthogonal similarity transformations.
+C
+C     On INPUT
+C
+C        NM must be set to the row dimension of two-dimensional
+C          array parameters as declared in the calling program
+C          dimension statement.
+C
+C        N is the order of the matrix.
+C
+C        MB is the (half) band width of the matrix, defined as the
+C          number of adjacent diagonals, including the principal
+C          diagonal, required to specify the non-zero portion of the
+C          lower triangle of the matrix.
+C
+C        A contains the lower triangle of the symmetric band input
+C          matrix stored as an N by MB array.  Its lowest subdiagonal
+C          is stored in the last N+1-MB positions of the first column,
+C          its next subdiagonal in the last N+2-MB positions of the
+C          second column, further subdiagonals similarly, and finally
+C          its principal diagonal in the N positions of the last column.
+C          Contents of storages not part of the matrix are arbitrary.
+C
+C        MATZ should be set to .TRUE. if the transformation matrix is
+C          to be accumulated, and to .FALSE. otherwise.
+C
+C     On OUTPUT
+C
+C        A has been destroyed, except for its last two columns which
+C          contain a copy of the tridiagonal matrix.
+C
+C        D contains the diagonal elements of the tridiagonal matrix.
+C
+C        E contains the subdiagonal elements of the tridiagonal
+C          matrix in its last N-1 positions.  E(1) is set to zero.
+C
+C        E2 contains the squares of the corresponding elements of E.
+C          E2 may coincide with E if the squares are not needed.
+C
+C        Z contains the orthogonal transformation matrix produced in
+C          the reduction if MATZ has been set to .TRUE.  Otherwise, Z
+C          is not referenced.
+C
+C     Questions and comments should be directed to B. S. Garbow,
+C     Applied Mathematics Division, ARGONNE NATIONAL LABORATORY
+C     ------------------------------------------------------------------
+C***REFERENCES  B. T. SMITH, J. M. BOYLE, J. J. DONGARRA, B. S. GARBOW,
+C                 Y. IKEBE, V. C. KLEMA, C. B. MOLER, *MATRIX EIGEN-
+C                 SYSTEM ROUTINES - EISPACK GUIDE*, SPRINGER-VERLAG,
+C                 1976.
+C***ROUTINES CALLED  (NONE)
+C***END PROLOGUE  BANDR
+ 
+ 

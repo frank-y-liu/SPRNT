@@ -1,0 +1,66 @@
+ 
+      FUNCTION E1(X)
+C***BEGIN PROLOGUE  E1
+C***DATE WRITTEN   770701   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C5
+C***KEYWORDS  E1,EXPONENTIAL INTEGRAL,SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the exponential integral E1(X).
+C***DESCRIPTION
+C
+C E1(X) calculates the single precision exponential integral
+C for positive, single precision argument X.  It returns the
+C Cauchy principal value for negative X.  If principal values are
+C used everywhere, then for all X
+C
+C     EI(X) = -E1(-X)
+C or
+C     E1(X) = -EI(-X).
+C
+C
+C Series for AE11       on the interval -1.00000D-01 to  0.
+C                                        with weighted error   1.76E-17
+C                                         log weighted error  16.75
+C                               significant figures required  15.70
+C                                    decimal places required  17.55
+C
+C
+C Series for AE12       on the interval -2.50000D-01 to -1.00000D-01
+C                                        with weighted error   5.83E-17
+C                                         log weighted error  16.23
+C                               significant figures required  15.76
+C                                    decimal places required  16.93
+C
+C
+C Series for E11        on the interval -4.00000D+00 to -1.00000D+00
+C                                        with weighted error   1.08E-18
+C                                         log weighted error  17.97
+C                               significant figures required  19.02
+C                                    decimal places required  18.61
+C
+C
+C Series for E12        on the interval -1.00000D+00 to  1.00000D+00
+C                                        with weighted error   3.15E-18
+C                                         log weighted error  17.50
+C                        approx significant figures required  15.8
+C                                    decimal places required  18.10
+C
+C
+C Series for AE13       on the interval  2.50000D-01 to  1.00000D+00
+C                                        with weighted error   2.34E-17
+C                                         log weighted error  16.63
+C                               significant figures required  16.14
+C                                    decimal places required  17.33
+C
+C
+C Series for AE14       on the interval  0.          to  2.50000D-01
+C                                        with weighted error   5.41E-17
+C                                         log weighted error  16.27
+C                               significant figures required  15.38
+C                                    decimal places required  16.97
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  CSEVL,INITS,R1MACH,XERROR
+C***END PROLOGUE  E1
+ 
+ 

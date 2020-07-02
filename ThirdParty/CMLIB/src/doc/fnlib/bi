@@ -1,0 +1,42 @@
+ 
+      FUNCTION BI(X)
+C***BEGIN PROLOGUE  BI
+C***DATE WRITTEN   770701   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C10D
+C***KEYWORDS  BAIRY FUNCTION,SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the Bairy function.
+C***DESCRIPTION
+C
+C BI(X) calculates the Airy function of the second kind for real
+C argument X.
+C
+C Series for BIF        on the interval -1.00000D+00 to  1.00000D+00
+C                                        with weighted error   1.88E-19
+C                                         log weighted error  18.72
+C                               significant figures required  17.74
+C                                    decimal places required  19.20
+C
+C Series for BIG        on the interval -1.00000D+00 to  1.00000D+00
+C                                        with weighted error   2.61E-17
+C                                         log weighted error  16.58
+C                               significant figures required  15.17
+C                                    decimal places required  17.03
+C
+C Series for BIF2       on the interval  1.00000D+00 to  8.00000D+00
+C                                        with weighted error   1.11E-17
+C                                         log weighted error  16.95
+C                        approx significant figures required  16.5
+C                                    decimal places required  17.45
+C
+C Series for BIG2       on the interval  1.00000D+00 to  8.00000D+00
+C                                        with weighted error   1.19E-18
+C                                         log weighted error  17.92
+C                        approx significant figures required  17.2
+C                                    decimal places required  18.42
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  BIE,CSEVL,INITS,R1MACH,R9AIMP,XERROR
+C***END PROLOGUE  BI
+ 
+ 

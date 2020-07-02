@@ -1,0 +1,82 @@
+ 
+      SUBROUTINE DQC25S(F,A,B,BL,BR,ALFA,BETA,RI,RJ,RG,RH,RESULT,
+     1   ABSERR,RESASC,INTEGR,NEV)
+C***BEGIN PROLOGUE  DQC25S
+C***DATE WRITTEN   810101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  H2A2A2
+C***KEYWORDS  25-POINT CLENSHAW-CURTIS INTEGRATION
+C***AUTHOR  PIESSENS, ROBERT, APPLIED MATH. AND PROGR. DIV. -
+C             K. U. LEUVEN
+C           DE DONCKER, ELISE, APPLIED MATH. AND PROGR. DIV. -
+C             K. U. LEUVEN
+C***PURPOSE  To compute I = Integral of F*W over (BL,BR), with error
+C            estimate, where the weight function W has a singular
+C            behaviour of ALGEBRAICO-LOGARITHMIC type at the points
+C            A and/or B. (BL,BR) is a part of (A,B).
+C***DESCRIPTION
+C
+C        Integration rules for integrands having ALGEBRAICO-LOGARITHMIC
+C        end point singularities
+C        Standard fortran subroutine
+C        Double precision version
+C
+C        PARAMETERS
+C           F      - Double precision
+C                    Function subprogram defining the integrand
+C                    F(X). The actual name for F needs to be declared
+C                    E X T E R N A L  in the driver program.
+C
+C           A      - Double precision
+C                    Left end point of the original interval
+C
+C           B      - Double precision
+C                    Right end point of the original interval, B.GT.A
+C
+C           BL     - Double precision
+C                    Lower limit of integration, BL.GE.A
+C
+C           BR     - Double precision
+C                    Upper limit of integration, BR.LE.B
+C
+C           ALFA   - Double precision
+C                    PARAMETER IN THE WEIGHT FUNCTION
+C
+C           BETA   - Double precision
+C                    Parameter in the weight function
+C
+C           RI,RJ,RG,RH - Double precision
+C                    Modified CHEBYSHEV moments for the application
+C                    of the generalized CLENSHAW-CURTIS
+C                    method (computed in subroutine DQMOMO)
+C
+C           RESULT - Double precision
+C                    Approximation to the integral
+C                    RESULT is computed by using a generalized
+C                    CLENSHAW-CURTIS method if B1 = A or BR = B.
+C                    in all other cases the 15-POINT KRONROD
+C                    RULE is applied, obtained by optimal addition of
+C                    Abscissae to the 7-POINT GAUSS RULE.
+C
+C           ABSERR - Double precision
+C                    Estimate of the modulus of the absolute error,
+C                    which should equal or exceed ABS(I-RESULT)
+C
+C           RESASC - Double precision
+C                    Approximation to the integral of ABS(F*W-I/(B-A))
+C
+C           INTEGR - Integer
+C                    Which determines the weight function
+C                    = 1   W(X) = (X-A)**ALFA*(B-X)**BETA
+C                    = 2   W(X) = (X-A)**ALFA*(B-X)**BETA*LOG(X-A)
+C                    = 3   W(X) = (X-A)**ALFA*(B-X)**BETA*LOG(B-X)
+C                    = 4   W(X) = (X-A)**ALFA*(B-X)**BETA*LOG(X-A)*
+C                                 LOG(B-X)
+C
+C           NEV    - Integer
+C                    Number of integrand evaluations
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  DQCHEB,DQK15W,DQWGTS
+C***END PROLOGUE  DQC25S
+ 
+ 

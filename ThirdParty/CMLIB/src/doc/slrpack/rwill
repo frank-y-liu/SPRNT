@@ -1,0 +1,303 @@
+ 
+      subroutine rwill(n, x, y, u, v, bstart, mxiter, delmax,
+     1                 output, xres, yres, work, ier)
+ 
+ ---------------------------------------------------------------------
+ 
+    Package:  SLRPACK
+ 
+    Version:  October, 1985
+ 
+ ----------------------------------------------------------------------
+ 
+      PURPOSE
+      -------
+ 
+      This user-callable subroutine estimates simple linear regression
+      coefficients when both variables are subject to errors which are
+      not necessarily homogeneous in variance. The algorithm for the
+      estimation is due to Williamson (1968) (see reference below).
+ 
+ 
+      DESCRIPTION
+      -----------
+ 
+      1. The input data are observations (x(i),y(i)), i = 1,...,n, and
+         variances u(i) and v(i) associated with observations x(i) and
+         y(i) respectively, for i = 1,...,n.
+ 
+      2. The function
+ 
+         S = sum over i ((x(i)-X(i))**2/u(i) + (y(i)-Y(i))**2/v(i))
+ 
+         is minimized with respect to the fitted values X(i) and Y(i),
+         i = 1,...,n. The set of points (X(i),Y(i)) i = 1,...,n, are
+         constrained to be collinear.
+ 
+         This subroutine straightforwardly implements the calculations
+         described in Williamson (1968) (see references).
+ 
+      3. The slope estimate is obtained iteratively, with an initial
+         estimate supplied by the user. One suggested initial estimate
+         is the geometric mean of the OLS-y and OLS-x slopes obtained
+         by executing SLRPACK subroutine RGM (see documentation of that
+         subroutine).
+ 
+      4. At each iteration a linear equation is solved and the solution
+         is selected as the slope estimate at that iteration.
+ 
+      5. The iterations terminate when 1) the angle between the lines est-
+         imated in two successive iterations is less than user-set DELMAX,
+         or 2) the maximum number of iterations (user-set MXITER) has been
+         reached, whichever occurs first.
+ 
+      6. The equations for the standard deviations and the weighted
+         averages are given in Williamson (1968).
+ 
+      7. Another algorithm for minimizing S, described by York (1966),
+         is implemented in the SLRPACK subroutine RYORK.
+ 
+ 
+      INPUT PARAMETERS
+      ----------------
+ 
+      N       Integer scalar (unchanged on output)
+              Number of observations.
+ 
+              N must be at least 3.
+ 
+      X       Real vector dimensioned at least N (unchanged on output)
+              The X-observations.
+ 
+      Y       Real vector dimensioned at least N (unchanged on output)
+              The Y-observations.
+ 
+      U       Real vector dimensioned at least N (unchanged on output)
+              U(i) is the variance associated with X(i).
+ 
+              U(i) > 0.0  for i = 1,...,N.
+ 
+      V       Real vector dimensioned at least N (unchanged on output)
+              V(i) is the variance associated with Y(i).
+ 
+              V(i) > 0.0  for i = 1,...,N.
+ 
+      BSTART  Real scalar (unchanged on output)
+              Initial slope estimate.
+ 
+      MXITER  Integer scalar (unchanged on output)
+              Maximum number of iterations allowed.
+ 
+      DELMAX  Real scalar (unchanged on output)
+              Angular distance in radians such that execution terminates
+              if the angular distance between lines estimated in two
+              successive iterations is less than DELMAX.
+ 
+      WORK    Real vector dimensioned at least 5 * N
+              Work vector.
+ 
+      OUTPUT PARAMETERS
+      -----------------
+ 
+      OUTPUT  Real vector dimensioned at least 11
+ 
+              OUTPUT(1) = Slope estimate at final iteration.
+ 
+              OUTPUT(2) = Intercept estimate at final iteration.
+ 
+              OUTPUT(3) = Standard deviation of slope estimate.
+ 
+              OUTPUT(4) = Standard deviation of intercept estimate.
+ 
+              OUTPUT(5) = Standard deviation of the slope estimate
+                          multiplied by the chi-square test statistic
+                          weighted sum of squares divided by degrees
+                          of freedom.
+ 
+              OUTPUT(6) = Standard deviation of the intercept estimate
+                          multiplied by the chi-square test statistic
+                          weighted sum of squares divided by degrees
+                          of freedom.
+ 
+              OUTPUT(7) = Weighted average of x observations at final
+                          iteration.
+ 
+              OUTPUT(8) = Weighted average of y observations at final
+                          iteration.
+ 
+              OUTPUT(9) = Root mean square error in the x-direction.
+ 
+              OUTPUT(10)= Root mean square error in the y-direction.
+ 
+              OUTPUT(11)= Number of iterations.
+ 
+      XRES    Real vector dimensioned at least N
+              The x residuals.
+ 
+      YRES    Real vector dimensioned at least N
+              The y residuals.
+ 
+      IER     Integer scalar
+ 
+              IER =  0  if there are no execution time errors or
+                           warnings
+ 
+              IER =  1  Williamson technique regression line slope
+                           estimates cannot be calculated because the
+                           data set is too small
+ 
+                        Cannot compute OUTPUT(I) for I=1,...,11
+                           and residuals
+ 
+              IER =  2  Williamson technique regression line slope
+                           estimates cannot be calculated because all
+                           X-observations are equal
+ 
+                        Cannot compute OUTPUT(I) for I=1,...,11
+                           and residuals
+ 
+              IER =  3  Williamson technique regression line slope
+                           estimates cannot be calculated because all
+                           variances are not greater than 0.0
+ 
+                        Cannot compute OUTPUT(I) for I=1,...,11
+                           and residuals
+ 
+              IER =  4  Williamson technique regression line slope
+                           estimates cannot be determined because the sum
+                           of the weights is zero (equation for W(i) is
+                           on page 1846 of Williamson).
+ 
+                        Cannot compute OUTPUT(I) for I=1,...,11
+                           and residuals
+ 
+              IER =  5  Uncertainties in slope and intercept cannot be
+                           calculated since the final slope is 0.
+ 
+                        Cannot compute OUTPUT(I) for I=3,4,5,6,9,10
+                           and residuals
+ 
+              IER =  6  Uncertainties in slope and intercept cannot be
+                           determined because certain calculations involve
+                           division by zero
+ 
+                        Cannot compute OUTPUT(I) for I=3,4,5,6,9,10
+                           and residuals
+ 
+              IER =  7  Williamson technique slope estimates have not
+                           converged in allowed number of iterations
+ 
+                        Have computed OUTPUT(I) for I=1,...,11 only for
+                           the last iteration.
+ 
+      EXAMPLE
+      -------
+ 
+      Input:
+ 
+               N = 10
+            IRES =  1
+          MXITER = 20
+          BSTART =  -.54600
+          DELMAX =   .00010
+ 
+              I        X(I)      U(I)        Y(I)      V(I)
+              1       0.000     0.00100     5.900     1.00000
+              2       0.900     0.00100     5.400     0.55556
+              3       1.800     0.00200     4.400     0.25000
+              4       2.600     0.00125     4.600     0.12500
+              5       3.300     0.00500     3.500     0.05000
+              6       4.400     0.01250     3.700     0.05000
+              7       5.200     0.01667     2.800     0.01429
+              8       6.100     0.05000     2.800     0.01429
+              9       6.500     0.55556     2.400     0.01000
+             10       7.400     1.00000     1.500     0.00200
+ 
+      Call sequence:
+ 
+      subroutine rwill(n, x, y, u, v, bstart, mxiter, delmax,
+     1                 output, xres, yres, work, ier)
+ 
+      Output:
+ 
+                    IER = 0
+ 
+                    OUTPUT(1) =  -.481
+                    OUTPUT(2) =  5.480
+                    OUTPUT(3) =   .071
+                    OUTPUT(4) =   .362
+                    OUTPUT(5) =   .0576
+                    OUTPUT(6) =   .2919
+                    OUTPUT(7) =  4.911
+                    OUTPUT(8) =  3.120
+                    OUTPUT(9) =   .2888
+                    OUTPUT(10)=   .2776
+                    OUTPUT(11)=  4.
+ 
+               Weighted Residuals
+ 
+            I          XRES(I)    YRES(I)
+            1           .000       -.420
+            2           .000       -.352
+            3           .001        .214
+            4          -.002       -.369
+            5           .019        .385
+            6          -.038       -.316
+            7           .080        .143
+            8          -.234       -.139
+            9          -.085       -.003
+           10           .874        .004
+ 
+      PRECISION
+      ---------
+ 
+      All calculations are done in single precision.
+ 
+      OTHER SUBROUTINES
+      -----------------
+ 
+      PORT  subroutine  R1MACH
+ 
+      LANGUAGE
+      --------
+ 
+      The routine is coded in standard Fortran 77.
+ 
+      REFERENCE
+      ---------
+ 
+      Riggs, D. S., Guarnieri, J. A., and Addelman, S. (1978).  Fitting
+         straight lines when both variables are subject to error.  Life
+         Sciences, 22, 1305-1360.
+ 
+      York, D. (1966). Least-square fitting of a straight line. Canadian
+         Journal of Physics, 44, 1079-1086.
+ 
+      Williamson, J. H. (1968). Least-squares fitting of a straight line.
+         Canadian Journal of Physics, 46, 1845-1847.
+ 
+ 
+      AUTHORS
+      -------
+ 
+      R. Lindstrom
+      Inorganic Analytical Reasearch Division
+      Center for Analytical Chemistry
+ 
+      Sally E. Howe
+      Scientific Computing Division
+      Center for Applied Mathematics
+ 
+      National Bureau of Standards
+      Gaithersburg, MD  20899
+ 
+      NBS CONTACT
+      -----------
+ 
+      Sally E. Howe
+      Scientific Computing Division
+ 
+ ------------------------------------------------------------------------
+ 
+ 
+ 

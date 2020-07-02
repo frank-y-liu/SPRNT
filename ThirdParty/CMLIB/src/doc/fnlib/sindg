@@ -1,0 +1,18 @@
+ 
+      FUNCTION SINDG(X)
+C***BEGIN PROLOGUE  SINDG
+C***DATE WRITTEN   770601   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C4A
+C***KEYWORDS  DEGREE,FNLIB,SINE,TRIGONOMETRIC
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the Sine of an argument in degrees.
+C***DESCRIPTION
+C
+C SINDG(X) evaluates the single precision sine of X where
+C X is in degrees.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  (NONE)
+C***END PROLOGUE  SINDG
+ 
+ 

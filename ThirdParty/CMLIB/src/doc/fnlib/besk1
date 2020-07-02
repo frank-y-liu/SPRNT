@@ -1,0 +1,26 @@
+ 
+      FUNCTION BESK1(X)
+C***BEGIN PROLOGUE  BESK1
+C***DATE WRITTEN   770401   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C10B1
+C***KEYWORDS  BESSEL FUNCTION,HYPERBOLIC BESSEL FUNCTION,
+C             MODIFIED BESSEL FUNCTION,ORDER ONE,THIRD KIND
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the hyperbolic Bessel function of the third kind
+C            of order one
+C***DESCRIPTION
+C
+C BESK1(X) computes the modified (hyperbolic) Bessel function of third
+C kind of order one for real argument X, where X .GT. 0.
+C
+C Series for BK1        on the interval  0.          to  4.00000D+00
+C                                        with weighted error   7.02E-18
+C                                         log weighted error  17.15
+C                               significant figures required  16.73
+C                                    decimal places required  17.67
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  BESI1,BESK1E,CSEVL,INITS,R1MACH,XERROR
+C***END PROLOGUE  BESK1
+ 
+ 

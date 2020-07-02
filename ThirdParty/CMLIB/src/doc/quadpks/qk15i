@@ -1,0 +1,74 @@
+ 
+      SUBROUTINE QK15I(F,BOUN,INF,A,B,RESULT,ABSERR,RESABS,RESASC)
+C***BEGIN PROLOGUE  QK15I
+C***DATE WRITTEN   800101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  H2A3A2,H2A4A2
+C***KEYWORDS  15-POINT TRANSFORMED GAUSS-KRONROD RULES
+C***AUTHOR  PIESSENS, ROBERT, APPLIED MATH. AND PROGR. DIV. -
+C             K. U. LEUVEN
+C           DE DONCKER, ELISE, APPLIED MATH. AND PROGR. DIV. -
+C             K. U. LEUVEN
+C***PURPOSE  The original (infinite integration range is mapped
+C            onto the interval (0,1) and (A,B) is a part of (0,1).
+C            it is the purpose to compute
+C            I = Integral of transformed integrand over (A,B),
+C            J = Integral of ABS(Transformed Integrand) over (A,B).
+C***DESCRIPTION
+C
+C           Integration Rule
+C           Standard Fortran subroutine
+C           Real version
+C
+C           PARAMETERS
+C            ON ENTRY
+C              F      - Real
+C                       Fuction subprogram defining the integrand
+C                       FUNCTION F(X). The actual name for F needs to be
+C                       Declared E X T E R N A L in the calling program.
+C
+C              BOUN   - Real
+C                       Finite bound of original integration
+C                       Range (SET TO ZERO IF INF = +2)
+C
+C              INF    - Integer
+C                       If INF = -1, the original interval is
+C                                   (-INFINITY,BOUND),
+C                       If INF = +1, the original interval is
+C                                   (BOUND,+INFINITY),
+C                       If INF = +2, the original interval is
+C                                   (-INFINITY,+INFINITY) AND
+C                       The integral is computed as the sum of two
+C                       integrals, one over (-INFINITY,0) and one over
+C                       (0,+INFINITY).
+C
+C              A      - Real
+C                       Lower limit for integration over subrange
+C                       of (0,1)
+C
+C              B      - Real
+C                       Upper limit for integration over subrange
+C                       of (0,1)
+C
+C            ON RETURN
+C              RESULT - Real
+C                       Approximation to the integral I
+C                       Result is computed by applying the 15-POINT
+C                       KRONROD RULE(RESK) obtained by optimal addition
+C                       of abscissae to the 7-POINT GAUSS RULE(RESG).
+C
+C              ABSERR - Real
+C                       Estimate of the modulus of the absolute error,
+C                       WHICH SHOULD EQUAL or EXCEED ABS(I-RESULT)
+C
+C              RESABS - Real
+C                       Approximation to the integral J
+C
+C              RESASC - Real
+C                       Approximation to the integral of
+C                       ABS((TRANSFORMED INTEGRAND)-I/(B-A)) over (A,B)
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  R1MACH
+C***END PROLOGUE  QK15I
+ 
+ 

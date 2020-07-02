@@ -1,0 +1,60 @@
+ 
+      SUBROUTINE DQC25C(F,A,B,C,RESULT,ABSERR,KRUL,NEVAL)
+C***BEGIN PROLOGUE  DQC25C
+C***DATE WRITTEN   810101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  H2A2A2,J4
+C***KEYWORDS  25-POINT CLENSHAW-CURTIS INTEGRATION
+C***AUTHOR  PIESSENS, ROBERT, APPLIED MATH. AND PROGR. DIV. -
+C             K. U. LEUVEN
+C           DE DONCKER, ELISE, APPLIED MATH. AND PROGR. DIV. -
+C             K. U. LEUVEN
+C***PURPOSE  To compute I = Integral of F*W over (A,B) with
+C            error estimate, where W(X) = 1/(X-C)
+C***DESCRIPTION
+C
+C        Integration rules for the computation of CAUCHY
+C        PRINCIPAL VALUE integrals
+C        Standard fortran subroutine
+C        Double precision version
+C
+C        PARAMETERS
+C           F      - Double precision
+C                    Function subprogram defining the integrand function
+C                    F(X). The actual name for F needs to be declared
+C                    E X T E R N A L  in the driver program.
+C
+C           A      - Double precision
+C                    Left end point of the integration interval
+C
+C           B      - Double precision
+C                    Right end point of the integration interval, B.GT.A
+C
+C           C      - Double precision
+C                    Parameter in the WEIGHT function
+C
+C           RESULT - Double precision
+C                    Approximation to the integral
+C                    result is computed by using a generalized
+C                    Clenshaw-Curtis method if C lies within ten percent
+C                    of the integration interval. In the other case the
+C                    15-point Kronrod rule obtained by optimal addition
+C                    of abscissae to the 7-point Gauss rule, is applied.
+C
+C           ABSERR - Double precision
+C                    Estimate of the modulus of the absolute error,
+C                    which should equal or exceed ABS(I-RESULT)
+C
+C           KRUL   - Integer
+C                    Key which is decreased by 1 if the 15-point
+C                    Gauss-Kronrod scheme has been used
+C
+C           NEVAL  - Integer
+C                    Number of integrand evaluations
+C
+C ......................................................................
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  DQCHEB,DQK15W,DQWGTC
+C***END PROLOGUE  DQC25C
+ 
+ 

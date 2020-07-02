@@ -1,0 +1,79 @@
+ 
+      SUBROUTINE SSPDI(AP,N,KPVT,DET,INERT,WORK,JOB)
+C***BEGIN PROLOGUE  SSPDI
+C***DATE WRITTEN   780814   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D2B1A,D3B1A
+C***KEYWORDS  DETERMINANT,FACTOR,INVERSE,LINEAR ALGEBRA,LINPACK,MATRIX,
+C             PACKED,SYMMETRIC
+C***AUTHOR  BUNCH, J., (UCSD)
+C***PURPOSE  Computes the determinant, inertia, inverse of a real SYM-
+C            METRIC matrix (packed form) using the factors from SSPFA
+C***DESCRIPTION
+C
+C     SSPDI computes the determinant, inertia and inverse
+C     of a real symmetric matrix using the factors from SSPFA,
+C     where the matrix is stored in packed form.
+C
+C     On Entry
+C
+C        AP      REAL (N*(N+1)/2)
+C                the output from SSPFA.
+C
+C        N       INTEGER
+C                the order of the matrix A.
+C
+C        KPVT    INTEGER(N)
+C                the pivot vector from SSPFA.
+C
+C        WORK    REAL(N)
+C                work vector.  Contents ignored.
+C
+C        JOB     INTEGER
+C                JOB has the decimal expansion  ABC  where
+C                   If  C .NE. 0, the inverse is computed,
+C                   If  B .NE. 0, the determinant is computed,
+C                   If  A .NE. 0, the inertia is computed.
+C
+C                For example, JOB = 111  gives all three.
+C
+C     On Return
+C
+C        Variables not requested by JOB are not used.
+C
+C        AP     contains the upper triangle of the inverse of
+C               the original matrix, stored in packed form.
+C               The columns of the upper triangle are stored
+C               sequentially in a one-dimensional array.
+C
+C        DET    REAL(2)
+C               determinant of original matrix.
+C               Determinant = DET(1) * 10.0**DET(2)
+C               with 1.0 .LE. ABS(DET(1)) .LT. 10.0
+C               or DET(1) = 0.0.
+C
+C        INERT  INTEGER(3)
+C               the inertia of the original matrix.
+C               INERT(1)  =  number of positive eigenvalues.
+C               INERT(2)  =  number of negative eigenvalues.
+C               INERT(3)  =  number of zero eigenvalues.
+C
+C     Error Condition
+C
+C        A division by zero will occur if the inverse is requested
+C        and  SSPCO  has set RCOND .EQ. 0.0
+C        or  SSPFA  has set  INFO .NE. 0 .
+C
+C     LINPACK.  This version dated 08/14/78 .
+C     James Bunch, Univ. Calif. San Diego, Argonne Nat. Lab.
+C
+C     Subroutines and Functions
+C
+C     BLAS SAXPY,SCOPY,SDOT,SSWAP
+C     Fortran ABS,IABS,MOD
+C***REFERENCES  DONGARRA J.J., BUNCH J.R., MOLER C.B., STEWART G.W.,
+C                 *LINPACK USERS  GUIDE*, SIAM, 1979.
+C***ROUTINES CALLED  SAXPY,SCOPY,SDOT,SSWAP
+C***END PROLOGUE  SSPDI
+ 
+ 

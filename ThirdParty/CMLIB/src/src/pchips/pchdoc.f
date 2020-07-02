@@ -1,0 +1,198 @@
+ 
+      SUBROUTINE PCHDOC
+C***BEGIN PROLOGUE  PCHDOC
+C***DATE WRITTEN   811106   (YYMMDD)
+C***REVISION DATE  861211   (YYMMDD)
+C***CATEGORY NO.  E1B,Z
+C***KEYWORDS  LIBRARY=SLATEC(PCHIP),TYPE=ALL(PCHDOC-A),
+C             CUBIC HERMITE INTERPOLATION,DOCUMENTATION,
+C             MONOTONE INTERPOLATION,PIECEWISE CUBIC INTERPOLATION
+C***AUTHOR  FRITSCH, F. N., (LLNL)
+C             MATHEMATICS AND STATISTICS DIVISION
+C             LAWRENCE LIVERMORE NATIONAL LABORATORY
+C             P.O. BOX 808  (L-316)
+C             LIVERMORE, CA  94550
+C             FTS 532-4275, (415) 422-4275
+C***PURPOSE  PCHIP is a Fortran package for piecewise cubic Hermite
+C            interpolation of data.  It features software to produce a
+C            monotone and "visually pleasing" interpolant to monotone
+C            data.
+C***DESCRIPTION
+C
+C            PCHIP:  Piecewise Cubic Hermite Interpolation Package
+C
+C      This document contains the specifications for PCHIP, a new
+C   Fortran package for piecewise cubic Hermite interpolation of data.
+C   It features software to produce a monotone and "visually pleasing"
+C   interpolant to monotone data.  As is demonstrated in Reference 1,
+C   such an interpolant may be more reasonable than a cubic spline if
+C   the data contains both "steep" and "flat" sections.  Interpola-
+C   tion of cumulative probability distribution functions is another
+C   application.  (See References 1-3 for examples.)
+C
+C
+C      All piecewise cubic functions in PCHIP are represented in
+C   cubic Hermite form; that is, F(X) is determined by its values
+C   F(I) and derivatives D(I) at the breakpoints X(I), I=1(1)N.
+C
+C      The double precision equivalents of the PCHIP routines are
+C   obtained from the single precision names by prefixing the
+C   single precision names with a D.  For example, the double
+C   precision equivalent of PCHIM is DPCHIM.
+C
+C      The contents of the package are as follows:
+C
+C   1. Determine Derivative Values.
+C
+C         PCHIM -- Piecewise Cubic Hermite Interpolation to Monotone
+C               data.
+C               Used if the data are monotonic or if the user wants
+C               to guarantee that the interpolant stays within the
+C               limits of the data.  (See Reference 2.)
+C
+C         PCHIC -- Piecewise Cubic Hermite Interpolation Coefficients.
+C               Used if neither of the above conditions holds, or if
+C               the user wishes control over boundary derivatives.
+C               Will generally reproduce monotonicity on subintervals
+C               over which the data are monotonic.
+C
+C         PCHSP -- Piecewise Cubic Hermite Spline.
+C               Produces a cubic spline interpolator in cubic Hermite
+C               form.  Provided primarily for easy comparison of the
+C               spline with other piecewise cubic interpolants.  (A
+C               modified version of de Boor'S CUBSPL, Reference 4.)
+C
+C   2. Evaluate, Differentiate, or Integrate Resulting PCH Function.
+C
+C      NOTE:  If derivative values are available from some other
+C             source, these routines can be used without calling
+C             any of the previous routines.
+C
+C         CHFEV -- Cubic Hermite Function EValuator.
+C               Evaluates a single cubic Hermite function at an array
+C               of points.  Used when the interval is known, as in
+C               graphing applications.  Called by PCHFE.
+C
+C         PCHFE -- Piecewise Cubic Hermite Function Evaluator.
+C               Used when the interval is unknown or the evaluation
+C               array spans more than one data interval.
+C
+C         CHFDV -- Cubic Hermite Function and Derivative Evaluator.
+C               Evaluates a single cubic Hermite function and its
+C               first derivative at an array of points.  Used when
+C               the interval is known, as in graphing applications.
+C               Called by PCHFD.
+C
+C         PCHFD -- Piecewise Cubic Hermite Function and Derivative
+C               Evaluator.
+C               Used when the interval is unknown or the evaluation
+C               array spans more than one data interval.
+C
+C         PCHID -- Piecewise Cubic Hermite Integrator, Data Limits.
+C               Computes the definite integral of a piecewise cubic
+C               Hermite function when the integration limits are data
+C               points.
+C
+C         PCHIA -- Piecewise Cubic Hermite Integrator, Arbitrary Limits.
+C               Computes the definite integral of a piecewise cubic
+C               Hermite function over an arbitrary finite interval.
+C
+C   3. Check for monotonicity.
+C
+C         PCHMC -- Piecewise Cubic Hermite Monotonicity Checker.
+C
+C   4. Internal routines.
+C
+C         CHFIV -- Cubic Hermite Function Integral Evaluator.
+C               (Real function called by PCHIA.)
+C
+C         CHFMC -- Cubic Hermite Function Monotonicity Checker.
+C               (Integer function called by PCHMC.)
+C
+C         PCHCE -- PCHIC End Derivative Setter.
+C               (Called by PCHIC.)
+C
+C         PCHCI -- PCHIC Initial Derivative Setter.
+C               (Called by PCHIC.)
+C
+C         PCHCS -- PCHIC Monotonicity Switch Derivative Setter.
+C               (Called by PCHIC.)
+C
+C         PCHDF -- PCHIP Finite Difference Formula.
+C               (Real function called by PCHCE and PCHSP.)
+C
+C         PCHST -- PCHIP Sign Testing Routine.
+C               (Real function called by various PCHIP routines.)
+C
+C         PCHSW -- PCHCS Switch Excursion Adjuster.
+C               (Called by PCHCS.)
+C
+C   The calling sequences for these routines are described in the
+C   prologues of the respective routines.
+C
+C
+C      To facilitate two-dimensional applications, the representation
+C   of a PCH function throughout the package includes INCFD, the in-
+C   crement between successive elements in the F- and D-arrays.  For
+C   "normal" usage INCFD=1, and F and D are one-dimensional arrays.
+C   one would call PCHxx (where "xx" is "IM", "IC", or "SP") with
+C
+C              N, X, F, D, 1  .
+C
+C   Suppose, however, that one has data on a rectangular mesh,
+C
+C         F2D(I,J) = value at (X(I), Y(J)),  I=1(1)NX,
+C                                            J=1(1)NY.
+C   Assume the following dimensions:
+C
+C         REAL  X(NXMAX), Y(NYMAX)
+C         REAL  F2D(NXMAX,NYMAX), FX(NXMAX,NYMAX), FY(NXMAX,NYMAX)
+C
+C   where  2.LE.NX.LE.NXMAX AND 2.LE.NY.LE.NYMAX .  To interpolate
+C   in X along the line  Y = Y(J), call PCHxx with
+C
+C              NX, X, F2D(1,J), FX(1,J), 1  .
+C
+C   To interpolate along the line X = X(I), call PCHxx with
+C
+C              NY, Y, F2D(I,1), FY(I,1), MXMAX  .
+C
+C   (This example assumes the usual columnwise storage of 2-D arrays
+C    in Fortran.)
+C
+C
+C
+C                              References
+C
+C
+C     [1] F.N.Fritsch and R.E.Carlson, "Monotone Piecewise Cubic Inter-
+C         polation," SIAM J. Numer. Anal. 17, 2 (April 1980), 238-246.
+C
+C     [2] F.N.Fritsch and J.Butland, "A Method for Constructing Local
+C         Monotone Piecewise Cubic Interpolants," SIAM J. Sci. Stat.
+C         Comput. 5,2 (June 1984), 300-304.
+C
+C     [3] F.N.Fritsch, "Piecewise Cubic Hermite Interpolation Package,"
+C         LLNL report UCRL-87285 (July 1982).  [Poster presented at the
+C         SIAM 30th Anniversary Meeting, 19-23 July 1982.]
+C
+C     [4] Carl de Boor, A Practical Guide to Splines, Springer-Verlag
+C         (New York, 1978).  [esp. Chapter IV, pp. 49-62.]
+C***REFERENCES  1. F.N.FRITSCH AND R.E.CARLSON, 'MONOTONE PIECEWISE
+C                 CUBIC INTERPOLATION,' SIAM J.NUMER.ANAL. 17, 2 (APRIL
+C                 1980), 238-246.
+C               2. F.N.FRITSCH AND J.BUTLAND, 'A METHOD FOR CONSTRUCTING
+C                 LOCAL MONOTONE PIECEWISE CUBIC INTERPOLANTS,' SIAM
+C                 J.SCI.STAT.COMPUT.5,2 (JUNE 1984), 300-304.
+C               3. CARL DE BOOR, A PRACTICAL GUIDE TO SPLINES, SPRINGER-
+C                 VERLAG (NEW YORK, 1978).  (ESP. CHAPTER IV, PP.49-62.)
+C***ROUTINES CALLED  (NONE)
+C***END PROLOGUE  PCHDOC
+C-----------------------------------------------------------------------
+C
+C     THIS IS A DUMMY SUBROUTINE, AND SHOULD NEVER BE CALLED.
+C
+C***FIRST EXECUTABLE STATEMENT  PCHDOC
+      RETURN
+C------------- LAST LINE OF PCHDOC FOLLOWS -----------------------------
+      END

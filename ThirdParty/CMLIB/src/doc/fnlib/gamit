@@ -1,0 +1,38 @@
+ 
+      FUNCTION GAMIT(A,X)
+C***BEGIN PROLOGUE  GAMIT
+C***DATE WRITTEN   770701   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C7E
+C***KEYWORDS  GAMMA FUNCTION,INCOMPLETE GAMMA FUNCTION,SPECIAL FUNCTION,
+C             TRICOMI-S
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes Tricomi's form of the incomplete Gamma function.
+C***DESCRIPTION
+C
+C Evaluate Tricomi's incomplete gamma function defined by
+C
+C GAMIT = X**(-A)/GAMMA(A) * integral T = 0 to X of EXP(-T) * T**(A-1.)
+C
+C for A .GT. 0.0 and by analytic
+C continuation for A .LE. 0.0.  GAMMA(X) is the complete
+C gamma function of X.  GAMIT is evaluated for arbitrary real values of
+C A and for non-negative values of X (even though GAMIT is defined for
+C X .LT. 0.0), except that for X = 0 and A .LE. 0.0, GAMIT is infinite,
+C a fatal error.
+C
+C      A slight deterioration of 2 or 3 digits accuracy will occur when
+C GAMIT is very large or very small in absolute value, because log-
+C arithmic variables are used.  Also, if the parameter A is very close
+C to a negative integer (but not a negative integer), there is a loss
+C of accuracy, which is reported if the result is less than half
+C machine precision.
+C
+C Ref. -- W. Gautschi, An Evaluation Procedure for Incomplete Gamma
+C Functions, ACM Trans. Math. Software, Vol. 5, No. 4, December 1979.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  ALGAMS,ALNGAM,GAMR,R1MACH,R9GMIT,R9LGIC,R9LGIT,
+C                    XERCLR,XERROR
+C***END PROLOGUE  GAMIT
+ 
+ 

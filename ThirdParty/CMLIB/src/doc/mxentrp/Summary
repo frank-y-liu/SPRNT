@@ -1,0 +1,23 @@
+ 
+                  ****************************************
+                            M A X   E N T R O P Y
+                  ****************************************
+ 
+ 
+     Portable Fortran subprograms for computing maximum extropy spectra
+     estimates of time series data.
+ 
+     Current contents are ...
+ 
+     BURG.....computes the coefficients of a finite length causal
+              forward or backward prediction filter, and uses both the
+              forward and backward predictions in a symmetric manner to
+              generate the Maximum Entropy Spectrum by means of a
+              Toeplitz  recursion.  (This program was copied from the
+              book "Deconvolution of  Geophysical Time Series in the
+              Exploration for Oil and  Natural Gas", by Manuel T. Silvia
+              and Enders A. Robinson,  Elsevier Scientific Publishing
+              Company, New York, 1979.)
+ 
+ 
+ 

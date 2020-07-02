@@ -1,0 +1,62 @@
+ 
+      SUBROUTINE QZHES(NM,N,A,B,MATZ,Z)
+C***BEGIN PROLOGUE  QZHES
+C***DATE WRITTEN   760101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  D4C1B3
+C***KEYWORDS  EIGENVALUES,EIGENVECTORS,EISPACK
+C***AUTHOR  SMITH, B. T., ET AL.
+C***PURPOSE  The first step of the QZ algorithm for solving generalized
+C            matrix eigenproblems. Accepts a pair of real general
+C            matrices and reduces one of them to upper Hessenberg
+C            and the other to upper triangular form using orthogo
+C            transformations. Usually followed by QZIT, QZVAL, QZ
+C***DESCRIPTION
+C
+C     This subroutine is the first step of the QZ algorithm
+C     for solving generalized matrix eigenvalue problems,
+C     SIAM J. NUMER. ANAL. 10, 241-256(1973) by MOLER and STEWART.
+C
+C     This subroutine accepts a pair of REAL GENERAL matrices and
+C     reduces one of them to upper Hessenberg form and the other
+C     to upper triangular form using orthogonal transformations.
+C     It is usually followed by  QZIT,  QZVAL  and, possibly,  QZVEC.
+C
+C     On Input
+C
+C        NM must be set to the row dimension of two-dimensional
+C          array parameters as declared in the calling program
+C          dimension statement.
+C
+C        N is the order of the matrices.
+C
+C        A contains a real general matrix.
+C
+C        B contains a real general matrix.
+C
+C        MATZ should be set to .TRUE. if the right hand transformations
+C          are to be accumulated for later use in computing
+C          eigenvectors, and to .FALSE. otherwise.
+C
+C     On Output
+C
+C        A has been reduced to upper Hessenberg form.  The elements
+C          below the first subdiagonal have been set to zero.
+C
+C        B has been reduced to upper triangular form.  The elements
+C          below the main diagonal have been set to zero.
+C
+C        Z contains the product of the right hand transformations if
+C          MATZ has been set to .TRUE.  Otherwise, Z is not referenced.
+C
+C     Questions and comments should be directed to B. S. Garbow,
+C     APPLIED MATHEMATICS DIVISION, ARGONNE NATIONAL LABORATORY
+C     ------------------------------------------------------------------
+C***REFERENCES  B. T. SMITH, J. M. BOYLE, J. J. DONGARRA, B. S. GARBOW,
+C                 Y. IKEBE, V. C. KLEMA, C. B. MOLER, *MATRIX EIGEN-
+C                 SYSTEM ROUTINES - EISPACK GUIDE*, SPRINGER-VERLAG,
+C                 1976.
+C***ROUTINES CALLED  (NONE)
+C***END PROLOGUE  QZHES
+ 
+ 

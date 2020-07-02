@@ -1,0 +1,43 @@
+      DOUBLE PRECISION FUNCTION D9LGIC(A,X,ALX)
+C***BEGIN PROLOGUE  D9LGIC
+C***DATE WRITTEN   770701   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C7E
+C***KEYWORDS  DOUBLE PRECISION,GAMMA,INCOMPLETE GAMMA FUNCTION,
+C             LOGARITHM INCOMPLETE GAMMA FUNCTION,SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the d.p. log incomplete Gamma function for large X
+C            and for A .LE. X.
+C***DESCRIPTION
+C
+C Compute the log complementary incomplete gamma function for large X
+C and for A .LE. X.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D1MACH,XERROR
+C***END PROLOGUE  D9LGIC
+      DOUBLE PRECISION A, X, ALX, EPS, FK, P, R, S, T, XMA, XPA, D1MACH
+      DATA EPS / 0.D0 /
+C***FIRST EXECUTABLE STATEMENT  D9LGIC
+      IF (EPS.EQ.0.D0) EPS = 0.5D0*D1MACH(3)
+C
+      XPA = X + 1.0D0 - A
+      XMA = X - 1.D0 - A
+C
+      R = 0.D0
+      P = 1.D0
+      S = P
+      DO 10 K=1,300
+        FK = K
+        T = FK*(A-FK)*(1.D0+R)
+        R = -T/((XMA+2.D0*FK)*(XPA+2.D0*FK)+T)
+        P = R*P
+        S = S + P
+        IF (DABS(P).LT.EPS*S) GO TO 20
+ 10   CONTINUE
+      CALL XERROR ( 'D9LGIC  NO CONVERGENCE IN 300 TERMS OF CONTINUED FR
+     1ACTION', 57, 1, 2)
+C
+ 20   D9LGIC = A*ALX - X + DLOG(S/XPA)
+C
+      RETURN
+      END

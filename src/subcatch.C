@@ -525,8 +525,8 @@ void Subcatchment::GetDiffs(double &qdiff, double &adiff, double &tdiff) {
 
 // calculate froude number, also returns the ideal step size based on the average of 
 // flow velocity and celerity
-double Subcatchment::CalFroude() {
-  int j, cntr, bl;
+double Subcatchment::CalFroude(char **NAMES) {
+  int j, cntr, bl, al;
   const int onei = 1;
   const double sqg = OPT.SqrtG();
   MasStvEqn *ME;
@@ -544,7 +544,13 @@ double Subcatchment::CalFroude() {
   for (j=0; j<_num_nodes; j++ ) _workb[j] = sqrt(_workb[j]);
   FORTRAN(dscal)(&_num_nodes, &sqg, &_workb[0], &onei);
   
-  // calculate the froude number
+  _local_min_a = 9999.99;
+  al = -1;
+  for (j=0; j<_num_nodes; j++ ) {
+    if (_X[_NS[j]->AIdx()] < _local_min_a ) { al = j; _local_min_a = _X[_NS[j]->AIdx()];}
+    }
+    
+    // calculate the froude number
   for (j=0; j<_num_nodes; j++) _Froude[j] = _work[2*j]/_workb[j];
 
   // find out the max froude number, and how many of them are super critical, 
@@ -556,8 +562,13 @@ double Subcatchment::CalFroude() {
     if ( _Froude[j] > tiny        ) { bl = j; tiny = _Froude[j]; }
     if ( _Froude[j] > OPT.SuperC()) cntr++;
   }
+
+
   _num_superc = cntr;
   _max_froude = _Froude[bl];
+  _max_froude_node = bl;
+  _max_fr_name = NAMES[_NS[bl]->Id()];
+  _min_a_name = NAMES[_NS[al]->Id()];
 
   // calculate step size, use fudge number in OPT to scale it up
   // we use a heuristic method in place of the Froude number
@@ -830,7 +841,7 @@ void Subcatchment::PrintOnDemand(sptFile F, double tnow, int pstart, int what, c
 
   static int prev_t = pstart-OPT.PrintInterval();
 
-  if ( ! (what & ( PRT_Q | PRT_A | PRT_D | PRT_Z)) ) return;  
+  if ( ! (what & ( PRT_Q | PRT_A | PRT_D | PRT_Z | PRT_FR)) ) return;  
 
   int interval = OPT.PrintInterval();
   int tnowmin = (int)(tnow/60.0);
@@ -844,6 +855,7 @@ void Subcatchment::PrintOnDemand(sptFile F, double tnow, int pstart, int what, c
       if ( what & PRT_D ) sptFprintf(F," depth(m)");
       if ( what & PRT_Z ) sptFprintf(F," surf_elev(m)");
       if ( what & PRT_XY) sptFprintf(F," xy-coordinates");
+      if ( what & PRT_FR) sptFprintf(F," froude_num");
       sptFprintf(F,"\n");
     } else {
       sptFprintf(F,"*** id time(min)");
@@ -852,6 +864,7 @@ void Subcatchment::PrintOnDemand(sptFile F, double tnow, int pstart, int what, c
       if ( what & PRT_D ) sptFprintf(F," depth(ft)");
       if ( what & PRT_Z ) sptFprintf(F," surf_elev(ft)");
       if ( what & PRT_XY) sptFprintf(F," xy-coordinates");
+      if ( what & PRT_FR) sptFprintf(F," froude_num");
       sptFprintf(F,"\n");
     }
     // print the rest
@@ -863,6 +876,7 @@ void Subcatchment::PrintOnDemand(sptFile F, double tnow, int pstart, int what, c
       if ( what & PRT_D) sptFprintf(F, PRT_FMT, _Depth[jj] * fd);
       if ( what & PRT_Z) sptFprintf(F, PRT_FMT, _Elevation[jj] * fd);
       if ( what & PRT_XY) sptFprintf(F, PRT_XY_FMT, _NS[jj]->X(), _NS[jj]->Y());
+      if ( what & PRT_FR) sptFprintf(F, PRT_FMT, _NS[jj]->GetFroude(_X[_NS[jj]->QIdx()] * fq, _X[_NS[jj]->AIdx()] * fa));
       sptFprintf(F,"\n");
     }
   } else {  // we only print at the frequency being asked for
@@ -878,6 +892,7 @@ void Subcatchment::PrintOnDemand(sptFile F, double tnow, int pstart, int what, c
 	if ( what & PRT_D ) sptFprintf(F," depth(m)");
 	if ( what & PRT_Z ) sptFprintf(F," surf_elev(m)");
 	if ( what & PRT_XY) sptFprintf(F," xy-coordinates");
+  if ( what & PRT_FR) sptFprintf(F," froude_num");
 	sptFprintf(F,"\n");
       } else {
 	sptFprintf(F,"*** id time(min)");
@@ -886,7 +901,7 @@ void Subcatchment::PrintOnDemand(sptFile F, double tnow, int pstart, int what, c
 	if ( what & PRT_D ) sptFprintf(F," depth(ft)");
 	if ( what & PRT_Z ) sptFprintf(F," surf_elev(ft)");
 	if ( what & PRT_XY) sptFprintf(F," xy-coordinates");
-
+  if ( what & PRT_FR) sptFprintf(F," froude_num");
 	sptFprintf(F,"\n");
       }
 
@@ -898,6 +913,7 @@ void Subcatchment::PrintOnDemand(sptFile F, double tnow, int pstart, int what, c
 	if ( what & PRT_D) sptFprintf(F, PRT_FMT, _Depth[jj] * fd);
 	if ( what & PRT_Z) sptFprintf(F, PRT_FMT, _Elevation[jj] * fd);
 	if ( what & PRT_XY) sptFprintf(F, PRT_XY_FMT, _NS[jj]->X(), _NS[jj]->Y());
+  if ( what & PRT_FR) sptFprintf(F, PRT_FMT, _NS[jj]->GetFroude(_X[_NS[jj]->QIdx()] * fq, _X[_NS[jj]->AIdx()] * fa));
 	sptFprintf(F,"\n");
       }
       // move print time stamp forward
@@ -912,6 +928,7 @@ void Subcatchment::PrintOnDemand(sptFile F, double tnow, int pstart, int what, c
 	  if ( what & PRT_D ) sptFprintf(F," depth(m)");
 	  if ( what & PRT_Z ) sptFprintf(F," surf_elev(m)");
 	  if ( what & PRT_XY) sptFprintf(F," xy-coordinates");
+    if ( what & PRT_FR) sptFprintf(F," froude_num");
 	  sptFprintf(F,"\n");
 	} else {
 	  sptFprintf(F,"*** id time(min)");
@@ -920,6 +937,7 @@ void Subcatchment::PrintOnDemand(sptFile F, double tnow, int pstart, int what, c
 	  if ( what & PRT_D ) sptFprintf(F," depth(ft)");
 	  if ( what & PRT_Z ) sptFprintf(F," surf_elev(ft)");
 	  if ( what & PRT_XY) sptFprintf(F," xy-coordinates");
+    if ( what & PRT_FR) sptFprintf(F," froude_num");
 	  sptFprintf(F,"\n");
 	}
 	for (int jj=0; jj<_num_nodes; jj++) {
@@ -939,8 +957,10 @@ void Subcatchment::PrintOnDemand(sptFile F, double tnow, int pstart, int what, c
 	  if ( what & PRT_Z) sptFprintf(F, PRT_FMT, lin_interp(
 							   _tm1, _NS[jj]->GetElevation(_Xtm1[_NS[jj]->AIdx()]), 
 							   _t,_Elevation[jj], tprt*60.0) * fd);
-
 	  if ( what & PRT_XY) sptFprintf(F, PRT_XY_FMT, _NS[jj]->X(), _NS[jj]->Y());
+    if ( what & PRT_FR) sptFprintf(F, PRT_FMT, lin_interp(
+                  _tm1, _NS[jj]->GetFroude(_Xtm1[_NS[jj]->QIdx()] * fq, _Xtm1[_NS[jj]->AIdx()] * fa),
+                  _t, _NS[jj]->GetFroude(_X[_NS[jj]->QIdx()] * fq, _X[_NS[jj]->AIdx()] * fa), tprt*60));
 	  sptFprintf(F,"\n");
 	}
 	// move print time stamp forward
@@ -1371,7 +1391,7 @@ int Subcatchment::UnsteadySolve(double final_t, int jac_num, int max_iter, doubl
   while ( 1 ) {
     
     /* determine the time step we should use */
-    optdt = CalFroude();         // optimal time step based on Froude #
+    optdt = CalFroude(NAMES);         // optimal time step based on Froude #
 
     if ( first_start ) { // case1: first time enter restart, use previous 
       dtused = _dt;
@@ -1427,8 +1447,8 @@ int Subcatchment::UnsteadySolve(double final_t, int jac_num, int max_iter, doubl
     if (OPT.DebugLevel() >= 1 ) {
       int nbk = CheckBankFull();
       int nmn = CheckMinimalA();
-      fprintf(stdout,"  U time=%.4e (%6.2f out of %5.2f hrs), num_iter=%2d, falter=%d, dt=%.2e, n_SuperCr=%3d, max_Fr=%5.2f, n_bk=%3d, n_mn=%3d\n", 
-	      _t, _t/3600, tf_hr, niter_here, negcounter, dtused, GetNumSuperC(), GetMaxFroude(), nbk, nmn );
+      fprintf(stdout,"  U time=%.4e (%6.2f out of %5.2f hrs), num_iter=%2d, falter=%d, dt=%.2e, n_SC=%3d, maxF=%5.2f, maxF_at %s, MinA=%.3f, MinA_at %s, n_bk=%3d, n_mn=%3d\n", 
+	      _t, _t/3600, tf_hr, niter_here, negcounter, dtused, GetNumSuperC(), GetMaxFroude(), GetMaxFrName(), GetLocalMinA(), GetMinAName(), nbk, nmn );
     }
 
     // compute depth and elevation when needed
@@ -1488,7 +1508,7 @@ int Subcatchment::NonLinearStep(double t, double dt, int jac_num, int max_iter, 
   for (cnt=0; cnt < max_iter; cnt++) {
 
     if (cnt < jac_num)  Evaluate(t, dt);
-    else                EvaluateRHS(t, dt);
+    else                Evaluate(t, dt);//EvaluateRHS(t, dt);
 
 
     l2norm = this->GetNorm();
@@ -1571,5 +1591,6 @@ int Subcatchment::ComputeDepthAndElevation(int flags) {
 
   return 0;
 }
+
 
 // End

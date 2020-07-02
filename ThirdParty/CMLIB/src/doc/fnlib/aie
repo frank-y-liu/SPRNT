@@ -1,0 +1,37 @@
+ 
+      FUNCTION AIE(X)
+C***BEGIN PROLOGUE  AIE
+C***DATE WRITTEN   770701   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C10D
+C***KEYWORDS  AIRY FUNCTION,EXPONENTIALLY SCALED,SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the exponentialy scaled Airy function.
+C***DESCRIPTION
+C
+C AIE(X) computes the exponentially scaled Airy function for
+C non-negative X.  It evaluates AI(X) for X .LE. 0.0 and
+C EXP(ZETA)*AI(X) for X .GE. 0.0 where ZETA = (2.0/3.0)*(X**1.5).
+C
+C Series for AIF        on the interval -1.00000D+00 to  1.00000D+00
+C                                        with weighted error   1.09E-19
+C                                         log weighted error  18.96
+C                               significant figures required  17.76
+C                                    decimal places required  19.44
+C
+C Series for AIG        on the interval -1.00000D+00 to  1.00000D+00
+C                                        with weighted error   1.51E-17
+C                                         log weighted error  16.82
+C                               significant figures required  15.19
+C                                    decimal places required  17.27
+C
+C Series for AIP        on the interval  0.          to  1.00000D+00
+C                                        with weighted error   5.10E-17
+C                                         log weighted error  16.29
+C                               significant figures required  14.41
+C                                    decimal places required  17.06
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  CSEVL,INITS,R1MACH,R9AIMP
+C***END PROLOGUE  AIE
+ 
+ 

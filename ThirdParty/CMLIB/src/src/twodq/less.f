@@ -1,0 +1,6 @@
+      LOGICAL FUNCTION LESS(A,B,NWDS)
+      INTEGER NWDS
+      REAL A(NWDS), B(NWDS)
+      LESS= A(1) .LT. B(1)
+      RETURN
+      END

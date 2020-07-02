@@ -1,0 +1,21 @@
+ 
+      COMPLEX FUNCTION CLNGAM(ZIN)
+C***BEGIN PROLOGUE  CLNGAM
+C***DATE WRITTEN   780401   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C7A
+C***KEYWORDS  ABSOLUTE VALUE,COMPLETE GAMMA FUNCTION,COMPLEX,
+C             GAMMA FUNCTION,LOGARITHM,SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  CLNGAM computes the natural log of the complex valued Gamma
+C            function at ZIN, where ZIN is a complex number.
+C***DESCRIPTION
+C
+C CLNGAM computes the natural log of the complex valued gamma function
+C at ZIN, where ZIN is a complex number.  This is a preliminary version,
+C which is not accurate.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  C9LGMC,CARG,CLNREL,R1MACH,XERROR
+C***END PROLOGUE  CLNGAM
+ 
+ 

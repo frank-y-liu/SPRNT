@@ -1,0 +1,314 @@
+ 
+      SUBROUTINE HSTPLR(A,B,M,MBDCND,BDA,BDB,C,D,N,NBDCND,BDC,BDD,
+     1   ELMBDA,F,IDIMF,PERTRB,IERROR,W)
+C***BEGIN PROLOGUE  HSTPLR
+C***DATE WRITTEN   801001   (YYMMDD)
+C***REVISION DATE  830415   (YYMMDD)
+C***CATEGORY NO.  I2B1A1A
+C***KEYWORDS  ELLIPTIC,FISHPACK,HELMHOLTZ,PDE,POLAR
+C***AUTHOR  ADAMS, J., (NCAR)
+C           SWARZTRAUBER, P., (NCAR)
+C           SWEET, R., (NCAR)
+C***PURPOSE  HSTPLR solves the standard five-point finite difference
+C            approximation on a staggered grid to the Helmholtz equation
+C            in polar coordinates.
+C***DESCRIPTION
+C
+C      HSTPLR solves the standard five-point finite difference
+C      approximation on a staggered grid to the Helmholtz equation in
+C      polar coordinates
+C
+C      (1/R)(d/DR)(R(dU/DR)) + (1/R**2)(d/dTHETA)(dU/dTHETA)
+C
+C                      + LAMBDA*U = F(R,THETA)
+C
+C     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+C
+C     * * * * * * * *    Parameter Description     * * * * * * * * * *
+C
+C             * * * * * *   On Input    * * * * * *
+C
+C    A,B
+C      The range of R, i.e. A .LE. R .LE. B.  A must be less than B and
+C      A must be non-negative.
+C
+C    M
+C      The number of grid points in the interval (A,B).  The grid points
+C      in the R-direction are given by R(I) = A + (I-0.5)DR for
+C      I=1,2,...,M where DR =(B-A)/M.  M must be greater than 2.
+C
+C    MBDCND
+C      Indicates the type of boundary conditions at R = A and R = B.
+C
+C      = 1  If the solution is specified at R = A and R = B.
+C
+C      = 2  If the solution is specified at R = A and the derivative
+C           of the solution with respect to R is specified at R = B.
+C           (see note 1 below)
+C
+C      = 3  If the derivative of the solution with respect to R is
+C           specified at R = A (see note 2 below) and R = B.
+C
+C      = 4  If the derivative of the solution with respect to R is
+C           specified at R = A (see note 2 below) and the solution is
+C           specified at R = B.
+C
+C      = 5  If the solution is unspecified at R = A = 0 and the solution
+C           is specified at R = B.
+C
+C      = 6  If the solution is unspecified at R = A = 0 and the
+C           derivative of the solution with respect to R is specified at
+C           R = B.
+C
+C      NOTE 1:  If A = 0, MBDCND = 2, and NBDCND = 0 or 3, the system of
+C               equations to be solved is singular.  The unique solution
+C               is determined by extrapolation to the specification of
+C               U(0,THETA(1)).  But in this case the right side of the
+C               system will be perturbed by the constant PERTRB.
+C
+C      NOTE 2:  If A = 0, do not use MBDCND = 3 or 4, but instead use
+C               MBDCND = 1,2,5, or 6.
+C
+C    BDA
+C      A one-dimensional array of length N that specifies the boundary
+C      values (if any) of the solution at R = A.  When MBDCND = 1 or 2,
+C
+C               BDA(J) = U(A,THETA(J)) ,          J=1,2,...,N.
+C
+C      When MBDCND = 3 or 4,
+C
+C               BDA(J) = (d/dR)U(A,THETA(J)) ,    J=1,2,...,N.
+C
+C      When MBDCND = 5 or 6, BDA is a dummy variable.
+C
+C    BDB
+C      A one-dimensional array of length N that specifies the boundary
+C      values of the solution at R = B.  When MBDCND = 1,4, or 5,
+C
+C               BDB(J) = U(B,THETA(J)) ,          J=1,2,...,N.
+C
+C      When MBDCND = 2,3, or 6,
+C
+C               BDB(J) = (d/dR)U(B,THETA(J)) ,    J=1,2,...,N.
+C
+C    C,D
+C      The range of THETA, i.e. C .LE. THETA .LE. D.  C must be less
+C      than D.
+C
+C    N
+C      The number of unknowns in the interval (C,D).  The unknowns in
+C      the THETA-direction are given by THETA(J) = C + (J-0.5)DT,
+C      J=1,2,...,N, where DT = (D-C)/N.  N must be greater than 2.
+C
+C    NBDCND
+C      Indicates the type of boundary conditions at THETA = C
+C      and THETA = D.
+C
+C      = 0  If the solution is periodic in THETA, i.e.
+C           U(I,J) = U(I,N+J).
+C
+C      = 1  If the solution is specified at THETA = C and THETA = D
+C           (see note below).
+C
+C      = 2  If the solution is specified at THETA = C and the derivative
+C           of the solution with respect to THETA is specified at
+C           THETA = D (see note below).
+C
+C      = 3  If the derivative of the solution with respect to THETA is
+C           specified at THETA = C and THETA = D.
+C
+C      = 4  If the derivative of the solution with respect to THETA is
+C           specified at THETA = C and the solution is specified at
+C           THETA = d (see note below).
+C
+C      NOTE:  When NBDCND = 1, 2, or 4, do not use MBDCND = 5 or 6 (the
+C      former indicates that the solution is specified at R =  0; the
+C      latter indicates the solution is unspecified at R = 0).  Use
+C      instead MBDCND = 1 or 2.
+C
+C    BDC
+C      A one dimensional array of length M that specifies the boundary
+C      values of the solution at THETA = C.   When NBDCND = 1 or 2,
+C
+C               BDC(I) = U(R(I),C) ,              I=1,2,...,M.
+C
+C      When NBDCND = 3 or 4,
+C
+C               BDC(I) = (d/dTHETA)U(R(I),C),     I=1,2,...,M.
+C
+C      When NBDCND = 0, BDC is a dummy variable.
+C
+C    BDD
+C      A one-dimensional array of length M that specifies the boundary
+C      values of the solution at THETA = D.  When NBDCND = 1 or 4,
+C
+C               BDD(I) = U(R(I),D) ,              I=1,2,...,M.
+C
+C      When NBDCND = 2 or 3,
+C
+C               BDD(I) = (d/dTHETA)U(R(I),D) ,    I=1,2,...,M.
+C
+C      When NBDCND = 0, BDD is a dummy variable.
+C
+C    ELMBDA
+C      The constant LAMBDA in the Helmholtz equation.  If LAMBDA is
+C      greater than 0, a solution may not exist.  However, HSTPLR will
+C      attempt to find a solution.
+C
+C    F
+C      A two-dimensional array that specifies the values of the right
+C      side of the Helmholtz equation.  For I=1,2,...,M and J=1,2,...,N
+C
+C               F(I,J) = F(R(I),THETA(J)) .
+C
+C      F must be dimensioned at least M X N.
+C
+C    IDIMF
+C      The row (or first) dimension of the array F as it appears in the
+C      program calling HSTPLR.  This parameter is used to specify the
+C      variable dimension of F.  IDIMF must be at least M.
+C
+C    W
+C      A one-dimensional array that must be provided by the user for
+C      work space.  W may require up to 13M + 4N + M*INT(log2(N))
+C      locations.  The actual number of locations used is computed by
+C      HSTPLR and is returned in the location W(1).
+C
+C
+C             * * * * * *   On Output   * * * * * *
+C
+C    F
+C      Contains the solution U(I,J) of the finite difference
+C      approximation for the grid point (R(I),THETA(J)) for
+C      I=1,2,...,M, J=1,2,...,N.
+C
+C    PERTRB
+C      If a combination of periodic, derivative, or unspecified
+C      boundary conditions is specified for a Poisson equation
+C      (LAMBDA = 0), a solution may not exist.  PERTRB is a con-
+C      stant, calculated and subtracted from F, which ensures
+C      that a solution exists.  HSTPLR then computes this
+C      solution, which is a least squares solution to the
+C      original approximation.  This solution plus any constant is also
+C      a solution; hence, the solution is not unique.  The value of
+C      PERTRB should be small compared to the right side F.
+C      Otherwise, a solution is obtained to an essentially different
+C      problem.  This comparison should always be made to insure that
+C      a meaningful solution has been obtained.
+C
+C    IERROR
+C      An error flag that indicates invalid input parameters.
+C      Except for numbers 0 and 11, a solution is not attempted.
+C
+C      =  0  No error
+C
+C      =  1  A .LT. 0
+C
+C      =  2  A .GE. B
+C
+C      =  3  MBDCND .LT. 1 or MBDCND .GT. 6
+C
+C      =  4  C .GE. D
+C
+C      =  5  N .LE. 2
+C
+C      =  6  NBDCND .LT. 0 or NBDCND .GT. 4
+C
+C      =  7  A = 0 and MBDCND = 3 or 4
+C
+C      =  8  A .GT. 0 and MBDCND .GE. 5
+C
+C      =  9  MBDCND .GE. 5 and NBDCND .NE. 0 or 3
+C
+C      = 10  IDIMF .LT. M
+C
+C      = 11  LAMBDA .GT. 0
+C
+C      = 12  M .LE. 2
+C
+C      Since this is the only means of indicating a possibly
+C      incorrect call to HSTPLR, the user should test IERROR after
+C      the call.
+C
+C    W
+C      W(1) contains the required length of W.
+C***LONG DESCRIPTION
+C
+C     * * * * * * *   Program Specifications    * * * * * * * * * * * *
+C
+C     Dimension of   BDA(N),BDB(N),BDC(M),BDD(M),F(IDIMF,N),
+C     Arguments      W(see ARGUMENT LIST)
+C
+C     Latest         June 1, 1977
+C     Revision
+C
+C     Subprograms    HSTPLR,POISTG,POSTG2,GENBUN,POISD2,POISN2,POISP2,
+C     Required       COSGEN,MERGE,TRIX,TRI3,PIMACH
+C
+C     Special        NONE
+C     Conditions
+C
+C     Common         NONE
+C     Blocks
+C
+C     I/O            NONE
+C
+C     Precision      Single
+C
+C     Specialist     Roland Sweet
+C
+C     Language       FORTRAN
+C
+C     History        Written by Roland Sweet at NCAR in February, 1977
+C
+C     Algorithm      This subroutine defines the finite-difference
+C                    equations, incorporates boundary data, adjusts the
+C                    right side when the system is singular and calls
+C                    either POISTG or GENBUN which solves the linear
+C                    system of equations.
+C
+C     Space          8265(decimal) = 20111(octal) LOCATIONS ON THE
+C     Required       NCAR Control Data 7600
+C
+C     Timing and        The execution time T on the NCAR Control Data
+C     Accuracy       7600 for subroutine HSTPLR is roughly proportional
+C                    to M*N*log2(N).  Some typical values are listed in
+C                    the table below.
+C                       The solution process employed results in a loss
+C                    of no more than four significant digits for N and M
+C                    as large as 64.  More detailed information about
+C                    accuracy can be found in the documentation for
+C                    subroutine POISTG which is the routine that
+C                    actually solves the finite difference equations.
+C
+C
+C                       M(=N)    MBDCND    NBDCND    T(MSECS)
+C                       -----    ------    ------    --------
+C
+C                        32       1-6       1-4         56
+C                        64       1-6       1-4        230
+C
+C     Portability    American National Standards Institute Fortran.
+C                    All machine dependent constants are located in the
+C                    function PIMACH.
+C
+C     Required       COS
+C     Resident
+C     Routines
+C
+C     Reference      Schumann, U. and R. Sweet,'A Direct Method For
+C                    The Solution Of Poisson's Equation With Neumann
+C                    Boundary Conditions On A Staggered Grid of
+C                    Arbitrary Size,' J. Comp. Phys. 20(1976),
+C                    pp. 171-182.
+C
+C     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+C***REFERENCES  SCHUMANN, U. AND R. SWEET,'A DIRECT METHOD FOR
+C                 THE SOLUTION OF POISSON'S EQUATION WITH NEUMANN
+C                 BOUNDARY CONDITIONS ON A STAGGERED GRID OF
+C                 ARBITRARY SIZE,' J. COMP. PHYS. 20(1976),
+C                 PP. 171-182.
+C***ROUTINES CALLED  GENBUN,POISTG
+C***END PROLOGUE  HSTPLR
+ 
+ 

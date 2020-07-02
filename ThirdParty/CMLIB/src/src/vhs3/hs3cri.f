@@ -1,0 +1,81 @@
+ 
+      SUBROUTINE HS3CRI (XS,XF,L,LBDCND,YS,YF,M,MBDCND,ZS,ZF,N,NBDCND,
+     1                   ELMBDA,LDIMF,MDIMF,IERROR,W)
+C
+C     PACKAGE HS3CRT, VERSION 1, AUGUST 1985
+C
+      DIMENSION W(*)
+C
+C     CHECK FOR INVALID PARAMETERS.
+C
+      IERROR = 0
+      IF (XS.GT.XF) IERROR=1
+      IF (L.LT.3) IERROR=2
+      IF (LBDCND.LT.0 .OR. LBDCND.GT.4) IERROR=3
+      IF (YS.GT.YF) IERROR=4
+      IF (M.LT.3) IERROR=5
+      IF (MBDCND.LT.0 .OR. MBDCND.GT.4) IERROR=6
+      IF (ZS.GT.ZF) IERROR=7
+      IF (N.LT.3) IERROR=8
+      IF (NBDCND.LT.0 .OR. NBDCND.GT.4) IERROR=9
+      IF (LDIMF.LT.L) IERROR=11
+      IF (MDIMF.LT.M) IERROR=12
+      IF (IERROR.NE.0) RETURN
+      IF (ELMBDA.GT.0.) IERROR=10
+      DELTAX = (XF-XS)/L
+      DELTAY = (YF-YS)/M
+      DELTAZ = (ZF-ZS)/N
+      C1=1./DELTAY**2
+      C2=1./DELTAZ**2
+      LP = LBDCND+1
+      MP = MBDCND+1
+      NP = NBDCND+1
+      LPEROD=1
+      IF (LBDCND.EQ.0) LPEROD=0
+C
+C     SAVE PARAMETERS FOR HS3CRT IN WORK ARRAY W.
+C
+      W(1)=DELTAX
+      W(2)=L
+      W(3)=LP
+      W(4)=DELTAY
+      W(5)=M
+      W(6)=MP
+      W(7)=DELTAZ
+      W(8)=N
+      W(9)=NP
+      W(10)=ELMBDA
+C
+C     DEFINE THE A,B,C COEFFICIENTS IN W-ARRAY.
+C
+      IA = 11
+      IB = IA+L
+      IC = IB+L
+      IW = IC+L
+      S = 1./DELTAX**2
+      ST2 = 2.*S
+      DO 101 I=0,L-1
+         W(IA+I) = S
+         W(IB+I) = -ST2+ELMBDA
+         W(IC+I) = S
+  101 CONTINUE
+      GO TO (111,102,102,104,104),LP
+  102 W(IB)= W(IB)-W(IA)
+      GO TO 106
+  104 W(IB) = W(IB)+W(IA)
+  106 GO TO (111,107,109,109,107),LP
+  107 W(IC-1) = W(IC-1)-W(IB-1)
+      GO TO 111
+  109 W(IC-1) = W(IC-1)+W(IB-1)
+  111 CONTINUE
+      IF (LBDCND .EQ. 0) GO TO 124
+      W(IA) = 0.
+      W(IC+L-1) = 0.
+  124 CONTINUE
+C
+C     INITIALIZE SOLVER ROUTINE PSTG3D.
+C
+      CALL PST3DI(LPEROD,L,MBDCND,M,C1,NBDCND,N,C2,W(IA),W(IB),
+     1            W(IC),LDIMF,MDIMF,IERR1,W(IW))
+      RETURN
+      END

@@ -1,0 +1,18 @@
+ 
+      FUNCTION FAC(N)
+C***BEGIN PROLOGUE  FAC
+C***DATE WRITTEN   770601   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C1
+C***KEYWORDS  FACTORIAL,SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the factorial of N.
+C***DESCRIPTION
+C
+C FAC(N) evaluates the factorial function of N.  FAC is single
+C precision.  N must be an integer between 0 and 25 inclusive.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  GAMLIM,R9LGMC,XERROR
+C***END PROLOGUE  FAC
+ 
+ 

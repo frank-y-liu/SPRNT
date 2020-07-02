@@ -151,6 +151,7 @@ int main(int argc, char** argv) {
   if (OPT.PrintA()==1) print_flag |= PRT_A;
   if (OPT.PrintZ()==1) print_flag |= PRT_Z;
   if (OPT.PrintD()==1) print_flag |= PRT_D;
+  if (OPT.PrintFR()==1) print_flag |= PRT_FR;
 #ifdef HAVE_LIBZ
   sprintf(outname,"%s.output.dat.gz", fname);
 #else

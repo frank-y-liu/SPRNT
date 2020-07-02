@@ -1,0 +1,95 @@
+      SUBROUTINE MIDDLE(M, X, Y, Z, N, P, U, D)
+C
+C<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+C
+C   PURPOSE
+C   -------
+C
+C      AMALGAMATES THREE OBJECTS AND COMPUTED THE DISTANCE ACCORDING TO
+C      THE PARAMETER P
+C
+C   INPUT PARAMETERS
+C   ----------------
+C
+C   M     INTEGER SCALAR (UNCHANGED ON OUTPUT).
+C         THE NUMBER OF OBJECTS.
+C
+C   X, Y, Z  REAL VECTORS DIMENSIONED AT LEAST M (UNCHANGED ON OUTPUT).
+C         THE VARIABLE VALUES FOR THE THREE OBJECTS.
+C
+C   N     INTEGER SCALAR (UNCHANGED ON OUTPUT).
+C         THE SKIP FACTOR BETWEEN DESIRED ELEMENTS.
+C
+C         IF THE AMALGAMATION OF COLUMNS OF A MATRIX IS DESIRED,
+C            SET N = 1.
+C         IF THE AMALGAMATION OF ROWS OF A MATRIX IS DESIRED,
+C            SET N = DIM, WHERE DIM IS THE LEADING DIMENSION OF THE
+C            ARRAY THE ELEMENTS X, Y, AND Z COME FROM.
+C
+C   P     INTEGER SCALAR (UNCHANGED ON OUTPUT).
+C         PARAMETER SPECIFYING TYPE OF AMALGAMATION AND METHOD FOR
+C            DETERMINING DISTANCES BETWEEN CLUSTERS.
+C
+C         P = 2  NEW CLUSTERS WILL BE FORMED BY THE MEANS OF THE
+C                   AMALGAMATED CLUSTERS AND WILL USE EUCLIDEAN
+C                   DISTANCES BETWEEN CLUSTERS
+C         P = 1  NEW CLUSTERS WILL BE FORMED BY THE MEDIANS OF THE
+C                   AMALGAMATED CLUSTERS AND WILL USE THE ABSOLUTE
+C                   LINEAR DISTANCE BETWEEN CLUSTERS.
+C         P = 0  NEW CLUSTERS WILL BE FORMED BY THE MEDIANS OF THE
+C                   AMALGAMATED CLUSTERS AND THE DISTANCE BETWEEN
+C                   CLUSTERS WILL BE THE PROPORTION OF NON-MATCHING
+C                   VALUES.
+C
+C   OUTPUT PARAMETERS
+C   -----------------
+C
+C   U     REAL VECTOR DIMENSIONED AT LEAST M.
+C         THE VALUES FOR THE AMALGAMATED OBJECT.
+C
+C   D     REAL SCALAR.
+C         DISTANCE FROM OBJECTS X, Y, AND Z TO AMALGAMATED OBJECT U.
+C
+C   REFERENCE
+C   ---------
+C
+C     HARTIGAN, J. A. (1975).  CLUSTERING ALGORITHMS, JOHN WILEY &
+C        SONS, INC., NEW YORK.  PAGE 249.
+C
+C<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+C
+      INTEGER P
+      DIMENSION X(*), Y(*), Z(*), U(*)
+C
+C     AMALGAMATE THE OBJECTS
+C
+      DO 10 II=1,M
+         I = (II-1)*N + 1
+         IF(P.NE.2) THEN
+            IF((X(I)-Y(I))*(X(I)-Z(I)).LE.0.) U(I)=X(I)
+            IF((Y(I)-X(I))*(Y(I)-Z(I)).LE.0.) U(I)=Y(I)
+            IF((Z(I)-X(I))*(Z(I)-Y(I)).LE.0.) U(I)=Z(I)
+         ELSE
+            U(I)=(X(I)+Y(I)+Z(I))/3.
+         ENDIF
+   10 CONTINUE
+C
+C     COMPUTE THE DISTANCE
+C
+      D=0.
+      ID=0
+      DO 20 II=1,M
+         I = (II-1)*N + 1
+         ID=ID+1
+         IF(P.NE.0) THEN
+            D = D + (ABS(X(I)-U(I)))**P + (ABS(Y(I)-U(I)))**P +
+     *         (ABS(Z(I)-U(I)))**P
+         ELSE
+            IF(X(I).NE.U(I)) D=D+1.
+            IF(Y(I).NE.U(I)) D=D+1.
+            IF(Z(I).NE.U(I)) D=D+1.
+         ENDIF
+   20 CONTINUE
+      D=D/ID
+      RETURN
+      END

@@ -1,0 +1,101 @@
+ 
+      SUBROUTINE DPSIFN(X,N,KODE,M,ANS,NZ,IERR)
+C***BEGIN PROLOGUE  DPSIFN
+C***DATE WRITTEN   820601   (YYMMDD)
+C***REVISION DATE  851111   (YYMMDD)
+C***CATEGORY NO.  C7C
+C***KEYWORDS  DERIVATIVES OF THE GAMMA FUNCTION,DOUBLE PRECISION,
+C             GAMMA FUNCTION,POLYGAMMA FUNCTION,PSI FUNCTION
+C***AUTHOR  AMOS, DONALD E., SANDIA NATIONAL LABORATORIES
+C***PURPOSE  Compute derivatives of the PSI function.
+C            (18 or fewer digits)
+C***DESCRIPTION
+C
+C       **** Double Precision version of PSIFN ****
+C         The following definitions are used in DPSIFN:
+C
+C      Definition 1
+C         PSI(X) = d/dx (ln(GAMMA(X)), the first derivative of
+C                  the log GAMMA function.
+C      Definition 2
+C                     K   K
+C         PSI(K,X) = d /dx (PSI(X)), the K-th derivative of PSI(X).
+C   ___________________________________________________________________
+C      DPSIFN computes a sequence of SCALED derivatives of
+C      the PSI function; i.e. for fixed X and M it computes
+C      the M-member sequence
+C
+C                    ((-1)**(K+1)/GAMMA(K+1))*PSI(K,X)
+C                       for K = N,...,N+M-1
+C
+C      where PSI(K,X) is as defined above.   For KODE=1, DPSIFN returns
+C      the scaled derivatives as described.  KODE=2 is operative only
+C      when K=0 and in that case DPSIFN returns -PSI(X) + LN(X).  That
+C      is, the logarithmic behavior for large X is removed when KODE=2
+C      and K=0.  When sums or differences of PSI functions are computed
+C      the logarithmic terms can be combined analytically and computed
+C      separately to help retain significant digits.
+C
+C         Note that CALL DPSIFN(X,0,1,1,ANS) results in
+C                   ANS = -PSI(X)
+C
+C     Input      X is DOUBLE PRECISION
+C           X      - Argument, X .gt. 0.0D0
+C           N      - First member of the sequence, 0 .le. N .le. 100
+C                    N=0 gives ANS(1) = -PSI(X)       for KODE=1
+C                                       -PSI(X)+LN(X) for KODE=2
+C           KODE   - Selection parameter
+C                    KODE=1 returns scaled derivatives of the PSI
+C                    function.
+C                    KODE=2 returns scaled derivatives of the PSI
+C                    function EXCEPT when N=0. In this case,
+C                    ANS(1) = -PSI(X) + LN(X) is returned.
+C           M      - Number of members of the sequence, M.ge.1
+C
+C    Output     ANS is DOUBLE PRECISION
+C           ANS    - A vector of length at least M whose first M
+C                    components contain the sequence of derivatives
+C                    scaled according to KODE.
+C           NZ     - Underflow flag
+C                    NZ.eq.0, A normal return
+C                    NZ.ne.0, Underflow, last NZ components of ans are
+C                             set to zero, ANS(M-K+1)=0.0, K=1,...,NZ
+C           IERR   - Error flag
+C                    IERR=0, A normal return, computation completed
+C                    IERR=1, Input error,     no computation
+C                    IERR=2, Overflow,        X too small or N+M-1 too
+C                            large or both
+C                    IERR=3, Error,           N too large. Dimensioned
+C                            array TRMR(NMAX) is not large enough for N
+C
+C         The nominal computational accuracy is the maximum of unit
+C         roundoff (=D1MACH(4)) and 1.0D-18 since critical constants
+C         are given to only 18 digits.
+C
+C         PSIFN is the single precision version of DPSIFN.
+C***LONG DESCRIPTION
+C
+C         The basic method of evaluation is the asymptotic expansion
+C         for large X.ge.XMIN followed by backward recursion on a two
+C         term recursion relation
+C
+C                  W(X+1) + X**(-N-1) = W(X).
+C
+C         This is supplemented by a series
+C
+C                  SUM( (X+K)**(-N-1) , K=0,1,2,... )
+C
+C         which converges rapidly for large N. Both XMIN and the
+C         number of terms of the series are calculated from the unit
+C         roundoff of the machine environment.
+C***REFERENCES  HANDBOOK OF MATHEMATICAL FUNCTIONS, AMS 55, NATIONAL
+C                 BUREAU OF STANDARDS BY M. ABRAMOWITZ AND I. A.
+C                 STEGUN, 1964, PP.258-260, EQTNS. 6.3.5, 6.3.18, 6.4.6,
+C                 6.4.9, 6.4.10
+C               A PORTABLE FORTRAN SUBROUTINE FOR DERIVATIVES OF THE
+C                 PSI FUNCTION BY D. E. AMOS, ACM TRANS. MATH SOFTWARE,
+C                 1983, ALGORITHM 610
+C***ROUTINES CALLED  D1MACH,I1MACH
+C***END PROLOGUE  DPSIFN
+ 
+ 

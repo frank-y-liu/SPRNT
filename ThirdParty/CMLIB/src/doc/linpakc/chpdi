@@ -1,0 +1,79 @@
+ 
+      SUBROUTINE CHPDI(AP,N,KPVT,DET,INERT,WORK,JOB)
+C***BEGIN PROLOGUE  CHPDI
+C***DATE WRITTEN   780814   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D2D1A,D3D1A
+C***KEYWORDS  COMPLEX,DETERMINANT,FACTOR,HERMITIAN,INVERSE,
+C             LINEAR ALGEBRA,LINPACK,MATRIX,PACKED
+C***AUTHOR  BUNCH, J., (UCSD)
+C***PURPOSE  Computes the determinant, inertia and inverse of a COMPLEX
+C            HERMITIAN matrix (packed form) using the factors from CHPFA
+C***DESCRIPTION
+C
+C     CHPDI computes the determinant, inertia and inverse
+C     of a complex Hermitian matrix using the factors from CHPFA,
+C     where the matrix is stored in packed form.
+C
+C     On Entry
+C
+C        AP      COMPLEX (N*(N+1)/2)
+C                the output from CHPFA.
+C
+C        N       INTEGER
+C                the order of the matrix A.
+C
+C        KVPT    INTEGER(N)
+C                the pivot vector from CHPFA.
+C
+C        WORK    COMPLEX(N)
+C                work vector.  Contents ignored.
+C
+C        JOB     INTEGER
+C                JOB has the decimal expansion  ABC  where
+C                   if  C .NE. 0, the inverse is computed,
+C                   if  B .NE. 0, the determinant is computed,
+C                   if  A .NE. 0, the inertia is computed.
+C
+C                For example, JOB = 111  gives all three.
+C
+C     On Return
+C
+C        Variables not requested by JOB are not used.
+C
+C        AP     contains the upper triangle of the inverse of
+C               the original matrix, stored in packed form.
+C               The columns of the upper triangle are stored
+C               sequentially in a one-dimensional array.
+C
+C        DET    REAL(2)
+C               determinant of original matrix.
+C               Determinant = DET(1) * 10.0**DET(2)
+C               with 1.0 .LE. ABS(DET(1)) .LT. 10.0
+C               or DET(1) = 0.0.
+C
+C        INERT  INTEGER(3)
+C               the inertia of the original matrix.
+C               INERT(1)  =  number of positive eigenvalues.
+C               INERT(2)  =  number of negative eigenvalues.
+C               INERT(3)  =  number of zero eigenvalues.
+C
+C     Error Condition
+C
+C        A division by zero will occur if the inverse is requested
+C        and  CHPCO  has set RCOND .EQ. 0.0
+C        or  CHPFA  has set  INFO .NE. 0 .
+C
+C     LINPACK.  This version dated 08/14/78 .
+C     James Bunch, Univ. Calif. San Diego, Argonne Nat. Lab.
+C
+C     Subroutines and Functions
+C
+C     BLAS CAXPY,CCOPY,CDOTC,CSWAP
+C     Fortran ABS,CABS,CMPLX,CONJG,IABS,MOD,REAL
+C***REFERENCES  DONGARRA J.J., BUNCH J.R., MOLER C.B., STEWART G.W.,
+C                 *LINPACK USERS  GUIDE*, SIAM, 1979.
+C***ROUTINES CALLED  CAXPY,CCOPY,CDOTC,CSWAP
+C***END PROLOGUE  CHPDI
+ 
+ 

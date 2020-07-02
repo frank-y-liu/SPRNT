@@ -1,0 +1,130 @@
+ 
+      SUBROUTINE HFTI(A,MDA,M,N,B,MDB,NB,TAU,KRANK,RNORM,H,G,IP)
+C***BEGIN PROLOGUE  HFTI
+C***DATE WRITTEN   790101   (YYMMDD)
+C***REVISION DATE  830513   (YYMMDD)
+C***CATEGORY NO.  D9
+C***KEYWORDS  CURVE FITTING,LEAST SQUARE
+C***AUTHOR  LAWSON, C. L., (JPL)
+C           HANSON, R. J., (SNLA)
+C***PURPOSE  Solve the least squares problem Ax = b for
+C            banded matrices A using sequential accumulation of rows of
+C            the data matrix. Exactly one right-handed side vector is
+C            permitted.
+C***DESCRIPTION
+C
+C     DIMENSION A(MDA,N),(B(MDB,NB) or B(M)),RNORM(NB),H(N),G(N),IP(N)
+C
+C     This subroutine solves a linear least squares problem or a set of
+C     linear least squares problems having the same matrix but different
+C     right-side vectors.  The problem data consists of an M by N matrix
+C     A, an M by NB matrix B, and an absolute tolerance parameter TAU
+C     whose usage is described below.  The NB column vectors of B
+C     represent right-side vectors for NB distinct linear least squares
+C     problems.
+C
+C     This set of problems can also be written as the matrix least
+C     squares problem
+C
+C                       AX = B,
+C
+C     where X is the N by NB solution matrix.
+C
+C     Note that if B is the M by M identity matrix, then X will be the
+C     pseudo-inverse of A.
+C
+C     This subroutine first transforms the augmented matrix (A B) to a
+C     matrix (R C) using premultiplying Householder transformations with
+C     column interchanges.  All subdiagonal elements in the matrix R are
+C     zero and its diagonal elements satisfy
+C
+C                       ABS(R(I,I)).GE.ABS(R(I+1,I+1)),
+C
+C                       I = 1,...,L-1, where
+C
+C                       L = MIN(M,N).
+C
+C     The subroutine will compute an integer, KRANK, equal to the number
+C     of diagonal terms of R that exceed TAU in magnitude. Then a
+C     solution of minimum Euclidean length is computed using the first
+C     KRANK rows of (R C).
+C
+C     To be specific we suggest that the user consider an easily
+C     computable matrix norm, such as, the maximum of all column sums of
+C     magnitudes.
+C
+C     Now if the relative uncertainty of B is EPS, (norm of uncertainty/
+C     norm of B), it is suggested that TAU be set approximately equal to
+C     EPS*(norm of A).
+C
+C     The user must dimension all arrays appearing in the call list..
+C     A(MDA,N),(B(MDB,NB) or B(M)),RNORM(NB),H(N),G(N),IP(N).  This
+C     permits the solution of a range of problems in the same array
+C     space.
+C
+C     The entire set of parameters for HFTI are
+C
+C     INPUT..
+C
+C     A(*,*),MDA,M,N    The array A(*,*) initially contains the M by N
+C                       matrix A of the least squares problem AX = B.
+C                       The first dimensioning parameter of the array
+C                       A(*,*) is MDA, which must satisfy MDA.GE.M
+C                       Either M.GE.N or M.LT.N is permitted.  There
+C                       is no restriction on the rank of A.  The
+C                       condition MDA.LT.M is considered an error.
+C
+C     B(*),MDB,NB       If NB = 0 the subroutine will perform the
+C                       orthogonal decomposition but will make no
+C                       references to the array B(*).  If NB.GT.0
+C                       the array B(*) must initially contain the M by
+C                       NB matrix B of the least squares problem AX =
+C                       B.  If NB.GE.2 the array B(*) must be doubly
+C                       subscripted with first dimensioning parameter
+C                       MDB.GE.MAX(M,N).  If NB = 1 the array B(*) may
+C                       be either doubly or singly subscripted.  In
+C                       the latter case the value of MDB is arbitrary
+C                       but it should be set to some valid integer
+C                       value such as MDB = M.
+C
+C                       The condition of NB.GT.1.AND.MDB.LT. MAX(M,N)
+C                       is considered an error.
+C
+C     TAU               Absolute tolerance parameter provided by user
+C                       for pseudorank determination.
+C
+C     H(*),G(*),IP(*)   Arrays of working space used by HFTI.
+C
+C     OUTPUT..
+C
+C     A(*,*)            The contents of the array A(*,*) will be
+C                       modified by the subroutine. These contents
+C                       are not generally required by the user.
+C
+C     B(*)              On return the array B(*) will contain the N by
+C                       NB solution matrix X.
+C
+C     KRANK             Set by the subroutine to indicate the
+C                       pseudorank of A.
+C
+C     RNORM(*)          On return, RNORM(J) will contain the Euclidean
+C                       norm of the residual vector for the problem
+C                       defined by the J-th column vector of the array
+C                       B(*,*) for J = 1,...,NB.
+C
+C     H(*),G(*)         On return these arrays respectively contain
+C                       elements of the pre- and post-multiplying
+C                       Householder transformations used to compute
+C                       the minimum Euclidean length solution.
+C
+C     IP(*)             Array in which the subroutine records indices
+C                       describing the permutation of column vectors.
+C                       The contents of arrays H(*),G(*) and IP(*)
+C                       are not generally required by the user.
+C***REFERENCES  C. L. LAWSON AND R. J. HANSON,
+C                 SOLVING LEAST SQUARES PROBLEMS, PRENTICE-HALL,INC
+C                 (1974), CHAPTER 14.
+C***ROUTINES CALLED  DIFF,H12,XERROR
+C***END PROLOGUE  HFTI
+ 
+ 

@@ -1,0 +1,27 @@
+ 
+      SUBROUTINE CDCST (MAXORD,MINT,ISWFLG,EL,TQ)
+C***BEGIN PROLOGUE  CDCST
+C***REFER TO  CDRIV3
+C  CDCST is called by CDNTL and sets coefficients used by the core
+C  integrator CDSTP.  The array EL determines the basic method.
+C  The array TQ is involved in adjusting the step size in relation
+C  to truncation error.  EL and TQ depend upon MINT, and are calculated
+C  for orders 1 to MAXORD(.LE. 12).  For each order NQ, the coefficients
+C  EL are calculated from the generating polynomial:
+C    L(T) = EL(1,NQ) + EL(2,NQ)*T + ... + EL(NQ+1,NQ)*T**NQ.
+C  For the implicit Adams methods, L(T) is given by
+C    dL/dT = (1+T)*(2+T)* ... *(NQ-1+T)/K,   L(-1) = 0,
+C    where      K = factorial(NQ-1).
+C  For the Gear methods,
+C    L(T) = (1+T)*(2+T)* ... *(NQ+T)/K,
+C    where      K = factorial(NQ)*(1 + 1/2 + ... + 1/NQ).
+C  For each order NQ, there are three components of TQ.
+C***ROUTINES CALLED  (NONE)
+C***DATE WRITTEN   790601   (YYMMDD)
+C***REVISION DATE  841119   (YYMMDD)
+C***CATEGORY NO.  I1A2,I1A1B
+C***AUTHOR  KAHANER, D. K., NATIONAL BUREAU OF STANDARDS,
+C           SUTHERLAND, C. D., LOS ALAMOS NATIONAL LABORATORY
+C***END PROLOGUE  CDCST
+ 
+ 

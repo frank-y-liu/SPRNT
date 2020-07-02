@@ -1,0 +1,28 @@
+ 
+      FUNCTION AI(X)
+C***BEGIN PROLOGUE  AI
+C***DATE WRITTEN   770701   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C10D
+C***KEYWORDS  AIRY FUNCTION,SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the Airy function.
+C***DESCRIPTION
+C
+C AI(X) computes the Airy function Ai(X)
+C Series for AIF        on the interval -1.00000D+00 to  1.00000D+00
+C                                        with weighted error   1.09E-19
+C                                         log weighted error  18.96
+C                               significant figures required  17.76
+C                                    decimal places required  19.44
+C
+C Series for AIG        on the interval -1.00000D+00 to  1.00000D+00
+C                                        with weighted error   1.51E-17
+C                                         log weighted error  16.82
+C                               significant figures required  15.19
+C                                    decimal places required  17.27
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  AIE,CSEVL,INITS,R1MACH,R9AIMP,XERROR
+C***END PROLOGUE  AI
+ 
+ 

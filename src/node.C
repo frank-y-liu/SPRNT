@@ -24,7 +24,7 @@
 #include "options.h"
 
 #define USEDIFF 0
-#define SUPRESSOR 1
+#define SUPPRESSOR 1
 
 /* we need some place to hold the initializer for the class */
 int Node::_debug = 0;
@@ -557,7 +557,7 @@ int MomStvEqn::Evaluate(Node **n, double *X, double *Xp, double *RHS, SparseMatr
   int idx_dn_q = DN->QIdx();
 
 
-  double Qupsq = X[idx_up_q]*ABS(X[idx_up_q]);
+  double Qupsq = X[idx_up_q]*ABS(X[idx_up_q]);//X[idx_up_q]*ABS(X[idx_up_q]);
   double Qdnsq = X[idx_dn_q]*ABS(X[idx_dn_q]);
 
   double Qupsqdiva = ABS(Qupsq/X[idx_up_a] );
@@ -786,7 +786,7 @@ int MomStvEqn::EvaluateRHS(double t, double dt, Node **n, double *X, double *Xp,
     - gdt*( DN->GetSR()*(X[idx_dn_a]) + UP->GetSR()*(X[idx_up_a]) )
     + gdt*( DN->Nsq()*dn_n_corr*Qdnsq*Efdn + UP->Nsq()*up_n_corr*Qupsq*Efup );
 #else
-  #if SUPRESSOR
+  #if SUPPRESSOR
     // Write a condition statement here, if froude number >= certain threshold -> suppress advection term
     // Justin Yu_20200430
     RHS[_row]= suppress*(X[idx_dn_q] + X[idx_up_q] - Xp[idx_dn_q] - Xp[idx_up_q]
@@ -891,7 +891,7 @@ int MomStvEqn::Evaluate(double t, double dt, Node **n, double *X, double *Xp, do
     - gdt*( DN->GetSR()*(X[idx_dn_a]) + UP->GetSR()*(X[idx_up_a]) )
     + gdt*( DN->Nsq()*dn_n_corr*Qdnsq*Efdn + UP->Nsq()*up_n_corr*Qupsq*Efup );
 #else
-  #if SUPRESSOR
+  #if SUPPRESSOR
     // Write a condition statement here, if froude number >= certain threshold -> suppress advection term
     // Justin Yu_20200430
     RHS[_row]= suppress*(X[idx_dn_q] + X[idx_up_q] - Xp[idx_dn_q] - Xp[idx_up_q] + 
@@ -914,8 +914,8 @@ int MomStvEqn::Evaluate(double t, double dt, Node **n, double *X, double *Xp, do
   double up_fric_da = UP->XS()->GetEqFrictiondA(X[idx_up_a] + OPT.EpsilonA() );
   double dn_fric_da = DN->XS()->GetEqFrictiondA(X[idx_dn_a] + OPT.EpsilonA() );
 
-// If SUPRESSOR on -> Use LPI from Fread (1986)
-#if SUPRESSOR
+// If SUPPRESSOR on -> Use LPI from Fread (1986)
+#if SUPPRESSOR
   double dmdqup = suppress*(1.0 - 2.0*lambda2*OPT.Beta()*(X[idx_up_q])/(X[idx_up_a])) + 2.0*gdt*UP->Nsq()*up_n_corr*Efup*ABS(X[idx_up_q]);
   double dmdqdn = suppress*(1.0 + 2.0*lambda2*OPT.Beta()*(X[idx_dn_q])/(X[idx_dn_a])) + 2.0*gdt*DN->Nsq()*dn_n_corr*Efdn*ABS(X[idx_dn_q]);
 #else
@@ -937,7 +937,7 @@ int MomStvEqn::Evaluate(double t, double dt, Node **n, double *X, double *Xp, do
     - gdt*DN->GetSR()
     + gdt*DN->Nsq()*dn_n_corr*Qdnsq* dn_fric_da;
 #else
-  #if SUPRESSOR
+  #if SUPPRESSOR
     double dmdaup;
     double dmdadn;
     dmdaup = suppress*lambda2*OPT.Beta()*Qupsqdiva/(X[idx_up_a]) 

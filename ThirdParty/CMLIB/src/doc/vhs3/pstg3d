@@ -1,0 +1,237 @@
+ 
+C
+C                      * * * * * * * * * * * * *
+C                      *                       *
+C                      *         PSTG3D        *
+C                      *                       *
+C                      * * * * * * * * * * * * *
+C
+C
+C                       (VERSION 1, AUGUST 1985)
+C
+C  A VECTORIZED PACKAGE OF FORTRAN SUBPROGRAMS TO SOLVE CERTAIN BLOCK
+C  TRIDIAGONAL SYSTEMS THAT ARISE IN FINITE DIFFERENCE APPROXIMATIONS
+C     TO THREE-DIMENSIONAL HELMHOLTZ EQUATIONS ON A STAGGERED GRID
+C
+C                                  BY
+C
+C                           ROLAND A. SWEET
+C                    SCIENTIFIC COMPUTING DIVISION
+C                     NATIONAL BUREAU OF STANDARDS
+C                       BOULDER, COLORADO 80303
+C
+C
+C
+C                     * * * * * * * * * * * * * *
+C                     *                         *
+C                     *         PURPOSE         *
+C                     *                         *
+C                     * * * * * * * * * * * * * *
+C
+C
+C
+C  THIS PACKAGE CONSISTS OF TWO USER-CALLABLE FORTRAN SUBROUTINES FOR
+C  THE SOLUTION OF THE LINEAR SYSTEM OF EQUATIONS
+C
+C       A(I)*X(I-1,J,K) + B(I)*X(I,J,K) + C(I)*X(I+1,J,K)
+C       + C1*(X(I,J-1,K) - 2.*X(I,J,K) + X(I,J+1,K))
+C       + C2*(X(I,J,K-1) - 2.*X(I,J,K) + X(I,J,K+1))     =     F(I,J,K)
+C
+C  FOR  I=1,2,...,L , J=1,2,...,M , AND K=1,2,...,N.  THE INDICES I-1
+C  AND I+1 ARE EVALUATED MODULO L, I.E. X(0,J,K) = X(L,J,K) AND
+C  X(L+1,J,K) = X(1,J,K). THE UNKNOWNS X(I,0,K), X(I,M+1,K), X(I,J,0),
+C  AND X(I,J,N+1) ARE ASSUMED TO TAKE ON CERTAIN PRESCRIBED VALUES
+C  DESCRIBED BELOW.
+C
+C
+C              * * * * * * * * * * * * * * * * * * * * *
+C              *                                       *
+C              *         DESCRIPTION OF PACKAGE        *
+C              *                                       *
+C              * * * * * * * * * * * * * * * * * * * * *
+C
+C
+C     THE PACKAGE IS USED TO SOLVE A PARTICULAR PROBLEM BY CALLING:
+C
+C  1)  SUBROUTINE PST3DI (LPEROD,L,MPEROD,M,C1,NPEROD,N,C2,A,B,C,
+C                         LDIMF,MDIMF,IERROR,W)
+C
+C  THAT COMPUTES INTERMEDIATE QUANTITIES THAT WILL BE USED IN THE
+C  SOLUTION PROCESS, AND
+C
+C  2)  SUBROUTINE PSTG3D(LDIMF,MDIMF,F,W)
+C
+C  THAT SOLVES THE LINEAR SYSTEM BY INVOKING SPECIAL FAST FOURIER
+C  TRANSFORMS.
+C
+C     THE USER MUST CALL SUBROUTINE PST3DI FIRST FOR A GIVEN SYSTEM.
+C  THIS CALL IS FOLLOWED BY A CALL TO PSTG3D SPECIFYING THE RIGHT SIDE
+C  OF THE SYSTEM.  SUBSEQUENT SOLUTIONS CORRESPONDING TO DIFFERENT RIGHT
+C  SIDES, BUT THE SAME COEFFICIENT MATRIX MAY BE OBTAINED BY ONLY
+C  CALLING PSTG3D AGAIN.  SUCH SEPARATION OF TASKS RESULTS IN FASTER
+C  REPEATED SOLUTIONS.
+C
+C
+C              * * * * * * * * * * * * * * * * * * * * *
+C              *                                       *
+C              *         PARAMETER DESCRIPTION         *
+C              *                                       *
+C              * * * * * * * * * * * * * * * * * * * * *
+C
+C
+C  INPUT PARAMETERS
+C
+C     LPEROD
+C       = 0  IF A(1) AND C(L) ARE NOT ZERO.
+C       = 1  IF A(1) = C(L) = 0.
+C
+C     L
+C       THE NUMBER OF UNKNOWNS IN THE I-DIRECTION. L MUST BE AT 3.
+C
+C     MPEROD
+C       INDICATES THE VALUES THAT X(I,0,K) AND X(I,M+1,K) ARE
+C       ASSUMED TO HAVE.
+C
+C       = 0  IF X(I,0,K) = X(I,M,K) AND X(I,M+1,K) = X(I,1,K).
+C       = 1  IF X(I,0,K) = X(I,M+1,K) = 0.
+C       = 2  IF X(I,0,K) = 0 AND X(I,M+1,K) = X(I,M,K).
+C       = 3  IF X(I,0,K) = X(I,1,K) AND X(I,M+1,K) = X(I,M,K).
+C       = 4  IF X(I,0,K) = X(I,1,K) AND X(I,M+1,K) = 0.
+C
+C     M
+C       THE NUMBER OF UNKNOWNS IN THE J-DIRECTION. M MUST BE AT 3.
+C
+C     C1
+C       THE REAL CONSTANT WHICH APPEARS IN THE ABOVE EQUATION.
+C
+C     NPEROD
+C       INDICATES THE VALUES THAT X(I,J,0) AND X(I,J,N+1) ARE ASSUMED
+C       TO HAVE.
+C
+C       = 0  IF X(I,J,0) = X(I,J,N) AND X(I,J,N+1) = X(I,J,1).
+C       = 1  IF X(I,J,0) = X(I,J,N+1) = 0.
+C       = 2  IF X(I,J,0) = 0 AND X(I,J,N+1) = X(I,J,N).
+C       = 3  IF X(I,J,0) = X(I,J,1) AND X(I,J,N+1) = X(I,J,N).
+C       = 4  IF X(I,J,0) = X(I,J,1) AND X(I,J,N+1) = 0.
+C
+C     N
+C       THE NUMBER OF UNKNOWNS IN THE K-DIRECTION. N MUST BE AT 3.
+C
+C     C2
+C       THE REAL CONSTANT THAT APPEARS IN THE ABOVE EQUATION.
+C
+C     A,B,C
+C       ONE-DIMENSIONAL ARRAYS OF LENGTH L THAT SPECIFY THE COEFFICIENTS
+C       IN THE LINEAR EQUATIONS GIVEN ABOVE.
+C
+C       IF LPEROD = 0, THE ARRAY ELEMENTS MUST NOT DEPEND UPON THE INDEX
+C       I, BUT MUST BE CONSTANT. SPECIFICALLY, THE SUBROUTINE CHECKS THE
+C       FOLLOWING CONDITION:
+C
+C                          A(I) = C(1)
+C                          C(I) = C(1)             FOR I=1,2,...,L.
+C                          B(I) = B(1)
+C
+C     LDIMF
+C       THE ROW (OR FIRST) DIMENSION OF THE THREE-DIMENSIONAL ARRAY F AS
+C       IT APPEARS IN THE PROGRAM CALLING PSTG3D.  THIS PARAMETER IS
+C       USED TO SPECIFY THE VARIABLE DIMENSION OF F.  LDIMF MUST BE
+C       GREATER THAN OR EQUAL TO L.
+C
+C     MDIMF
+C       THE COLUMN (OR SECOND) DIMENSION OF THE THREE-DIMENSIONAL ARRAY
+C       F AS IT APPEARS IN THE PROGRAM CALLING PSTG3D.  THIS PARAMETER
+C       IS USED TO SPECIFY THE VARIABLE DIMENSION OF F.  MDIMF MUST BE
+C       GREATER THAN OR EQUAL TO M.
+C
+C     F
+C       A THREE-DIMENSIONAL ARRAY THAT SPECIFIES THE VALUES OF THE RIGHT
+C       SIDE OF THE LINEAR SYSTEM OF EQUATIONS GIVEN ABOVE.  F MUST BE
+C       DIMENSIONED LDIMF X MDIMF X N.
+C
+C     W
+C       A ONE-DIMENSIONAL ARRAY THAT MUST BE PROVIDED BY THE USER FOR
+C       WORK SPACE.  THE LENGTH OF W MUST BE AT LEAST
+C       2*L*M*N + 3*L + 5*(M+N) + 46.
+C
+C
+C  OUTPUT PARAMETERS
+C
+C     F
+C       CONTAINS THE SOLUTION X(I,J,K) FOR I=1,2,...,L, J=1,2,...,M, AND
+C       K=1,2,...,N.
+C
+C     IERROR
+C       AN ERROR FLAG THAT INDICATES INVALID INPUT PARAMETERS.  EXCEPT
+C       FOR NUMBER ZERO, A SOLUTION IS NOT ATTEMPTED.
+C
+C       = 0  NO ERROR
+C       = 1  LPEROD .NE. 0 OR 1
+C       = 2  L .LT. 3
+C       = 3  MPEROD .NE. 0, 1, 2, 3, OR 4
+C       = 4  M .LT. 3
+C       = 5  NPEROD .NE. 0, 1, 2, 3, OR 4
+C       = 6  N .LT. 3
+C       = 7  LDIMF .LT. L
+C       = 8  MDIMF .LT. M
+C       = 9  A(I) .NE. C(1) OR C(I) .NE. C(1) OR B(I) .NE. B(1)
+C            FOR SOME I=1,2,...,L, WHEN LPEROD = 0
+C       = 10 A(1) .NE. 0 OR C(L) .NE. 0 WHEN LPEROD = 1
+C
+C       SINCE THIS IS THE ONLY MEANS OF INDICATING A POSSIBLY INCORRECT
+C       CALL TO PST3DI, THE USER SHOULD TEST IERROR AFTER THE CALL.
+C
+C     W
+C       CONTAINS INTERMEDIATE QUANTITES (CALCULATED IN ROUTINE PST3DI)
+C       THAT MUST NOT BE DESTROYED IF THIS SUBROUTINE WILL BE USED FOR
+C       REPEATED SOLUTIONS.
+C
+C
+C
+C              * * * * * * * * * * * * * * * * * * * * *
+C              *                                       *
+C              *         PROGRAM SPECIFICATIONS        *
+C              *                                       *
+C              * * * * * * * * * * * * * * * * * * * * *
+C
+C
+C     DIMENSION OF   A(L),B(L),C(L),F(LDIMF,MDIMF,N),
+C     ARGUMENTS      W(2*L*M*N + 3*L + 5*(M+N) + 46)
+C
+C     LATEST         OCTOBER 1, 1984
+C     REVISION
+C
+C     SUBPROGRAMS    PSTG3D,PST3D1,PST3DI,PS3DI1,P3PACK,P3UNPK,
+C     REQUIRED       VSFFTI(PACKAGE),VSFFT(PACKAGE),VRFFTI(PACKAGE),
+C                    VRFFT(PACKAGE)
+C
+C     SPECIAL        NONE
+C     CONDITIONS
+C
+C     COMMON         NONE
+C     BLOCKS
+C
+C     I/O            NONE
+C
+C     PRECISION      SINGLE
+C
+C     SPECIALIST     ROLAND SWEET
+C
+C     LANGUAGE       FORTRAN
+C
+C     HISTORY        WRITTEN BY ROLAND SWEET AT NBS IN OCTOBER, 1984
+C
+C     ALGORITHM      THIS SUBROUTINE SOLVES THE THREE-DIMENSIONAL BLOCK
+C                    TRIDIAGONAL LINEAR SYSTEMS GIVEN ABOVE BY FOURIER
+C                    TRANSFORMING IN TWO DIMENSIONS AND SOLVING
+C                    TRIDIAGONAL SYSTEMS IN THE THIRD DIMENSION.
+C
+C     PORTABILITY    AMERICAN NATIONAL STANDARDS INSTITUTE FORTRAN 77.
+C                    THE MACHINE DEPENDENT CONSTANT PI IS DEFINED IN
+C                    FUNCTION PIMACH.
+C
+C     REQUIRED       COS,SIN
+C     RESIDENT
+C     ROUTINES
+C
+C

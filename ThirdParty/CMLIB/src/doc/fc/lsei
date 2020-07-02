@@ -1,0 +1,386 @@
+ 
+      SUBROUTINE LSEI(W,MDW,ME,MA,MG,N,PRGOPT,X,RNORME,RNORML,MODE,WS,
+     1   IP)
+C***BEGIN PROLOGUE  LSEI
+C***DATE WRITTEN   790701   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  K1A2A,D9
+C***KEYWORDS  CONSTRAINED LEAST SQUARES,CURVE FITTING,DATA FITTING,
+C             EQUALITY CONSTRAINTS,INEQUALITY CONSTRAINTS,
+C             QUADRATIC PROGRAMMING
+C***AUTHOR  HANSON, R. J., (SNLA)
+C           HASKELL, K. H., (SNLA)
+C***PURPOSE  Solve a linearly constrained least squares problem with
+C            equality and inequality constraints, and optionally compute
+C            a covariance matrix.
+C***DESCRIPTION
+C
+C     DIMENSION W(MDW,N+1),PRGOPT(*),X(N),
+C     WS(2*(ME+N)+K+(MG+2)*(N+7)),IP(MG+2*N+2)
+C     above, K=MAX(MA+MG,N).
+C
+C     Written by R. J. Hanson and K. H. Haskell.  For further math.
+C     and algorithmic details see Sandia Laboratories Tech. Repts.
+C     SAND-77-0552, (1978), and SAND-78-1290, (1979), or Math. Prog.,
+C     Vol. 21 (1981) pp. 98-118 and ACM Trans. on Math. Software,
+C     Sept. 1982.
+C
+C     Abstract
+C
+C     This subprogram solves a linearly constrained least squares
+C     problem with both equality and inequality constraints, and, if the
+C     user requests, obtains a covariance matrix of the solution
+C     parameters.
+C
+C     Suppose there are given matrices E, A and G of respective
+C     dimensions ME by N, MA by N and MG by N, and vectors F, B and H of
+C     respective lengths ME, MA and MG.  This subroutine solves the
+C     linearly constrained least squares problem
+C
+C                   EX = F, (E ME by N) (equations to be exactly
+C                                       satisfied)
+C                   AX = B, (A MA by N) (equations to be
+C                                       approximately satisfied,
+C                                       least squares sense)
+C                   GX .GE. H,(G MG by N) (inequality constraints)
+C
+C     The inequalities GX .GE. H mean that every component of the
+C     product GX must be .GE. the corresponding component of H.
+C
+C     In case the equality constraints cannot be satisfied, a
+C     generalized inverse solution residual vector length is obtained
+C     for F-EX.  This is the minimal length possible for F-EX.
+C
+C
+C     Any values ME .GE. 0, MA .GE. 0, or MG .GE. 0 are permitted.  The
+C     rank of the matrix E is estimated during the computation.  We call
+C     this value KRANKE.  It is an output parameter in IP(1) defined
+C     below.  Using a generalized inverse solution of EX=F, a reduced
+C     least squares problem with inequality constraints is obtained.
+C     The tolerances used in these tests for determining the rank
+C     of E and the rank of the reduced least squares problem are
+C     given in Sandia Tech. Rept. SAND-78-1290.  They can be
+C     modified by the user if new values are provided in
+C     the option list of the array PRGOPT(*).
+C
+C     The user must dimension all arrays appearing in the call list..
+C     W(MDW,N+1),PRGOPT(*),X(N),WS(2*(ME+N)+K+(MG+2)*(N+7)),IP(MG+2*N+2)
+C     where K=MAX(MA+MG,N).  This allows for a solution of a range of
+C     problems in the given working space.  The dimension of WS(*)
+C     given is a necessary overestimate.  Once a particular problem
+C     has been run, the output parameter IP(3) gives the actual
+C     dimension required for that problem.
+C
+C     The parameters for LSEI( ) are
+C
+C     Input..
+C
+C     W(*,*),MDW,   The array W(*,*) is doubly subscripted with
+C     ME,MA,MG,N    first dimensioning parameter equal to MDW.
+C                   For this discussion let us call M = ME+MA+MG.  Then
+C                   MDW must satisfy MDW .GE. M.  The condition
+C                   MDW .LT. M is an error.
+C
+C                   The array W(*,*) contains the matrices and vectors
+C
+C                                  (E  F)
+C                                  (A  B)
+C                                  (G  H)
+C
+C                   in rows and columns 1,...,M and 1,...,N+1
+C                   respectively.
+C
+C                   The integers ME, MA, and MG are the
+C                   respective matrix row dimensions
+C                   of E, A and G.  Each matrix has N columns.
+C
+C     PRGOPT(*)    This real-valued array is the option vector.
+C                  If the user is satisfied with the nominal
+C                  subprogram features set
+C
+C                  PRGOPT(1)=1 (or PRGOPT(1)=1.0)
+C
+C                  Otherwise PRGOPT(*) is a linked list consisting of
+C                  groups of data of the following form
+C
+C                  LINK
+C                  KEY
+C                  DATA SET
+C
+C                  The parameters LINK and KEY are each one word.
+C                  The DATA SET can be comprised of several words.
+C                  The number of items depends on the value of KEY.
+C                  The value of LINK points to the first
+C                  entry of the next group of data within
+C                  PRGOPT(*).  The exception is when there are
+C                  no more options to change.  In that
+C                  case, LINK=1 and the values KEY and DATA SET
+C                  are not referenced.  The general layout of
+C                  PRGOPT(*) is as follows.
+C
+C               ...PRGOPT(1)=link1 (link to first entry of next group)
+C               .  PRGOPT(2)=key1 (key to the option change)
+C               .  PRGOPT(3)=data value (data value for this change)
+C               .       .
+C               .       .
+C               .       .
+C               ...PRGOPT(LINK1)=link2 (link to the first entry of
+C               .                       next group)
+C               .  PRGOPT(LINK1+1)=key2 (key to the option change)
+C               .  PRGOPT(LINK1+2)=data value
+C               ...     .
+C               .       .
+C               .       .
+C               ...PRGOPT(LINK)=1 (no more options to change)
+C
+C                  Values of LINK that are nonpositive are errors.
+C                  A value of LINK .GT. NLINK=100000 is also an error.
+C                  This helps prevent using invalid but positive
+C                  values of LINK that will probably extend
+C                  beyond the program limits of PRGOPT(*).
+C                  Unrecognized values of KEY are ignored.  The
+C                  order of the options is arbitrary and any number
+C                  of options can be changed with the following
+C                  restriction.  To prevent cycling in the
+C                  processing of the option array, a count of the
+C                  number of options changed is maintained.
+C                  Whenever this count exceeds NOPT=1000, an error
+C                  message is printed and the subprogram returns.
+C
+C                  Options..
+C
+C                  KEY=1
+C                         Compute in W(*,*) the N by N
+C                  covariance matrix of the solution variables
+C                  as an output parameter.  Nominally the
+C                  covariance matrix will not be computed.
+C                  (This requires no user input.)
+C                  The data set for this option is a single value.
+C                  It must be nonzero when the covariance matrix
+C                  is desired.  If it is zero, the covariance
+C                  matrix is not computed.  When the covariance matrix
+C                  is computed, the first dimensioning parameter
+C                  of the array W(*,*) must satisfy MDW .GE. MAX0(M,N).
+C
+C                  KEY=10
+C                         Suppress scaling of the inverse of the
+C                  normal matrix by the scale factor RNORM**2/
+C                  MAX(1, no. of degrees of freedom).  This option
+C                  only applies when the option for computing the
+C                  covariance matrix (KEY=1) is used.  With KEY=1 and
+C                  KEY=10 used as options the unscaled inverse of the
+C                  normal matrix is returned in W(*,*).
+C                  The data set for this option is a single value.
+C                  When it is nonzero no scaling is done.  When it is
+C                  zero scaling is done.  The nominal case is to do
+C                  scaling so if option (KEY=1) is used alone, the
+C                  matrix will be scaled on output.
+C
+C                  KEY=2
+C                         Scale the nonzero columns of the
+C                         entire data matrix.
+C                  (E)
+C                  (A)
+C                  (G)
+C
+C                  to have length one.  The data set for this
+C                  option is a single value.  It must be
+C                  nonzero if unit length column scaling
+C                  is desired.
+C
+C                  KEY=3
+C                         Scale columns of the entire data matrix
+C                  (E)
+C                  (A)
+C                  (G)
+C
+C                  with a user-provided diagonal matrix.
+C                  The data set for this option consists
+C                  of the N diagonal scaling factors, one for
+C                  each matrix column.
+C
+C                  KEY=4
+C                         Change the rank determination tolerance for
+C                  the equality constraint equations from
+C                  the nominal value of SQRT(SRELPR).  This quantity can
+C                  be no smaller than SRELPR, the arithmetic-
+C                  storage precision.  The quantity SRELPR is the
+C                  largest positive number such that T=1.+SRELPR
+C                  satisfies T .EQ. 1.  The quantity used
+C                  here is internally restricted to be at
+C                  least SRELPR.  The data set for this option
+C                  is the new tolerance.
+C
+C                  KEY=5
+C                         Change the rank determination tolerance for
+C                  the reduced least squares equations from
+C                  the nominal value of SQRT(SRELPR).  This quantity can
+C                  be no smaller than SRELPR, the arithmetic-
+C                  storage precision.  The quantity used
+C                  here is internally restricted to be at
+C                  least SRELPR.  The data set for this option
+C                  is the new tolerance.
+C
+C                  For example, suppose we want to change
+C                  the tolerance for the reduced least squares
+C                  problem, compute the covariance matrix of
+C                  the solution parameters, and provide
+C                  column scaling for the data matrix.  For
+C                  these options the dimension of PRGOPT(*)
+C                  must be at least N+9.  The Fortran statements
+C                  defining these options would be as follows:
+C
+C                  PRGOPT(1)=4 (link to entry 4 in PRGOPT(*))
+C                  PRGOPT(2)=1 (covariance matrix key)
+C                  PRGOPT(3)=1 (covariance matrix wanted)
+C
+C                  PRGOPT(4)=7 (link to entry 7 in PRGOPT(*))
+C                  PRGOPT(5)=5 (least squares equas.  tolerance key)
+C                  PRGOPT(6)=... (new value of the tolerance)
+C
+C                  PRGOPT(7)=N+9 (link to entry N+9 in PRGOPT(*))
+C                  PRGOPT(8)=3 (user-provided column scaling key)
+C
+C                  CALL SCOPY(N,D,1,PRGOPT(9),1)  (Copy the N
+C                    scaling factors from the user array D(*)
+C                    to PRGOPT(9)-PRGOPT(N+8))
+C
+C                  PRGOPT(N+9)=1 (no more options to change)
+C
+C                  The contents of PRGOPT(*) are not modified
+C                  by the subprogram.
+C                  The options for WNNLS( ) can also be included
+C                  in this array.  The values of KEY recognized
+C                  by WNNLS( ) are 6, 7 and 8.  Their functions
+C                  are documented in the usage instructions for
+C                  subroutine WNNLS( ).  Normally these options
+C                  do not need to be modified when using LSEI( ).
+C
+C     IP(1),       The amounts of working storage actually
+C     IP(2)        allocated for the working arrays WS(*) and
+C                  IP(*), respectively.  These quantities are
+C                  compared with the actual amounts of storage
+C                  needed by LSEI( ).  Insufficient storage
+C                  allocated for either WS(*) or IP(*) is an
+C                  error.  This feature was included in LSEI( )
+C                  because miscalculating the storage formulas
+C                  for WS(*) and IP(*) might very well lead to
+C                  subtle and hard-to-find execution errors.
+C
+C                  The length of WS(*) must be at least
+C
+C                  LW = 2*(ME+N)+K+(MG+2)*(N+7)
+C
+C                  where K = max(MA+MG,N)
+C                  This test will not be made if IP(1).LE.0.
+C
+C                  The length of IP(*) must be at least
+C
+C                  LIP = MG+2*N+2
+C                  This test will not be made if IP(2).LE.0.
+C
+C     Output..
+C
+C     X(*),RNORME,  The array X(*) contains the solution parameters
+C     RNORML        if the integer output flag MODE = 0 or 1.
+C                   The definition of MODE is given directly below.
+C                   When MODE = 0 or 1, RNORME and RNORML
+C                   respectively contain the residual vector
+C                   Euclidean lengths of F - EX and B - AX.  When
+C                   MODE=1 the equality constraint equations EX=F
+C                   are contradictory, so RNORME .NE. 0.  The residual
+C                   vector F-EX has minimal Euclidean length.  For
+C                   MODE .GE. 2, none of these parameters are
+C                   defined.
+C
+C     MODE          Integer flag that indicates the subprogram
+C                   status after completion.  If MODE .GE. 2, no
+C                   solution has been computed.
+C
+C                   MODE =
+C
+C                   0  Both equality and inequality constraints
+C                      are compatible and have been satisfied.
+C
+C                   1  Equality constraints are contradictory.
+C                      A generalized inverse solution of EX=F was used
+C                      to minimize the residual vector length F-EX.
+C                      In this sense, the solution is still meaningful.
+C
+C                   2  Inequality constraints are contradictory.
+C
+C                   3  Both equality and inequality constraints
+C                      are contradictory.
+C
+C                   The following interpretation of
+C                   MODE=1,2 or 3 must be made.  The
+C                   sets consisting of all solutions
+C                   of the equality constraints EX=F
+C                   and all vectors satisfying GX .GE. H
+C                   have no points in common.  (In
+C                   particular this does not say that
+C                   each individual set has no points
+C                   at all, although this could be the
+C                   case.)
+C
+C                   4  Usage error occurred.  The value
+C                      of MDW is .LT. ME+MA+MG, MDW is
+C                      .LT. N and a covariance matrix is
+C                      requested, or the option vector
+C                      PRGOPT(*) is not properly defined,
+C                      or the lengths of the working arrays
+C                      WS(*) and IP(*), when specified in
+C                      IP(1) and IP(2) respectively, are not
+C                      long enough.
+C
+C     W(*,*)        The array W(*,*) contains the N by N symmetric
+C                   covariance matrix of the solution parameters,
+C                   provided this was requested on input with
+C                   the option vector PRGOPT(*) and the output
+C                   flag is returned with MODE = 0 or 1.
+C
+C     IP(*)         The integer working array has three entries
+C                   that provide rank and working array length
+C                   information after completion.
+C
+C                      IP(1) = rank of equality constraint
+C                              matrix.  Define this quantity
+C                              as KRANKE.
+C
+C                      IP(2) = rank of reduced least squares
+C                              problem.
+C
+C                      IP(3) = the amount of storage in the
+C                              working array WS(*) that was
+C                              actually used by the subprogram.
+C                              The formula given above for the length
+C                              of WS(*) is a necessary overestimate.
+C                              If exactly the same problem matrices
+C                              are used in subsequent executions,
+C                              the declared dimension of WS(*) can
+C                              be reduced to this output value.
+C     User Designated
+C     Working Arrays..
+C
+C     WS(*),IP(*)              These are respectively type real
+C                              and type integer working arrays.
+C                              Their required minimal lengths are
+C                              given above.
+C***REFERENCES  K.H. HASKELL AND R.J. HANSON, *AN ALGORITHM FOR
+C                 LINEAR LEAST SQUARES PROBLEMS WITH EQUALITY AND
+C                 NONNEGATIVITY CONSTRAINTS*, SAND77-0552, JUNE 1978.
+C               K.H. HASKELL AND R.J. HANSON, *SELECTED ALGORITHMS FOR
+C                 THE LINEARLY CONSTRAINED LEAST SQUARES PROBLEM--
+C                 A USERS GUIDE*, SAND78-1290, AUGUST 1979.
+C               K.H. HASKELL AND R.J. HANSON, *AN ALGORITHM FOR
+C                 LINEAR LEAST SQUARES PROBLEMS WITH EQUALITY AND
+C                 NONNEGATIVITY CONSTRAINTS*, MATH. PROG. 21 (1981),
+C                 PP. 98-118.
+C               R.J. HANSON AND K.H. HASKELL, *TWO ALGORITHMS FOR THE
+C                 LINEARLY CONSTRAINED LEAST SQUARES PROBLEM*, ACM
+C                 TRANS. ON MATH. SOFTWARE, SEPT. 1982.
+C***ROUTINES CALLED  H12,LSI,SASUM,SAXPY,SCOPY,SDOT,SNRM2,SSCAL,SSWAP,
+C                    XERROR,XERRWV
+C***END PROLOGUE  LSEI
+ 
+ 

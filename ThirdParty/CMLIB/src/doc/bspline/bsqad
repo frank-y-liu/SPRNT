@@ -1,0 +1,50 @@
+ 
+      SUBROUTINE BSQAD(T,BCOEF,N,K,X1,X2,BQUAD,WORK)
+C***BEGIN PROLOGUE  BSQAD
+C***DATE WRITTEN   800901   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  H2A2A1,E3,K6
+C***KEYWORDS  B-SPLINE,DATA FITTING,INTERPOLATION,QUADRATURE,SPLINE
+C***AUTHOR  AMOS, D. E., (SNLA)
+C***PURPOSE  Computes the integral on (X1,X2) of a K-th order
+C            B-spline using the B-representation.
+C***DESCRIPTION
+C
+C     Written by D. E. Amos, June, 1979.
+C
+C     Reference SAND 79-1825
+C
+C     Abstract
+C         BSQAD computes the integral on (X1,X2) of a K-th order
+C         B-spline using the B-representation (T,BCOEF,N,K).  Orders
+C         K as high as 20 are permitted by applying a 2, 6, or 10
+C         point Gauss formula on subintervals of (X1,X2) which are
+C         formed by included (distinct) knots.
+C
+C         If orders K greater than 20 are needed, use BFQAD with
+C         F(X) = 1.
+C
+C         BSQAD calls INTRV, BVALU, XERROR
+C
+C     Description of Arguments
+C         Input
+C           T      - knot array of length N+K
+C           BCOEF  - B-spline coefficient array of length N
+C           N      - length of coefficient array
+C           K      - order of B-spline, 1 .LE. K .LE. 20
+C           X1,X2  - end points of quadrature interval in
+C                    T(K) .LE. X .LE. T(N+1)
+C
+C         Output
+C           BQUAD  - integral of the B-spline over (X1,X2)
+C           WORK   - work vector of length 3*K
+C
+C     Error Conditions
+C         Improper input is a fatal error
+C***REFERENCES  D.E. AMOS, *QUADRATURE SUBROUTINES FOR SPLINES AND
+C                 B-SPLINES*, SAND79-1825, SANDIA LABORATORIES,
+C                 DECEMBER 1979.
+C***ROUTINES CALLED  BVALU,INTRV,XERROR
+C***END PROLOGUE  BSQAD
+ 
+ 

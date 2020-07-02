@@ -1,0 +1,163 @@
+ 
+      SUBROUTINE DQAWSE(F,A,B,ALFA,BETA,INTEGR,EPSABS,EPSREL,LIMIT,
+     1   RESULT,ABSERR,NEVAL,IER,ALIST,BLIST,RLIST,ELIST,IORD,LAST)
+C***BEGIN PROLOGUE  DQAWSE
+C***DATE WRITTEN   800101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  H2A2A1
+C***KEYWORDS  ALGEBRAICO-LOGARITHMIC END POINT SINGULARITIES,
+C             AUTOMATIC INTEGRATOR,CLENSHAW-CURTIS METHOD,
+C             SPECIAL-PURPOSE
+C***AUTHOR  PIESSENS, ROBERT, APPLIED MATH. AND PROGR. DIV. -
+C             K. U. LEUVEN
+C           DE DONCKER, ELISE, APPLIED MATH. AND PROGR. DIV. -
+C             K. U. LEUVEN
+C***PURPOSE  The routine calculates an approximation result to a given
+C            definite integral I = Integral of F*W over (A,B),
+C            (where W shows a singular behaviour at the end points,
+C            see parameter INTEGR).
+C            Hopefully satisfying following claim for accuracy
+C            ABS(I-RESULT).LE.MAX(EPSABS,EPSREL*ABS(I)).
+C***DESCRIPTION
+C
+C        Integration of functions having algebraico-logarithmic
+C        end point singularities
+C        Standard fortran subroutine
+C        Double precision version
+C
+C        PARAMETERS
+C         ON ENTRY
+C            F      - Double precision
+C                     Function subprogram defining the integrand
+C                     function F(X). The actual name for F needs to be
+C                     declared E X T E R N A L in the driver program.
+C
+C            A      - Double precision
+C                     Lower limit of integration
+C
+C            B      - Double precision
+C                     Upper limit of integration, B.GT.A
+C                     If B.LE.A, the routine will end with IER = 6.
+C
+C            ALFA   - Double precision
+C                     Parameter in the WEIGHT function, ALFA.GT.(-1)
+C                     If ALFA.LE.(-1), the routine will end with
+C                     IER = 6.
+C
+C            BETA   - Double precision
+C                     Parameter in the WEIGHT function, BETA.GT.(-1)
+C                     If BETA.LE.(-1), the routine will end with
+C                     IER = 6.
+C
+C            INTEGR - Integer
+C                     Indicates which WEIGHT function is to be used
+C                     = 1  (X-A)**ALFA*(B-X)**BETA
+C                     = 2  (X-A)**ALFA*(B-X)**BETA*LOG(X-A)
+C                     = 3  (X-A)**ALFA*(B-X)**BETA*LOG(B-X)
+C                     = 4  (X-A)**ALFA*(B-X)**BETA*LOG(X-A)*LOG(B-X)
+C                     If INTEGR.LT.1 or INTEGR.GT.4, the routine
+C                     will end with IER = 6.
+C
+C            EPSABS - Double precision
+C                     Absolute accuracy requested
+C            EPSREL - Double precision
+C                     Relative accuracy requested
+C                     If  EPSABS.LE.0
+C                     and EPSREL.LT.MAX(50*REL.MACH.ACC.,0.5D-28),
+C                     the routine will end with IER = 6.
+C
+C            LIMIT  - Integer
+C                     Gives an upper bound on the number of subintervals
+C                     in the partition of (A,B), LIMIT.GE.2
+C                     If LIMIT.LT.2, the routine will end with IER = 6.
+C
+C         ON RETURN
+C            RESULT - Double precision
+C                     Approximation to the integral
+C
+C            ABSERR - Double precision
+C                     Estimate of the modulus of the absolute error,
+C                     which should equal or exceed ABS(I-RESULT)
+C
+C            NEVAL  - Integer
+C                     Number of integrand evaluations
+C
+C            IER    - Integer
+C                     IER = 0 Normal and reliable termination of the
+C                             routine. It is assumed that the requested
+C                             accuracy has been achieved.
+C                     IER.GT.0 Abnormal termination of the routine
+C                             the estimates for the integral and error
+C                             are less reliable. It is assumed that the
+C                             requested accuracy has not been achieved.
+C            ERROR MESSAGES
+C                         = 1 Maximum number of subdivisions allowed
+C                             has been achieved. One can allow more
+C                             subdivisions by increasing the value of
+C                             LIMIT. However, if this yields no
+C                             improvement, it is advised to analyze the
+C                             integrand in order to determine the
+C                             integration difficulties which prevent the
+C                             requested tolerance from being achieved.
+C                             In case of a jump DISCONTINUITY or a local
+C                             SINGULARITY of algebraico-logarithmic type
+C                             at one or more interior points of the
+C                             integration range, one should proceed by
+C                             splitting up the interval at these
+C                             points and calling the integrator on the
+C                             subranges.
+C                         = 2 The occurrence of roundoff error is
+C                             detected, which prevents the requested
+C                             tolerance from being achieved.
+C                         = 3 Extremely bad integrand behaviour occurs
+C                             at some points of the integration
+C                             interval.
+C                         = 6 The input is invalid, because
+C                             B.LE.A or ALFA.LE.(-1) or BETA.LE.(-1), or
+C                             INTEGR.LT.1 or INTEGR.GT.4, or
+C                             (EPSABS.LE.0 and
+C                              EPSREL.LT.MAX(50*REL.MACH.ACC.,0.5D-28),
+C                             or LIMIT.LT.2.
+C                             RESULT, ABSERR, NEVAL, RLIST(1), ELIST(1),
+C                             IORD(1) and LAST are set to zero. ALIST(1)
+C                             and BLIST(1) are set to A and B
+C                             respectively.
+C
+C            ALIST  - Double precision
+C                     Vector of dimension at least LIMIT, the first
+C                      LAST  elements of which are the left
+C                     end points of the subintervals in the partition
+C                     of the given integration range (A,B)
+C
+C            BLIST  - Double precision
+C                     Vector of dimension at least LIMIT, the first
+C                      LAST  elements of which are the right
+C                     end points of the subintervals in the partition
+C                     of the given integration range (A,B)
+C
+C            RLIST  - Double precision
+C                     Vector of dimension at least LIMIT,the first
+C                      LAST  elements of which are the integral
+C                     approximations on the subintervals
+C
+C            ELIST  - Double precision
+C                     Vector of dimension at least LIMIT, the first
+C                      LAST  elements of which are the moduli of the
+C                     absolute error estimates on the subintervals
+C
+C            IORD   - Integer
+C                     Vector of dimension at least LIMIT, the first K
+C                     of which are pointers to the error
+C                     estimates over the subintervals, so that
+C                     ELIST(IORD(1)), ..., ELIST(IORD(K)) with K = LAST
+C                     If LAST.LE.(LIMIT/2+2), and K = LIMIT+1-LAST
+C                     otherwise form a decreasing sequence
+C
+C            LAST   - Integer
+C                     Number of subintervals actually produced in
+C                     the subdivision process
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D1MACH,DQC25S,DQMOMO,DQPSRT
+C***END PROLOGUE  DQAWSE
+ 
+ 

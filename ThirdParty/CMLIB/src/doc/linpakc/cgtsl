@@ -1,0 +1,57 @@
+ 
+      SUBROUTINE CGTSL(N,C,D,E,B,INFO)
+C***BEGIN PROLOGUE  CGTSL
+C***DATE WRITTEN   780814   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D2C2A
+C***KEYWORDS  COMPLEX,LINEAR ALGEBRA,LINPACK,MATRIX,SOLVE,TRIDIAGONAL
+C***AUTHOR  DONGARRA, J., (ANL)
+C***PURPOSE  Solves a GENERAL COMPLEX TRIDIAGONAL system of equations.
+C***DESCRIPTION
+C
+C     CGTSL given a general tridiagonal matrix and a right hand
+C     side will find the solution.
+C
+C     On Entry
+C
+C        N       INTEGER
+C                is the order of the tridiagonal matrix.
+C
+C        C       COMPLEX(N)
+C                is the subdiagonal of the tridiagonal matrix.
+C                C(2) through C(N) should contain the subdiagonal.
+C                On output C is destroyed.
+C
+C        D       COMPLEX(N)
+C                is the diagonal of the tridiagonal matrix.
+C                On output D is destroyed.
+C
+C        E       COMPLEX(N)
+C                is the superdiagonal of the tridiagonal matrix.
+C                E(1) through E(N-1) should contain the superdiagonal.
+C                On output E is destroyed.
+C
+C        B       COMPLEX(N)
+C                is the right hand side vector.
+C
+C     On Return
+C
+C        B       is the solution vector.
+C
+C        INFO    INTEGER
+C                = 0 normal value.
+C                = K if the K-th element of the diagonal becomes
+C                    exactly zero.  The subroutine returns when
+C                    this is detected.
+C
+C     LINPACK.  This version dated 08/14/78 .
+C     Jack Dongarra, Argonne National Laboratory.
+C
+C     No Externals
+C     Fortran ABS,AIMAG,REAL
+C***REFERENCES  DONGARRA J.J., BUNCH J.R., MOLER C.B., STEWART G.W.,
+C                 *LINPACK USERS  GUIDE*, SIAM, 1979.
+C***ROUTINES CALLED  (NONE)
+C***END PROLOGUE  CGTSL
+ 
+ 

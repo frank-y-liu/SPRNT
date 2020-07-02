@@ -1,0 +1,156 @@
+ 
+      SUBROUTINE DQRSL(X,LDX,N,K,QRAUX,Y,QY,QTY,B,RSD,XB,JOB,INFO)
+C***BEGIN PROLOGUE  DQRSL
+C***DATE WRITTEN   780814   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D9,D2A1
+C***KEYWORDS  DOUBLE PRECISION,LINEAR ALGEBRA,LINPACK,MATRIX,
+C             ORTHOGONAL TRIANGULAR,SOLVE
+C***AUTHOR  STEWART, G. W., (U. OF MARYLAND)
+C***PURPOSE  Applies the output of DQRDC to compute coordinate
+C            transformations, projections, and least squares solutions.
+C***DESCRIPTION
+C
+C     DQRSL applies the output of DQRDC to compute coordinate
+C     transformations, projections, and least squares solutions.
+C     For K .LE. MIN(N,P), let XK be the matrix
+C
+C            XK = (X(JPVT(1)),X(JPVT(2)), ... ,X(JPVT(K)))
+C
+C     formed from columnns JPVT(1), ... ,JPVT(K) of the original
+C     N X P matrix X that was input to DQRDC (if no pivoting was
+C     done, XK consists of the first K columns of X in their
+C     original order).  DQRDC produces a factored orthogonal matrix Q
+C     and an upper triangular matrix R such that
+C
+C              XK = Q * (R)
+C                       (0)
+C
+C     This information is contained in coded form in the arrays
+C     X and QRAUX.
+C
+C     On Entry
+C
+C        X      DOUBLE PRECISION(LDX,P).
+C               X contains the output of DQRDC.
+C
+C        LDX    INTEGER.
+C               LDX is the leading dimension of the array X.
+C
+C        N      INTEGER.
+C               N is the number of rows of the matrix XK.  It must
+C               have the same value as N in DQRDC.
+C
+C        K      INTEGER.
+C               K is the number of columns of the matrix XK.  K
+C               must not be greater than MIN(N,P), where P is the
+C               same as in the calling sequence to DQRDC.
+C
+C        QRAUX  DOUBLE PRECISION(P).
+C               QRAUX contains the auxiliary output from DQRDC.
+C
+C        Y      DOUBLE PRECISION(N)
+C               Y contains an N-vector that is to be manipulated
+C               by DQRSL.
+C
+C        JOB    INTEGER.
+C               JOB specifies what is to be computed.  JOB has
+C               the decimal expansion ABCDE, with the following
+C               meaning.
+C
+C                    If A .NE. 0, compute QY.
+C                    If B,C,D, or E .NE. 0, compute QTY.
+C                    If C .NE. 0, compute B.
+C                    If D .NE. 0, compute RSD.
+C                    If E .NE. 0, compute XB.
+C
+C               Note that a request to compute B, RSD, or XB
+C               automatically triggers the computation of QTY, for
+C               which an array must be provided in the calling
+C               sequence.
+C
+C     On Return
+C
+C        QY     DOUBLE PRECISION(N).
+C               QY contains Q*Y, if its computation has been
+C               requested.
+C
+C        QTY    DOUBLE PRECISION(N).
+C               QTY contains TRANS(Q)*Y, if its computation has
+C               been requested.  Here TRANS(Q) is the
+C               transpose of the matrix Q.
+C
+C        B      DOUBLE PRECISION(K)
+C               B contains the solution of the least squares problem
+C
+C                    minimize norm2(Y - XK*B),
+C
+C               if its computation has been requested.  (Note that
+C               if pivoting was requested in DQRDC, the J-th
+C               component of B will be associated with column JPVT(J)
+C               of the original matrix X that was input into DQRDC.)
+C
+C        RSD    DOUBLE PRECISION(N).
+C               RSD contains the least squares residual Y - XK*B,
+C               if its computation has been requested.  RSD is
+C               also the orthogonal projection of Y onto the
+C               orthogonal complement of the column space of XK.
+C
+C        XB     DOUBLE PRECISION(N).
+C               XB contains the least squares approximation XK*B,
+C               if its computation has been requested.  XB is also
+C               the orthogonal projection of Y onto the column space
+C               of X.
+C
+C        INFO   INTEGER.
+C               INFO is zero unless the computation of B has
+C               been requested and R is exactly singular.  In
+C               this case, INFO is the index of the first zero
+C               diagonal element of R and B is left unaltered.
+C
+C     The parameters QY, QTY, B, RSD, and XB are not referenced
+C     if their computation is not requested and in this case
+C     can be replaced by dummy variables in the calling program.
+C     To save storage, the user may in some cases use the same
+C     array for different parameters in the calling sequence.  A
+C     frequently occuring example is when one wishes to compute
+C     any of B, RSD, or XB and does not need Y or QTY.  In this
+C     case one may identify Y, QTY, and one of B, RSD, or XB, while
+C     providing separate arrays for anything else that is to be
+C     computed.  Thus the calling sequence
+C
+C          CALL DQRSL(X,LDX,N,K,QRAUX,Y,DUM,Y,B,Y,DUM,110,INFO)
+C
+C     will result in the computation of B and RSD, with RSD
+C     overwriting Y.  More generally, each item in the following
+C     list contains groups of permissible identifications for
+C     a single calling sequence.
+C
+C          1. (Y,QTY,B) (RSD) (XB) (QY)
+C
+C          2. (Y,QTY,RSD) (B) (XB) (QY)
+C
+C          3. (Y,QTY,XB) (B) (RSD) (QY)
+C
+C          4. (Y,QY) (QTY,B) (RSD) (XB)
+C
+C          5. (Y,QY) (QTY,RSD) (B) (XB)
+C
+C          6. (Y,QY) (QTY,XB) (B) (RSD)
+C
+C     In any group the value returned in the array allocated to
+C     the group corresponds to the last member of the group.
+C
+C     LINPACK.  This version dated 08/14/78 .
+C     G. W. Stewart, University of Maryland, Argonne National Lab.
+C
+C     DQRSL uses the following functions and subprograms.
+C
+C     BLAS DAXPY,DCOPY,DDOT
+C     Fortran DABS,MIN0,MOD
+C***REFERENCES  DONGARRA J.J., BUNCH J.R., MOLER C.B., STEWART G.W.,
+C                 *LINPACK USERS  GUIDE*, SIAM, 1979.
+C***ROUTINES CALLED  DAXPY,DCOPY,DDOT
+C***END PROLOGUE  DQRSL
+ 
+ 

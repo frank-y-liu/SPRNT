@@ -1,0 +1,48 @@
+ 
+      SUBROUTINE DPTSL(N,D,E,B)
+C***BEGIN PROLOGUE  DPTSL
+C***DATE WRITTEN   780814   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D2B2A
+C***KEYWORDS  DOUBLE PRECISION,LINEAR ALGEBRA,LINPACK,MATRIX,
+C             POSITIVE DEFINITE,SOLVE,TRIDIAGONAL
+C***AUTHOR  DONGARRA, J., (ANL)
+C***PURPOSE  Solves the system  T*X=B  where T is POSITIVE DEFINITE
+C            SYMMETRIC TRIDIAGONAL.
+C***DESCRIPTION
+C
+C     DPTSL, given a positive definite symmetric tridiagonal matrix and
+C     a right hand side, will find the solution.
+C
+C     On Entry
+C
+C        N        INTEGER
+C                 is the order of the tridiagonal matrix.
+C
+C        D        DOUBLE PRECISION(N)
+C                 is the diagonal of the tridiagonal matrix.
+C                 On output D is destroyed.
+C
+C        E        DOUBLE PRECISION(N)
+C                 is the offdiagonal of the tridiagonal matrix.
+C                 E(1) through E(N-1) should contain the
+C                 offdiagonal.
+C
+C        B        DOUBLE PRECISION(N)
+C                 is the right hand side vector.
+C
+C     On Return
+C
+C        B        contains the solution.
+C
+C     LINPACK.  This version dated 08/14/78 .
+C     Jack Dongarra, Argonne National Laboratory.
+C
+C     No externals
+C     Fortran MOD
+C***REFERENCES  DONGARRA J.J., BUNCH J.R., MOLER C.B., STEWART G.W.,
+C                 *LINPACK USERS  GUIDE*, SIAM, 1979.
+C***ROUTINES CALLED  (NONE)
+C***END PROLOGUE  DPTSL
+ 
+ 

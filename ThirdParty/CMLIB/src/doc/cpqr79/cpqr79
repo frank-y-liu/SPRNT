@@ -1,0 +1,57 @@
+ 
+      SUBROUTINE CPQR79(NDEG,COEFF,ROOT,IERR,WORK)
+C***BEGIN PROLOGUE  CPQR79
+C***DATE WRITTEN   791201   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  F1A1B
+C***KEYWORDS  COMPLEX POLYNOMIAL,POLYNOMIAL ZEROS,ZEROS
+C***AUTHOR  VANDEVENDER, W. H., (SNLA)
+C***PURPOSE  Find the zeros of a polynomial with complex coefficients
+C***DESCRIPTION
+C
+C     Abstract
+C         This routine computes all zeros of a polynomial
+C         of degree NDEG with complex coefficients
+C         by computing the eigenvalues of the companion matrix.
+C
+C     Description of Parameters
+C         The user must dimension all arrays appearing in the call list
+C              COEFF(NDEG+1), ROOT(NDEG), WORK(*)
+C
+C      --Input--
+C        NDEG    degree of polynomial
+C
+C        COEFF   complex coefficients in descending order.  i.e.,
+C               P(Z)= COEFF(1)*(Z**NDEG) + COEFF(NDEG)*Z + COEFF(NDEG+1)
+C
+C        WORK    real work array of dimension at least 2*NDEG*(NDEG+1)
+C
+C     --Output--
+C        ROOT    computed complex roots
+C
+C        IERR    Output Error Code
+C             - Normal Code
+C            0  means the roots were computed.
+C             - Abnormal Codes
+C            1  more than 30 QR interations on some
+C               eigenvalue of the companion matrix
+C            2  COEFF(1)=0.0
+C            3  NDEG is invalid( .LE. 0)
+C
+C       Externals Called
+C
+C         Fortran
+C          COMQR--EISPACK routine
+C          XERROR--SLATEC error handler
+C          CABS--Fortran library function
+C         Intrinsic
+C          REAL
+C          AIMAG
+C          CMPLX
+C     This routine is an interface to an eigenvalue routine in EISPACK.
+C     This interface was written by Walter H. Vandevender.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  COMQR,XERROR
+C***END PROLOGUE  CPQR79
+ 
+ 

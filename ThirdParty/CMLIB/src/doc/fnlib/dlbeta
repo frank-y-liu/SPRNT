@@ -1,0 +1,21 @@
+ 
+      DOUBLE PRECISION FUNCTION DLBETA(A,B)
+C***BEGIN PROLOGUE  DLBETA
+C***DATE WRITTEN   770701   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C7B
+C***KEYWORDS  BETA,BETA FUNCTION,COMPLETE BETA FUNCTION,
+C             DOUBLE PRECISION,LOGARITHM,SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the  d.p. natural logarithm of the complete Beta
+C            function
+C***DESCRIPTION
+C
+C DLBETA(A,B) calculates the double precision natural logarithm of
+C the complete beta function for double precision arguments
+C A and B.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D9LGMC,DGAMMA,DLNGAM,DLNREL,XERROR
+C***END PROLOGUE  DLBETA
+ 
+ 

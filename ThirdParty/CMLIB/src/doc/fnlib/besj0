@@ -1,0 +1,37 @@
+ 
+      FUNCTION BESJ0(X)
+C***BEGIN PROLOGUE  BESJ0
+C***DATE WRITTEN   770401   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C10A1
+C***KEYWORDS  BESSEL FUNCTION,FIRST KIND,ORDER ZERO,SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the Bessel function of the first kind of order
+C            zero
+C***DESCRIPTION
+C
+C BESJ0(X) calculates the Bessel function of the first kind of
+C order zero for real argument X.
+C
+C Series for BJ0        on the interval  0.          to  1.60000D+01
+C                                        with weighted error   7.47E-18
+C                                         log weighted error  17.13
+C                               significant figures required  16.98
+C                                    decimal places required  17.68
+C
+C Series for BM0        on the interval  0.          to  6.25000D-02
+C                                        with weighted error   4.98E-17
+C                                         log weighted error  16.30
+C                               significant figures required  14.97
+C                                    decimal places required  16.96
+C
+C Series for BTH0       on the interval  0.          to  6.25000D-02
+C                                        with weighted error   3.67E-17
+C                                         log weighted error  16.44
+C                               significant figures required  15.53
+C                                    decimal places required  17.13
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  CSEVL,INITS,R1MACH,XERROR
+C***END PROLOGUE  BESJ0
+ 
+ 

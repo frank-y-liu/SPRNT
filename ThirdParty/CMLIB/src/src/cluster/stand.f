@@ -1,0 +1,72 @@
+      SUBROUTINE STAND(MM, M, N, A)
+C
+C<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+C
+C   PURPOSE
+C   -------
+C
+C      STANDARDIZES A DATA MATRIX SUCH THAT EACH VARIABLE HAS MEAN ZERO
+C      AND UNIT VARIANCE.  MISSING VALUES ARE IGNORED
+C
+C   INPUT PARAMETERS
+C   ----------------
+C
+C   MM    INTEGER SCALAR (UNCHANGED ON OUTPUT).
+C         THE FIRST DIMENSION OF THE MATRIX A.  MUST BE AT LEAST M.
+C
+C   M     INTEGER SCALAR (UNCHANGED ON OUTPUT).
+C         THE NUMBER OF CASES.
+C
+C   N     INTEGER SCALAR (UNCHANGED ON OUTPUT).
+C         THE NUMBER OF VARIABLES.
+C
+C   A     REAL MATRIX WHOSE FIRST DIMENSION MUST BE MM AND WHOSE SECOND
+C            DIMENSION MUST BE AT LEAST N (CHANGED ON OUTPUT).
+C         THE MATRIX OF DATA VALUES.
+C
+C         A(I,J) IS THE VALUE FOR THE J-TH VARIABLE FOR THE I-TH CASE.
+C
+C   OUTPUT PARAMETER
+C   ----------------
+C
+C   A     REAL MATRIX WHOSE FIRST DIMENSION MUST BE MM AND WHOSE SECOND
+C            DIMENSION MUST BE AT LEAST N.
+C         THE STANDARDIZED MATRIX OF DATA VALUES.
+C
+C   REFERENCE
+C   ---------
+C
+C     HARTIGAN, J. A. (1975).  CLUSTERING ALGORITHMS, JOHN WILEY &
+C        SONS, INC., NEW YORK.  PAGES 69, 73.
+C
+C<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+C
+      DIMENSION A(MM,*)
+C
+C     COMPUTE MEANS AND VARIANCES
+C
+      DO 30 J=1,N
+         ICOUNT=0
+         S1=0.
+         S2=0.
+         DO 10 I=1,M
+C
+C     IGNORE MISSING VALUES
+C
+            IF(A(I,J).NE.99999.) THEN
+               ICOUNT=ICOUNT+1
+               S1=S1+A(I,J)
+               S2=S2+A(I,J)**2
+            ENDIF
+   10    CONTINUE
+         IF(ICOUNT.NE.0) THEN
+            S1=S1/ICOUNT
+            S2=S2/ICOUNT-S1**2
+         ENDIF
+         IF(S2.GT.0.) S2=SQRT(S2)
+         IF(S2.EQ.0.) S2=1.
+         DO 20 I=1,M
+   20       IF(A(I,J).NE.99999.) A(I,J)=(A(I,J)-S1)/S2
+   30 CONTINUE
+      RETURN
+      END

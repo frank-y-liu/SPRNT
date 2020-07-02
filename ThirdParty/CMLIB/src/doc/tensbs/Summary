@@ -1,0 +1,64 @@
+ 
+ 
+ 
+P A C K A G E      TENSBS
+ 
+(Version 1982 )
+ 
+ 
+Subprograms for interpolation of two and three  dimensional  gridded
+data using tensor products of B-spline basis functions.
+ 
+By two dimensional gridded data we mean data of the form
+ 
+         (x(i), y(j), f(x(i),y(j)))  i=1,..,nx, j=1,..,ny.
+ 
+The subprograms in this package  determine  a  piecewise  polynomial
+function S(x,y) such that
+ 
+        S(x(i),y(j)) = f(x(i),y(j))  i=1,..,nx, j=1,..,ny.
+ 
+The function S takes the form
+ 
+                        nx   ny
+            S(x,y)  =  SUM  SUM  a   U (x) V (y)
+                       i=1  j=1   ij  i     j
+ 
+where U(i) and V(j) are fixed one-dimensional  piecewise  polynomial
+functions (the B-spline basis functions of the reference). The  user
+specifies the order (degree+1) of the polynomial pieces that  define
+the function S in each direction.  The  resulting  interpolant  will
+have continuous derivatives of up to order-2 in each direction.  For
+example, if the user specifies order 4 in x and order 3 in  y,  then
+the functions U(i) will be piecewise  cubic  polynomials  while  the
+functions  V(j)  will  be  piecewise   quadratics.   The   resulting
+interpolating function will have continuous first and second partial
+derivatives  with  respect  to  x  and  continuous   first   partial
+derivative with respect to y. (Lower continuity can be  obtained  by
+using the option for user-specified "knots" -- see the reference.)
+ 
+The subroutines in this package are
+ 
+ 
+B2INK..........computes   parameters   that   define   a   piecewise
+               polynomial function that interpolates a given set  of
+               two-dimensional gridded data.
+ 
+B2VAL..........evaluates the interpolating  function  determined  by
+               B2INK or one of its derivatives.
+ 
+B3INK..........computes   parameters   that   define   a   piecewise
+               polynomial function that interpolates a given set  of
+               three-dimensional gridded data.
+ 
+B3VAL..........evaluates the interpolating  function  determined  by
+               B3INK or one of its derivatives.
+ 
+ 
+Reference
+ 
+Carl de Boor, A Practical Guide  to  Splines,  Springer-Verlag,  New
+     York, 1978.
+ 
+ 
+ 

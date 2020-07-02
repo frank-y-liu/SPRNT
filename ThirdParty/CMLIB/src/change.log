@@ -1,0 +1,314 @@
+                       ***********************
+                       LOG OF CHANGES TO CMLIB
+                       ***********************
+  
+Symbols used in AFFECTS columns: 
+S = source has been changed
+D = documentation has been changed
+T = test deck has been changed
+R = source has been recompiled
+  
+  
+                     AFFECTS
+  DATE    PACKAGE    S D T R   WHO             ACTION
+---------------------------------------------------------------------------
+11/29/83  SLRPACK    X     X   RFB   Error in RYARNG found on PE3230
+                                     (extra parens in I/O list)
+11/29/83  LOTPS      X         RFB   Error in LOCAL, LOEVL found on PE3230
+                                     (dummy args in stmt fcn illegal)
+11/29/83  FCNPAK     X         RFB   Line missing in D9LGIT found on PE3230
+                                     (first line of declarations)
+01/30/84  SLRPACK    X   X X   SEH   Correct computation of PI =
+                                     4.0 * ATAN (1.0)
+03/20/84  ADAPT      X X X X   DKK   New package
+03/20/84  UNCMIN     X X X X   RFB   New package
+03/20/84  FCNPAK     X X X X   DKK   Add elliptic integral routines
+04/27/84  QUADSP       X       DKK   Correct documentation bug in QPDOC
+                                     re call to QAGS.
+04/18/84  AMOSLIB    X         DKK   Fixed XERROR calls for Vax in
+                                          DEXINT, EXINT
+04/18/84  BVSUP      X         DKK   Fixed XERROR calls for Vax in BVSUP
+04/18/84  CDRIV      X         DKK   Fixed XERROR calls for Vax in
+                                          CDRIV1, CDRIV3
+04/18/84  DBSPLINE   X         DKK   Fixed XERROR calls for Vax in DBINTK
+                                          DPPGQ8, DPPGQ8
+04/18/84  DDRIV      X         DKK   Fixed XERROR calls for Vax in
+                                          DDRIV1, DDRIV3
+04/18/84  DEPAC      X         DKK   Fixed XERROR calls for Vax in
+                                          DEBDF, DERKFS, DE2, LSOD
+04/18/84  FC         X         DKK   Fixed XERROR calls for Vax in EFCMN
+04/18/84  FNLIB      X         DKK   Fixed XERROR calls for Vax in ALNGAM
+                                          CPSI, DINT, DLNGAM, TAN
+04/18/84  LICEPACK   X         DKK   Fixed XERROR calls for Vax in
+                                          CGEEV, CHIEV, SGEEV
+04/18/84  LOTPS      X         DKK   Fixed XERROR calls for Vax in LOTPS
+04/26/84  SDRIV      X X X X   DKK   F77 version of SDRIV
+04/26/84  DDRIV      X X X X   DKK   F77 version of DDRIV
+04/26/84  CDRIV      X X X X   DKK   F77 version of CDRIV
+06/01/84  UNCMIN           X   RFB   Recompiled OPTDRV,DFAULT
+06/01/84  UNCMIN         X     RFB   Fixed compilation error in OPTIF9
+06/11/84  TWODQ      X X X X   DKK   New package
+06/18/84  LOTPS      X         RFB   Dummy argument in LOCAL statement
+                                     function same as array name. Fixed.
+06/19/84  LOTPS      X         DKK   Fixed XERROR bug in LOTPS
+06/19/84  AMOSLIB    X         DKK   Fixed XERROR bug in EXINT, DEXINT
+06/19/84  BVSUP      X         DKK   Fixed XERROR bug in BVSUP
+06/19/84  DBSPLINE   X         DKK   Fixed XERROR bug in DBINTK,DPPGQ8,
+                                      DBSGQ8
+06/19/84  DEPAC      X         DKK   Fixed XERROR bug in DEBDF,DERKFS,
+                                      DE2,LSOD
+06/19/84  FC         X         DKK   Fixed XERROR bug in EFCMN
+06/19/84  FNLIB      X         DKK   Fixed XERROR bug in ALNGAM,CPSI,
+                                      DINT,TAN
+06/19/84  LICEPACK   X         DKK   Fixed XERROR bug in CGEEV,CHIEV,
+                                      SGEEV
+11/30/84  BOCLS      X X X X   RFB   New package
+03/10/85  SDRIV      X         DKK   Internal modifications
+03/10/85  DDRIV      X         DKK   Internal modifications
+03/10/85  CDRIV      X         DKK   Internal modifications
+03/26/85  CSORT      X         DKK   Added info about length of chars
+04/09/85  DBOCLS     X         RFB   Fixed errors in conversion to
+                                     double precision.
+04/25/85  XSLEGF     X         RFB   Changed reference of I1MACH(14)
+                                     to I1MACH(11)
+08/30/85  All        X X   X   RFB   All CMLIB routines replaced by their
+                                     SLATEC versions, where applicable
+10/29/85  All            X     RFB   All tests replaced by SLATEC versions
+                                     and other quicktests converted to same
+                                     format
+-----------------------------------------------------------------------
+                   VERSION 1 EXTRACTED HERE
+---------------------------------------------------------------------
+03/20/86  SDRIV      X         KMK   Added dummy routines FA, G, JACOBN,
+                                     and USERS to prevent loader errors.
+05/06/86  CLUSTER    X X X X   KMK   New sublibrary
+05/13/86  SDRIV      X X X X   KMK   New versions. WORK now dimensioned
+          DDRIV                      at 264, not 263, and IWORK at 24
+          CDRIV                      instead of 23.
+07/09/86  FCNPAK         X     KMK   New version of test from D. Lozier
+07/29/86  VFFT       X X X X   KMK   New sublibrary
+07/29/86  VHS3       X X X X   KMK   New sublibrary
+07/29/86  VSFFT      X X X X   KMK   New sublibrary
+12/05/86  BLAS           X     KMK   Comment out calls to DQDOTA and
+                                     DQDOTI which cause fatal link
+                                     errors on some machines.
+12/19/86  ADAPT          X     KMK   Change MAXPTS and WORKSTR from
+                                     2000 to 3000 in test.
+01/06/87  AMOSLIB    X X   X   KMK   Four new modules (Besy, Dbesj,
+                                     Dpsifn, Psifn) in Amoslib.
+01/06/87  FCNPAK     X X   X   KMK   New version of RJ routine.
+01/20/87  FCNPAK     X X   X   KMK   New versions of all routines
+                                     except RC, RD, RF, and RJ.
+-----------------------------------------------------------------------
+                   VERSION 2 EXTRACTED HERE
+---------------------------------------------------------------------
+08/05/87  VFFT       X X X X   RFB   New routines for trigonometric
+                                     transforms: VSINTI, VSINT, VCOSTI,
+                                     VCOST, VSINQI, VSINQF, VSINQB,
+                                     VCOSQI, VCOSQF, VCOSQB. Routines
+                                     not ending in I have 205 versions.
+10/29/87  QUADPKS    X         LLL   New routine EA added
+10/29/87  QUADPKD      X       LLL   New routine DEA added
+11/03/87  PCHIPS     X         LLL   Revision of PCHIP from SLATEC library
+11/03/87  PCHIPD       X       LLL   New double precision version of PCHIP
+11/03/87  BOCLS        X       LLL   Missing routine DMOUT added
+02/09/88  ODRPACK    X X X X   RFB   New sublibrary
+03/30/88  FC             X     RFB   Fixed bug in test
+03/30/88  LINDRV         X     RFB   Fixed bug in tests LINDRV1, LINDRV2
+04/08/88  QUADPKS    X         LLL   Fixed bug in EA
+04/08/88  QUADPKD      X       LLL   Fixed bug in DEA
+04/08/88  AMOSLIB    X         LLL   Added some internal routines that
+                                     were missing (BESYNU,YAIRY,DBESY,
+                                     DASYJY,DBSYNU,DYAIRY)and replaced
+                                     the routines that called them (BESY
+                                     and ASYJY) with new ones
+04/14/88  SDRIV      X         LLL   Fixed error in function G.
+04/14/88  PCHIPS     X   X     LLL   Fixed compiler error in test
+                                     routines EVPCCK and PCHQK2
+04/14/88  SLRPACK    X X X     LLL   Changed declaration in test
+                                     routine SLRQX5
+04/14/88  FCNPAK     X     X   LLL   New version of XDLEGF, XSLEGF, XDNRMP,
+                                     XSNRMP
+04/14/88  VFFT       X X X     LLL   Changed WRITE statement in test
+                                     program, changed all occurrences of
+                                     PIMACH to PIMACH(1.0) in source
+                                     routines VRADB3,VRADB5,VRADBG,VRADF3,
+                                     VRADF5,VRADFG,VRFTI1
+04/14/88  VHS3       X X       LLL   Changed PIMACH to PIMACH(1.0) in
+                                     source routines VSCOSI and VSCSQI
+04/18/88  MACHCON    X         RFB   Added constants for Cyber 180
+                                     NOS/VE, SUN 3, and CONVEX C-120
+-----------------------------------------------------------------------
+                 Version 3.0 Extracted Here
+-----------------------------------------------------------------------
+03/17/89  AMOSLIB    X X X X   JZC   Added function DJAIRY. 
+09/14/89  SNLSE        X       MKP   Removed documentation for SNLS and
+                                     SNLSE since source doesn't exist for
+                                     them any more.
+09/27/89  DNL2SN       X       MKP   Replaced incorrect documentation for
+                                     this record.
+10/02/89  SNSQ         X       MKP   Removed the duplicates of these
+          SNSQE                      three records from the MODDOC
+          SOS                        file.
+11/3/89   BLAS2      X X X X   JZC   New package.      
+12/6/89   BLAS3      X X X X   JZC   New package.
+12/11/89  AMOSLIB    X X X X   JZC   Added new Bessel functions.
+10/18/91  PCHIP          X     RFB   Declared RAND external to avoid compile
+                                     error on RS6000 (RAND is reserved word there).
+10/18/91  SLRPACK        X     RFB   Relaxed tolerance on test of DLINFS so test
+                                     would pass on RS6000.
+10/21/91  AMOSLIB    X         RFB   Added 'EXTERNAL GAMMA' to BESYNU.
+                                     Added 'EXTERNAL DGAMMA' to DBSYNU.
+                                     On IBM R/S6000 GAMMA is an intrinsic,
+                                     but it is not correct.  This forces
+                                     CMLIB version to be selected.
+10/21/91  FNLIB      X   X     RFB   Added 'EXTERNAL GAMMA' to albeta,
+                                     alngam, beta, chu, gamr, poch, and
+                                     r9knus. Added 'EXTERNAL DGAMMA' to
+                                     d9knus, dbeta, dchu, dgamr, dlbeta,
+                                     dlngam, and  dpoch.  Also added EXTERNAL
+                                     statements to fnlibs and fnlibd quickchecks.
+                                     On IBM RS/6000 GAMMA is an intrinsic,
+                                     but it is not correct.  This forces
+                                     CMLIB version to be selected.
+10/30/91  CLUSTER    X         RFB   Commented out two "dead" lines in ASSIGN 
+                                     that caused fatal error in Lahey Fortran.
+10/30/91  FNLIB      X         RFB   Added EXTERNAL CARG to CCBRT, CLNGAM, and
+                                     CLNREL.  CARG is an intrinsic (with a
+                                     different purpose) in Lahey Fortran.  This
+                                     forces the CMLIB version to be used.
+11/06/91  FC       .  .  X     RFB   Changed integer parameter IFMT(*) to
+                                     character*(*).  This corresponds to how it
+                                     is used and conforms to ANSI standard.
+12/16/91  FISHPAK        X     RFB   Modified test to make print conform to
+                                     conventions.
+02/19/92  FC         X         RFB   Forced LSI, LSEI, WNLSM to get machine
+                                     epsilon from R1MACH.  They were computing
+                                     it, which failed on HP9000s300.
+02/19/92  FISHPAK        X     RFB   Call to HWSCYL was missing argument PERTRB
+06/30/92  FISHPAK    X         RFB   Added digits to PI.
+06/30/92  DTENSBS        X     RFB   Make test more robust when EPS=1E-16.
+06/30/92  SLRPACK        X     RFB   Make test more robust when EPS=1E-16.
+06/30/92  CLUSTER        X     RFB   Make test more robust when EPS=1E-16.
+06/30/92  FC             X     RFB   Make test more robust when EPS=1E-16.
+06/30/92  FCNPAK         X     RFB   Make test more robust when EPS=1E-16.
+06/30/92  FISHPAK        X     RFB   Make test more robust when EPS=1E-16.
+09/08/92  FNLIB      X         RFB   Add EXTERNAL RAND to RUNIF, RGAUSS to
+                                     fix problem on RS/6000
+09/08/92  DBSPLIN        X     RFB   Set PI using ATAN
+09/08/92  DTENSBS        X     RFB   Loosen tolerance by factor of 2.
+09/08/92  SLRPACK        X     RFB   Remove check for kount from test 5.
+06/15/94  EISPACK    X         RFB   Make these routines get MACHEP from R1MACH:
+                                     BISECT, RATQR, TQLRAT, TRIDIB, TSTURM
+                                     Computation of MACHEP failed on IBM RS6000.
+04/02/98  BLAS           X     RFB   Changed IDINT to INT in test routine. Failed
+                                     to compile on SGI Origin f77 -r8 -d16.
+05/26/98  QUADPKD      X       RFB   Changed INF to Integer in documentation
+06/10/98  SGLSS      X         RFB   Changed u11us.f and u11ls.f calls to SSWAP
+                                     with integer arrays to explicit swaps.
+06/18/98  QUADPKD        X     RFB   Declaration of DABS,DSIN in test confuses SGI
+03/18/99  LINPAKC    X X       RFB   Fixed documentation: words row and column were
+                                     switched in descriptions of variables N and P.
+02/22/00  TENSBS     X X       RFB   Added check for range of X and Y in B2VAL/DB2VAL
+          DTENSBS                    and X, Y and Z in B3VAL/DB3VAL.  Fixed
+                                     documentation: TY(NY+NY) changed to TY(NY+KY)
+03/31/00  All        X   X     JEC   All CMLIB routines with array declarations
+                                     for dummy arguments specifying the size of their
+                                     largest dimension as 1 were modified to specify *
+                                     for that dimension, where applicable.
+03/31/00  DASSL      X         JEC   Added PARAMETER statement for pointers into
+          SDASSL     X               IWORK in DDASSL/SDASSL.
+03/31/00  FC         X         JEC   Changed call to HFTI in LSI to pass MA (not 1)
+                                     as the size of WS dimension. 
+03/31/00  LICEPAK    X         JEC   Changed call to TRED3 in SSPEV to pass the
+                                     size of A instead of 1.
+03/31/00  SPLP       X         JEC   Changed upper limit on 'DO 150' from LAST to
+                                     LAST-1.
+03/31/00  TENSBS         X     JEC   Changed reference to FUNCTION F to only have 2 
+                                     arguments like the definition, otherwise g77 fails
+                                     to compile.
+06/01/00  FNLIB      X         RFB   Changed MAX1/DINT to MAX/AINT in routines D9KNUS, DBETAI,
+                                     DBINOM, and R9KNUS.  Changed CSQRT/CLOG/CCOS/CEXP/CSIN
+                                     to generic SQRT/LOG/COS/EXP/SIN in CASIN, CCOSH,
+                                     CEXPRL, CLNGAM, CLNREL, CLOG10, CPSI, and CSINH.
+                                     Added "EXTERNAL DERFC" statement to derf.f
+06/01/00  LINDRV     X         RFB   Changed IDINT to generic INT in routines DGEFS,
+                                     DNBFS, and DPOFS
+06/01/00  FC         X         JEC   Changed AMAX1 to MAX in routines LSEI, LSI,
+                                     and WNLSM
+06/01/00  QUADPKD    X         RFB   Changed DMAX1/DMIN1/DABS/DSIN/DCOS/DLOG to their
+                                     generic equivalent.
+06/01/00  SPLP       X         JEC   Changed AMAX1 to MAX in SPOPT
+06/01/00  TWODQ      X         JEC   Changed AMAX1/AMIN1 to MAX/MIN in LQM0 and LQM1
+
+
+1RETIRED
+-----------------------------------------------------------------------
+Package   Module       Notice  Remove           Comments
+ Name     Name(s)       Date    Date
+-----------------------------------------------------------------------
+FCNPAK    NORMP        03-84   08-84   Replaced by XDNRMP
+          XLEGF        03-84   08-84   Replaced by XDLEGF
+FCNPAK    XDPCOM       04-88   04-88
+          XSPCOM       04-88   04-88
+          XDERR        04-88   04-88
+          XSERR        04-88   04-88
+
+
+Changes made to development version but never migrated to permanent one.
+-----------------------------------------------------------------------
+Package   Module       Notice  Remove           Comments
+ Name     Name(s)       Date    Date
+-----------------------------------------------------------------------
+
+2/10/91   SDRIV      X X X X   JZC   Created new SDRIV sublibrary by
+                                     combining the old sublibraries
+                                     SDRIV, DDRIV, and CDRIV.
+          DDRIV      X X X     JZC   Sublibrary deleted.
+          CDRIV      X X X     JZC   Sublibrary deleted.
+2/10/91   LINPACK    X X X X   JZC   Created LINPACK sublibrary: 
+                                     LINPACK = LINPAKS + LINPAKD + LINPAKC. 
+          LINPAKS    X X X X   JZC   Sublibrary deleted.
+          LINPAKD    X X X X   JZC   Sublibrary deleted.
+          LINPAKC    X X X X   JZC   Sublibrary deleted.
+2/10/91   DASSL      X X X X   JZC   Created DASSL sublibrary: 
+                                     DASSL = SDASSL + DDASSL.
+          SDASSL     X X X     JZC   Sublibrary deleted.
+          DDASSL     X X X     JZC   Sublibrary deleted.
+2/10/91   BSPLINE    X X X X   JZC   Created BSPLINE sublibrary:
+                                     BSPLINE = BSPLINE + DBSPLIN.
+          DBSPLIN    X X X     JZC   Sublibrary deleted.
+2/12/91   TENSBS     X X X X   JZC   Created TENSBS sublibrary:
+                                     TENSBS = TENSBS + DTENSBS.
+          DTENSBS    X X X X   JZC   Sublibrary deleted.
+2/12/91   SQRLSS     X X X X   JZC   Created SQRLSS sublibrary:
+                                     SQRLSS = SQRLSS + DQRLSS.
+          DQRLSS     X X X     JZC   Sublibrary deleted.
+2/12/91   PCHIP      X X X X   JZC   Created PCHIP sublibrary:
+                                     PCHIP = PCHIPS + PCHIPD.
+          PCHIPS     X X X X   JZC   Sublibrary deleted.
+          PCHIPD     X X X X   JZC   Sublibrary deleted.
+2/12/91   QUADPACK   X X X X   JZC   Created QUADPACK sublibrary:
+                                     QUADPACK = QUADPKS + QUADPKD.
+          QUADPKS    X X X     JZC   Sublibrary deleted.
+          QUADPKD    X X X     JZC   Sublibrary deleted.
+2/15/91   SDRIV      X X X X   JZC   Replaced previous versions of
+                                     SDRIV subroutines with new versions.
+4/4/91    FNLIB      X     X   JZC   Error fixed in DBESJ1.F.
+                                     (use dbesj1 = sign(amp,x) * dcos(theta))
+4/4/91    FNLIB      X     X   JZC   Error fixed in D9UPAK.F.
+4/4/91    FNLIB      X     X   JZC   Error fixed in D9AIMP.F.
+                                     ( replace nath21 with nath1 in data
+                                       statement).    
+8/1/91    FMIN       X X X X   JZC   Created/developed $cmlib/develop/src/fmin;
+                                     Created/developed $cmlib/develop/doc/fmin;
+                                     Edited $cmlib/develop/doc/Summary; 
+                                     Added fmin sublibrary to makefile; 
+                                     Compiled source; Developed test routine;
+                                     Tested fmin.f --- O.K. for finding min of
+                                     f(x) = (x-1)**4 on the interval (0,3).
+10/21/91  FMIN                 JZC   Added fmin.f and fmind.f to 
+                                     /home/fs3b/cmlib/src/fmin; added
+                                     fmin.f (test program) to
+                                     /home/fs3b/cmlib/qcheck.
+

@@ -20,7 +20,7 @@
 #include "ngraph.h"
 
 // constant 
-const double ngraph::_tol = 1e-4;
+const double ngraph::_tol = 1e-8;
 
 // take care of memory allocation
 void ngraph::Init(int max_node_idx, int max_edge_idx, int max_junc_idx) {

@@ -1,0 +1,21 @@
+ 
+      DOUBLE PRECISION FUNCTION DLNGAM(X)
+C***BEGIN PROLOGUE  DLNGAM
+C***DATE WRITTEN   770601   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C7A
+C***KEYWORDS  ABSOLUTE VALUE,DOUBLE PRECISION,GAMMA FUNCTION,LOGARITHM,
+C             SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the d.p. logarithm of the absolute value of the
+C            Gamma function
+C***DESCRIPTION
+C
+C DLNGAM(X) calculates the double precision logarithm of the
+C absolute value of the gamma function for double precision
+C argument X.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D1MACH,D9LGMC,DGAMMA,DINT,XERROR
+C***END PROLOGUE  DLNGAM
+ 
+ 

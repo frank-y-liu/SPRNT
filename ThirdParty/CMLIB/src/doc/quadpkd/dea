@@ -1,0 +1,124 @@
+ 
+      SUBROUTINE DEA(NEWFLG,SVALUE,LIMEXP,RESULT,ABSERR,EPSTAB,IERR)
+C***BEGIN PROLOGUE  DEA
+C***DATE WRITTEN   800101  (YYMMDD)
+C***REVISION DATE  870617  (YYMMDD)
+C***CATEGORY NO.  E5
+C***KEYWORDS  CONVERGENCE ACCELERATION,EPSILON ALGORITHM,EXTRAPOLATION
+C***AUTHOR  PIESSENS, ROBERT, APPLIED MATH. AND PROGR. DIV. -
+C             K. U. LEUVEN
+C           DE DONCKER-KAPENGA, ELISE,WESTERN MICHIGAN UNIVERSITY
+C           KAHANER, DAVID K., NATIONAL BUREAU OF STANDARDS
+C           STARKENBURG, C. B., NATIONAL BUREAU OF STANDARDS
+C***PURPOSE  Given a slowly convergent sequence, this routine attempts
+C            to extrapolate nonlinearly to a better estimate of the
+C            sequence's limiting value, thus improving the rate of
+C            convergence. Routine is based on the epsilon algorithm
+C            of P. Wynn. An estimate of the absolute error is also
+C            given.
+C***DESCRIPTION
+C
+C              Epsilon algorithm. Standard fortran subroutine.
+C              Double precision version.
+C
+C       A R G U M E N T S   I N   T H E   C A L L   S E Q U E N C E
+C
+C              NEWFLG - LOGICAL                       (INPUT and OUTPUT)
+C                       On the first call to DEA set NEWFLG to .TRUE.
+C                       (indicating a new sequence). DEA will set NEWFLG
+C                       to .FALSE.
+C
+C              SVALUE - DOUBLE PRECISION                         (INPUT)
+C                       On the first call to DEA set SVALUE to the first
+C                       term in the sequence. On subsequent calls set
+C                       SVALUE to the subsequent sequence value.
+C
+C              LIMEXP - INTEGER                                  (INPUT)
+C                       An integer equal to or greater than the total
+C                       number of sequence terms to be evaluated. Do not
+C                       change the value of LIMEXP until a new sequence
+C                       is evaluated (NEWFLG=.TRUE.).  LIMEXP .GE. 3
+C
+C              RESULT - DOUBLE PRECISION                        (OUTPUT)
+C                       Best approximation to the sequence's limit.
+C
+C              ABSERR - DOUBLE PRECISION                        (OUTPUT)
+C                       Estimate of the absolute error.
+C
+C              EPSTAB - DOUBLE PRECISION                        (OUTPUT)
+C                       Workvector of DIMENSION at least (LIMEXP+7).
+C
+C              IERR   - INTEGER                                 (OUTPUT)
+C                       IERR=0 Normal termination of the routine.
+C                       IERR=1 The input is invalid because LIMEXP.LT.3.
+C
+C    T Y P I C A L   P R O B L E M   S E T U P
+C
+C   This sample problem uses the trapezoidal rule to evaluate the
+C   integral of the sin function from 0.0 to 0.5*PI (value = 1.0). The
+C   program implements the trapezoidal rule 8 times creating an
+C   increasingly accurate sequence of approximations to the integral.
+C   Each time the trapezoidal rule is used, it uses twice as many
+C   panels as the time before. DEA is called to obtain even more
+C   accurate estimates.
+C
+C      PROGRAM SAMPLE
+C      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+C      DOUBLE PRECISION EPSTAB(57)
+CC                                     [57 = LIMEXP + 7]
+C      LOGICAL NEWFLG
+C      EXTERNAL F
+C      DATA LIMEXP/50/
+C      WRITE(*,*) ' NO. PANELS          TRAP. APPROX'
+C     *           ,'        APPROX W/EA         ABSERR'
+C      WRITE(*,*)
+C      HALFPI = DASIN(1.0D+00)
+CC                                     [UPPER INTEGRATION LIMIT = PI/2]
+C      NEWFLG = .TRUE.
+CC                                     [SET FLAG - 1ST DEA CALL]
+C      DO 10 I = 0,7
+C         NPARTS = 2 ** I
+C         WIDTH = HALFPI/NPARTS
+C         APPROX = 0.5D+00 * WIDTH * (F(0.0D+00) + F(HALFPI))
+C         DO 11 J = 1,NPARTS-1
+C            APPROX = APPROX + F(J * WIDTH) * WIDTH
+C  11     CONTINUE
+CC                                     [END TRAPEZOIDAL RULE APPROX]
+C         SVALUE = APPROX
+CC                                     [SVALUE = NEW SEQUENCE VALUE]
+C         CALL DEA(NEWFLG,SVALUE,LIMEXP,RESULT,ABSERR,EPSTAB,IERR)
+CC                                     [CALL DEA FOR BETTER ESTIMATE]
+C         WRITE(*,12) NPARTS,APPROX,RESULT,ABSERR
+C  12     FORMAT('   ',I4,T20,F16.13,T40,F16.13,T60,D11.4)
+C  10  CONTINUE
+C      STOP
+C      END
+C
+C      DOUBLE PRECISION FUNCTION F(X)
+C      DOUBLE PRECISION X
+C      F = DSIN(X)
+CC                                     [INTEGRAND]
+C      RETURN
+C      END
+C
+C   Output from the above program will be:
+C
+C  NO. PANELS          TRAP. APPROX        APPROX W/EA         ABSERR
+C
+C      1              .7853981633974      .7853981633974      .7854D+00
+C      2              .9480594489685      .9480594489685      .9760D+00
+C      4              .9871158009728      .9994567212570      .2141D+00
+C      8              .9967851718862      .9999667417647      .3060D-02
+C     16              .9991966804851      .9999998781041      .6094D-03
+C     32              .9997991943200      .9999999981026      .5767D-03
+C     64              .9999498000921      .9999999999982      .3338D-04
+C    128              .9999874501175     1.0000000000000      .1238D-06
+C
+C-----------------------------------------------------------------------
+C***REFERENCES  "Acceleration de la convergence en analyse numerique",
+C                 C. Brezinski, "Lecture Notes in Math.", vol. 584,
+C                 Springer-Verlag, New York, 1977.
+C***ROUTINES CALLED  D1MACH,XERROR
+C***END PROLOGUE  DEA
+ 
+ 

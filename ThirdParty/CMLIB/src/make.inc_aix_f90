@@ -1,0 +1,7 @@
+INPT = 11
+FORTRAN = /usr/bin/xlf90
+OPTS = -O -qtune=pwr -qfixed -qmaxmem=8192
+NOPTS = -qtune=pwr -qfixed
+RANLIB = ranlib
+MACHCON = IEEE.MOST-SIG-BYTE-FIRST
+LIBRARY = libcm.a

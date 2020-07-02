@@ -1,0 +1,16 @@
+ 
+      SUBROUTINE DDNTP (H,K,N,NQ,T,TOUT,YH,Y)
+C***BEGIN PROLOGUE  DDNTP
+C***REFER TO  DDRIV3
+C   Subroutine DDNTP interpolates the K-th derivative of Y at TOUT,
+C   using the data in the YH array.  If K has a value greater than NQ,
+C   the NQ-th derivative is calculated.
+C***ROUTINES CALLED  (NONE)
+C***DATE WRITTEN   790601   (YYMMDD)
+C***REVISION DATE  841119   (YYMMDD)
+C***CATEGORY NO.  I1A2,I1A1B
+C***AUTHOR  KAHANER, D. K., NATIONAL BUREAU OF STANDARDS,
+C           SUTHERLAND, C. D., LOS ALAMOS NATIONAL LABORATORY
+C***END PROLOGUE  DDNTP
+ 
+ 

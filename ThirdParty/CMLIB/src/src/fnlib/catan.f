@@ -1,0 +1,62 @@
+      COMPLEX FUNCTION CATAN(Z)
+C***BEGIN PROLOGUE  CATAN
+C***DATE WRITTEN   770801   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C4A
+C***KEYWORDS  ARC TANGENT,COMPLEX,ELEMENTARY FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the complex arc Tangent.
+C***DESCRIPTION
+C
+C CATAN(Z) calculates the complex trigonometric arc tangent of Z.
+C The result is in units of radians, and the real part is in the first
+C or fourth quadrant.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  R1MACH,XERROR
+C***END PROLOGUE  CATAN
+      COMPLEX Z, Z2
+      DATA PI2 / 1.5707963267 9489661923E0 /
+      DATA NTERMS, SQEPS, RMIN, RMAX / 0, 3*0.0 /
+C***FIRST EXECUTABLE STATEMENT  CATAN
+      IF (NTERMS.NE.0) GO TO 10
+C NTERMS = ALOG(EPS)/ALOG(RBND) WHERE RBND = 0.1
+      NTERMS = -0.4343*ALOG(R1MACH(3)) + 1.0
+      SQEPS = SQRT(R1MACH(4))
+      RMIN = SQRT (3.0*R1MACH(3))
+      RMAX = 1.0/R1MACH(3)
+C
+ 10   R = CABS(Z)
+      IF (R.GT.0.1) GO TO 30
+C
+      CATAN = Z
+      IF (R.LT.RMIN) RETURN
+C
+      CATAN = (0.0, 0.0)
+      Z2 = Z*Z
+      DO 20 I=1,NTERMS
+        TWOI = 2*(NTERMS-I) + 1
+        CATAN = 1.0/TWOI - Z2*CATAN
+ 20   CONTINUE
+      CATAN = Z*CATAN
+      RETURN
+C
+ 30   IF (R.GT.RMAX) GO TO 50
+      X = REAL(Z)
+      Y = AIMAG(Z)
+      R2 = R*R
+      IF (R2.EQ.1.0 .AND. X.EQ.0.0) CALL XERROR ( 'CATAN   Z IS +I OR -I
+     1',21,2,2)
+      IF (ABS(R2-1.0).GT.SQEPS) GO TO 40
+      IF (CABS(CMPLX(1.0,0.0)+Z*Z).LT.SQEPS) CALL XERROR ( 'CATAN   ANSW
+     1ER LT HALF PRECISION, Z**2 CLOSE TO -1',50,1,1)
+C
+ 40   XANS = 0.5*ATAN2(2.0*X, 1.0-R2)
+      YANS = 0.25*ALOG((R2+2.0*Y+1.0)/(R2-2.0*Y+1.0))
+      CATAN = CMPLX (XANS, YANS)
+      RETURN
+C
+ 50   CATAN = CMPLX (PI2, 0.)
+      IF (REAL(Z).LT.0.0) CATAN = CMPLX(-PI2,0.0)
+      RETURN
+C
+      END

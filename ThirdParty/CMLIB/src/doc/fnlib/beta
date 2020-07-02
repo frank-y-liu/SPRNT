@@ -1,0 +1,21 @@
+ 
+      FUNCTION BETA(A,B)
+C***BEGIN PROLOGUE  BETA
+C***DATE WRITTEN   770601   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C7B
+C***KEYWORDS  BETA FUNCTION,COMPLETE BETA FUNCTION,SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the complete Beta function.
+C***DESCRIPTION
+C
+C BETA computes the complete beta function.
+C
+C Input Parameters:
+C       A   real and positive
+C       B   real and positive
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  ALBETA,GAMLIM,GAMMA,R1MACH,XERROR
+C***END PROLOGUE  BETA
+ 
+ 

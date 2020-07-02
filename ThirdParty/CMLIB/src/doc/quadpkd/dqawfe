@@ -1,0 +1,200 @@
+ 
+      SUBROUTINE DQAWFE(F,A,OMEGA,INTEGR,EPSABS,LIMLST,LIMIT,MAXP1,
+     1   RESULT,ABSERR,NEVAL,IER,RSLST,ERLST,IERLST,LST,ALIST,BLIST,
+     2   RLIST,ELIST,IORD,NNLOG,CHEBMO)
+C***BEGIN PROLOGUE  DQAWFE
+C***DATE WRITTEN   800101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  H2A3A1
+C***KEYWORDS  AUTOMATIC INTEGRATOR,CONVERGENCE ACCELERATION WITH DQELG,
+C             FOURIER INTEGRALS,INTEGRATION BETWEEN ZEROS WITH DQAWOE,
+C             SPECIAL-PURPOSE
+C***AUTHOR  PIESSENS, ROBERT, APPLIED MATH. AND PROGR. DIV. -
+C             K. U. LEUVEN
+C           DE DONCKER, ELISE, APPLIED MATH. AND PROGR. DIV. -
+C             K. U. LEUVEN
+C***PURPOSE  The routine calculates an approximation result to a
+C            given Fourier integal
+C            I = Integral of F(X)*W(X) over (A,INFINITY)
+C            where W(X)=COS(OMEGA*X) or W(X)=SIN(OMEGA*X),
+C            hopefully satisfying following claim for accuracy
+C            ABS(I-RESULT).LE.EPSABS.
+C***DESCRIPTION
+C
+C        Computation of Fourier integrals
+C        Standard fortran subroutine
+C        Double precision version
+C
+C        PARAMETERS
+C         ON ENTRY
+C            F      - Double precision
+C                     Function subprogram defining the integrand
+C                     Function F(X). The actual name for F needs to
+C                     be declared E X T E R N A L in the driver program.
+C
+C            A      - Double precision
+C                     Lower limit of integration
+C
+C            OMEGA  - Double precision
+C                     Parameter in the WEIGHT function
+C
+C            INTEGR - Integer
+C                     Indicates which WEIGHT function is used
+C                     INTEGR = 1      W(X) = COS(OMEGA*X)
+C                     INTEGR = 2      W(X) = SIN(OMEGA*X)
+C                     If INTEGR.NE.1.AND.INTEGR.NE.2, the routine will
+C                     end with IER = 6.
+C
+C            EPSABS - Double precision
+C                     absolute accuracy requested, EPSABS.GT.0
+C                     If EPSABS.LE.0, the routine will end with IER = 6.
+C
+C            LIMLST - Integer
+C                     LIMLST gives an upper bound on the number of
+C                     cycles, LIMLST.GE.1.
+C                     If LIMLST.LT.3, the routine will end with IER = 6.
+C
+C            LIMIT  - Integer
+C                     Gives an upper bound on the number of subintervals
+C                     allowed in the partition of each cycle, LIMIT.GE.1
+C                     each cycle, LIMIT.GE.1.
+C
+C            MAXP1  - Integer
+C                     Gives an upper bound on the number of
+C                     Chebyshev moments which can be stored, I.E.
+C                     for the intervals of lengths ABS(B-A)*2**(-L),
+C                     L=0,1, ..., MAXP1-2, MAXP1.GE.1
+C
+C         ON RETURN
+C            RESULT - Double precision
+C                     Approximation to the integral X
+C
+C            ABSERR - Double precision
+C                     Estimate of the modulus of the absolute error,
+C                     which should equal or exceed ABS(I-RESULT)
+C
+C            NEVAL  - Integer
+C                     Number of integrand evaluations
+C
+C            IER    - IER = 0 Normal and reliable termination of
+C                             the routine. It is assumed that the
+C                             requested accuracy has been achieved.
+C                     IER.GT.0 Abnormal termination of the routine. The
+C                             estimates for integral and error are less
+C                             reliable. It is assumed that the requested
+C                             accuracy has not been achieved.
+C            ERROR MESSAGES
+C                    If OMEGA.NE.0
+C                     IER = 1 Maximum number of  cycles  allowed
+C                             Has been achieved., i.e. of subintervals
+C                             (A+(K-1)C,A+KC) where
+C                             C = (2*INT(ABS(OMEGA))+1)*PI/ABS(OMEGA),
+C                             for K = 1, 2, ..., LST.
+C                             One can allow more cycles by increasing
+C                             the value of LIMLST (and taking the
+C                             according dimension adjustments into
+C                             account).
+C                             Examine the array IWORK which contains
+C                             the error flags on the cycles, in order to
+C                             look for eventual local integration
+C                             difficulties. If the position of a local
+C                             difficulty can be determined (e.g.
+C                             SINGULARITY, DISCONTINUITY within the
+C                             interval) one will probably gain from
+C                             splitting up the interval at this point
+C                             and calling appropriate integrators on
+C                             the subranges.
+C                         = 4 The extrapolation table constructed for
+C                             convergence acceleration of the series
+C                             formed by the integral contributions over
+C                             the cycles, does not converge to within
+C                             the requested accuracy. As in the case of
+C                             IER = 1, it is advised to examine the
+C                             array IWORK which contains the error
+C                             flags on the cycles.
+C                         = 6 The input is invalid because
+C                             (INTEGR.NE.1 AND INTEGR.NE.2) or
+C                              EPSABS.LE.0 or LIMLST.LT.3.
+C                              RESULT, ABSERR, NEVAL, LST are set
+C                              to zero.
+C                         = 7 Bad integrand behaviour occurs within one
+C                             or more of the cycles. Location and type
+C                             of the difficulty involved can be
+C                             determined from the vector IERLST. Here
+C                             LST is the number of cycles actually
+C                             needed (see below).
+C                             IERLST(K) = 1 The maximum number of
+C                                           subdivisions (= LIMIT) has
+C                                           been achieved on the K th
+C                                           cycle.
+C                                       = 2 Occurrence of roundoff error
+C                                           is detected and prevents the
+C                                           tolerance imposed on the
+C                                           K th cycle, from being
+C                                           achieved.
+C                                       = 3 Extremely bad integrand
+C                                           behaviour occurs at some
+C                                           points of the K th cycle.
+C                                       = 4 The integration procedure
+C                                           over the K th cycle does
+C                                           not converge (to within the
+C                                           required accuracy) due to
+C                                           roundoff in the
+C                                           extrapolation procedure
+C                                           invoked on this cycle. It
+C                                           is assumed that the result
+C                                           on this interval is the
+C                                           best which can be obtained.
+C                                       = 5 The integral over the K th
+C                                           cycle is probably divergent
+C                                           or slowly convergent. It
+C                                           must be noted that
+C                                           divergence can occur with
+C                                           any other value of
+C                                           IERLST(K).
+C                    If OMEGA = 0 and INTEGR = 1,
+C                    The integral is calculated by means of DQAGIE
+C                    and IER = IERLST(1) (with meaning as described
+C                    for IERLST(K), K = 1).
+C
+C            RSLST  - Double precision
+C                     Vector of dimension at least LIMLST
+C                     RSLST(K) contains the integral contribution
+C                     over the interval (A+(K-1)C,A+KC) where
+C                     C = (2*INT(ABS(OMEGA))+1)*PI/ABS(OMEGA),
+C                     K = 1, 2, ..., LST.
+C                     Note that, if OMEGA = 0, RSLST(1) contains
+C                     the value of the integral over (A,INFINITY).
+C
+C            ERLST  - Double precision
+C                     Vector of dimension at least LIMLST
+C                     ERLST(K) contains the error estimate corresponding
+C                     with RSLST(K).
+C
+C            IERLST - Integer
+C                     Vector of dimension at least LIMLST
+C                     IERLST(K) contains the error flag corresponding
+C                     with RSLST(K). For the meaning of the local error
+C                     flags see description of output parameter IER.
+C
+C            LST    - Integer
+C                     Number of subintervals needed for the integration
+C                     If OMEGA = 0 then LST is set to 1.
+C
+C            ALIST, BLIST, RLIST, ELIST - Double precision
+C                     vector of dimension at least LIMIT,
+C
+C            IORD, NNLOG - Integer
+C                     Vector of dimension at least LIMIT, providing
+C                     space for the quantities needed in the subdivision
+C                     process of each cycle
+C
+C            CHEBMO - Double precision
+C                     Array of dimension at least (MAXP1,25), providing
+C                     space for the Chebyshev moments needed within the
+C                     cycles
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D1MACH,DQAGIE,DQAWOE,DQELG
+C***END PROLOGUE  DQAWFE
+ 
+ 

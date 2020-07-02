@@ -1,0 +1,33 @@
+ 
+      DOUBLE PRECISION FUNCTION DPSI(X)
+C***BEGIN PROLOGUE  DPSI
+C***DATE WRITTEN   770601   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C7C
+C***KEYWORDS  DIGAMMA FUNCTION,DOUBLE PRECISION,PSI FUNCTION,
+C             SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the d.p. Psi (or Digamma) function.
+C***DESCRIPTION
+C
+C DPSI calculates the double precision psi (or digamma) function for
+C double precision argument X.  PSI(X) is the logarithmic derivative
+C of the gamma function of X.
+C
+C Series for PSI        on the interval  0.          to  1.00000E+00
+C                                        with weighted error   5.79E-32
+C                                         log weighted error  31.24
+C                               significant figures required  30.93
+C                                    decimal places required  32.05
+C
+C
+C Series for APSI       on the interval  0.          to  1.00000E-02
+C                                        with weighted error   7.75E-33
+C                                         log weighted error  32.11
+C                               significant figures required  28.88
+C                                    decimal places required  32.71
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D1MACH,DCOT,DCSEVL,DINT,INITDS,XERROR
+C***END PROLOGUE  DPSI
+ 
+ 

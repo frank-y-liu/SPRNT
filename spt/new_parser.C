@@ -143,10 +143,11 @@ Descriptor Op_Descriptor[] = {
   { "PRTSURFELEV", no,  ft_ascii }, // 14
   { "PRTQ",        no,  ft_ascii }, 
   { "PRTA",        no,  ft_ascii }, // 16
-  { "PRTCOORD",    no,  ft_ascii }, 
-  { "VERBOSE",     no,  ft_ascii }, // 18
-  { "EPOCH",       no,  ft_ascii }, // 19
-  { "SPINUPTIME", no,  ft_real  }  // 20
+  { "PRTCOORD",    no,  ft_ascii },
+  { "PRTFR",       no,  ft_ascii }, // 18  
+  { "VERBOSE",     no,  ft_ascii }, // 19
+  { "EPOCH",       no,  ft_ascii }, // 20
+  { "SPINUPTIME", no,  ft_real  }  // 21
 };
 
 
@@ -661,19 +662,25 @@ int read_spt_from_file(sptFile F, Subcatchment *SUB, NameStore *NODE_NAMES, SMap
 	if (out) fprintf(out,"[II]: PrtCoord set to %1d\n", OPT.PrintXY() );
       }
 
-      tmp = Prime->Find_Value( Op_Descriptor[18]._key); // verbose
+      tmp = Prime->Find_Value( Op_Descriptor[18]._key); // PrintFroudeNum
+      if (tmp) {
+	OPT.PrintFR() = atoi(tmp) > 0 ? 1 : 0;
+	if (out) fprintf(out,"[II]: PrtFr set to %1d\n", OPT.PrintFR() );
+      }
+
+      tmp = Prime->Find_Value( Op_Descriptor[19]._key); // verbose
       if (tmp) {
 	OPT.DebugLevel() = atoi(tmp) > 0 ? atoi(tmp) : 0;
 	if (out) fprintf(out,"[II]: Verbose set to %1d\n", OPT.DebugLevel() );
       }
 
-      tmp = Prime->Find_Value( Op_Descriptor[19]._key); // epoch
+      tmp = Prime->Find_Value( Op_Descriptor[20]._key); // epoch
       if (tmp) {
 	STAT.SetEpoch(tmp);
 	if (out) fprintf(out, "[II]: Epoch is set to %s\n", STAT.Epoch() );
       }
 
-      tmp = Prime->Find_Value( Op_Descriptor[20]._key); // spinup_time
+      tmp = Prime->Find_Value( Op_Descriptor[21]._key); // spinup_time
       if (tmp) spinuptime = atof(tmp);
       if ( spinuptime < 0 ) {
 	if (out) fprintf(out,"[WW]: negative spin-up time specified on line %d. Use zero instead (disabled)\n",

@@ -1,0 +1,50 @@
+      FUNCTION ALBETA(A,B)
+C***BEGIN PROLOGUE  ALBETA
+C***DATE WRITTEN   770701   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C7B
+C***KEYWORDS  BETA FUNCTION,COMLETE BETA FUNCTION,LOGARITHM,
+C             SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the natural log of the complete Beta function.
+C***DESCRIPTION
+C
+C ALBETA computes the natural log of the complete beta function.
+C
+C Input Parameters:
+C       A   real and positive
+C       B   real and positive
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  ALNGAM,ALNREL,GAMMA,R9LGMC,XERROR
+C***END PROLOGUE  ALBETA
+      EXTERNAL GAMMA
+      DATA SQ2PIL / 0.9189385332 0467274 E0 /
+C***FIRST EXECUTABLE STATEMENT  ALBETA
+      P = AMIN1 (A, B)
+      Q = AMAX1 (A, B)
+C
+      IF (P.LE.0.0) CALL XERROR ( 'ALBETA  BOTH ARGUMENTS MUST BE GT ZER
+     1O', 38, 1, 2)
+      IF (P.GE.10.0) GO TO 30
+      IF (Q.GE.10.0) GO TO 20
+C
+C P AND Q ARE SMALL.
+C
+      ALBETA = ALOG(GAMMA(P) * (GAMMA(Q)/GAMMA(P+Q)) )
+      RETURN
+C
+C P IS SMALL, BUT Q IS BIG.
+C
+ 20   CORR = R9LGMC(Q) - R9LGMC(P+Q)
+      ALBETA = ALNGAM(P) + CORR + P - P*ALOG(P+Q) +
+     1  (Q-0.5)*ALNREL(-P/(P+Q))
+      RETURN
+C
+C P AND Q ARE BIG.
+C
+ 30   CORR = R9LGMC(P) + R9LGMC(Q) - R9LGMC(P+Q)
+      ALBETA = -0.5*ALOG(Q) + SQ2PIL + CORR + (P-0.5)*ALOG(P/(P+Q))
+     1  + Q*ALNREL(-P/(P+Q))
+      RETURN
+C
+      END

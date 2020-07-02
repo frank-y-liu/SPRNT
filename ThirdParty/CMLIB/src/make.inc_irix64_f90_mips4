@@ -1,0 +1,6 @@
+FORTRAN = f90
+OPTS = -64 -mips4 -O2 -OPT:IEEE_arithmetic=2 -static
+NOPTS = -64 -mips4 -OPT:IEEE_arithmetic=2 -static
+RANLIB = ar tsl
+MACHCON = IEEE.MOST-SIG-BYTE-FIRST
+LIBRARY = libcm.a

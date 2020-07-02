@@ -1,0 +1,40 @@
+ 
+      REAL FUNCTION SDSDOT(N,SB,SX,INCX,SY,INCY)
+C***BEGIN PROLOGUE  SDSDOT
+C***DATE WRITTEN   791001   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D1A4
+C***KEYWORDS  BLAS,INNER PRODUCT,LINEAR ALGEBRA,VECTOR
+C***AUTHOR  LAWSON, C. L., (JPL)
+C           HANSON, R. J., (SNLA)
+C           KINCAID, D. R., (U. OF TEXAS)
+C           KROGH, F. T., (JPL)
+C***PURPOSE  S.P. result with inner product accumulated in d.p.
+C***DESCRIPTION
+C
+C                B L A S  Subprogram
+C    Description of Parameters
+C
+C     --Input--
+C        N  number of elements in input vector(s)
+C       SB  single precision scalar to be added to inner product
+C       SX  single precision vector with N elements
+C     INCX  storage spacing between elements of SX
+C       SY  single precision vector with N elements
+C     INCY  storage spacing between elements of SY
+C
+C     --Output--
+C   SDSDOT  single precision dot product (zero if N .LE. 0)
+C
+C     Returns S.P. result with dot product accumulated in D.P.
+C     SDSDOT = SB + sum for I = 0 to N-1 of SX(LX+I*INCX)*SY(LY+I*INCY)
+C     where LX = 1 if INCX .GE. 0, else LX = (-INCX)*N, and LY is
+C     defined in a similar way using INCY.
+C***REFERENCES  LAWSON C.L., HANSON R.J., KINCAID D.R., KROGH F.T.,
+C                 *BASIC LINEAR ALGEBRA SUBPROGRAMS FOR FORTRAN USAGE*,
+C                 ALGORITHM NO. 539, TRANSACTIONS ON MATHEMATICAL
+C                 SOFTWARE, VOLUME 5, NUMBER 3, SEPTEMBER 1979, 308-323
+C***ROUTINES CALLED  (NONE)
+C***END PROLOGUE  SDSDOT
+ 
+ 

@@ -1,0 +1,26 @@
+ 
+      FUNCTION BESK0(X)
+C***BEGIN PROLOGUE  BESK0
+C***DATE WRITTEN   770401   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C10B1
+C***KEYWORDS  BESSEL FUNCTION,HYBERBOLIC BESSEL FUNCTION,
+C             MODIFIED BESSEL FUNCTION,ORDER ZERO,THIRD KIND
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the hyperbolic Bessel function of the third kind
+C            of order zero
+C***DESCRIPTION
+C
+C BESK0(X) calculates the modified (hyperbolic) Bessel function
+C of the third kind of order zero for real argument X .GT. 0.0.
+C
+C Series for BK0        on the interval  0.          to  4.00000D+00
+C                                        with weighted error   3.57E-19
+C                                         log weighted error  18.45
+C                               significant figures required  17.99
+C                                    decimal places required  18.97
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  BESI0,BESK0E,CSEVL,INITS,R1MACH,XERROR
+C***END PROLOGUE  BESK0
+ 
+ 

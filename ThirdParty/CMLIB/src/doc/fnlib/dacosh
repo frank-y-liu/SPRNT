@@ -1,0 +1,20 @@
+ 
+      DOUBLE PRECISION FUNCTION DACOSH(X)
+C***BEGIN PROLOGUE  DACOSH
+C***DATE WRITTEN   770601   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C4C
+C***KEYWORDS  DOUBLE PRECISION,ELEMENTARY FUNCTION,
+C             INVERSE HYPERBOLIC COSINE
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the arc hyperbolic Cosine.
+C***DESCRIPTION
+C
+C DACOSH(X) calculates the double precision arc hyperbolic cosine for
+C double precision argument X.  THe result is returned on the
+C positive branch.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D1MACH,XERROR
+C***END PROLOGUE  DACOSH
+ 
+ 

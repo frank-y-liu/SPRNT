@@ -1,0 +1,152 @@
+ 
+      SUBROUTINE QAGIE(F,BOUND,INF,EPSABS,EPSREL,LIMIT,RESULT,ABSERR,
+     1   NEVAL,IER,ALIST,BLIST,RLIST,ELIST,IORD,LAST)
+C***BEGIN PROLOGUE  QAGIE
+C***DATE WRITTEN   800101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  H2A3A1,H2A4A1
+C***KEYWORDS  AUTOMATIC INTEGRATOR,EXTRAPOLATION,GENERAL-PURPOSE,
+C             GLOBALLY ADAPTIVE,INFINITE INTERVALS,TRANSFORMATION
+C***AUTHOR  PIESSENS, ROBERT, APPLIED MATH. AND PROGR. DIV. -
+C             K. U. LEUVEN
+C           DE DONCKER, ELISE, APPLIED MATH. AND PROGR. DIV. -
+C             K. U. LEUVEN
+C***PURPOSE  The routine calculates an approximation result to a given
+C            integral   I = Integral of F over (BOUND,+INFINITY)
+C                    or I = Integral of F over (-INFINITY,BOUND)
+C                    or I = Integral of F over (-INFINITY,+INFINITY),
+C                    hopefully satisfying following claim for accuracy
+C                    ABS(I-RESULT).LE.MAX(EPSABS,EPSREL*ABS(I))
+C***DESCRIPTION
+C
+C Integration over infinite intervals
+C Standard fortran subroutine
+C
+C            F      - Real
+C                     Function subprogram defining the integrand
+C                     function F(X). The actual name for F needs to be
+C                     declared E X T E R N A L in the driver program.
+C
+C            BOUND  - Real
+C                     Finite bound of integration range
+C                     (has no meaning if interval is doubly-infinite)
+C
+C            INF    - Real
+C                     Indicating the kind of integration range involved
+C                     INF = 1 corresponds to  (BOUND,+INFINITY),
+C                     INF = -1            to  (-INFINITY,BOUND),
+C                     INF = 2             to (-INFINITY,+INFINITY).
+C
+C            EPSABS - Real
+C                     Absolute accuracy requested
+C            EPSREL - Real
+C                     Relative accuracy requested
+C                     If  EPSABS.LE.0
+C                     and EPSREL.LT.MAX(50*REL.MACH.ACC.,0.5D-28),
+C                     the routine will end with IER = 6.
+C
+C            LIMIT  - Integer
+C                     Gives an upper bound on the number of subintervals
+C                     in the partition of (A,B), LIMIT.GE.1
+C
+C         ON RETURN
+C            RESULT - Real
+C                     Approximation to the integral
+C
+C            ABSERR - Real
+C                     Estimate of the modulus of the absolute error,
+C                     which should equal or exceed ABS(I-RESULT)
+C
+C            NEVAL  - Integer
+C                     Number of integrand evaluations
+C
+C            IER    - Integer
+C                     IER = 0 Normal and reliable termination of the
+C                             routine. It is assumed that the requested
+C                             accuracy has been achieved.
+C                   - IER.GT.0 Abnormal termination of the routine. The
+C                             estimates for result and error are less
+C                             reliable. It is assumed that the requested
+C                             accuracy has not been achieved.
+C            ERROR MESSAGES
+C                     IER = 1 Maximum number of subdivisions allowed
+C                             has been achieved. One can allow more
+C                             subdivisions by increasing the value of
+C                             LIMIT (and taking the according dimension
+C                             adjustments into account). However,if
+C                             this yields no improvement it is advised
+C                             to analyze the integrand in order to
+C                             determine the integration difficulties.
+C                             If the position of a local difficulty can
+C                             be determined (e.g. SINGULARITY,
+C                             DISCONTINUITY within the interval) one
+C                             will probably gain from splitting up the
+C                             interval at this point and calling the
+C                             integrator on the subranges. If possible,
+C                             an appropriate special-purpose integrator
+C                             should be used, which is designed for
+C                             handling the type of difficulty involved.
+C                         = 2 The occurrence of roundoff error is
+C                             detected, which prevents the requested
+C                             tolerance from being achieved.
+C                             The error may be under-estimated.
+C                         = 3 Extremely bad integrand behaviour occurs
+C                             at some points of the integration
+C                             interval.
+C                         = 4 The algorithm does not converge.
+C                             Roundoff error is detected in the
+C                             extrapolation table.
+C                             It is assumed that the requested tolerance
+C                             cannot be achieved, and that the returned
+C                             result is the best which can be obtained.
+C                         = 5 The integral is probably divergent, or
+C                             slowly convergent. It must be noted that
+C                             divergence can occur with any other value
+C                             of IER.
+C                         = 6 The input is invalid, because
+C                             (EPSABS.LE.0 and
+C                              EPSREL.LT.MAX(50*REL.MACH.ACC.,0.5D-28),
+C                             RESULT, ABSERR, NEVAL, LAST, RLIST(1),
+C                             ELIST(1) and IORD(1) are set to zero.
+C                             ALIST(1) and BLIST(1) are set to 0
+C                             and 1 respectively.
+C
+C            ALIST  - Real
+C                     Vector of dimension at least LIMIT, the first
+C                      LAST  elements of which are the left
+C                     end points of the subintervals in the partition
+C                     of the transformed integration range (0,1).
+C
+C            BLIST  - Real
+C                     Vector of dimension at least LIMIT, the first
+C                      LAST  elements of which are the right
+C                     end points of the subintervals in the partition
+C                     of the transformed integration range (0,1).
+C
+C            RLIST  - Real
+C                     Vector of dimension at least LIMIT, the first
+C                      LAST  elements of which are the integral
+C                     approximations on the subintervals
+C
+C            ELIST  - Real
+C                     Vector of dimension at least LIMIT,  the first
+C                     LAST elements of which are the moduli of the
+C                     absolute error estimates on the subintervals
+C
+C            IORD   - Integer
+C                     Vector of dimension LIMIT, the first K
+C                     elements of which are pointers to the
+C                     error estimates over the subintervals,
+C                     such that ELIST(IORD(1)), ..., ELIST(IORD(K))
+C                     form a decreasing sequence, with K = LAST
+C                     If LAST.LE.(LIMIT/2+2), and K = LIMIT+1-LAST
+C                     otherwise
+C
+C            LAST   - Integer
+C                     Number of subintervals actually produced
+C                     in the subdivision process
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  QELG,QK15I,QPSRT,R1MACH
+C***END PROLOGUE  QAGIE
+ 
+ 

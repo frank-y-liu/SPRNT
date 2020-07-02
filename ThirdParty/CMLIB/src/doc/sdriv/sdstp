@@ -1,0 +1,61 @@
+ 
+      SUBROUTINE SDSTP (EPS,F,FA,HMAX,IMPL,JACOBN,MATDIM,MAXORD,MINT,
+     8   MITER,ML,MU,N,NDE,YWT,UROUND,AVGH,AVGORD,H,HUSED,JTASK,MNTOLD,
+     8   MTROLD,NFE,NJE,NQUSED,NSTEP,T,Y,YH,A,CONVRG,DFDY,EL,HOLD,IPVT,
+     8   JSTATE,NQ,NWAIT,RC,RMAX,SAVE1,SAVE2,TQ,TREND,ISWFLG,MTRSV,
+     8   MXRDSV)
+C***BEGIN PROLOGUE  SDSTP
+C***REFER TO  SDRIV3
+C  SDSTP performs one step of the integration of an initial value
+C  problem for a system of ordinary differential equations.
+C  Communication with SDSTP is done with the following variables:
+C
+C    YH      An N by MAXORD+1 array containing the dependent variables
+C              and their scaled derivatives.  MAXORD, the maximum order
+C              used, is currently 12 for the Adams methods and 5 for the
+C              Gear methods.  YH(I,J+1) contains the J-th derivative of
+C              Y(I), scaled by H**J/factorial(J).  Only Y(I),
+C              1 .LE. I .LE. N, need be set by the calling program on
+C              the first entry.  The YH array should not be altered by
+C              the calling program.  When referencing YH as a
+C              2-dimensional array, use a column length of N, as this is
+C              the value used in SDSTP.
+C    DFDY    A block of locations used for partial derivatives if MITER
+C              is not 0.  If MITER is 1 or 2 its length must be at least
+C              N*N.  If MITER is 4 or 5 its length must be at least
+C              (2*ML+MU+1)*N.
+C    YWT     An array of N locations used in convergence and error tests
+C    SAVE1
+C    SAVE2   Arrays of length N used for temporary storage.
+C    IPVT    An integer array of length N used by the linear system
+C              solvers for the storage of row interchange information.
+C    A       A block of locations used to store the matrix A, when using
+C              the implicit method.  If IMPL is 1, A is a MATDIM by N
+C              array.  If MITER is 1 or 2 MATDIM is N, and if MITER is 4
+C              or 5 MATDIM is 2*ML+MU+1.  If IMPL is 2 its length is N.
+C    JTASK   An integer used on input.
+C              It has the following values and meanings:
+C                 .EQ. 0  Perform the first step.  This value enables
+C                         the subroutine to initialize itself.
+C                .GT. 0  Take a new step continuing from the last.
+C                         Assumes the last step was successful and
+C                         user has not changed any parameters.
+C                 .LT. 0  Take a new step with a new value of H and/or
+C                         MINT and/or MITER.
+C    JSTATE  A completion code with the following meanings:
+C                1  The step was successful.
+C                2  A solution could not be obtained with H .NE. 0.
+C                3  A solution was not obtained in MXTRY attempts.
+C                4  For IMPL .NE. 0, the matrix A is singular.
+C              On a return with JSTATE .GT. 1, the values of T and
+C              the YH array are as of the beginning of the last
+C              step, and H is the last step size attempted.
+C***ROUTINES CALLED  SDNTL,SDPST,SDCOR,SDPSC,SDSCL,SNRM2
+C***DATE WRITTEN   790601   (YYMMDD)
+C***REVISION DATE  860513   (YYMMDD)
+C***CATEGORY NO.  I1A2,I1A1B
+C***AUTHOR  KAHANER, D. K., NATIONAL BUREAU OF STANDARDS,
+C           SUTHERLAND, C. D., LOS ALAMOS NATIONAL LABORATORY
+C***END PROLOGUE  SDSTP
+ 
+ 

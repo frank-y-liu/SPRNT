@@ -1,0 +1,19 @@
+ 
+      FUNCTION ALNGAM(X)
+C***BEGIN PROLOGUE  ALNGAM
+C***DATE WRITTEN   770601   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C7A
+C***KEYWORDS  GAMMA FUNCTION,LOGARITHM,SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the log of the absolute value of the Gamma
+C            function
+C***DESCRIPTION
+C
+C ALNGAM(X) computes the logarithm of the absolute value of the
+C gamma function at X.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  GAMMA,R1MACH,R9LGMC,XERROR
+C***END PROLOGUE  ALNGAM
+ 
+ 

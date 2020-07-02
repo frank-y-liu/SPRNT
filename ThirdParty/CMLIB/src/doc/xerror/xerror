@@ -1,0 +1,50 @@
+ 
+      SUBROUTINE XERROR(MESSG,NMESSG,NERR,LEVEL)
+C***BEGIN PROLOGUE  XERROR
+C***DATE WRITTEN   790801   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  R3C
+C***KEYWORDS  ERROR,XERROR PACKAGE
+C***AUTHOR  JONES, R. E., (SNLA)
+C***PURPOSE  Processes an error (diagnostic) message
+C***DESCRIPTION
+C
+C     Abstract
+C        XERROR processes a diagnostic message, in a manner
+C        determined by the value of LEVEL and the current value
+C        of the library error control flag, KONTRL.
+C        (See subroutine XSETF for details.)
+C
+C     Description of Parameters
+C      --Input--
+C        MESSG - the Hollerith message to be processed, containing
+C                no more than 72 characters.
+C        NMESSG- the actual number of characters in MESSG.
+C        NERR  - the error number associated with this message.
+C                NERR must not be zero.
+C        LEVEL - error category.
+C                =2 means this is an unconditionally fatal error.
+C                =1 means this is a recoverable error.  (I.e., it is
+C                   non-fatal if XSETF has been appropriately called.)
+C                =0 means this is a warning message only.
+C                =-1 means this is a warning message which is to be
+C                   printed at most once, regardless of how many
+C                   times this call is executed.
+C
+C     Examples
+C        CALL XERROR(23HSMOOTH -- NUM WAS ZERO.,23,1,2)
+C        CALL XERROR(43HINTEG  -- LESS THAN FULL ACCURACY ACHIEVED.,
+C                    43,2,1)
+C        CALL XERROR(65HROOTER -- ACTUAL ZERO OF F FOUND BEFORE INTERVAL
+C    1 FULLY COLLAPSED.,65,3,0)
+C        CALL XERROR(39HEXP    -- UNDERFLOWS BEING SET TO ZERO.,39,1,-1)
+C
+C     Written by Ron Jones, with SLATEC Common Math Library Subcommittee
+C     Latest revision ---  7 Feb 1979
+C***REFERENCES  JONES R.E., *SLATEC COMMON MATHEMATICAL LIBRARY ERROR
+C                 HANDLING PACKAGE*, SAND78-1189, SANDIA LABORATORIES,
+C                 1978.
+C***ROUTINES CALLED  XERRWV
+C***END PROLOGUE  XERROR
+ 
+ 

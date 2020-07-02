@@ -1,0 +1,60 @@
+ 
+      SUBROUTINE HTRIB3(NM,N,A,TAU,M,ZR,ZI)
+C***BEGIN PROLOGUE  HTRIB3
+C***DATE WRITTEN   760101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  D4C4
+C***KEYWORDS  EIGENVALUES,EIGENVECTORS,EISPACK
+C***AUTHOR  SMITH, B. T., ET AL.
+C***PURPOSE  Computes eigenvectors of complex Hermitian matrix from
+C            eigenvectors of real symmetric tridiagonal matrix output
+C            from HTRID3.
+C***DESCRIPTION
+C
+C     This subroutine is a translation of a complex analogue of
+C     the ALGOL procedure TRBAK3, NUM. MATH. 11, 181-195(1968)
+C     by Martin, Reinsch, and Wilkinson.
+C     HANDBOOK FOR AUTO. COMP., VOL.II-LINEAR ALGEBRA, 212-226(1971).
+C
+C     This subroutine forms the eigenvectors of a COMPLEX HERMITIAN
+C     matrix by back transforming those of the corresponding
+C     real symmetric tridiagonal matrix determined by  HTRID3.
+C
+C     On INPUT
+C
+C        NM must be set to the row dimension of two-dimensional
+C          array parameters as declared in the calling program
+C          dimension statement.
+C
+C        N is the order of the matrix.
+C
+C        A contains information about the unitary transformations
+C          used in the reduction by  HTRID3.
+C
+C        TAU contains further information about the transformations.
+C
+C        M IS the number of eigenvectors to be back transformed.
+C
+C        ZR contains the eigenvectors to be back transformed
+C          in its first M columns.
+C
+C     On OUTPUT
+C
+C        ZR and ZI contain the real and imaginary parts,
+C          respectively, of the transformed eigenvectors
+C          in their first M columns.
+C
+C     NOTE that the last component of each returned vector
+C     is real and that vector Euclidean norms are preserved.
+C
+C     Questions and comments should be directed to B. S. Garbow,
+C     APPLIED MATHEMATICS DIVISION, ARGONNE NATIONAL LABORATORY
+C     ------------------------------------------------------------------
+C***REFERENCES  B. T. SMITH, J. M. BOYLE, J. J. DONGARRA, B. S. GARBOW,
+C                 Y. IKEBE, V. C. KLEMA, C. B. MOLER, *MATRIX EIGEN-
+C                 SYSTEM ROUTINES - EISPACK GUIDE*, SPRINGER-VERLAG,
+C                 1976.
+C***ROUTINES CALLED  (NONE)
+C***END PROLOGUE  HTRIB3
+ 
+ 

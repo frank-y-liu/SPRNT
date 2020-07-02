@@ -1,0 +1,6 @@
+FORTRAN = f77
+OPTS = -n32 -mips4 -O2 -OPT:IEEE_arithmetic=2 -static -woff 2202,2418
+NOPTS = -n32 -mips4 -OPT:IEEE_arithmetic=2 -static -woff 2202,2418
+RANLIB = ar tsl
+MACHCON = IEEE.MOST-SIG-BYTE-FIRST
+LIBRARY = libcm.a

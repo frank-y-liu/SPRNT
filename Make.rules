@@ -14,7 +14,7 @@
 
 CC = gcc
 CXX = g++
-FC = gfortran
+FC = f77
 
 AR = ar
 RANLIB = ranlib
@@ -41,7 +41,7 @@ endif
 ARCH := $(shell uname )
 
 ## gfortran libs
-LIBFORTRAN = -L/usr/local/gfortran/lib -lgfortran
+LIBFORTRAN =  -lgfortran
 
 ## where to find blas, returned by ax_loc_blas
 ifeq (${ARCH},Darwin)
