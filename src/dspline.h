@@ -34,25 +34,25 @@ extern "C" double FORTRAN(dbvalu)(...);
 const int SM_DFLT_FIX = 100;
 
 class DSpline {
- protected:
-  int         _nx;
-  int         _k;
-  
-  double      _xb;
-  double      _xe;
+protected:
+  int _nx;
+  int _k;
 
-  int         _inbv;
+  double _xb;
+  double _xe;
 
-  FlexVec<double, SM_DFLT_FIX>   _t;
-  FlexVec<double, SM_DFLT_FIX>   _bcoef;
-  FlexVec<double, SM_DFLT_FIX>   _q;
-  FlexVec<double, SM_DFLT_FIX>   _work;
+  int _inbv;
 
- public:
- DSpline():_nx(0),_k(0),_xb(0.0),_xe(0.0),_inbv(1){}
-  ~DSpline(){}
+  FlexVec<double, SM_DFLT_FIX> _t;
+  FlexVec<double, SM_DFLT_FIX> _bcoef;
+  FlexVec<double, SM_DFLT_FIX> _q;
+  FlexVec<double, SM_DFLT_FIX> _work;
 
-  int   GetNKnots() const { return _k; }
+public:
+  DSpline() : _nx(0), _k(0), _xb(0.0), _xe(0.0), _inbv(1) {}
+  ~DSpline() {}
+
+  int GetNKnots() const { return _k; }
 
   double GetXb() const { return _xb; }
   double GetXe() const { return _xe; }
@@ -64,7 +64,6 @@ class DSpline {
   int EvalFunAndDer(double x, double &y, double &dy);
 
   // might want to have functions which eval an array */
-
 };
 
 #endif
@@ -72,4 +71,3 @@ class DSpline {
 // Local Variables:
 // mode: c++
 // End:
-

@@ -21,26 +21,26 @@
 #include "solver_def.h"
 
 class Solver_Interface {
- protected:
+protected:
   static const char *_name;
-  void        *_handle;
-  void        *_s;
+  void *_handle;
+  void *_s;
 
   create_solver_t create_solver;
   delete_solver_t delete_solver;
-  init_solver_t   init_solver;
-  solve_t         solve;
-  get_type_t      get_type;
-  clear_t         clear_solver;
+  init_solver_t init_solver;
+  solve_t solve;
+  get_type_t get_type;
+  clear_t clear_solver;
 
 public:
-  Solver_Interface():_handle(0),_s(0) {}
+  Solver_Interface() : _handle(0), _s(0) {}
   ~Solver_Interface();
 
   int Setup(int);
   void Init(int nnz, int dim, int *rows, int *cols, double *vals);
-  int  Solve(double *rhs, double *x);
-  int  SolverType();
+  int Solve(double *rhs, double *x);
+  int SolverType();
   void Clear();
 };
 

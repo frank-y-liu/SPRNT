@@ -39,12 +39,12 @@
 #endif
 
 void PrintHeader(FILE *F) {
-  fprintf(F,"  \n");
-  fprintf(F,"   SPRNT: Simulation Program for River Networks\n");
-  fprintf(F,"      version %d.%d.%d (%s) : %s  %s\n", 
-	  VERSION_MAJOR, VERSION_MINOR, VERSION_REVISION, GIT_HASH, BUILD_DATE, BUILD_TIME);
-  fprintf(F,"      compiled with %s\n", COMPILER_VER);
-  fprintf(F,"  \n");
+  fprintf(F, "  \n");
+  fprintf(F, "   SPRNT: Simulation Program for River Networks\n");
+  fprintf(F, "      version %d.%d.%d (%s) : %s  %s\n", VERSION_MAJOR,
+          VERSION_MINOR, VERSION_REVISION, GIT_HASH, BUILD_DATE, BUILD_TIME);
+  fprintf(F, "      compiled with %s\n", COMPILER_VER);
+  fprintf(F, "  \n");
 }
 
 #undef VERSION_MAJOR

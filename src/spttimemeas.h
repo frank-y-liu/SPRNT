@@ -21,37 +21,37 @@
 /*
  simple wrapper class to measure runtime
  usage example:
-    start(); 
-    stop(); 
-    read(); 
+    start();
+    stop();
+    read();
  repeat
- or 
-  restart(); 
-  stop(); 
-  start(); 
-  stop(); 
+ or
+  restart();
+  stop();
+  start();
+  stop();
   read(); repeat
 
- limitation: the resoltion only to milliseconds. 
+ limitation: the resoltion only to milliseconds.
 
- make sure to check the return flag of stop() 
+ make sure to check the return flag of stop()
 */
 class mytm {
 protected:
-  double           _accum;
-  int              _started;
-  struct timeval   _start;
-  struct timeval   _end;
-  
+  double _accum;
+  int _started;
+  struct timeval _start;
+  struct timeval _end;
+
 public:
-  mytm():_accum(0.0),_started(0) {}
+  mytm() : _accum(0.0), _started(0) {}
   ~mytm() {}
 
   void start() {
     _started = 1;
-    gettimeofday(&_start,NULL);
+    gettimeofday(&_start, NULL);
   }
-  
+
   int stop() {
     if (!_started) {
       return 0;
@@ -60,19 +60,18 @@ public:
       long int dus, ds;
       dus = _end.tv_usec - _start.tv_usec;
       ds = _end.tv_sec - _start.tv_sec;
-      _accum += (double)(ds*1000000+dus)/1000000.0;
+      _accum += (double)(ds * 1000000 + dus) / 1000000.0;
       _started = 0;
       return 1;
     }
   }
-  
+
   void restart() {
-    _accum =0.0;
+    _accum = 0.0;
     start();
   }
-  
-  double read() const { return _accum; }
 
+  double read() const { return _accum; }
 };
 
 #endif
@@ -80,4 +79,3 @@ public:
 // Local Variables:
 // mode: c++
 // End:
-

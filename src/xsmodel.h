@@ -19,12 +19,12 @@
 #ifndef _XSMODEL_H
 #define _XSMODEL_H
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
 
-#include "flexvec.h"
 #include "dspline.h"
+#include "flexvec.h"
 #include "xsection.h"
 #include "xstrans.h"
 
@@ -32,30 +32,30 @@
    XY cross section
 ************************************************************************/
 class XY_XSection : public XSection {
- protected:
-  // the idea is use troughs to build the following  
-  int                        _num_segs;    
+protected:
+  // the idea is use troughs to build the following
+  int _num_segs;
 
-  DSpline                    _y_sp;    // splines
-  DSpline                    _cen_sp;
-  DSpline                    _per_sp;
-  DSpline                    _w_sp;
+  DSpline _y_sp; // splines
+  DSpline _cen_sp;
+  DSpline _per_sp;
+  DSpline _w_sp;
 
-  double                     _top_y;
-  double                     _bot_y;
-  
- public:
- XY_XSection(int id):XSection(id) {
+  double _top_y;
+  double _bot_y;
+
+public:
+  XY_XSection(int id) : XSection(id) {
     _top_y = 0.0;
     _bot_y = 0.0;
   }
 
-  ~XY_XSection() { }
-  
+  ~XY_XSection() {}
+
   // methods for the real usage
   int Build(int num_pairs, double *xx, double *yy, xs_trans *m);
   int Build(int num, double *aa, double *pp, double *yy, double *ww);
-	    
+
   double GetDepth(double a);
   double GetDepthdA(double a);
   double GetWidth(double a);
@@ -73,8 +73,8 @@ class XY_XSection : public XSection {
   void GetEqFriction(double a, double &ef, double &efda);
   void GetHydroRadius(double a, double &r, double &drda);
 
-  int ReachedBankFull(double a) { return ( a >= _aa_bf ); }
-  int ReachedMinimalA(double a) { return ( a <  _aa_min); }
+  int ReachedBankFull(double a) { return (a >= _aa_bf); }
+  int ReachedMinimalA(double a) { return (a < _aa_min); }
 };
 
 #endif

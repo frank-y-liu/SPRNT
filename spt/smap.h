@@ -17,8 +17,8 @@
 
  anticipated number of unique entries 100 ~ 100,000
 
- use unordered_map 
-  
+ use unordered_map
+
  interface using char* to be backward compatible
 
  capacity: since we use int, the max number of entries is ~2,000,000,000
@@ -28,7 +28,7 @@
  Update:
    on older compiler which doesn't support c++0x, use <map>
    unscientific testing shows <map> is twice as slow as <unordered_map>
- 
+
  */
 
 #ifndef _SMAP_H
@@ -50,25 +50,25 @@ using namespace std;
 class SMap {
 private:
 #ifdef HAS_CXX_SUPPORT
-  typedef std::unordered_map< std::string, int>   MapType;
+  typedef std::unordered_map<std::string, int> MapType;
 #else
-  typedef std::map<std::string, int>               MapType;
+  typedef std::map<std::string, int> MapType;
 #endif
-  int                             _cntr;
-  MapType                         _M;
+  int _cntr;
+  MapType _M;
 
 public:
 #ifdef HAS_CXX_SUPPORT
-  SMap():_cntr(0) { _M.rehash(15000000); } // slightly different hash function
+  SMap() : _cntr(0) { _M.rehash(15000000); } // slightly different hash function
 #else
-  SMap():_cntr(0) {}
+  SMap() : _cntr(0) {}
 #endif
 
   ~SMap() {}
 
   /* public methods */
   // return the size of the mapping table
-  int Size() const { return ( _M.size() ); }
+  int Size() const { return (_M.size()); }
 
   // check, if the entry is found returns the key
   // if not, create a new entry and returns key
@@ -77,11 +77,11 @@ public:
     MapType::const_iterator loc;
 
     loc = _M.find(ns);
-    if ( loc == _M.end() ) {
+    if (loc == _M.end()) {
       _M[ns] = _cntr;
       return (_cntr++);
     } else {
-      return _M[ ns ];
+      return _M[ns];
     }
   }
 
@@ -93,20 +93,17 @@ public:
     MapType::const_iterator loc;
 
     loc = _M.find(ns);
-    if ( loc == _M.end() ) {
+    if (loc == _M.end()) {
       return (-1);
     } else {
-      return _M[ ns ];
+      return _M[ns];
     }
   }
-  
 };
 
 #undef HAS_CXX_SUPPORT
 #endif
 
-// Local Variables: 
+// Local Variables:
 // mode: c++
 // End:
-
-

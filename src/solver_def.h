@@ -18,12 +18,12 @@
 #define L_KLU 1
 #define L_UNKNOWN 2
 
-typedef  void*(*create_solver_t)(int);
-typedef  void (*delete_solver_t)(void*);
-typedef  void (*init_solver_t)(void *, int, int, int*, int*, double*);
-typedef  int  (*solve_t)(void*, double*, double*);
-typedef  int  (*get_type_t)(void*);
-typedef  void (*clear_t)(void*);
+typedef void *(*create_solver_t)(int);
+typedef void (*delete_solver_t)(void *);
+typedef void (*init_solver_t)(void *, int, int, int *, int *, double *);
+typedef int (*solve_t)(void *, double *, double *);
+typedef int (*get_type_t)(void *);
+typedef void (*clear_t)(void *);
 
 #endif
 
