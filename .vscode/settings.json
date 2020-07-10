@@ -38,7 +38,8 @@
         "xstrans.C": "cpp",
         "xsection.C": "cpp",
         "__hash_table": "cpp",
-        "xsmodel.C": "cpp"
+        "xsmodel.C": "cpp",
+        "*.tcc": "cpp"
     },
     "C_Cpp.dimInactiveRegions": false
 }

@@ -1508,7 +1508,7 @@ int Subcatchment::NonLinearStep(double t, double dt, int jac_num, int max_iter, 
   for (cnt=0; cnt < max_iter; cnt++) {
 
     if (cnt < jac_num)  Evaluate(t, dt);
-    else                Evaluate(t, dt);//EvaluateRHS(t, dt);
+    else                EvaluateRHS(t, dt);
 
 
     l2norm = this->GetNorm();
@@ -1586,7 +1586,11 @@ int Subcatchment::ComputeDepthAndElevation(int flags) {
   }
 
   if ( flags & PRT_Z ) {
-    for (int jj=0; jj<_num_nodes; jj++) _Elevation[jj] = _NS[jj]->GetElevation(_X[_NS[jj]->AIdx()]);
+    for (int jj=0; jj<_num_nodes; jj++) {
+      _Elevation[jj] = _NS[jj]->GetElevation(_X[_NS[jj]->AIdx()]);
+      //fprintf(stdout,"node = %d, depth = %3f, , absdepth=%.5f, zR = %.5f, hR = %5f elevation = %.5f \n",_NS[jj]->Id(), _NS[jj]->GetDepth(_X[_NS[jj]->AIdx()]), _NS[jj]->GetAbsoluteDepth(_X[_NS[jj]->AIdx()]), 
+      //_NS[jj]->GetzR(), _NS[jj]->HR(),  _NS[jj]->GetElevation(_X[_NS[jj]->AIdx()]));
+    }
   }
 
   return 0;

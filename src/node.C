@@ -601,30 +601,50 @@ int MomStvEqn::Evaluate(Node **n, double *X, double *Xp, double *RHS, SparseMatr
     suppress=0;}
   else {
     suppress=1;}
-
-  RHS[_row]= suppress*(OPT.Beta()/_dx) * (Qdnsqdiva - Qupsqdiva) + 
-    (half_g/_dx)* (X[idx_dn_a] + X[idx_up_a])*( DN->GetDepth(X[idx_dn_a])
-					       -UP->GetDepth(X[idx_up_a]) )
-    - half_g * (DN->GetSR()*(X[idx_dn_a]) + UP->GetSR()*(X[idx_up_a]) )
-    + half_g * (DN->Nsq()*dn_n_corr*Qdnsq*Efdn + UP->Nsq()*up_n_corr*Qupsq*Efup );
+  
+  #if SUPPRESSOR
+    RHS[_row]= suppress*(OPT.Beta()/_dx) * (Qdnsqdiva - Qupsqdiva) + 
+      (half_g/_dx)* (X[idx_dn_a] + X[idx_up_a])*( DN->GetDepth(X[idx_dn_a])
+			  		       -UP->GetDepth(X[idx_up_a]) )
+      - half_g * (DN->GetSR()*(X[idx_dn_a]) + UP->GetSR()*(X[idx_up_a]) )
+      + half_g * (DN->Nsq()*dn_n_corr*Qdnsq*Efdn + UP->Nsq()*up_n_corr*Qupsq*Efup );
+  #else
+    RHS[_row]= OPT.Beta()/_dx * (Qdnsqdiva - Qupsqdiva) + 
+      (half_g/_dx)* (X[idx_dn_a] + X[idx_up_a])*( DN->GetDepth(X[idx_dn_a])
+			  		       -UP->GetDepth(X[idx_up_a]) )
+      - half_g * (DN->GetSR()*(X[idx_dn_a]) + UP->GetSR()*(X[idx_up_a]) )
+      + half_g * (DN->Nsq()*dn_n_corr*Qdnsq*Efdn + UP->Nsq()*up_n_corr*Qupsq*Efup );
+  #endif
 
 
   double up_fric_da = UP->XS()->GetEqFrictiondA(X[idx_up_a] + OPT.EpsilonA() );
   double dn_fric_da = DN->XS()->GetEqFrictiondA(X[idx_dn_a] + OPT.EpsilonA() );
 
+  #if SUPPRESSOR
+    double dmdaup = suppress*(OPT.Beta()/_dx) * Qupsqdiva/(X[idx_up_a]) 
+      + (half_g/_dx) * (DN->GetDepth(X[idx_dn_a]) - UP->GetDepth(X[idx_up_a])
+		        - (X[idx_up_a]+X[idx_dn_a])*UP->GetDepthdA(X[idx_up_a])   ) 
+      - half_g*UP->GetSR()
+      + half_g*UP->Nsq()*up_n_corr*Qupsq * up_fric_da;
 
-  double dmdaup = suppress*(OPT.Beta()/_dx) * Qupsqdiva/(X[idx_up_a]) 
-    + (half_g/_dx) * (DN->GetDepth(X[idx_dn_a]) - UP->GetDepth(X[idx_up_a])
-		      - (X[idx_up_a]+X[idx_dn_a])*UP->GetDepthdA(X[idx_up_a])   ) 
-    - half_g*UP->GetSR()
-    + half_g*UP->Nsq()*up_n_corr*Qupsq * up_fric_da;
+    double dmdadn = suppress*(-OPT.Beta()/_dx)*Qdnsqdiva/(X[idx_dn_a]) 
+      + (half_g/_dx) * (DN->GetDepth(X[idx_dn_a]) - UP->GetDepth(X[idx_up_a])
+		        + (X[idx_up_a]+X[idx_dn_a])*DN->GetDepthdA(X[idx_dn_a]) ) 
+      - half_g*DN->GetSR()
+      + half_g*DN->Nsq()*dn_n_corr*Qdnsq* dn_fric_da;
+  #else
+    double dmdaup = OPT.Beta()/_dx * Qupsqdiva/(X[idx_up_a]) 
+      + (half_g/_dx) * (DN->GetDepth(X[idx_dn_a]) - UP->GetDepth(X[idx_up_a])
+		        - (X[idx_up_a]+X[idx_dn_a])*UP->GetDepthdA(X[idx_up_a])   ) 
+      - half_g*UP->GetSR()
+      + half_g*UP->Nsq()*up_n_corr*Qupsq * up_fric_da;
 
-  double dmdadn = suppress*(-OPT.Beta()/_dx)*Qdnsqdiva/(X[idx_dn_a]) 
-    + (half_g/_dx) * (DN->GetDepth(X[idx_dn_a]) - UP->GetDepth(X[idx_up_a])
-		      + (X[idx_up_a]+X[idx_dn_a])*DN->GetDepthdA(X[idx_dn_a]) ) 
-    - half_g*DN->GetSR()
-    + half_g*DN->Nsq()*dn_n_corr*Qdnsq* dn_fric_da;
-
+    double dmdadn = -OPT.Beta()/_dx*Qdnsqdiva/(X[idx_dn_a]) 
+      + (half_g/_dx) * (DN->GetDepth(X[idx_dn_a]) - UP->GetDepth(X[idx_up_a])
+		        + (X[idx_up_a]+X[idx_dn_a])*DN->GetDepthdA(X[idx_dn_a]) ) 
+      - half_g*DN->GetSR()
+      + half_g*DN->Nsq()*dn_n_corr*Qdnsq* dn_fric_da;
+  #endif
 
   M->CreateEntryNC(_row, UP->AIdx(), dmdaup);
   M->CreateEntryNC(_row, DN->AIdx(), dmdadn);
@@ -692,13 +712,20 @@ int MomStvEqn::EvaluateRHS(Node **n, double *X, double *Xp, double *RHS) {
     suppress=0;}
   else {
     suppress=1;}
-
-  RHS[_row]= suppress*(OPT.Beta()/_dx)* (Qdnsqdiva - Qupsqdiva) + 
-    (half_g/_dx)* (X[idx_dn_a] + X[idx_up_a])*( DN->GetDepth(X[idx_dn_a])
-					       -UP->GetDepth(X[idx_up_a]) )
-    - half_g* (DN->GetSR()*(X[idx_dn_a]) + UP->GetSR()*(X[idx_up_a]) )
-    + half_g * (DN->Nsq()*dn_n_corr*Qdnsq*Efdn + UP->Nsq()*up_n_corr*Qupsq*Efup );
-
+    
+  #if SUPPRESSOR
+    RHS[_row]= suppress*(OPT.Beta()/_dx)* (Qdnsqdiva - Qupsqdiva) + 
+      (half_g/_dx)* (X[idx_dn_a] + X[idx_up_a])*( DN->GetDepth(X[idx_dn_a])
+      -UP->GetDepth(X[idx_up_a]) )
+      - half_g* (DN->GetSR()*(X[idx_dn_a]) + UP->GetSR()*(X[idx_up_a]) )
+      + half_g * (DN->Nsq()*dn_n_corr*Qdnsq*Efdn + UP->Nsq()*up_n_corr*Qupsq*Efup );
+  #else
+    RHS[_row]= OPT.Beta()/_dx* (Qdnsqdiva - Qupsqdiva) + 
+      (half_g/_dx)* (X[idx_dn_a] + X[idx_up_a])*( DN->GetDepth(X[idx_dn_a])
+      -UP->GetDepth(X[idx_up_a]) )
+      - half_g* (DN->GetSR()*(X[idx_dn_a]) + UP->GetSR()*(X[idx_up_a]) )
+      + half_g * (DN->Nsq()*dn_n_corr*Qdnsq*Efdn + UP->Nsq()*up_n_corr*Qupsq*Efup );
+  #endif
   return OK;
 }
 

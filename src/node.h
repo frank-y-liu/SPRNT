@@ -112,6 +112,7 @@ class Node {
   double& Q0() { return _q0;}
   double& A0() { return _a0;}
   float& HR()  { return _hr;}
+  double GetzR() const {return _zr;}
 
   /* method to add more sutff */
   void AddLocationInfo(double x, double y);
@@ -132,7 +133,7 @@ class Node {
   // AbsoluteDepth is the depth from the bathymetry bottom
   double GetDepth(double a) { return a < 0 ?-1.0 : _xs->GetDepth(a) + _hr; }
   double GetAbsoluteDepth(double a) { return a < 0 ? -1.0 : _xs->GetDepth(a); }
-  double GetElevation(double a) { return _xs->GetDepth(a) + _zr; }
+  double GetElevation(double a) { return _xs->GetDepth(a) + _zr + _hr; }
   double GetAbyDepth(double a) { return _xs->GetAbyDepth(a); }
   double GetDepthdA(double a) { return _xs->GetDepthdA(a); }
 

@@ -1,0 +1,12 @@
+
+The two test cases in this folder are used to test the implementation of Fread method in the SPRNT model.
+
+In the SPRNT model, we use the method proposed by Danny Fread (1986) to handle the numerical instaiblity of Preissmann scheme in the transition from subcritical to supercritical,
+or vice versa. 
+
+Both files are generated from test cases in MacDonald  (1995) (https://www.reading.ac.uk/web/files/maths/02-95.pdf).
+
+f1.spt and f2.spt are UR6 and UT4 in MacDonald (1995) respectively. 
+
+  
+ 
