@@ -1,0 +1,14 @@
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdftex 2014.9.27)  1 OCT 2014 18:14
+entering extended mode
+**C:/Users/cesc/Dropbox/UT/course_EFM/critical*review/bibliographyfile.bib
+("C:/Users/cesc/Dropbox/UT/course_EFM/critical review/bibliographyfile.bib"
+! Undefined control sequence.
+l.2 \usepackage
+                {url}
+? 
+! Emergency stop.
+l.2 \usepackage
+                {url}
+End of file on the terminal!
+
+!  ==> Fatal error occurred, no output PDF file produced!

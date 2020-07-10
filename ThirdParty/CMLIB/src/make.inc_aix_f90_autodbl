@@ -1,0 +1,6 @@
+FORTRAN = /usr/bin/xlf90
+OPTS = -O -qtune=pwr -qautodbl=dblpad -qfixed -qmaxmem=8192
+NOPTS = -qtune=pwr -qautodbl=dblpad -qfixed
+RANLIB = ranlib
+MACHCON = IBM.RS6000.XLF-WITH-AUTODBL-OPTION
+LIBRARY = libcm.a

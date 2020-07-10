@@ -1,0 +1,25 @@
+ 
+      DOUBLE PRECISION FUNCTION DCOT(X)
+C***BEGIN PROLOGUE  DCOT
+C***DATE WRITTEN   770601   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C4A
+C***KEYWORDS  COTANGENT,DEGREE,DOUBLE PRECISION,ELEMENTARY FUNCTION,
+C             TRIGONOMETRIC COSINE
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the d.p. Cotangent.
+C***DESCRIPTION
+C
+C DCOT(X) calculates the double precision trigonometric cotangent
+C for double precision argument X.  X is in units of radians.
+C
+C Series for COT        on the interval  0.          to  6.25000E-02
+C                                        with weighted error   5.52E-34
+C                                         log weighted error  33.26
+C                               significant figures required  32.34
+C                                    decimal places required  33.85
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D1MACH,DCSEVL,DINT,INITDS,XERROR
+C***END PROLOGUE  DCOT
+ 
+ 

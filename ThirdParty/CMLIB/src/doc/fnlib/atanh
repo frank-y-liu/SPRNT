@@ -1,0 +1,23 @@
+ 
+      FUNCTION ATANH(X)
+C***BEGIN PROLOGUE  ATANH
+C***DATE WRITTEN   770401   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C4C
+C***KEYWORDS  ARC HYPERBOLIC TANGENT,ATANH,ELEMENTARY FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Compute the arc hyperbolic Tangent.
+C***DESCRIPTION
+C
+C ATANH(X) computes the arc hyperbolic tangent of X.
+C
+C Series for ATNH       on the interval  0.          to  2.50000D-01
+C                                        with weighted error   6.70E-18
+C                                         log weighted error  17.17
+C                               significant figures required  16.01
+C                                    decimal places required  17.76
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  CSEVL,INITS,R1MACH,XERROR
+C***END PROLOGUE  ATANH
+ 
+ 

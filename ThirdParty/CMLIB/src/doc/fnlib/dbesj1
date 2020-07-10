@@ -1,0 +1,26 @@
+ 
+      DOUBLE PRECISION FUNCTION DBESJ1(X)
+C***BEGIN PROLOGUE  DBESJ1
+C***DATE WRITTEN   780601   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C10A1
+C***KEYWORDS  BESSEL FUNCTION,DOUBLE PRECISION,FIRST KIND,ORDER ONE,
+C             SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the d.p. Bessel function of the first kind of
+C            order one.
+C***DESCRIPTION
+C
+C DBESJ1(X) calculates the double precision Bessel function of the
+C first kind of order one for double precision argument X.
+C
+C Series for BJ1        on the interval  0.          to  1.60000E+01
+C                                        with weighted error   1.16E-33
+C                                         log weighted error  32.93
+C                               significant figures required  32.36
+C                                    decimal places required  33.57
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D1MACH,D9B1MP,DCSEVL,INITDS,XERROR
+C***END PROLOGUE  DBESJ1
+ 
+ 

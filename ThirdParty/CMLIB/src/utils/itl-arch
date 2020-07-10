@@ -1,0 +1,25 @@
+#! /bin/sh
+
+OSNAME=`uname -s`
+
+case "$OSNAME" in
+    'HP-UX')
+	HWNAME="`uname -m | awk -F/ '{print $1}'`"
+	OSREL="`uname -r | awk -F. '{print $2}'`"
+	;;
+
+    'AIX')
+	HWNAME="`uname -m | cut -c 9-`"
+	OSREL="`uname -v`.`uname -r`"
+	;;
+
+    'Linux')
+	HWNAME=`uname -m`
+	OSREL=`uname -r | sed 's/-.*//'`
+	;;
+    *)
+	HWNAME=`uname -m`
+	OSREL=`uname -r`
+esac
+
+echo $OSNAME-$HWNAME-$OSREL

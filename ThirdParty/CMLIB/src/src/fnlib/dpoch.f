@@ -1,0 +1,92 @@
+      DOUBLE PRECISION FUNCTION DPOCH(A,X)
+C***BEGIN PROLOGUE  DPOCH
+C***DATE WRITTEN   770701   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C1,C7A
+C***KEYWORDS  DOUBLE PRECISION,POCHHAMMER,SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes d.p. generalized Pochhammer's symbol.
+C***DESCRIPTION
+C
+C Evaluate a double precision generalization of Pochhammer's symbol
+C (A)-sub-X = GAMMA(A+X)/GAMMA(A) for double precision A and X.
+C For X a non-negative integer, POCH(A,X) is just Pochhammer's symbol.
+C This is a preliminary version that does not handle wrong arguments
+C properly and may not properly handle the case when the result is
+C computed to less than half of double precision.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D9LGMC,DCOT,DFAC,DGAMMA,DGAMR,DINT,DLGAMS,DLNREL,
+C                    XERROR
+C***END PROLOGUE  DPOCH
+      EXTERNAL DGAMMA
+      DOUBLE PRECISION A, X, ABSA, ABSAX, ALNGA, ALNGAX, AX, B, PI,
+     1  SGNGA, SGNGAX, DFAC, DLNREL, D9LGMC, DGAMMA, DGAMR, DCOT, DINT
+      DATA PI / 3.1415926535 8979323846 2643383279 503 D0 /
+C***FIRST EXECUTABLE STATEMENT  DPOCH
+      AX = A + X
+      IF (AX.GT.0.0D0) GO TO 30
+      IF (DINT(AX).NE.AX) GO TO 30
+C
+      IF (A.GT.0.0D0 .OR. DINT(A).NE.A) CALL XERROR ( 'DPOCH   A+X IS NO
+     1N-POSITIVE INTEGER BUT A IS NOT', 48, 2, 2)
+C
+C WE KNOW HERE THAT BOTH A+X AND A ARE NON-POSITIVE INTEGERS.
+C
+      DPOCH = 1.0D0
+      IF (X.EQ.0.D0) RETURN
+C
+      N = X
+      IF (DMIN1(A+X,A).LT.(-20.0D0)) GO TO 20
+C
+      IA = A
+      DPOCH = (-1.0D0)**N * DFAC(-IA)/DFAC(-IA-N)
+      RETURN
+C
+ 20   DPOCH = (-1.0D0)**N * DEXP ((A-0.5D0)*DLNREL(X/(A-1.0D0))
+     1  + X*DLOG(-A+1.0D0-X) - X + D9LGMC(-A+1.0D0) - D9LGMC(-A-X+1.D0))
+      RETURN
+C
+C A+X IS NOT ZERO OR A NEGATIVE INTEGER.
+C
+ 30   DPOCH = 0.0D0
+      IF (A.LE.0.0D0 .AND. DINT(A).EQ.A) RETURN
+C
+      N = DABS(X)
+      IF (DBLE(FLOAT(N)).NE.X .OR. N.GT.20) GO TO 50
+C
+C X IS A SMALL NON-POSITIVE INTEGER, PRESUMMABLY A COMMON CASE.
+C
+      DPOCH = 1.0D0
+      IF (N.EQ.0) RETURN
+      DO 40 I=1,N
+        DPOCH = DPOCH * (A+DBLE(FLOAT(I-1)))
+ 40   CONTINUE
+      RETURN
+C
+ 50   ABSAX = DABS(A+X)
+      ABSA = DABS(A)
+      IF (DMAX1(ABSAX,ABSA).GT.20.0D0) GO TO 60
+      DPOCH = DGAMMA(A+X) * DGAMR(A)
+      RETURN
+C
+ 60   IF (DABS(X).GT.0.5D0*ABSA) GO TO 70
+C
+C ABS(X) IS SMALL AND BOTH ABS(A+X) AND ABS(A) ARE LARGE.  THUS,
+C A+X AND A MUST HAVE THE SAME SIGN.  FOR NEGATIVE A, WE USE
+C GAMMA(A+X)/GAMMA(A) = GAMMA(-A+1)/GAMMA(-A-X+1) *
+C SIN(PI*A)/SIN(PI*(A+X))
+C
+      B = A
+      IF (B.LT.0.0D0) B = -A - X + 1.0D0
+      DPOCH = DEXP ((B-0.5D0)*DLNREL(X/B) + X*DLOG(B+X) - X
+     1  + D9LGMC(B+X) - D9LGMC(B) )
+      IF (A.LT.0.0D0 .AND. DPOCH.NE.0.0D0) DPOCH =
+     1  DPOCH/(DCOS(PI*X) + DCOT(PI*A)*DSIN(PI*X) )
+      RETURN
+C
+ 70   CALL DLGAMS (A+X, ALNGAX, SGNGAX)
+      CALL DLGAMS (A, ALNGA, SGNGA)
+      DPOCH = SGNGAX * SGNGA * DEXP(ALNGAX-ALNGA)
+C
+      RETURN
+      END

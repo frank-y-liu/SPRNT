@@ -1,0 +1,218 @@
+      SUBROUTINE GL15T(F,A,B,XL,XR,R,AE,RA,
+     1                 RASC,FMIN,FMAX)
+C
+C***AUTHORS          ROBERT PIESSENS AND ELISE DE DONCKER
+C                    APPL. MATH. AND PROGR. DIV.- K.U.LEUVEN
+C                    DAVID KAHANER, NBS WASHINGTON
+C     .................................................................
+C           PURPOSE
+C              TO COMPUTE I = INTEGRAL OF G(X) OVER (A,B),
+C                             WITH ERROR ESTIMATE
+C                         J = INTEGRAL OF ABS(G) OVER (A,B)
+C
+C           PARAMETERS
+C            ON ENTRY
+C              F      - REAL
+C                       FUNCTION SUBPROGRAM DEFINING THE INTEGRAND
+C                       FUNCTION F(X). THE ACTUAL NAME FOR F NEEDS
+C                       TO BE DECLARED E X T E R N A L IN THE
+C                       CALLING PROGRAM.
+C                       THE FUNCTION G(X) IS DEFINED TO BE
+C                       G(X)=F(PHI(X))*PHIP(X)
+C                       WHERE PHI(X) IS THE CUBIC GIVEN BY
+C                       THE ARITHMETIC STATEMENT FUNCTION BELOW.
+C                       PHIP(X) IS ITS DERIVATIVE.  THE VARIABLES
+C                       XL AND XR ARE THE LEFT AND RIGHT ENDPOINTS
+C                       OF A PARENT INTERVAL OF WHICH (A,B) IS A PART.
+C
+C              A      - REAL
+C                       LOWER LIMIT OF INTEGRATION
+C
+C              B      - REAL
+C                       UPPER LIMIT OF INTEGRATION
+C
+C              XL     - DOUBLE PRECISION
+C              XR     - DOUBLE PRECISION
+C                       LOWER AND UPPER LIMITS OF PARENT INTERVAL
+C                       OF WHICH [A,B] IS A PART.
+C
+C            ON RETURN
+C              R - REAL
+C                       APPROXIMATION TO THE INTEGRAL I
+C                       R IS COMPUTED BY APPLYING THE 15-POINT
+C                       KRONROD RULE (RESK) OBTAINED BY OPTIMAL
+C                       ADDITION OF ABSCISSAE TO THE 7-POINT GAUSS
+C                       RULE (RESG).
+C
+C              AE - REAL
+C                       ESTIMATE OF THE MODULUS OF THE ABSOLUTE ERROR,
+C                       WHICH SHOULD NOT EXCEED ABS(I-R)
+C
+C              RA - REAL
+C                       APPROXIMATION TO THE INTEGRAL J
+C
+C              RASC - REAL
+C                       APPROXIMATION TO THE INTEGRAL OF ABS(G-I/(B-A))
+C                       OVER (A,B)
+C
+C              FMAX, FMIN - REAL
+C                       MAX AND MIN VALUES OF THE FUNCTION F ON (A,B)
+C           SUBROUTINES OR FUNCTIONS NEEDED
+C                 - F (USER-PROVIDED FUNCTION)
+C                 - R1MACH
+C                 - FORTRAN ABS, AMAX1, AMIN1
+C
+C     .................................................................
+C***END PROLOGUE
+C
+      SAVE EPMACH,UFLOW
+      REAL A,AE,B,DHLGTH,EPMACH,F,FC,FSUM,FVAL1,FVAL2,
+     *  FV1,FV2,HLGTH,RA,RASC,RESG,RESK,RESKH,R,R1MACH,UFLOW,
+     *  WG,WGK,XGK
+      DOUBLE PRECISION XL,XR,CENTR,ABSC,U
+      INTEGER J,JTW,JTWM1
+C
+      DIMENSION FV1(7),FV2(7),WG(4),WGK(8),XGK(8)
+C
+C           THE ABSCISSAE AND WEIGHTS ARE GIVEN FOR THE INTERVAL (-1,1)
+C           BECAUSE OF SYMMETRY ONLY THE POSITIVE ABSCISSAE AND THEIR
+C           CORRESPONDING WEIGHTS ARE GIVEN.
+C
+C           XGK    - ABSCISSAE OF THE 15-POINT KRONROD RULE
+C                    XGK(2), XGK(4), ...  ABSCISSAE OF THE 7-POINT
+C                    GAUSS RULE
+C                    XGK(1), XGK(3), ...  ABSCISSAE WHICH ARE OPTIMALLY
+C                    ADDED TO THE 7-POINT GAUSS RULE
+C
+C           WGK    - WEIGHTS OF THE 15-POINT KRONROD RULE
+C
+C           WG     - WEIGHTS OF THE 7-POINT GAUSS RULE
+C
+      DATA XGK(1),XGK(2),XGK(3),XGK(4),XGK(5),XGK(6),XGK(7),XGK(8)/
+     *     0.9914553711208126E+00,   0.9491079123427585E+00,
+     *     0.8648644233597691E+00,   0.7415311855993944E+00,
+     *     0.5860872354676911E+00,   0.4058451513773972E+00,
+     *     0.2077849550078985E+00,   0.0E+00              /
+      DATA WGK(1),WGK(2),WGK(3),WGK(4),WGK(5),WGK(6),WGK(7),WGK(8)/
+     *     0.2293532201052922E-01,   0.6309209262997855E-01,
+     *     0.1047900103222502E+00,   0.1406532597155259E+00,
+     *     0.1690047266392679E+00,   0.1903505780647854E+00,
+     *     0.2044329400752989E+00,   0.2094821410847278E+00/
+      DATA WG(1),WG(2),WG(3),WG(4)/
+     *     0.1294849661688697E+00,   0.2797053914892767E+00,
+     *     0.3818300505051189E+00,   0.4179591836734694E+00/
+C
+      PHI(U)=XR-(XR-XL)*U*U*(2.*U+3.)
+      PHIP(U)=-6.*U*(U+1.)
+C
+C           LIST OF MAJOR VARIABLES
+C           -----------------------
+C
+C           CENTR  - MID POINT OF THE INTERVAL
+C           HLGTH  - HALF-LENGTH OF THE INTERVAL
+C           ABSC   - ABSCISSA
+C           FVAL*  - FUNCTION VALUE
+C           RESG   - R OF THE 7-POINT GAUSS FORMULA
+C           RESK   - R OF THE 15-POINT KRONROD FORMULA
+C           RESKH  - APPROXIMATION TO THE MEAN VALUE OF F OVER (A,B),
+C                    I.E. TO I/(B-A)
+C
+C           MACHINE DEPENDENT CONSTANTS
+C           ---------------------------
+C
+C           EPMACH IS THE LARGEST RELATIVE SPACING.
+C           UFLOW IS THE SMALLEST POSITIVE MAGNITUDE.
+C
+C***FIRST EXECUTABLE STATEMENT
+      DATA EPMACH,UFLOW/0.0,0.0/
+      IF(EPMACH.EQ.0.0) THEN
+         EPMACH=R1MACH(4)
+         UFLOW=R1MACH(1)
+      ENDIF
+C
+      IF(XL.LT.XR)THEN
+         SL=SNGL(XL)
+         SR=SNGL(XR)
+        ELSE
+         SL=SNGL(XR)
+         SR=SNGL(XL)
+      ENDIF
+      HLGTH = 0.5E+00*(B-A)
+      CENTR = A+HLGTH
+      DHLGTH = ABS(HLGTH)
+C
+C           COMPUTE THE 15-POINT KRONROD APPROXIMATION TO
+C           THE INTEGRAL, AND ESTIMATE THE ABSOLUTE ERROR.
+C
+      U=(CENTR-XR)/(XR-XL)
+      PHIU=PHI(U)
+      IF(PHIU.LE.SL .OR. PHIU.GE.SR) PHIU=CENTR
+      FMIN=F(PHIU)
+      FMAX=FMIN
+      FC=FMIN*PHIP(U)
+      RESG = FC*WG(4)
+      RESK = FC*WGK(8)
+      RA = ABS(RESK)
+      DO 10 J=1,3
+        JTW = J*2
+        ABSC = HLGTH*XGK(JTW)
+        U=(CENTR-ABSC-XR)/(XR-XL)
+        PHIU=PHI(U)
+        IF(PHIU.LE.SL .OR. PHIU.GE.SR) PHIU=CENTR
+        FVAL1=F(PHIU)
+        FMAX=AMAX1(FMAX,FVAL1)
+        FMIN=AMIN1(FMIN,FVAL1)
+        FVAL1=FVAL1*PHIP(U)
+        U=(CENTR+ABSC-XR)/(XR-XL)
+        PHIU=PHI(U)
+        IF(PHIU.LE.SL .OR. PHIU.GE.SR) PHIU=CENTR
+        FVAL2=F(PHIU)
+        FMAX=AMAX1(FMAX,FVAL2)
+        FMIN=AMIN1(FMIN,FVAL2)
+        FVAL2=FVAL2*PHIP(U)
+        FV1(JTW) = FVAL1
+        FV2(JTW) = FVAL2
+        FSUM = FVAL1+FVAL2
+        RESG = RESG+WG(J)*FSUM
+        RESK = RESK+WGK(JTW)*FSUM
+        RA = RA+WGK(JTW)*(ABS(FVAL1)+ABS(FVAL2))
+   10 CONTINUE
+      DO 15 J = 1,4
+        JTWM1 = J*2-1
+        ABSC = HLGTH*XGK(JTWM1)
+        U=(CENTR-ABSC-XR)/(XR-XL)
+        PHIU=PHI(U)
+        IF(PHIU.LE.SL .OR. PHIU.GE.SR) PHIU=CENTR
+        FVAL1=F(PHIU)
+        FMAX=AMAX1(FMAX,FVAL1)
+        FMIN=AMIN1(FMIN,FVAL1)
+        FVAL1=FVAL1*PHIP(U)
+        U=(CENTR+ABSC-XR)/(XR-XL)
+        PHIU=PHI(U)
+        IF(PHIU.LE.SL .OR. PHIU.GE.SR) PHIU=CENTR
+        FVAL2=F(PHIU)
+        FMAX=AMAX1(FMAX,FVAL2)
+        FMIN=AMIN1(FMIN,FVAL2)
+        FVAL2=FVAL2*PHIP(U)
+        FV1(JTWM1) = FVAL1
+        FV2(JTWM1) = FVAL2
+        FSUM = FVAL1+FVAL2
+        RESK = RESK+WGK(JTWM1)*FSUM
+        RA = RA+WGK(JTWM1)*(ABS(FVAL1)+ABS(FVAL2))
+   15 CONTINUE
+      RESKH = RESK*0.5E+00
+      RASC = WGK(8)*ABS(FC-RESKH)
+      DO 20 J=1,7
+        RASC = RASC+WGK(J)*(ABS(FV1(J)-RESKH)+ABS(FV2(J)-RESKH))
+   20 CONTINUE
+      R = RESK*HLGTH
+      RA = RA*DHLGTH
+      RASC = RASC*DHLGTH
+      AE = ABS((RESK-RESG)*HLGTH)
+      IF(RASC.NE.0.0E+00.AND.AE.NE.0.0E+00)
+     *  AE = RASC*AMIN1(0.1E+01,
+     *  (0.2E+03*AE/RASC)**1.5E+00)
+      IF(RA.GT.UFLOW/(0.5E+02*EPMACH)) AE = AMAX1
+     *  ((EPMACH*0.5E+02)*RA,AE)
+      RETURN
+      END

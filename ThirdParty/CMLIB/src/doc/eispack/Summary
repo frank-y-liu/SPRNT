@@ -1,0 +1,23 @@
+ 
+ 
+ 
+     EISPACK IS A COLLECTION OF 70 FORTRAN SUBROUTINES FOR
+      EIGENANALYSIS OF MATRICES, BOTH REAL AND COMPLEX.
+ 
+========================================================================
+ 
+      COMPLETE DOCUMENTATION FOR THE EISPACK ROUTINES MAY BE FOUND
+      IN THE BOOKS
+ 
+      MATRIX EIGENSYSTEM ROUTINES - EISPACK GUIDE
+      BY SMITH ET AL.
+      (VOLUMES 6 AND 51 OF LECTURE NOTES IN COMPUTER SCIENCE,
+      SPRINGER-VERLAG, 1976.)
+ 
+========================================================================
+ 
+     NOTE:  WHILE EISPACK PROGRAMS CAN ANALYZE COMPLEX MATRICES
+             A L L  INTERNAL ARITHMETIC IS  R E A L.
+ 
+ 
+ 

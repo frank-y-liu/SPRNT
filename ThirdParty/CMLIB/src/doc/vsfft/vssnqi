@@ -1,0 +1,97 @@
+ 
+C
+C             * * * * * * * * * * * * * * * * * * * * * *
+C             *                                         *
+C             * SUBROUTINE VSSNQI(N,C1,C2,C3,C4,WSAVE)  *
+C             *                                         *
+C             * * * * * * * * * * * * * * * * * * * * * *
+C
+C
+C                           * * * * * * * *
+C                           *   PURPOSE   *
+C                           * * * * * * * *
+C
+C
+C     A SUBROUTINE THAT COMPUTES INTERMEDIATE VALUES REQUIRED FOR THE
+C     CALCULATION OF STAGGERED GRID COSINE AND SINE QUARTER-WAVE
+C     TRANSFORMS AND FOR A REAL PERIODIC FAST FOURIER TRANSFORM.
+C
+C     NOTE:  SUBROUTINE VSCSQI OR VSSNQI MUST BE CALLED BEFORE EITHER OF
+C     THE SUBROUTINES VSCOSQ OR VSSINQ IS CALLED, BUT THEY NEED BE
+C     CALLED ONLY ONCE FOR ANY GIVEN VALUE OF N.
+C
+C
+C                    * * * * * * * * * * * * * * *
+C                    *   PARAMETER DESCRIPTION   *
+C                    * * * * * * * * * * * * * * *
+C
+C
+C     INPUT PARAMETER
+C
+C     N      THE LENGTH OF THE STAGGERED GRID COSINE OR SINE QUARTER-
+C            WAVE TRANSFORM TO BE COMPUTED.
+C
+C
+C     OUTPUT PARAMETERS
+C
+C     C1,C2, FOUR REAL ONE-DIMENSIONAL ARRAYS OF LENGTH M THAT CONTAIN
+C     C3,C4  INTERMEDIATE TRIGONOMETRIC VALUES USED IN THE STAGGERED
+C            GRID TRANSFORMS.
+C
+C     WSAVE  A REAL ONE-DIMENSIONAL ARRAY OF LENGTH M+15 THAT CONTAINS
+C            INTERMEDIATE VALUES CREATED BY THE SUBROUTINE VRFFTI FOR
+C            USE IN THE COMPUTATION OF A REAL PERIODIC FAST FOURIER
+C            TRANSFORM.
+C
+C     NOTE:  THE QUANTITIES IN THE ARRAYS C1, C2, C3, C4, AND WSAVE MUST
+C            NOT BE DESTROYED BETWEEN SUCCESSIVE CALLS TO THE STAGGERED
+C            GRID TRANSFORM ROUTINES.
+C
+C
+C
+C              * * * * * * * * * * * * * * * * * * * * *
+C              *                                       *
+C              *         PROGRAM SPECIFICATIONS        *
+C              *                                       *
+C              * * * * * * * * * * * * * * * * * * * * *
+C
+C
+C
+C     DIMENSION OF    F(L,M,N), FT(L*M*N), C1(M), C2(M), C3(M), C4(M),
+C     ARGUMENTS       WSAVE(N+15)
+C
+C     LATEST          AUGUST 1, 1985
+C     REVISION
+C
+C     SUBPROGRAMS     VSRFTI, VSCOSI, VSCSQI, VSRFTF, VSRFTB, VSCOSF,
+C     REQUIRED        VSCOSB, VSCOSQ, VSSINF, VSSINB, VSSINQ, PIMACH,
+C                     VRFFTPK (PACKAGE)
+C
+C     SPECIAL         NONE
+C     CONDITIONS
+C
+C     COMMON          NONE
+C     BLOCKS
+C
+C     I/O             NONE
+C
+C     PRECISION       SINGLE
+C
+C     SPECIALIST      ROLAND SWEET
+C
+C     LANGUAGE        FORTRAN
+C
+C     HISTORY         WRITTEN BY LINDA LINDGREN AND ROLAND SWEET AT THE
+C                     NATIONAL BUREAU OF STANDARDS (BOULDER).
+C
+C     ALGORITHM       SEE "FAST FOURIER TRANSFORMS ON A STAGGERED GRID"
+C                     BY ROLAND A. SWEET (TO APPEAR)
+C
+C     PORTABILITY     AMERICAN NATIONAL STANDARDS INSTITUTE FORTRAN 77.
+C                     THE ONLY MACHINE DEPENDENT CONSTANT IS LOCATED IN
+C                     THE FUNCTION PIMACH.
+C
+C     REQUIRED        COS,SIN
+C     RESIDENT
+C     ROUTINES
+C

@@ -1,0 +1,24 @@
+ 
+      DOUBLE PRECISION FUNCTION DERF(X)
+C***BEGIN PROLOGUE  DERF
+C***DATE WRITTEN   770701   (YYMMDD)
+C***REVISION DATE  840425   (YYMMDD)
+C***CATEGORY NO.  C8A,L5A1E
+C***KEYWORDS  DOUBLE PRECISION,ERROR FUNCTION,SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the d.p. error function, ERF, of X.
+C***DESCRIPTION
+C
+C DERF(X) calculates the double precision error function for double
+C precision argument X.
+C
+C Series for ERF        on the interval  0.          to  1.00000E+00
+C                                        with weighted error   1.28E-32
+C                                         log weighted error  31.89
+C                               significant figures required  31.05
+C                                    decimal places required  32.55
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D1MACH,DCSEVL,DERFC,INITDS
+C***END PROLOGUE  DERF
+ 
+ 

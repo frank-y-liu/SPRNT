@@ -1,0 +1,90 @@
+ 
+      SUBROUTINE CPPCO(AP,N,RCOND,Z,INFO)
+C***BEGIN PROLOGUE  CPPCO
+C***DATE WRITTEN   780814   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D2D1B
+C***KEYWORDS  COMPLEX,CONDITION,FACTOR,LINEAR ALGEBRA,LINPACK,MATRIX,
+C             PACKED,POSITIVE DEFINITE
+C***AUTHOR  MOLER, C. B., (U. OF NEW MEXICO)
+C***PURPOSE  Factors a COMPLEX HERMITIAN POSITIVE DEFINITE matrix stored
+C            in packed form and estimates the condition of the matrix.
+C***DESCRIPTION
+C
+C     CPPCO factors a complex Hermitian positive definite matrix
+C     stored in packed form and estimates the condition of the matrix.
+C
+C     If  RCOND  is not needed, CPPFA is slightly faster.
+C     To solve  A*X = B , follow CPPCO by CPPSL.
+C     To compute  INVERSE(A)*C , follow CPPCO by CPPSL.
+C     To compute  DETERMINANT(A) , follow CPPCO by CPPDI.
+C     To compute  INVERSE(A) , follow CPPCO by CPPDI.
+C
+C     On Entry
+C
+C        AP      COMPLEX (N*(N+1)/2)
+C                the packed form of a Hermitian matrix  A .  The
+C                columns of the upper triangle are stored sequentially
+C                in a one-dimensional array of length  N*(N+1)/2 .
+C                See comments below for details.
+C
+C        N       INTEGER
+C                the order of the matrix  A .
+C
+C     On Return
+C
+C        AP      an upper triangular matrix  R , stored in packed
+C                form, so that  A = CTRANS(R)*R .
+C                If  INFO .NE. 0 , the factorization is not complete.
+C
+C        RCOND   REAL
+C                an estimate of the reciprocal condition of  A .
+C                For the system  A*X = B , relative perturbations
+C                in  A  and  B  of size  EPSILON  may cause
+C                relative perturbations in  X  of size  EPSILON/RCOND .
+C                If  RCOND  is so small that the logical expression
+C                           1.0 + RCOND .EQ. 1.0
+C                is true, then  A  may be singular to working
+C                precision.  In particular,  RCOND  is zero  if
+C                exact singularity is detected or the estimate
+C                underflows.  If INFO .NE. 0 , RCOND is unchanged.
+C
+C        Z       COMPLEX(N)
+C                a work vector whose contents are usually unimportant.
+C                If  A  is singular to working precision, then  Z  is
+C                an approximate null vector in the sense that
+C                NORM(A*Z) = RCOND*NORM(A)*NORM(Z) .
+C                If  INFO .NE. 0 , Z  is unchanged.
+C
+C        INFO    INTEGER
+C                = 0  for normal return.
+C                = K  signals an error condition.  The leading minor
+C                     of order  K  is not positive definite.
+C
+C     Packed Storage
+C
+C          The following program segment will pack the upper
+C          triangle of a Hermitian matrix.
+C
+C                K = 0
+C                DO 20 J = 1, N
+C                   DO 10 I = 1, J
+C                      K = K + 1
+C                      AP(K) = A(I,J)
+C             10    CONTINUE
+C             20 CONTINUE
+C
+C     LINPACK.  This version dated 08/14/78 .
+C     Cleve Moler, University of New Mexico, Argonne National Lab.
+C
+C     Subroutines and Functions
+C
+C     LINPACK CPPFA
+C     BLAS CAXPY,CDOTC,CSSCAL,SCASUM
+C     Fortran ABS,AIMAG,AMAX1,CMPLX,CONJG,REAL
+C***REFERENCES  DONGARRA J.J., BUNCH J.R., MOLER C.B., STEWART G.W.,
+C                 *LINPACK USERS  GUIDE*, SIAM, 1979.
+C***ROUTINES CALLED  CAXPY,CDOTC,CPPFA,CSSCAL,SCASUM
+C***END PROLOGUE  CPPCO
+ 
+ 

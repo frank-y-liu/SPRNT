@@ -1,0 +1,21 @@
+#!/bin/sh
+#  This procedure creates a Makefile in the src
+#  subdirectories that contain special source
+#  versions for a specific library version.
+#  (Should be run from arch/libdir directory, e.g.
+#   IRIX64-IP27-6.5/lib_mips4)
+#
+dirs=`ls src`
+for dname in $dirs ; do
+   files=`cd src/$dname;ls -m *.f|sed -e 's/\.f/\.o/g' -e 's/,//g' -e '\$,\$!s/\$/\\\/'`
+   echo 'include ../../../../make.inc' > src/$dname/Makefile
+   echo '#' >> src/$dname/Makefile
+   echo '#' >> src/$dname/Makefile
+   echo '' >> src/$dname/Makefile
+   echo 'all: \' >> src/$dname/Makefile
+   echo "$files" >> src/$dname/Makefile
+   echo '' >> src/$dname/Makefile
+   echo '.f.o: ' >> src/$dname/Makefile
+   echo '	$(FORTRAN) $(OPTS) -c $<' >> src/$dname/Makefile
+   echo '' >> src/$dname/Makefile
+done

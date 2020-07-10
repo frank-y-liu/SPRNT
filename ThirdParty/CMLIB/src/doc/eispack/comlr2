@@ -1,0 +1,81 @@
+ 
+      SUBROUTINE COMLR2(NM,N,LOW,IGH,INT,HR,HI,WR,WI,ZR,ZI,IERR)
+C***BEGIN PROLOGUE  COMLR2
+C***DATE WRITTEN   760101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  D4C2B
+C***KEYWORDS  EIGENVALUES,EIGENVECTORS,EISPACK
+C***AUTHOR  SMITH, B. T., ET AL.
+C***PURPOSE  Computes eigenvalues and eigenvectors of complex upper
+C            Hessenberg matrix using modified LR method.
+C***DESCRIPTION
+C
+C     This subroutine is a translation of the ALGOL procedure COMLR2,
+C     NUM. MATH. 16, 181-204(1970) by Peters and Wilkinson.
+C     HANDBOOK FOR AUTO. COMP., VOL.II-LINEAR ALGEBRA, 372-395(1971).
+C
+C     This subroutine finds the eigenvalues and eigenvectors
+C     of a COMPLEX UPPER Hessenberg matrix by the modified LR
+C     method.  The eigenvectors of a COMPLEX GENERAL matrix
+C     can also be found if  COMHES  has been used to reduce
+C     this general matrix to Hessenberg form.
+C
+C     On INPUT
+C
+C        NM must be set to the row dimension of two-dimensional
+C          array parameters as declared in the calling program
+C          dimension statement.
+C
+C        N is the order of the matrix.
+C
+C        LOW and IGH are integers determined by the balancing
+C          subroutine  CBAL.  If  CBAL  has not been used,
+C          set LOW=1, IGH=N.
+C
+C        INT contains information on the rows and columns interchanged
+C          in the reduction by  COMHES, if performed.  Only elements
+C          LOW through IGH are used.  If the eigenvectors of the HESSEN-
+C          BERG matrix are desired, set INT(J)=J for these elements.
+C
+C        HR and HI contain the real and imaginary parts,
+C          respectively, of the complex upper Hessenberg matrix.
+C          Their lower triangles below the subdiagonal contain the
+C          multipliers which were used in the reduction by  COMHES,
+C          if performed.  If the eigenvectors of the Hessenberg
+C          matrix are desired, these elements must be set to zero.
+C
+C     On OUTPUT
+C
+C        The upper Hessenberg portions of HR and HI have been
+C          destroyed, but the location HR(1,1) contains the norm
+C          of the triangularized matrix.
+C
+C        WR and WI contain the real and imaginary parts,
+C          respectively, of the eigenvalues.  If an error
+C          exit is made, the eigenvalues should be correct
+C          for indices IERR+1,...,N.
+C
+C        ZR and ZI contain the real and imaginary parts,
+C          respectively, of the eigenvectors.  The eigenvectors
+C          are unnormalized.  If an error exit is made, none of
+C          the eigenvectors has been found.
+C
+C        IERR is set to
+C          Zero       for normal return,
+C          J          if the J-th eigenvalue has not been
+C                     determined after a total of 30*N iterations.
+C
+C     Calls CSROOT for complex square root.
+C     Calls CDIV for complex division.
+C
+C     Questions and comments should be directed to B. S. Garbow,
+C     APPLIED MATHEMATICS DIVISION, ARGONNE NATIONAL LABORATORY
+C     ------------------------------------------------------------------
+C***REFERENCES  B. T. SMITH, J. M. BOYLE, J. J. DONGARRA, B. S. GARBOW,
+C                 Y. IKEBE, V. C. KLEMA, C. B. MOLER, *MATRIX EIGEN-
+C                 SYSTEM ROUTINES - EISPACK GUIDE*, SPRINGER-VERLAG,
+C                 1976.
+C***ROUTINES CALLED  CDIV,CSROOT
+C***END PROLOGUE  COMLR2
+ 
+ 

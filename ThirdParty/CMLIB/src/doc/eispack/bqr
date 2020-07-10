@@ -1,0 +1,98 @@
+ 
+      SUBROUTINE BQR(NM,N,MB,A,T,R,IERR,NV,RV)
+C***BEGIN PROLOGUE  BQR
+C***DATE WRITTEN   760101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  D4A6
+C***KEYWORDS  EIGENVALUES,EIGENVECTORS,EISPACK
+C***AUTHOR  SMITH, B. T., ET AL.
+C***PURPOSE  Computes some of the eigenvalues of a real symmetric
+C            matrix using the QR method with shifts of origin.
+C***DESCRIPTION
+C
+C     This subroutine is a translation of the ALGOL procedure BQR,
+C     NUM. MATH. 16, 85-92(1970) by Martin, Reinsch, and Wilkinson.
+C     HANDBOOK FOR AUTO. COMP., VOL II-LINEAR ALGEBRA, 266-272(1971).
+C
+C     This subroutine finds the eigenvalue of smallest (usually)
+C     magnitude of a REAL SYMMETRIC BAND matrix using the
+C     QR algorithm with shifts of origin.  Consecutive calls
+C     can be made to find further eigenvalues.
+C
+C     On INPUT
+C
+C        NM must be set to the row dimension of two-dimensional
+C          array parameters as declared in the calling program
+C          dimension statement.
+C
+C        N is the order of the matrix.
+C
+C        MB is the (half) band width of the matrix, defined as the
+C          number of adjacent diagonals, including the principal
+C          diagonal, required to specify the non-zero portion of the
+C          lower triangle of the matrix.
+C
+C        A contains the lower triangle of the symmetric band input
+C          matrix stored as an N by MB array.  Its lowest subdiagonal
+C          is stored in the last N+1-MB positions of the first column,
+C          its next subdiagonal in the last N+2-MB positions of the
+C          second column, further subdiagonals similarly, and finally
+C          its principal diagonal in the N positions of the last column.
+C          Contents of storages not part of the matrix are arbitrary.
+C          On a subsequent call, its output contents from the previous
+C          call should be passed.
+C
+C        T specifies the shift (of eigenvalues) applied to the diagonal
+C          of A in forming the input matrix. What is actually determined
+C          is the eigenvalue of A+TI (I is the identity matrix) nearest
+C          to T.  On a subsequent call, the output value of T from the
+C          previous call should be passed if the next nearest eigenvalue
+C          is sought.
+C
+C        R should be specified as zero on the first call, and as its
+C          output value from the previous call on a subsequent call.
+C          It is used to determine when the last row and column of
+C          the transformed band matrix can be regarded as negligible.
+C
+C        NV must be set to the dimension of the array parameter RV
+C          as declared in the calling program dimension statement.
+C
+C     On OUTPUT
+C
+C        A contains the transformed band matrix.  The matrix A+TI
+C          derived from the output parameters is similar to the
+C          input A+TI to within rounding errors.  Its last row and
+C          column are null (if IERR is zero).
+C
+C        T contains the computed eigenvalue of A+TI (if IERR is zero).
+C
+C        R contains the maximum of its input value and the norm of the
+C          last column of the input matrix A.
+C
+C        IERR is set to
+C          Zero       for normal return,
+C          N          if the eigenvalue has not been
+C                     determined after 30 iterations.
+C
+C        RV is a temporary storage array of dimension at least
+C          (2*MB**2+4*MB-3).  The first (3*MB-2) locations correspond
+C          to the ALGOL array B, the next (2*MB-1) locations correspond
+C          to the ALGOL array H, and the final (2*MB**2-MB) locations
+C          correspond to the MB by (2*MB-1) ALGOL array U.
+C
+C     NOTE. For a subsequent call, N should be replaced by N-1, but
+C     MB should not be altered even when it exceeds the current N.
+C
+C     Calls PYTHAG(A,B) for SQRT(A**2 + B**2).
+C
+C     Questions and comments should be directed to B. S. Garbow,
+C     Applied Mathematics Division, ARGONNE NATIONAL LABORATORY
+C     ------------------------------------------------------------------
+C***REFERENCES  B. T. SMITH, J. M. BOYLE, J. J. DONGARRA, B. S. GARBOW,
+C                 Y. IKEBE, V. C. KLEMA, C. B. MOLER, *MATRIX EIGEN-
+C                 SYSTEM ROUTINES - EISPACK GUIDE*, SPRINGER-VERLAG,
+C                 1976.
+C***ROUTINES CALLED  PYTHAG
+C***END PROLOGUE  BQR
+ 
+ 

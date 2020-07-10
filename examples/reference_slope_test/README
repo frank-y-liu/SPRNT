@@ -1,0 +1,9 @@
+The two files in this folder are used to validate the usage of reference slope feature in the SPRNT model.
+
+r1.spt has 24 simple cross sections with reference slope line generated from the original HEC-RAS dataset. 
+
+On the contrast, r2.spt has the same cross section configuration, but the reference slope line is enhanced 10 meters. 
+
+Although the elevation of two reference slope lines are different, but the solutions should be indentical.
+
+  

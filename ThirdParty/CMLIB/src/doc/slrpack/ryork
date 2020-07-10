@@ -1,0 +1,289 @@
+ 
+      subroutine ryork (n, x, y, wx, wy, bstart, mxiter, delmax,
+     1                  ires, maxd, work, output, res, ier)
+ 
+--------------------------------------------------------------------------
+ 
+      Package:  SLRPACK
+ 
+      Version:  October, 1985
+ 
+--------------------------------------------------------------------------
+ 
+      PURPOSE
+      -------
+ 
+      This user-callable subroutine estimates simple linear regression
+      coefficients when both variables are subject to errors which are
+      not necessarily homogeneous in variance. The algorithm for the
+      estimation is due to York (1966) (see reference below).
+ 
+ 
+      DESCRIPTION
+      -----------
+ 
+      1. The input data are observations (x(i),y(i)), i = 1,...,n, and
+         weights wx(i) and wy(i) associated with observations x(i) and
+         y(i) respectively, for i = 1,...,n.
+ 
+      2. The function
+ 
+         S = sum over i (wx(i)*(x(i)-X(i))**2 + wy(i)*(y(i)-Y(i))**2)
+ 
+         is minimized with respect to the fitted values X(i) and Y(i),
+         i = 1,...,n. The set of points (X(i),Y(i)) i = 1,...,n, are
+         constrained to be collinear.
+ 
+         This subroutine straightforwardly implements the calculations
+         described in York (1966) (see references below).
+ 
+      3. The slope estimate is obtained iteratively, with an initial
+         estimate supplied by the user. One suggested initial estimate
+         is the geometric mean of the OLS-y and OLS-x slopes obtained
+         by executing SLRPACK subroutine RGM (see documentation of that
+         subroutine).
+ 
+      4. At each iteration a cubic equation is solved and the "best" of
+         the up to three possible real-valued solutions is selected as
+         the slope estimate at that iteration.
+ 
+         There are between one and three solutions of the cubic equation
+         at a given iteration. If there is one real solution (and two com-
+         plex solutions), the iterations proceed. If there is more than
+         one real solution, the solution closest to the previous solution
+         is found and the iterations proceed.
+ 
+      5. The iterations terminate when 1) the angle between the lines est-
+         imated in two successive iterations is less than user-set DELMAX,
+         or 2) the maximum number of iterations (user-set MXITER) has been
+         reached, whichever occurs first.
+ 
+      6. The equations for the weighted averages of the x- and y-
+         observations are given by equations (19) in the York reference,
+         and the equations for the two standard deviations are given
+         on pages 1084 and 1085 of the same reference.
+ 
+      7. Another algorithm for minimizing S, described by Williamson
+         (1968), is implemented in the SLRPACK subroutine RWILL.
+ 
+ 
+      INPUT PARAMETERS
+      ----------------
+ 
+      N       Integer scalar (unchanged on output)
+              Number of observations.
+ 
+              N must be at least 3.
+ 
+      X       Real vector dimensioned at least N (unchanged on output)
+              The X-observations.
+ 
+      Y       Real vector dimensioned at least N (unchanged on output)
+              The Y-observations.
+ 
+      WX      Real vector dimensioned at least N (unchanged on output)
+              Weights associated with x-observations (commonly the
+              multiplicative inverses of the variances associated with
+              the x-observations).
+ 
+              WX(i) > 0   for i = 1,...,N
+ 
+      WY      Real vector dimensioned at least N (unchanged on output)
+              Weights associated with y-observations (commonly the
+              multiplicative inverses of the variances associated with
+              the y-observations).
+ 
+              WY(i) > 0   for i = 1,...,N
+ 
+      BSTART  Real scalar (unchanged on output)
+              Initial slope estimate.
+ 
+      MXITER  Integer scalar (unchanged on output)
+              Maximum number of iterations allowed.
+ 
+      DELMAX  Real scalar (unchanged on output)
+              Angular distance in radians such that execution terminates
+              if the angular distance between lines estimated in two
+              successive iterations is less than DELMAX.
+ 
+      IRES    Integer scalar (unchanged on output)
+ 
+              IRES = 1 if residuals are to be calculated
+              IRES = 0 otherwise
+ 
+      MAXD    Integer scalar (unchanged on output)
+              Row dimension of RES in the calling program.
+ 
+              MAXD must be at least N if IRES = 1, otherwise MAXD
+              may be 1.
+ 
+      WORK    Real vector dimensioned at least 10 + (9*N)
+              Work vector.
+ 
+      OUTPUT PARAMETERS
+      -----------------
+ 
+      OUTPUT  Real vector dimensioned at least 7
+ 
+              OUTPUT(1) = slope estimate at final iteration
+ 
+              OUTPUT(2) = intercept estimate at final iteration
+ 
+              OUTPUT(3) = standard deviation of slope estimate
+ 
+              OUTPUT(4) = standard deviation of intercept estimate
+ 
+              OUTPUT(5) = weighted average of x observations at final
+                          iteration
+ 
+              OUTPUT(6) = weighted average of y observations at final
+                          iteration
+ 
+              OUTPUT(7) = number of iterations
+ 
+      RES     Real matrix dimensioned at least MAXD by 2
+              The i-th x and y residuals are in RES(i,1) and  RES(i,2)
+              respectively.
+ 
+      IER     Integer scalar
+ 
+              IER =  0  if there are no execution time errors or
+                           warnings
+ 
+              IER =  1  York technique regression line slope estimates
+                           cannot be calculated because the data set is
+                           too small
+ 
+                        Cannot compute OUTPUT(I) for I=1,...,7
+                           and cannot compute the residuals
+ 
+              IER =  2  York technique regression line slope estimates
+                           cannot be calculated because all x-observations
+                           are equal
+ 
+                        Cannot compute OUTPUT(I) for I=1,2,3,4,7
+                           and cannot compute the residuals
+ 
+              IER =  3  York technique regression line slope estimates
+                           cannot be calculated because all of the
+                           weights are not positive
+ 
+                        Cannot compute OUTPUT(I) for I=1,...,7
+                           and cannot compute the residuals
+ 
+              IER =  4  York technique slope estimates have not converged
+                           in allowed number of iterations
+ 
+                        Have computed OUTPUT(I) for I=1,...,7 and residuals
+                           for the final iteration
+ 
+      EXAMPLE
+      -------
+ 
+    INPUT:
+ 
+               N = 10
+            IRES =  1
+          MXITER = 20
+          BSTART =  -.54600
+          DELMAX =   .00010
+ 
+              I        X(I)      WX(I)       Y(I)      WY(I)
+              1        .000   1000.000      5.900      1.000
+              2        .900   1000.000      5.400      1.800
+              3       1.800    500.000      4.400      4.000
+              4       2.600    800.000      4.600      8.000
+              5       3.300    200.000      3.500     20.000
+              6       4.400     80.000      3.700     20.000
+              7       5.200     60.000      2.800     70.000
+              8       6.100     20.000      2.800     70.000
+              9       6.500      1.800      2.400    100.000
+             10       7.400      1.000      1.500    500.000
+ 
+    CALL SEQUENCE:
+ 
+      call ryork (n, x, y, wx, wy, bstart, mxiter, delmax,
+     1            ires, maxd, work, output, res, ier)
+ 
+    OUTPUT:
+ 
+                    IER = 0
+ 
+                    OUTPUT(1) =  -.481
+                    OUTPUT(2) =  5.480
+                    OUTPUT(3) =   .071
+                    OUTPUT(4) =   .362
+                    OUTPUT(5) =  4.911
+                    OUTPUT(6) =  3.120
+                    OUTPUT(7) =  5.
+ 
+               Weighted Residuals
+            I         RES(I,1)    RES(I,2)
+            1           .000       -.420
+            2           .000       -.352
+            3           .001        .215
+            4          -.002       -.369
+            5           .019        .385
+            6          -.038       -.316
+            7           .080        .143
+            8          -.234       -.139
+            9          -.084       -.003
+           10           .875        .004
+ 
+      Note:  Given initial slope bstart = -0.546, after one "iteration"
+             of the York technique, the estimated slope is -0.477, in
+             agreement with York (1966).
+ 
+      PRECISION
+      ---------
+ 
+      All calculations are done in single precision.
+ 
+      LANGUAGE
+      --------
+ 
+      The routine is written in standard Fortran 77.
+ 
+      OTHER SUBROUTINES
+      -----------------
+ 
+      SLRPACK  subroutines  WYORK, RYBAR, RYARNG
+ 
+      PORT     subroutines  R1MACH
+ 
+      REFERENCES
+      ----------
+ 
+      Madansky, A. (1959). The fitting of straight lines when both
+         variables are subject to error. JASA, 54, 173-205.
+ 
+      Riggs, D. S., Guarnieri, J. A., and Addelman, S. (1978).  Fitting
+         straight lines when both variables are subject to error.  Life
+         Sciences, 22, 1305-1360.
+ 
+      York, D. (1966). Least-square fitting of a straight line. Canadian
+         Journal of Physics, 44, 1079-1086.
+ 
+      Williamson, J. H. (1968). Least-squares fitting of a straight line.
+         Canadian Journal of Physics, 46, 1845-1847.
+ 
+      CONTRIBUTORS
+      ------------
+ 
+      Sally E. Howe
+      Katherine Rensenbrink
+      Amy DelGiorno
+      Gregory Rhoads
+      Scientific Computing Division
+      Center for Applied Mathematics
+      National Bureau of Standards
+      Gaithersburg, MD  20899
+ 
+      NBS CONTACT
+      -----------
+ 
+      Sally E. Howe
+      Center for Applied Mathematics
+ 
+-------------------------------------------------------------------------
+ 

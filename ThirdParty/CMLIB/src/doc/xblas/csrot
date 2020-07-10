@@ -1,0 +1,44 @@
+ 
+      SUBROUTINE CSROT(N,CX,INCX,CY,INCY,C,S)
+C***BEGIN PROLOGUE  CSROT
+C***DATE WRITTEN   810223   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D1B10
+C***KEYWORDS  BLAS,COMPLEX,LINEAR ALGEBRA,PLANE ROTATION,VECTOR
+C***AUTHOR  DONGARRA, J., (ANL)
+C***PURPOSE  Applies a plane rotation to complex vectors.
+C***DESCRIPTION
+C
+C     CSROT applies the complex Givens rotation
+C
+C          (X)   ( C S)(X)
+C          (Y) = (-S C)(Y)
+C
+C     N times where for I = 0,...,N-1
+C
+C          X = CX(1+I*INCX)
+C          Y = CY(1+I*INCY)
+C
+C     Argument Description
+C
+C        N      (integer)  number of elements in each vector
+C
+C        CX     (complex array)  beginning of one vector
+C
+C        INCX   (integer)  memory spacing of successive elements
+C               of vector CX
+C
+C        CY     (complex array)  beginning of the other vector
+C
+C        INCY   (integer)  memory spacing of successive elements
+C               of vector CY
+C
+C        C      (real)  cosine term of the rotation
+C
+C        S      (real)  sine term of the rotation.
+C***REFERENCES  DONGARRA J.J., BUNCH J.R., MOLER C.B., STEWART G.W.,
+C                 *LINPACK USERS  GUIDE*, SIAM, 1979.
+C***ROUTINES CALLED  (NONE)
+C***END PROLOGUE  CSROT
+ 
+ 

@@ -1,0 +1,35 @@
+      FUNCTION RGAUSS(XMEAN,SD)
+C***BEGIN PROLOGUE  RGAUSS
+C***DATE WRITTEN   770401   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  L6A14
+C***KEYWORDS  GAUSSIAN,NORMAL,RANDOM NUMBER,SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Generates a normally distributed (Gaussian) random number.
+C***DESCRIPTION
+C
+C Generate a normally distributed random number, i.e., generate random
+C numbers with a Gaussian distribution.  These random numbers are not
+C exceptionally good -- especially in the tails of the distribution,
+C but this implementation is simple and suitable for most applications.
+C See R. W. Hamming, Numerical Methods for Scientists and Engineers,
+C McGraw-Hill, 1962, pages 34 and 389.
+C
+C             Input Arguments --
+C XMEAN  the mean of the Guassian distribution.
+C SD     the standard deviation of the Guassian function
+C          EXP (-1/2 * (X-XMEAN)**2 / SD**2)
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  RAND
+C***END PROLOGUE  RGAUSS
+      EXTERNAL RAND
+C***FIRST EXECUTABLE STATEMENT  RGAUSS
+      RGAUSS = -6.0
+      DO 10 I=1,12
+        RGAUSS = RGAUSS + RAND(0.0)
+ 10   CONTINUE
+C
+      RGAUSS = XMEAN + SD*RGAUSS
+C
+      RETURN
+      END

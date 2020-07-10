@@ -1,0 +1,491 @@
+ 
+C***BEGIN PROLOGUE  DBOCLS
+C***DATE WRITTEN  821220
+C***REVISION DATE  831104
+C***CATEGORY NO.  K1a2a,G2e,G2h1,G2h2
+C***KEYWORDS  LINEAR,LEAST SQUARES,BOUNDS,CONSTRAINTS,INEQUALITY
+C***AUTHOR  HANSON, R. J., SNLA
+C***PURPOSE
+C     This subprogram solves the bounded and constrained least squares
+C     problem. The problem statement is:
+C
+C     solve E*x = f (least squares sense), subject to constraints
+C     C*x=y.
+C
+C***DESCRIPTION
+C     This constrained linear least squares subprogram solves E*x=f
+C     subject to C*x=y, where E is MROWS by NCOLS, C is MCON by NCOLS.
+C
+C      The user must have dimension statements of the form:
+C      DOUBLE PRECISION W(MDW,NCOLS+MCON+1), BL(NCOLS+MCON),
+C     * BU(NCOLS+MCON), X(2*(NCOLS+MCON)+2+NX), RW(6*NCOLS+5*MCON)
+C       INTEGER IND(NCOLS+MCON), IOPT(16+NI), IW(2*(NOCLS+MCON))
+C
+C     (Here NX=number of extra locations required for the options; NX=0
+C     if no options are in use. Also NI=16+number of extra locations
+C     for options 1-9.
+C
+C   |INPUT|
+C    -----
+C
+C    -------------------------
+C    W(MDW,*),MCON,MROWS,NCOLS
+C    -------------------------
+C     The array W contains the (possibly null) matrix [C:*] followed by
+C     [E:f].  This must be placed in W as follows:
+C          [C  :  *]
+C     W  = [       ]
+C          [E  :  f]
+C     The (*) after C indicates that this data can be undefined. The
+C     matrix [E:f] has MROWS rows and NCOLS+1 columns. The matrix C is
+C     placed in the first MCON rows and columns of W(*,*) while [E:f]
+C     follows in rows MCON+1 through MCON+MROWS of W(*,*). The vector f
+C     is placed in rows MCON+1 through MCON+MROWS, column NCOLS+1. The
+C     values of MDW and NCOLS must be positive; the value of MCON must
+C     be nonnegative. An exception to this occurs when using option 1
+C     for accumulation of blocks of equations. In that case MROWS is an
+C     output variable only, and the matrix data for [E:f] is placed in
+C     W(*,*), one block of rows at a time. See IOPT(*) CONTENTS, option
+C     number 1, for further details. The row dimension, MDW, of the
+C     array W(*,*) must satisfy the inequality MDW .GE. MCON+MROWS.
+C     Other values are errors.
+C
+C    ------------------
+C    BL(*),BU(*),IND(*)
+C    ------------------
+C     These arrays contain the information about the bounds that the
+C     solution values are to satisfy. The value of IND(J) tells the
+C     type of bound and BL(J) and BU(J) give the explicit values for
+C     the respective upper and lower bounds.
+C
+C    1.    For IND(J)=1, require X(J) .GE. BL(J);
+C          if J.GT.NCOLS,        Y(J-NCOLS) .GE. BL(J).
+C          (The value of BU(J) is not used.)
+C    2.    For IND(J)=2, require X(J) .LE. BU(J);
+C          if J.GT.NCOLS,        Y(J-NCOLS) .LE. BU(J).
+C          (The value of BL(J) is not used.)
+C    3.    For IND(J)=3, require X(J) .GE. BL(J) and
+C                                X(J) .LE. BU(J);
+C          if J.GT.NCOLS,        Y(J-NCOLS) .GE. BL(J) and
+C                                Y(J-NCOLS) .LE. BU(J).
+C    4.    For IND(J)=4, no bounds on X(J) or Y(J-NCOLS) are required.
+C          (The values of BL(J) and BU(J) are not used.)
+C
+C     Values other than 1,2,3 or 4 for IND(J) are errors. In the case
+C     IND(J)=3 (upper and lower bounds) the condition BL(J) .GT. BU(J)
+C     is an error.
+C
+C
+C    -------
+C    IOPT(*)
+C    -------
+C     This is the array where the user can specify nonstandard options
+C     for DBOCLS( ). Most of the time this feature can be ignored by
+C     setting the input value IOPT(1)=99. Occasionally users may have
+C     needs that require use of the following subprogram options. For
+C     details about how to use the options see below: IOPT(*) CONTENTS.
+C
+C     Option Number   Brief Statement of Purpose
+C     ------ ------   ----- --------- -- -------
+C           1         Return to user for accumulation of blocks
+C                     of least squares equations.
+C           2         Check lengths of all arrays used in the
+C                     subprogram.
+C           3         Common scaling of the data matrix, [C].
+C                                                        [E]
+C           4         User provides column scaling for matrix [C].
+C                                                             [E]
+C           5         Provide option array to the low-level
+C                     subprogram DBOLS( ).
+C           6         Provide option array to the low-level
+C                     subprogram DBOLSM( ).
+C           7         Move the IOPT(*) processing pointer.
+C           8         Do not preprocess the constraints to
+C                     resolve infeasibilities.
+C           9         Do not pretriangularize the least squares matrix.
+C          99         No more options to change.
+C
+C    ----
+C    X(*)
+C    ----
+C     This array is used to pass data associated with options 4,5 and
+C     6. Ignore this parameter (on input) if no options are used.
+C     Otherwise see below: IOPT(*) CONTENTS.
+C
+C
+C   |OUTPUT|
+C    ------
+C
+C    -----
+C    MROWS
+C    -----
+C     The number of rows in the matrix after triangularizing several
+C     blocks of equations. This is an output parameter only when option
+C     1 is used. See IOPT(*) CONTENTS for details about option 1.
+C
+C    -----------------
+C    X(*),RNORMC,RNORM
+C    -----------------
+C     The array X(*) contains a solution (if MODE .GE.0 or .eq.-21) for
+C     the constrained least squares problem. The value RNORMC is the
+C     minimum residual vector length for the constraints C*x -y = 0.
+C     The value RNORM is the minimum residual vector length for the
+C     least squares equations. Normally RNORMC=0. but in the case of
+C     inconsistent constraints this value will be nonzero.
+C
+C
+C    ----
+C    MODE
+C    ----
+C     The sign of MODE determines whether the subprogram has completed
+C     normally, or encountered an error condition or abnormal status. A
+C     value of MODE .GE. 0 signifies that the subprogram has completed
+C     normally. The value of MODE (.GE. 0) is the number of variables
+C     in an active status: not at a bound nor at the value zero, for
+C     the case of free variables. A negative value of MODE will be one
+C     of the cases (-57)-(-41), (-37)-(-21), (-19)-(-2). Values .LT. -1
+C     correspond to an abnormal completion of the subprogram. To
+C     understand the abnormal completion codes see below: ERROR
+C     MESSAGES FOR DBOCLS( ). An approximate solution will be returned
+C     to the user only when max. iterations is reached, MODE=-21.
+C     Values for MODE=-37,...,-21 come from the low-level subprogram
+C     DBOLSM( ). See the section ERROR MESSAGES FOR DBOLSM( ) in the
+C     documentation for DBOLSM( ).
+C
+C
+C    -----------
+C    RW(*),IW(*)
+C    -----------
+C     These are working arrays with 3*NCOLS and 2*NCOLS entries.
+C     (Normally the user can ignore these parameters.)
+C
+C
+C    IOPT(*) CONTENTS
+C    ------- --------
+C     The option array allows a user to modify some internal variables
+C     in the subprogram without recompiling the source code. A central
+C     goal of the initial software design was to do a good job for most
+C     people. Thus the use of options will be restricted to a select
+C     group of users. The processing of the option array proceeds as
+C     follows: A pointer, here called LP, is initially set to the value
+C     1. At the pointer position the option number is extracted and
+C     used for locating other information that allows for options to be
+C     changed. The portion of the array IOPT(*) that is used for each
+C     option is fixed; the user and the subprogram both know how many
+C     locations are needed for each option. The value of LP is updated
+C     for each option based on the amount of storage in IOPT(*) that is
+C     required. A great deal of error checking is done by the
+C     subprogram on the contents of the option array. Nevertheless it
+C     is still possible to give the subprogram optional input that is
+C     meaningless. For example option 4 uses the locations
+C     X(NCOLS+IOFF),...,X(NCOLS+IOFF+NCOLS-1) for passing scaling data.
+C     The user must manage the allocation of these locations.
+C
+C    |1|
+C     -
+C     This option allows the user to solve problems with a large number
+C     of rows compared to the number of variables. The idea is that the
+C     subprogram returns to the user (perhaps many times) and receives
+C     new least squares equations from the calling program unit.
+C     Eventually the user signals "that's all" and a solution is then
+C     computed. The value of MROWS is an output variable when this
+C     option is used. Its value is always in the range 0 .LE. MROWS
+C     .LE. NCOLS+1. It is the number of rows after the
+C     triangularization of the entire set of equations. If LP is the
+C     processing pointer for IOPT(*), the usage for the sequential
+C     processing of blocks of equations is
+C
+C
+C        IOPT(LP)=1
+C        {Move block of equations to W(*,*) starting at
+C        the first row of W(*,*).}
+C        IOPT(LP+3)=# of rows in the block; user defined
+C
+C     The user now calls DBOCLS( ) in a LOOP. The value of IOPT(LP+1)
+C     directs the user's action. The value of IOPT(LP+2) points to
+C     where the subsequent rows are to be placed in W(*,*). Both of
+C     these values are first defined in the subprogram. The user
+C     changes the value of IOPT(LP+1) (to 2) as a signal that all of
+C     the rows have been processed.
+C
+C
+C      .<LOOP
+C      . CALL DBOCLS( )
+C      . IF(IOPT(LP+1) .EQ. 1) THEN
+C      .    IOPT(LP+3)=# of rows in the new block; user defined
+C      .    {Place new block of IOPT(LP+3) rows in
+C      .    W(*,*) starting at row IOPT(LP+2).}
+C      .
+C      .    IF( this is the last block of equations ) THEN
+C      .       IOPT(LP+1)=2
+C      .<------CYCLE LOOP
+C      .    ELSE IF (IOPT(LP+1) .EQ. 2) THEN
+C      <-------EXIT LOOP {Solution computed if MODE .GE. 0 }
+C      . ELSE
+C      . {Error condition; should not happen.}
+C      .<END LOOP
+C
+C     Use of this option adds 4 to the required length of IOPT(*).
+C
+C   |2|
+C    -
+C     This option is useful for checking the lengths of all arrays used
+C     by DBOCLS( ) against their actual requirements for this problem.
+C     The idea is simple: the user's program unit passes the declared
+C     dimension information of the arrays. These values are compared
+C     against the problem-dependent needs within the subprogram. If any
+C     of the dimensions are too small an error message is printed and a
+C     negative value of MODE is returned, -41 to -47. The printed error
+C     message tells how long the dimension should be. If LP is the
+C     processing pointer for IOPT(*),
+C
+C        IOPT(LP)=2
+C        IOPT(LP+1)=row dimension of W(*,*)
+C        IOPT(LP+2)=col. dimension of W(*,*)
+C        IOPT(LP+3)=dimensions of BL(*),BU(*),IND(*)
+C        IOPT(LP+4)=dimension of X(*)
+C        IOPT(LP+5)=dimension of RW(*)
+C        IOPT(LP+6)=dimension of IW(*)
+C        IOPT(LP+7)=dimension of IOPT(*)
+C         .
+C        CALL DBOCLS( )
+C
+C     Use of this option adds 8 to the required length of IOPT(*).
+C
+C   |3|
+C    -
+C     This option can change the type of scaling for the data matrix.
+C     Nominally each nonzero column of the matrix is scaled so that the
+C     magnitude of its largest entry is equal to the value one. If LP
+C     is the processing pointer for IOPT(*),
+C
+C        IOPT(LP)=3
+C        IOPT(LP+1)=1,2 or 3
+C           {1= nominal scaling as noted;
+C            2= each nonzero column scaled to have length one;
+C            3= identity scaling; scaling effectively suppressed.}
+C         .
+C        CALL DBOCLS( )
+C
+C     Use of this option adds 2 to the required length of IOPT(*).
+C
+C   |4|
+C    -
+C     This options allows the user to provide arbitrary (positive)
+C     column scaling for the matrix. If LP is the processing pointer
+C     for IOPT(*),
+C
+C        IOPT(LP)=4
+C        IOPT(LP+1)=IOFF
+C        {X(NCOLS+IOFF),...,X(NCOLS+IOFF+NCOLS-1)
+C        = positive scale factors for cols. of E.}
+C         .
+C        CALL DBOCLS( )
+C
+C     Use of this option adds 2 to the required length of IOPT(*)
+C     and NCOLS to the required length of X(*).
+C
+C   |5|
+C    -
+C     This option allows the user to provide an option array to the
+C     low-level subprogram DBOLS( ). If LP is the processing pointer
+C     for IOPT(*),
+C
+C        IOPT(LP)=5
+C        IOPT(LP+1)= position in IOPT(*) where option array
+C                    data for DBOLS( ) begins.
+C         .
+C        CALL DBOCLS( )
+C
+C     Use of this option adds 2 to the required length of IOPT(*).
+C
+C   |6|
+C    -
+C     This option allows the user to provide an option array to the
+C     low-level subprogram DBOLSM( ). If LP is the processing pointer
+C     for IOPT(*),
+C
+C        IOPT(LP)=6
+C        IOPT(LP+1)= position in IOPT(*) where option array
+C                    data for DBOLSM( ) begins.
+C         .
+C        CALL DBOCLS( )
+C
+C     Use of this option adds 2 to the required length of IOPT(*).
+C
+C    |7|
+C     -
+C     Move the processing pointer (either forward or backward) to the
+C     location IOPT(LP+1). The default value for option 7 is LP+2. For
+C     example to skip over locations 3,...,NCOLS+2,
+C
+C       IOPT(1)=7
+C       IOPT(2)=NCOLS+3
+C       (IOPT(I), I=3,...,NCOLS+2 are not defined here.)
+C       IOPT(NCOLS+3)=99
+C       CALL DBOCLS( )
+C
+C     Caution: Misuse of this option can yield some very hard -to-find
+C     bugs. Use it with care. It is intended to be used for passing
+C     option arrays to other subprograms.
+C
+C   |8|
+C    -
+C     This option allows the user to suppress the algorithmic feature
+C     of DBOCLS( ) that processes the contraint equations C*x = y and
+C     resolves infeasibilities. The steps normally done are to solve
+C     C*x -y = 0 in a least squares sense using the stated bounds on
+C     both x and y. Then the "reachable" vector y = C*x is computed using
+C     the solution x obtained. Finally the stated bounds for y are
+C     enlarged to include C*x. To suppress the feature
+C
+C
+C       IOPT(LP)=8
+C         .
+C       CALL DBOCLS( )
+C
+C     Use of this option adds 1 to the required length of IOPT(*).
+C
+C    |9|
+C     -
+C     This option allows the user to suppress the pretriangularizing
+C     step of the least squares matrix that is done within DBOCLS( ).
+C     This is primarily a means of enhancing the subprogram efficiency
+C     and has little effect on accuracy. To suppress the step, set:
+C
+C       IOPT(LP)=9
+C         .
+C       CALL DBOCLS( )
+C
+C     Use of this option adds 1 to the required length of IOPT(*).
+C
+C   |99|
+C    --
+C     There are no more options to change.
+C
+C     Only option numbers -99, -9,-8,...,-1, 1,2,...,9, and 99 are
+C     permitted. Other values are errors. Options -99,-1,...,-9 mean
+C     that the respective options 99,1,...,9 are left at their default
+C     values. An example is the option to suppress the preprocessing of
+C     contraints:
+C
+C       IOPT(1)=-8 {option is recognized but not changed}
+C       IOPT(2)=99
+C       CALL DBOCLS( )
+C
+C     This capability of ignoring options, but leaving the code for the
+C     possible use of the option in place, is intended to help
+C     programmers use the code package.
+C
+C
+C   |ERROR MESSAGES FOR DBOCLS( )|
+C    ----- -------- --- ---------
+C
+C
+C RECOVERABLE ERROR IN...
+C DBOCLS(). THE ROW DIMENSION OF W(,)=(I1) MUST BE .GE. THE NUMBER
+C OF EFFECTIVE ROWS=(I2).
+C           IN ABOVE MESSAGE, I1=         1
+C           IN ABOVE MESSAGE, I2=         2
+C ERROR NUMBER =        41
+C
+C RECOVERABLE ERROR IN...
+C DBOCLS(). THE COLUMN DIMENSION OF W(,)=(I1) MUST BE .GE. NCOLS+
+C MCON+1=(I2).
+C           IN ABOVE MESSAGE, I1=         2
+C           IN ABOVE MESSAGE, I2=         3
+C ERROR NUMBER =        42
+C
+C RECOVERABLE ERROR IN...
+C DBOCLS(). THE DIMENSIONS OF THE ARRAYS BL(),BU(), AND IND()=(I1) MUST BE
+C  .GE. NCOLS+MCON=(I2).
+C           IN ABOVE MESSAGE, I1=         1
+C           IN ABOVE MESSAGE, I2=         2
+C ERROR NUMBER =        43
+C
+C RECOVERABLE ERROR IN...
+C DBOCLS(). THE DIMENSION OF X()=(I1) MUST BE .GE. THE REQD. LENGTH=(I2).
+C           IN ABOVE MESSAGE, I1=         1
+C           IN ABOVE MESSAGE, I2=         2
+C ERROR NUMBER =        44
+C
+C RECOVERABLE ERROR IN...
+C DBOCLS(). THE DIMENSION OF RW()=(I1) MUST BE .GE. 6*NCOLS+5*MCON=(I2).
+C           IN ABOVE MESSAGE, I1=         1
+C           IN ABOVE MESSAGE, I2=         7
+C ERROR NUMBER =        45
+C
+C RECOVERABLE ERROR IN...
+C DBOCLS() THE DIMENSION OF IW()=(I1) MUST BE .GE. 2*NCOLS+2*MCON=(I2).
+C           IN ABOVE MESSAGE, I1=         1
+C           IN ABOVE MESSAGE, I2=         4
+C ERROR NUMBER =        46
+C
+C RECOVERABLE ERROR IN...
+C DBOCLS(). THE DIMENSION OF IOPT()=(I1) MUST BE .GE. THE REQD. LEN.=(I2).
+C           IN ABOVE MESSAGE, I1=        16
+C           IN ABOVE MESSAGE, I2=        18
+C ERROR NUMBER =        47
+C
+C RECOVERABLE ERROR IN...
+C DBOCLS(). ISCALE OPTION=(I1) MUST BE 1-3.
+C           IN ABOVE MESSAGE, I1=         0
+C ERROR NUMBER =        48
+C
+C RECOVERABLE ERROR IN...
+C DBOCLS(). OFFSET PAST X(NCOLS) (I1) FOR USER-PROVIDED COLUMN SCALING
+C MUST BE POSITIVE.
+C           IN ABOVE MESSAGE, I1=         0
+C ERROR NUMBER =        49
+C
+C RECOVERABLE ERROR IN...
+C DBOCLS(). EACH PROVIDED COL. SCALE FACTOR MUST BE POSITIVE.
+C  COMPONENT (I1) NOW = (R1).
+C           IN ABOVE MESSAGE, I1=         1
+C           IN ABOVE MESSAGE, R1=    0.
+C ERROR NUMBER =        50
+C
+C RECOVERABLE ERROR IN...
+C DBOCLS(). THE OPTION NUMBER=(I1) IS NOT DEFINED.
+C           IN ABOVE MESSAGE, I1=      1001
+C ERROR NUMBER =        51
+C
+C RECOVERABLE ERROR IN...
+C DBOCLS(). NO. OF ROWS=(I1) MUST BE .GE. 0 .AND. .LE. MDW-MCON=(I2).
+C           IN ABOVE MESSAGE, I1=         2
+C           IN ABOVE MESSAGE, I2=         1
+C ERROR NUMBER =        52
+C
+C RECOVERABLE ERROR IN...
+C DBOCLS(). MDW=(I1) MUST BE POSITIVE.
+C           IN ABOVE MESSAGE, I1=         0
+C ERROR NUMBER =        53
+C
+C RECOVERABLE ERROR IN...
+C DBOCLS(). MCON=(I1) MUST BE NONNEGATIVE.
+C           IN ABOVE MESSAGE, I1=        -1
+C ERROR NUMBER =        54
+C
+C RECOVERABLE ERROR IN...
+C DBOCLS(). NCOLS=(I1) THE NO. OF VARIABLES MUST BE POSITIVE.
+C           IN ABOVE MESSAGE, I1=         0
+C ERROR NUMBER =        55
+C
+C RECOVERABLE ERROR IN...
+C DBOCLS(). FOR J=(I1), IND(J)=(I2) MUST BE 1-4.
+C           IN ABOVE MESSAGE, I1=         1
+C           IN ABOVE MESSAGE, I2=         0
+C ERROR NUMBER =        56
+C
+C RECOVERABLE ERROR IN...
+C DBOCLS(). FOR J=(I1), BOUND BL(J)=(R1) IS .GT. BU(J)=(R2).
+C           IN ABOVE MESSAGE, I1=         1
+C           IN ABOVE MESSAGE, R1=     .1000000000E+01
+C           IN ABOVE MESSAGE, R2=    0.
+C ERROR NUMBER =        57
+C***REFERENCES  HANSON, R. J. LINEAR LEAST SQUARES WITH BOUNDS AND
+C                 LINEAR CONSTRAINTS, SNLA REPT. SAND82-1517, AUG., (1982).
+C***ROUTINED CALLED  DBOLD,DCOPY,DSCAL,DASUM,DNRM2,DDOT,XERRWV
+C***END PROLOGUE
+ 
+ 

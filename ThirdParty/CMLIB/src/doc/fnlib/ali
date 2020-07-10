@@ -1,0 +1,18 @@
+ 
+      FUNCTION ALI(X)
+C***BEGIN PROLOGUE  ALI
+C***DATE WRITTEN   770601   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C5
+C***KEYWORDS  LOGARITHMIC INTEGRAL,SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the logarithmic integral.
+C***DESCRIPTION
+C
+C ALI(X) computes the logarithmic integral; i.e., the
+C integral from 0.0 to X of (1.0/ln(t))dt.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  EI,XERROR
+C***END PROLOGUE  ALI
+ 
+ 

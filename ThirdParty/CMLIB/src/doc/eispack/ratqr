@@ -1,0 +1,108 @@
+ 
+      SUBROUTINE RATQR(N,EPS1,D,E,E2,M,W,IND,BD,TYPE,IDEF,IERR)
+C***BEGIN PROLOGUE  RATQR
+C***DATE WRITTEN   760101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  D4A5,D4C2A
+C***KEYWORDS  EIGENVALUES,EIGENVECTORS,EISPACK
+C***AUTHOR  SMITH, B. T., ET AL.
+C***PURPOSE  Computes largest or smallest eigenvalues of symmetric
+C            tridiagonal matrix using rational QR method with Newton
+C            correction.
+C***DESCRIPTION
+C
+C     This subroutine is a translation of the ALGOL procedure RATQR,
+C     NUM. MATH. 11, 264-272(1968) by REINSCH and BAUER.
+C     HANDBOOK FOR AUTO. COMP., VOL.II-LINEAR ALGEBRA, 257-265(1971).
+C
+C     This subroutine finds the algebraically smallest or largest
+C     eigenvalues of a SYMMETRIC TRIDIAGONAL matrix by the
+C     rational QR method with Newton corrections.
+C
+C     On Input
+C
+C        N is the order of the matrix.
+C
+C        EPS1 is a theoretical absolute error tolerance for the
+C          computed eigenvalues.  If the input EPS1 is non-positive,
+C          or indeed smaller than its default value, it is reset
+C          at each iteration to the respective default value,
+C          namely, the product of the relative machine precision
+C          and the magnitude of the current eigenvalue iterate.
+C          The theoretical absolute error in the K-th eigenvalue
+C          is usually not greater than K times EPS1.
+C
+C        D contains the diagonal elements of the input matrix.
+C
+C        E contains the subdiagonal elements of the input matrix
+C          in its last N-1 positions.  E(1) is arbitrary.
+C
+C        E2 contains the squares of the corresponding elements of E.
+C          E2(1) is arbitrary.
+C
+C        M is the number of eigenvalues to be found.
+C
+C        IDEF should be set to 1 if the input matrix is known to be
+C          positive definite, to -1 if the input matrix is known to
+C          be negative definite, and to 0 otherwise.
+C
+C        TYPE should be set to .TRUE. if the smallest eigenvalues
+C          are to be found, and to .FALSE. If the largest eigenvalues
+C          are to be found.
+C
+C     On Output
+C
+C        EPS1 is unaltered unless it has been reset to its
+C          (last) default value.
+C
+C        D and E are unaltered (unless W overwrites D).
+C
+C        ELEMENTS of E2, corresponding to elements of E regarded
+C          as negligible, have been replaced by zero causing the
+C          matrix to split into a direct sum of submatrices.
+C          E2(1) is set to 0.0e0 if the smallest eigenvalues have been
+C          found, and to 2.0e0 if the largest eigenvalues have been
+C          found.  E2 is otherwise unaltered (unless overwritten by BD).
+C
+C        W contains the M algebraically smallest eigenvalues in
+C          ascending order, or the M largest eigenvalues in
+C          descending order.  If an error exit is made because of
+C          an incorrect specification of IDEF, no eigenvalues
+C          are found.  If the Newton iterates for a particular
+C          eigenvalue are not monotone, the best estimate obtained
+C          is returned and IERR is set.  W may coincide with D.
+C
+C        IND contains in its first M positions the submatrix indices
+C          associated with the corresponding eigenvalues in W --
+C          1 for eigenvalues belonging to the first submatrix from
+C          the top, 2 for those belonging to the second submatrix, etc.
+C
+C        BD contains refined bounds for the theoretical errors of the
+C          corresponding eigenvalues in W.  These bounds are usually
+C          within the tolerance specified by EPS1.  BD may coincide
+C          with E2.
+C
+C        IERR is set to
+C          Zero       for normal return,
+C          6*N+1      if  IDEF  is set to 1 and  type  to .TRUE.
+C                     when the matrix is NOT positive definite, or
+C                     if  IDEF  is set to -1 and  type  to .FALSE.
+C                     when the matrix is NOT negative definite,
+C          5*N+K      if successive iterates to the K-th eigenvalue
+C                     are NOT monotone increasing, where K refers
+C                     to the last such occurrence.
+C
+C     Note that subroutine TRIDIB is generally faster and more
+C     accurate than RATQR if the eigenvalues are clustered.
+C
+C     Questions and comments should be directed to B. S. Garbow,
+C     APPLIED MATHEMATICS DIVISION, ARGONNE NATIONAL LABORATORY
+C     ------------------------------------------------------------------
+C***REFERENCES  B. T. SMITH, J. M. BOYLE, J. J. DONGARRA, B. S. GARBOW,
+C                 Y. IKEBE, V. C. KLEMA, C. B. MOLER, *MATRIX EIGEN-
+C                 SYSTEM ROUTINES - EISPACK GUIDE*, SPRINGER-VERLAG,
+C                 1976.
+C***ROUTINES CALLED  (NONE)
+C***END PROLOGUE  RATQR
+ 
+ 

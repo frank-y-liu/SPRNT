@@ -1,0 +1,27 @@
+ 
+      FUNCTION CHU(A,B,X)
+C***BEGIN PROLOGUE  CHU
+C***DATE WRITTEN   770801   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C11
+C***KEYWORDS  CONFLUENT,HYPERGEOMETRIC,
+C             LOGARITHM CONFLUENT HYPERGEOMETRIC FUNCTION,
+C             SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the logarithmic confluent hypergeometric function.
+C***DESCRIPTION
+C
+C CHU computes the logarithmic confluent hypergeometric function,
+C U(A,B,X).
+C
+C Input Parameters:
+C       A   real
+C       B   real
+C       X   real and positive
+C
+C This routine is not valid when 1+A-B is close to zero if X is small.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  EXPREL,GAMMA,GAMR,POCH,POCH1,R1MACH,R9CHU,XERROR
+C***END PROLOGUE  CHU
+ 
+ 

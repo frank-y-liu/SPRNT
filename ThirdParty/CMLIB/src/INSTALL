@@ -1,0 +1,164 @@
+ Installing CMLIB:
+ ----------------
+
+  (0) In some cases CMLIB is distributed with precompiled libraries.  The 
+      libraries are found in the files ARCH/lib<opts>/libcm.a , where ARCH is
+      the architecture of the workstation and 'lib<opts>' is dependent on which
+      compilation options were used to build the library.  For example, the
+      subdirectory SunOS-sun4m-5.6/lib_f90 would contain the libcm.a file which
+      was created on a Sparcstation 5, running Solaris 2, using the Fortran 90
+      compiler.  If the library is present, then run ranlib on it.  The
+      quickcheck programs should be run to verify the library.  If the output
+      of the command "utils/itl-arch" is not exactly the same as an existing
+      ARCH directory but is compatible (e.g. SunOS-sun4u-5.6 is available and
+      your ARCH is SunOS-sun4m-5.5.1), then create a link for your ARCH to the
+      existing directory, e.g. "ln -s SunOS-sun4u-5.6 SunOS-sun4m-5.5.1".
+      Type "RunMake -m testall" and choose the library to test.  A job that
+      runs the tests will be run by way of either the "qsub" or "at" command,
+      if they exist, otherwise it will run interactively.
+      You may skip (1) below.
+
+ (1) To build CMLIB and run testall go to the directory where you extracted the 
+     CMLIB tar file (SRCDIR) and execute RunMake.
+     
+          cd SRCDIR
+          ./RunMake
+     
+     RunMake presents a menu of compiler/compiler-options that can be used to
+     build CMLIB for a given architecture (ARCH) (For some architectures there
+     is currently only one option, e.g. Linux).  Based on the selected option,
+     a command file (job.cmd) is created and run by way of either the "qsub"
+     or "at" command, if they exist, otherwise it will run interactively. You
+     should receive mail that contains the output from the build/testall when
+     the at/qsub job completes (this could take several hours and will contain
+     lots of output).
+
+
+ (2) The library, libcm.a[so], and a copy of the output from testall,
+     testall.ARCH.out, are written to the SRCDIR/ARCH/lib<opts>
+     directory. Check the testall output to verify the library was built
+     correctly.  Refer to the table_of_notes file for known problems.
+
+
+ (3) To install the library on your machine, create a link to the file
+     SRCDIR/ARCH/lib<opts>/libcm.a in the directory in which you keep local
+     libraries (usually /usr/local/lib).  In this way users can link to
+     the library by putting the option -lcm on the Fortran compilation
+     statement.  When multiple versions of the library are built for one
+     ARCH, it will be necessary to create multiple links, refer to the
+     appropriate man page located in the SRCDIR/man directory for possible
+     naming conventions.
+     
+     
+ (4) SRCDIR/scripts contains C shell scripts for retrieving CMLIB documentation,
+     source, and source + dependencies.  They are called cmdoc, cmsrc and
+     cmsrcx.os, where os is either aix, irix, irix64, solaris2, sun4, hpux, or
+     linux. cmdoc, cmsrc, and the appropriate cmsrcx.os script must be edited
+     to reflect the locations of the directories SRCDIR/doc, SRCDIR/src, and 
+     SRCDIR on your machine, respectively. The third script, cmsrcx.os, edits
+     a loader listing for operating system "os" to obtain a list of external
+     references for the routine whose source+externals is required.  This may
+     need to be modified to work correctly on your machine.  These scripts
+     should be installed in the directory where you keep local executables
+     (usually /usr/local/bin), renaming cmsrcx.os to cmsrcx. 
+     
+ (5) The SRCDIR/man directory contains a man pages for the different operating
+     systems (cmlib_os.l).  It may need to be edited to reflect your situation.
+     It should linked or copied to where you keep local man pages as cmlib.l.
+     
+
+  Using the associated shell scripts
+  ----------------------------------
+
+  The following shell scripts are available in the script subdirectory
+
+    cmdoc LIST    : retrieves documentation on subprograms in LIST
+    cmdoc -s NAME : retrieves summary documentation on sublibrary NAME
+    cmdoc -s      : retrieves summary documentation on CMLIB
+    cmsrc LIST    : retrieves source for subprograms in LIST
+    cmsrcx LIST   : retrieves source for subprograms in LIST plus all their
+                    external references within CMLIB
+
+  All output is written to standard output.  Some examples follow:
+
+    cmdoc -s fcnpak | more        : scan summary documentation for fcnpak
+    cmsrc sgefa sgesl > srcfil    : put source for sgefa and sgesl in srcfil
+
+
+
+ File Organization
+ ------------------
+     
+ SRCDIR                        the directory where you extracted the tar file.
+     
+ Under SRCDIR the following structure exists:
+     
+ RunMake                       script used for building and testing CMLIB
+ make.inc<_os_opts>            include files used by make for defining
+                               compiler, compiler options, etc. to be used
+                               for <_os_opts> (e.g. make.inc_aix contains
+                               the compiler, ... definitions used to create
+                               the Fortran 77 version of CMLIB for the AIX
+                               operating system) 
+ src/SUBLIBRARY/*.f            source files for SUBLIBRARY
+ test/SUBLIBRARY.f             test program for SUBLIBRARY
+ doc/summary                   summary documentation for CMLIB
+ doc/SUBLIBRARY/summary        summary documentation for SUBLIBRARY
+ doc/SUBLIBRARY/SUBPROGRAM     documentation for SUBPROGRAM in SUBLIBRARY
+ man/cmlib_os.l                man pages for different operating systems (os)
+ scripts                       C shell scripts for documentation and source
+                               retrieval
+ utils                         various utilities required by RunMake
+ ARCH                          directory that contains the subdirectories
+                               where libraries are generated for machine
+                               ARCH.  ARCH is determined by the "utils/itl-arch"
+                               script. The name consists of the operating system
+                               name, hardware name and operating system release
+                               level separated with hyphens.  (e.g.
+                               SunOS-sun4m-5.6 is a Sparcstation 5 running
+                               Solaris 2.5)
+ 
+ Under ARCH the following structure exists:
+ 
+ lib<opts>                     the directory where the library built for ARCH
+                               using <opts> is located. Output for testall
+                               and specific routine tests are also located here.
+                               (e.g. SunOS-sun4m-5.6/lib_f90 contains the
+                               version of CMLIB made using the f90 compiler.)
+ lib<opts>/src/SUBLIBRARY/*.f  special versions of source files required for 
+                               a specific build.  (e.g. lib/src/machcon
+                               contains the *.f routines with the correct 
+                               machine constants for ARCH using lib<opts>) 
+ 
+     
+     
+ RunMake Command Options for Multiple-Architecture Installation
+ --------------------------------------------------------------
+     
+  RunMake [-d remote-SRCDIR]
+          [-h remote-host]
+          [-m testall | test | libcm | clean]
+          [-i nn (nn is test input)]
+          [-r rsh|ssh]
+     
+    -d   if not specified, defaults to current working directory
+    -h   if not specified, runs job.cmd on current host, otherwise will run
+         job.cmd on remote host (you must have rshcmd permission)
+    -m   if not specified, defaults to 'libcm and testall'
+           libcm   - builds the requested library
+           testall - runs all the SUBLIBRARY tests
+           test    - runs the tests for a specific SUBLIBRARY
+    -i   if not specified, defaults to '11' for '-m testall' and prompts
+         you for 'output level' for '-m test'
+    -r   if not specified, defaults to rsh. 
+     
+  If a version of cmlib already exists and you want to test a similar 
+  ARCH, for example AIX-8900-4.2 already exists and you want to
+  see if AIX-4C00-4.3 can use the same libraries then:
+     
+       cd SRCDIR
+       ln -s AIX-8900-4.2 AIX-4C00-4.3
+       ./RunMake [-h remote-host] -m testall 
+           
+     
+

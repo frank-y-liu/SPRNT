@@ -1,0 +1,18 @@
+ 
+      COMPLEX FUNCTION CCBRT(Z)
+C***BEGIN PROLOGUE  CCBRT
+C***DATE WRITTEN   770401   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C2
+C***KEYWORDS  COMPLEX,CUBE ROOT,ELEMENTARY FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the complex cube root of Z.
+C***DESCRIPTION
+C
+C CCBRT(Z) calculates the complex cube root of Z.  The principal root
+C for which -PI .LT. arg(Z) .LE. +PI is returned.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  CARG,CBRT
+C***END PROLOGUE  CCBRT
+ 
+ 

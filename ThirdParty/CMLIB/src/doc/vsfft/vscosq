@@ -1,0 +1,109 @@
+ 
+C
+C          * * * * * * * * * * * * * * * * * * * * * * * * * *
+C          *                                                 *
+C          * SUBROUTINE VSCOSQ(F,L,M,N,FT,C1,C2,C3,C4,WSAVE) *
+C          *                                                 *
+C          * * * * * * * * * * * * * * * * * * * * * * * * * *
+C
+C
+C                           * * * * * * * *
+C                           *   PURPOSE   *
+C                           * * * * * * * *
+C
+C
+C     A VECTORIZED SUBROUTINE TO COMPUTE THE STAGGERED GRID COSINE
+C     QUARTER-WAVE ANALYSIS AND SYNTHESIS
+C
+C       V_HAT(J) = SQRT(2/M)*SUM(L=1,M)[ V(L)*COS((L-.5)*(J-.5)*PI/M) ]
+C
+C                  (J=1,...,M)
+C
+C     FOR L*N VECTORS.
+C
+C
+C                    * * * * * * * * * * * * * * *
+C                    *   PARAMETER DESCRIPTION   *
+C                    * * * * * * * * * * * * * * *
+C
+C
+C     INPUT PARAMETERS
+C
+C     F      A REAL THREE-DIMENSIONAL ARRAY OF SIZE L X M X N THAT
+C            CONTAINS THE L*N VECTORS OF LENGTH M TO BE TRANSFORMED.
+C            SPECIFICALLY, FOR EACH I=1,...,L AND K=1,...,N THE VECTOR
+C            TO BE TRANSFORMED IS STORED AS F(I,J,K), J=1,...,M.
+C
+C     L,M,N  NON-NEGATIVE INTEGERS THAT SPECIFY THE NUMBER AND LENGTH OF
+C            THE VECTORS TO BE TRANSFORMED.  THERE IS NO RESTRICTION ON
+C            M, THE LENGTH OF THE TRANSFORM.
+C
+C     FT     A WORK ARRAY OF SIZE L*M*N THAT MUST BE PROVIDED BY THE
+C            USER.
+C
+C     C1,C2, FOUR ONE-DIMENSIONAL REAL WORK ARRAYS THAT CONTAIN CERTAIN
+C     C3,C4  TRIGONOMETRIC VALUES COMPUTED IN THE SUBROUTINE VSCSQI.
+C
+C     WORK   A REAL ONE-DIMENSIONAL WORK ARRAY OF SIZE M+15 THAT
+C            CONTAINS CERTAIN INTERMEDIATE QUANTITIES USED BY SUBROUTINE
+C            VRFFTB, A VECTORIZED REAL PERIODIC FAST FOURIER TRANSFORM
+C            ROUTINE.
+C
+C
+C     OUTPUT PARAMETER
+C
+C     F      CONTAINS THE L*N TRANSFORMS OF THE INPUT VECTORS STORED IN
+C            PERMUTED ORDER.  SPECIFICALLY, THE TRANSFORM OF THE INPUT
+C            VECTOR F(I,J,K), J=,1,...,M, IS STORED, ON OUTPUT, AS
+C            F(I,K,J), J=1,...,M.
+C
+C
+C
+C              * * * * * * * * * * * * * * * * * * * * *
+C              *                                       *
+C              *         PROGRAM SPECIFICATIONS        *
+C              *                                       *
+C              * * * * * * * * * * * * * * * * * * * * *
+C
+C
+C
+C     DIMENSION OF    F(L,M,N), FT(L*M*N), C1(M), C2(M), C3(M), C4(M),
+C     ARGUMENTS       WSAVE(N+15)
+C
+C     LATEST          AUGUST 1, 1985
+C     REVISION
+C
+C     SUBPROGRAMS     VSRFTI, VSCOSI, VSCSQI, VSRFTF, VSRFTB, VSCOSF,
+C     REQUIRED        VSCOSB, VSCOSQ, VSSINF, VSSINB, VSSINQ, PIMACH,
+C                     VRFFTPK (PACKAGE)
+C
+C     SPECIAL         NONE
+C     CONDITIONS
+C
+C     COMMON          NONE
+C     BLOCKS
+C
+C     I/O             NONE
+C
+C     PRECISION       SINGLE
+C
+C     SPECIALIST      ROLAND SWEET
+C
+C     LANGUAGE        FORTRAN
+C
+C     HISTORY         WRITTEN BY LINDA LINDGREN AND ROLAND SWEET AT THE
+C                     NATIONAL BUREAU OF STANDARDS (BOULDER).
+C
+C     ALGORITHM       SEE "FAST FOURIER TRANSFORMS ON A STAGGERED GRID"
+C                     BY ROLAND A. SWEET (TO APPEAR)
+C
+C     PORTABILITY     AMERICAN NATIONAL STANDARDS INSTITUTE FORTRAN 77.
+C                     THE ONLY MACHINE DEPENDENT CONSTANT IS LOCATED IN
+C                     THE FUNCTION PIMACH.
+C
+C     REQUIRED        COS,SIN
+C     RESIDENT
+C     ROUTINES
+C
+ 
+ 

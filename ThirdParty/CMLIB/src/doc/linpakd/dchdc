@@ -1,0 +1,99 @@
+ 
+      SUBROUTINE DCHDC(A,LDA,P,WORK,JPVT,JOB,INFO)
+C***BEGIN PROLOGUE  DCHDC
+C***DATE WRITTEN   790319   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D2B1B
+C***KEYWORDS  CHOLESKY DECOMPOSITION,DOUBLE PRECISION,LINEAR ALGEBRA,
+C             LINPACK,MATRIX,POSITIVE DEFINITE
+C***AUTHOR  DONGARRA, J., (ANL)
+C           STEWART, G. W., (U. OF MARYLAND)
+C***PURPOSE  Computes the Cholesky decomposition of a POSITIVE DEFINITE
+C            matrix.  A pivoting option allows the user to estimate the
+C            condition of a positive definite matrix or determine the
+C            rank of a POSITIVE SEMIDEFINITE matrix.
+C***DESCRIPTION
+C
+C     DCHDC computes the Cholesky decomposition of a positive definite
+C     matrix.  A pivoting option allows the user to estimate the
+C     condition of a positive definite matrix or determine the rank
+C     of a positive semidefinite matrix.
+C
+C     On Entry
+C
+C         A      DOUBLE PRECISION(LDA,P).
+C                A contains the matrix whose decomposition is to
+C                be computed.  Only the upper half of A need be stored.
+C                The lower part of the array A is not referenced.
+C
+C         LDA    INTEGER.
+C                LDA is the leading dimension of the array A.
+C
+C         P      INTEGER.
+C                P is the order of the matrix.
+C
+C         WORK   DOUBLE PRECISION.
+C                WORK is a work array.
+C
+C         JPVT   INTEGER(P).
+C                JPVT contains integers that control the selection
+C                of the pivot elements, if pivoting has been requested.
+C                Each diagonal element A(K,K)
+C                is placed in one of three classes according to the
+C                value of JPVT(K).
+C
+C                   If JPVT(K) .GT. 0, then X(K) is an initial
+C                                      element.
+C
+C                   If JPVT(K) .EQ. 0, then X(K) is a free element.
+C
+C                   If JPVT(K) .LT. 0, then X(K) is a final element.
+C
+C                Before the decomposition is computed, initial elements
+C                are moved by symmetric row and column interchanges to
+C                the beginning of the array A and final
+C                elements to the end.  Both initial and final elements
+C                are frozen in place during the computation and only
+C                free elements are moved.  At the K-th stage of the
+C                reduction, if A(K,K) is occupied by a free element
+C                it is interchanged with the largest free element
+C                A(L,L) with L .GE. K.  JPVT is not referenced if
+C                JOB .EQ. 0.
+C
+C        JOB     INTEGER.
+C                JOB is an integer that initiates column pivoting.
+C                If JOB .EQ. 0, no pivoting is done.
+C                If JOB .NE. 0, pivoting is done.
+C
+C     On Return
+C
+C         A      A contains in its upper half the Cholesky factor
+C                of the matrix A as it has been permuted by pivoting.
+C
+C         JPVT   JPVT(J) contains the index of the diagonal element
+C                of a that was moved into the J-th position,
+C                provided pivoting was requested.
+C
+C         INFO   contains the index of the last positive diagonal
+C                element of the Cholesky factor.
+C
+C     For positive definite matrices INFO = P is the normal return.
+C     For pivoting with positive semidefinite matrices INFO will
+C     in general be less than P.  However, INFO may be greater than
+C     the rank of A, since rounding error can cause an otherwise zero
+C     element to be positive.  Indefinite systems will always cause
+C     INFO to be less than P.
+C
+C     LINPACK.  This version dated 03/19/79 .
+C     J.Dongarra J. and Stewart G. W., Argonne National Laboratory and
+C     University of Maryland.
+C
+C
+C     BLAS DAXPY,DSWAP
+C     Fortran DSQRT
+C***REFERENCES  DONGARRA J.J., BUNCH J.R., MOLER C.B., STEWART G.W.,
+C                 *LINPACK USERS  GUIDE*, SIAM, 1979.
+C***ROUTINES CALLED  DAXPY,DSWAP
+C***END PROLOGUE  DCHDC
+ 
+ 

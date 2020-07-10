@@ -1,0 +1,59 @@
+ 
+ 
+ ************************************************************************
+ *                                                                      *
+ *                          S U D S O D S                               *
+ *                                                                      *
+ *     Solution of overdetermined (SODS) and underdetermined (SUDS)     *
+ *     systems of linear algebraic equations.                           *
+ *                                                                      *
+ *     Written by H. A. Watts, SANDIA LABORATORIES, ALBUQUERQUE         *
+ *                                                                      *
+ ************************************************************************
+ 
+ 
+      SUBROUTINE SODS(A,X,B,NEQ,NUK,NRDA,IFLAG,WORK,IWORK)
+ 
+   SODS solves the overdetermined system of linear equations A X = B,
+   where A is NEQ by NUK and NEQ .GE. NUK. If rank A = NUK,
+   X is the UNIQUE least squares solution vector. That is,
+            R(1)**2 + ..... + R(NEQ)**2 = minimum
+   where R is the residual vector  R = B - A X.
+   If rank A .LT. NUK , the least squares solution of minimal
+   length can be provided.
+ 
+   References
+ 
+     G.Golub, NUMERICAL METHODS FOR SOLVING LINEAR LEAST SQUARES
+     PROBLEMS, NUMER. MATH.,V.7,PP.206,H-216,1965.
+     P. Businger and G. Golub, LINEAR LEAST SQUARES SOLUTIONS BY
+     HOUSEHOLDER TRANSFORMATIONS,NUMER. MATH.,V.7,PP.269-276,1965.
+ 
+     H.A.Watts,SOLVING LINEAR LEAST SQUARES PROBLEMS USING
+     SODS/SUDS/CODS , SANDIA REPORT SAND77-0683
+ 
+ 
+ ************************************************************************
+ 
+ 
+   SUBROUTINE SUDS(A,X,B,NEQ,NUK,NRDA,IFLAG,MLSO,WORK,IWORK)
+ 
+   SUDS solves the underdetermined system of linear equations A Z = B
+   where A is NEQ by NUK and NEQ .LE. NUK. In particular,if rank A
+   equals IRA,a vector X and a matrix U are determined such that
+   X is the UNIQUE solution of smallest length,satisfying A X = B,
+   and the columns of U form an orthonormal basis for the null
+   space of A,satisfying A U = 0 . Then all solutions Z are
+   given by
+            Z = X + C(1)*U(1) + ..... + C(NUK-IRA)*U(NUK-IRA)
+   where U(J) represents the J-th column of U and the C(J) are
+   arbitrary constants.
+   If the system of equations are not compatible,only the least
+   squares solution of minimal length is computed.
+ 
+   Reference
+ 
+     H.A.Watts,SOLVING LINEAR LEAST SQUARES PROBLEMS USING
+     SODS/SUDS/CODS , SANDIA REPORT SAND77-0683
+ 
+ 

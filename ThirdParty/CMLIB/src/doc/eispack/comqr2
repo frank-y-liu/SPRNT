@@ -1,0 +1,86 @@
+ 
+      SUBROUTINE COMQR2(NM,N,LOW,IGH,ORTR,ORTI,HR,HI,WR,WI,ZR,ZI,IERR)
+C***BEGIN PROLOGUE  COMQR2
+C***DATE WRITTEN   760101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  D4C2B
+C***KEYWORDS  EIGENVALUES,EIGENVECTORS,EISPACK
+C***AUTHOR  SMITH, B. T., ET AL.
+C***PURPOSE  Computes eigenvalues and eigenvectors of complex upper
+C            Hessenberg matrix.
+C***DESCRIPTION
+C
+C     This subroutine is a translation of a unitary analogue of the
+C     ALGOL procedure  COMLR2, NUM. MATH. 16, 181-204(1970) by Peters
+C     and Wilkinson.
+C     HANDBOOK FOR AUTO. COMP., VOL.II-LINEAR ALGEBRA, 372-395(1971).
+C     The unitary analogue substitutes the QR algorithm of Francis
+C     (COMP. JOUR. 4, 332-345(1962)) for the LR algorithm.
+C
+C     This subroutine finds the eigenvalues and eigenvectors
+C     of a COMPLEX UPPER Hessenberg matrix by the QR
+C     method.  The eigenvectors of a COMPLEX GENERAL matrix
+C     can also be found if  CORTH  has been used to reduce
+C     this general matrix to Hessenberg form.
+C
+C     On INPUT
+C
+C        NM must be set to the row dimension of two-dimensional
+C          array parameters as declared in the calling program
+C          dimension statement.
+C
+C        N is the order of the matrix.
+C
+C        LOW and IGH are integers determined by the balancing
+C          subroutine  CBAL.  If  CBAL  has not been used,
+C          set LOW=1, IGH=N.
+C
+C        ORTR and ORTI contain information about the unitary trans-
+C          formations used in the reduction by  CORTH, if performed.
+C          Only elements LOW through IGH are used.  If the eigenvectors
+C          of the Hessenberg matrix are desired, set ORTR(J) and
+C          ORTI(J) to 0.0E0 for these elements.
+C
+C        HR and HI contain the real and imaginary parts,
+C          respectively, of the complex upper Hessenberg matrix.
+C          Their lower triangles below the subdiagonal contain further
+C          information about the transformations which were used in the
+C          reduction by  CORTH, if performed.  If the eigenvectors of
+C          the Hessenberg matrix are desired, these elements may be
+C          arbitrary.
+C
+C     On OUTPUT
+C
+C        ORTR, ORTI, and the upper Hessenberg portions of HR and HI
+C          have been destroyed.
+C
+C        WR and WI contain the real and imaginary parts,
+C          respectively, of the eigenvalues.  If an error
+C          exit is made, the eigenvalues should be correct
+C          for indices IERR+1,...,N.
+C
+C        ZR and ZI contain the real and imaginary parts,
+C          respectively, of the eigenvectors.  The eigenvectors
+C          are unnormalized.  If an error exit is made, none of
+C          the eigenvectors has been found.
+C
+C        IERR is set to
+C          Zero       for normal return,
+C          J          if the J-th eigenvalue has not been
+C                     determined after a total of 30*N iterations.
+C
+C     Calls CSROOT for complex square root.
+C     Calls PYTHAG(A,B) for sqrt(A**2 + B**2).
+C     Calls CDIV for complex division.
+C
+C     Questions and comments should be directed to B. S. Garbow,
+C     APPLIED MATHEMATICS DIVISION, ARGONNE NATIONAL LABORATORY
+C     ------------------------------------------------------------------
+C***REFERENCES  B. T. SMITH, J. M. BOYLE, J. J. DONGARRA, B. S. GARBOW,
+C                 Y. IKEBE, V. C. KLEMA, C. B. MOLER, *MATRIX EIGEN-
+C                 SYSTEM ROUTINES - EISPACK GUIDE*, SPRINGER-VERLAG,
+C                 1976.
+C***ROUTINES CALLED  CDIV,CSROOT,PYTHAG
+C***END PROLOGUE  COMQR2
+ 
+ 

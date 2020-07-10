@@ -1,0 +1,70 @@
+ 
+      SUBROUTINE SVD(NM,M,N,A,W,MATU,U,MATV,V,IERR,RV1)
+C***BEGIN PROLOGUE  SVD
+C***REFER TO  EISDOC
+C
+C     This subroutine is a translation of the ALGOL procedure SVD,
+C     NUM. MATH. 14, 403-420(1970) by Golub and Reinsch.
+C     HANDBOOK FOR AUTO. COMP., VOL II-LINEAR ALGEBRA, 134-151(1971).
+C
+C     This subroutine determines the singular value decomposition
+C          T
+C     A=USV  of a REAL M by N rectangular matrix.  Householder
+C     bidiagonalization and a variant of the QR algorithm are used.
+C
+C     On Input
+C
+C        NM must be set to the row dimension of two-dimensional
+C          array parameters as declared in the calling program
+C          dimension statement.  Note that NM must be at least
+C          as large as the maximum of M and N.
+C
+C        M is the number of rows of A (and U).
+C
+C        N is the number of columns of A (and U) and the order of V.
+C
+C        A contains the rectangular input matrix to be decomposed.
+C
+C        MATU should be set to .TRUE. if the U matrix in the
+C          decomposition is desired, and to .FALSE. otherwise.
+C
+C        MATV should be set to .TRUE. if the V matrix in the
+C          decomposition is desired, and to .FALSE. otherwise.
+C
+C     On Output
+C
+C        A is unaltered (unless overwritten by U or V).
+C
+C        W contains the N (non-negative) singular values of A (the
+C          diagonal elements of S).  They are UNORDERED.  If an
+C          error exit is made, the singular values should be correct
+C          for indices IERR+1,IERR+2,...,N.
+C
+C        U contains the matrix U (orthogonal column vectors) of the
+C          decomposition if MATU has been set to .TRUE.  Otherwise
+C          U is used as a temporary array.  U may coincide with A.
+C          If an error exit is made, the columns of U corresponding
+C          to indices of correct singular values should be correct.
+C
+C        V contains the matrix V (orthogonal) of the decomposition if
+C          MATV has been set to .TRUE.  Otherwise V is not referenced.
+C          V may also coincide with A if U is not needed.  If an error
+C          exit is made, the columns of V corresponding to indices of
+C          correct singular values should be correct.
+C
+C        IERR is set to
+C          Zero       for normal return,
+C          K          if the K-th singular value has not been
+C                     determined after 30 iterations.
+C
+C        RV1 is a temporary storage array.
+C
+C     CALLS PYTHAG(A,B) for sqrt(A**2 + B**2).
+C
+C     Questions and comments should be directed to B. S. Garbow,
+C     APPLIED MATHEMATICS DIVISION, ARGONNE NATIONAL LABORATORY
+C     ------------------------------------------------------------------
+C***ROUTINES CALLED  PYTHAG
+C***END PROLOGUE  SVD
+ 
+ 

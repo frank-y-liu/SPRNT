@@ -1,0 +1,26 @@
+ 
+      FUNCTION CSEVL(X,CS,N)
+C***BEGIN PROLOGUE  CSEVL
+C***DATE WRITTEN   770401   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C3A2
+C***KEYWORDS  CHEBYSHEV,FNLIB,SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Evaluate the N-term Chebyshev series CS at X.
+C***DESCRIPTION
+C
+C Evaluate the N-term Chebyshev series CS at X.  Adapted from
+C R. Broucke, Algorithm 446, C.A.C.M., 16, 254 (1973). Also see Fox
+C and Parker, Chebyshev Polynomials in Numerical Analysis, Oxford Press,
+C page 56.
+C
+C       Input Arguments --
+C X    value at which the series is to be evaluated.
+C CS   array of N terms of a Chebyshev series.  In eval-
+C      uating CS, only half the first coefficient is summed.
+C N    number of terms in array CS.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  XERROR
+C***END PROLOGUE  CSEVL
+ 
+ 

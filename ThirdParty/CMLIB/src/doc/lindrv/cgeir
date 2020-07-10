@@ -1,0 +1,105 @@
+ 
+      SUBROUTINE CGEIR(A,LDA,N,V,ITASK,IND,WORK,IWORK)
+C***BEGIN PROLOGUE  CGEIR
+C***DATE WRITTEN   800502   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D2C1
+C***KEYWORDS  COMPLEX,COMPLEX LINEAR EQUATIONS,
+C             GENERAL SYSTEM OF LINEAR EQUATIONS,LINEAR EQUATIONS
+C***AUTHOR  VOORHEES, E., (LANL)
+C***PURPOSE  CGEIR solves a GENERAL COMPLEX NXN system
+C            of linear equations.  Iterative refine-
+C            ment is used to obtain an error estimate.
+C***DESCRIPTION
+C
+C    Subroutine CGEIR solves a general NxN system of complex
+C    linear equations using LINPACK subroutines CGEFA and CGESL.
+C    One pass of iterative refinement is used only to obtain an
+C    estimate of the accuracy.  That is, if A is an NxN complex
+C    matrix and if X and B are complex N-vectors, then CGEIR solves
+C    the equation
+C
+C                          A*X=B.
+C
+C    The matrix A is first factored into upper and lower tri-
+C    angular matrices U and L using partial pivoting.  These
+C    factors and the pivoting information are used to calculate
+C    the solution, X.  Then the residual vector is found and
+C    used to calculate an estimate of the relative error, IND.
+C    IND estimates the accuracy of the solution only when the
+C    input matrix and the right hand side are represented
+C    exactly in the computer and does not take into
+C    account any errors in the input data.
+C
+C    If the equation A*X=B is to be solved for more than one vector
+C    B, the factoring of A does not need to be performed again and
+C    the option to only solve (ITASK .GT. 1) will be faster for
+C    the succeedIng solutions.  In this case, the contents of A,
+C    LDA, N, WORK, and IWORK must not have been altered by the
+C    user following factorization (ITASK=1).  IND will not be
+C    changed by CGEIR in this case.
+C
+C  Argument Description ***
+C
+C    A      COMPLEX(LDA,N)
+C             the doubly subscripted array with dimension (LDA,N)
+C             which contains the coefficient matrix.  A is not
+C             altered by the routine.
+C    LDA    INTEGER
+C             the leading dimension of the array A.  LDA must be great-
+C             er than or equal to N.  (Terminal error message IND=-1)
+C    N      INTEGER
+C             the order of the matrix A.  The first N elements of
+C             the array A are the elements of the first column of
+C             matrix A.  N must be greater than or equal to 1.
+C             (Terminal error message IND=-2)
+C    V      COMPLEX(N)
+C             on entry, the singly subscripted array(vector) of di-
+C               mension N which contains the right hand side B of a
+C               system of simultaneous linear equations A*X=B.
+C             on return, V contains the solution vector, X .
+C    ITASK  INTEGER
+C             if ITASK=1, the matrix A is factored and then the
+C               linear equation is solved.
+C             if ITASK .GT. 1, the equation is solved using the existing
+C               factored matrix A (stored in work).
+C             if ITASK .LT. 1, then terminal error message IND=-3 is
+C               printed.
+C    IND    INTEGER
+C             GT.0  IND is a rough estimate of the number of digits
+C                     of accuracy in the solution, X.  IND=75 means
+C                     that the solution vector X is zero.
+C             LT.0  see error message corresponding to IND below.
+C    WORK   COMPLEX(N*(N+1))
+C             a singly subscripted array of dimension at least N*(N+1).
+C    IWORK  INTEGER(N)
+C             a singly subscripted array of dimension at least N.
+C
+C  Error Messages Printed ***
+C
+C    IND=-1  terminal   N is greater than LDA.
+C    IND=-2  terminal   N is less than one.
+C    IND=-3  terminal   ITASK is less than one.
+C    IND=-4  terminal   The matrix A is computationally singular.
+C                         A solution has not been computed.
+C    IND=-10 warning    The solution has no apparent significance.
+C                         The solution may be inaccurate or the matrix
+C                         A may be poorly scaled.
+C
+C               NOTE-  The above terminal(*fatal*) error messages are
+C                      designed to be handled by XERRWV in which
+C                      LEVEL=1 (recoverable) and IFLAG=2 .  LEVEL=0
+C                      for warning error messages from XERROR.  Unless
+C                      the user provides otherwise, an error message
+C                      will be printed followed by an abort.
+C***REFERENCES  SUBROUTINE CGEIR WAS DEVELOPED BY GROUP C-3, LOS ALAMOS
+C                 SCIENTIFIC LABORATORY, LOS ALAMOS, NM 87545.
+C                 THE LINPACK SUBROUTINES USED BY CGEIR ARE DESCRIBED IN
+C                 DETAIL IN THE *LINPACK USERS GUIDE* PUBLISHED BY
+C                 THE SOCIETY FOR INDUSTRIAL AND APPLIED MATHEMATICS
+C                 (SIAM) DATED 1979.
+C***ROUTINES CALLED  CCOPY,CDCDOT,CGEFA,CGESL,R1MACH,SCASUM,XERROR,
+C                    XERRWV
+C***END PROLOGUE  CGEIR
+ 
+ 

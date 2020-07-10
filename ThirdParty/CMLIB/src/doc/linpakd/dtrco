@@ -1,0 +1,67 @@
+ 
+      SUBROUTINE DTRCO(T,LDT,N,RCOND,Z,JOB)
+C***BEGIN PROLOGUE  DTRCO
+C***DATE WRITTEN   780814   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D2A3
+C***KEYWORDS  CONDITION,DOUBLE PRECISION,FACTOR,LINEAR ALGEBRA,LINPACK,
+C             MATRIX,TRIANGULAR
+C***AUTHOR  MOLER, C. B., (U. OF NEW MEXICO)
+C***PURPOSE  Estimates the condition of a double precision TRIANGULAR
+C            matrix.
+C***DESCRIPTION
+C
+C     DTRCO estimates the condition of a double precision triangular
+C     matrix.
+C
+C     On Entry
+C
+C        T       DOUBLE PRECISION(LDT,N)
+C                T contains the triangular matrix.  The zero
+C                elements of the matrix are not referenced, and
+C                the corresponding elements of the array can be
+C                used to store other information.
+C
+C        LDT     INTEGER
+C                LDT is the leading dimension of the array T.
+C
+C        N       INTEGER
+C                N is the order of the system.
+C
+C        JOB     INTEGER
+C                = 0         T  is lower triangular.
+C                = nonzero   T  is upper triangular.
+C
+C     On Return
+C
+C        RCOND   DOUBLE PRECISION
+C                an estimate of the reciprocal condition of  T .
+C                For the system  T*X = B , relative perturbations
+C                in  T  and  B  of size  EPSILON  may cause
+C                relative perturbations in  X  of size  EPSILON/RCOND .
+C                If  RCOND  is so small that the logical expression
+C                           1.0 + RCOND .EQ. 1.0
+C                is true, then  T  may be singular to working
+C                precision.  In particular,  RCOND  is zero  if
+C                exact singularity is detected or the estimate
+C                underflows.
+C
+C        Z       DOUBLE PRECISION(N)
+C                a work vector whose contents are usually unimportant.
+C                If  T  is close to a singular matrix, then  Z  is
+C                an approximate null vector in the sense that
+C                NORM(A*Z) = RCOND*NORM(A)*NORM(Z) .
+C
+C     LINPACK.  This version dated 08/14/78 .
+C     Cleve Moler, University of New Mexico, Argonne National Lab.
+C
+C     Subroutines and Functions
+C
+C     BLAS DAXPY,DSCAL,DASUM
+C     Fortran DABS,DMAX1,DSIGN
+C***REFERENCES  DONGARRA J.J., BUNCH J.R., MOLER C.B., STEWART G.W.,
+C                 *LINPACK USERS  GUIDE*, SIAM, 1979.
+C***ROUTINES CALLED  DASUM,DAXPY,DSCAL
+C***END PROLOGUE  DTRCO
+ 
+ 

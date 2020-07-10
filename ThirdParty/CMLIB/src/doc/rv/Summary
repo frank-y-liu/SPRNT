@@ -1,0 +1,21 @@
+ 
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+C
+C                 RV  Random Variables
+C
+C      RV is a package of random number generators.
+C
+C         UNI generates uniform numbers on [0,1).
+C        RNOR generates normal numbers with zero mean and
+C                 standard deviation one.
+C
+C      The major advantages of these generators are long cycle,
+C      very high degree of portability and reproducibility of
+C      results on different machines.
+C
+C      In addition, as of May 1983, RNOR is the fastest of all
+C      the Fortran normal random number generators we have tested.
+C
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+ 
+ 

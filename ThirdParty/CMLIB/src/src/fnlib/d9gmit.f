@@ -1,0 +1,76 @@
+      DOUBLE PRECISION FUNCTION D9GMIT(A,X,ALGAP1,SGNGAM,ALX)
+C***BEGIN PROLOGUE  D9GMIT
+C***DATE WRITTEN   770701   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C7E
+C***KEYWORDS  COMPLEMENTARY,COMPLEMENTARY INCOMPLETE GAMMA FUNCTION,
+C             DOUBLE PRECISION,GAMMA,GAMMA FUNCTION,SPECIAL FUNCTON,
+C             TRICOMI
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes d.p. Tricomi-s incomplete Gamma function for
+C            small X.
+C***DESCRIPTION
+C
+C Compute Tricomi's incomplete gamma function for small X.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D1MACH,DLNGAM,XERROR
+C***END PROLOGUE  D9GMIT
+      DOUBLE PRECISION A, X, ALGAP1, SGNGAM, ALX, AE, AEPS, ALGS, ALG2,
+     1  BOT, EPS, FK, S, SGNG2, T, TE, D1MACH, DLNGAM
+      DATA EPS, BOT / 2*0.D0 /
+C***FIRST EXECUTABLE STATEMENT  D9GMIT
+      IF (EPS.NE.0.D0) GO TO 10
+      EPS = 0.5D0*D1MACH(3)
+      BOT = DLOG (D1MACH(1))
+C
+ 10   IF (X.LE.0.D0) CALL XERROR ( 'D9GMIT  X SHOULD BE GT 0', 24, 1, 2)
+C
+      MA = A + 0.5D0
+      IF (A.LT.0.D0) MA = A - 0.5D0
+      AEPS = A - DBLE(FLOAT(MA))
+C
+      AE = A
+      IF (A.LT.(-0.5D0)) AE = AEPS
+C
+      T = 1.D0
+      TE = AE
+      S = T
+      DO 20 K=1,200
+        FK = K
+        TE = -X*TE/FK
+        T = TE/(AE+FK)
+        S = S + T
+        IF (DABS(T).LT.EPS*DABS(S)) GO TO 30
+ 20   CONTINUE
+      CALL XERROR ( 'D9GMIT  NO CONVERGENCE IN 200 TERMS OF TAYLOR-S SER
+     1IES', 54, 2, 2)
+C
+ 30   IF (A.GE.(-0.5D0)) ALGS = -ALGAP1 + DLOG(S)
+      IF (A.GE.(-0.5D0)) GO TO 60
+C
+      ALGS = -DLNGAM(1.D0+AEPS) + DLOG(S)
+      S = 1.0D0
+      M = -MA - 1
+      IF (M.EQ.0) GO TO 50
+      T = 1.0D0
+      DO 40 K=1,M
+        T = X*T/(AEPS-DBLE(FLOAT(M+1-K)))
+        S = S + T
+        IF (DABS(T).LT.EPS*DABS(S)) GO TO 50
+ 40   CONTINUE
+C
+ 50   D9GMIT = 0.0D0
+      ALGS = -DBLE(FLOAT(MA))*DLOG(X) + ALGS
+      IF (S.EQ.0.D0 .OR. AEPS.EQ.0.D0) GO TO 60
+C
+      SGNG2 = SGNGAM * DSIGN (1.0D0, S)
+      ALG2 = -X - ALGAP1 + DLOG(DABS(S))
+C
+      IF (ALG2.GT.BOT) D9GMIT = SGNG2 * DEXP(ALG2)
+      IF (ALGS.GT.BOT) D9GMIT = D9GMIT + DEXP(ALGS)
+      RETURN
+C
+ 60   D9GMIT = DEXP (ALGS)
+      RETURN
+C
+      END

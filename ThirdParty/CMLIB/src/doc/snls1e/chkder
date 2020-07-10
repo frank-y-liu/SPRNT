@@ -1,0 +1,101 @@
+ 
+      SUBROUTINE CHKDER(M,N,X,FVEC,FJAC,LDFJAC,XP,FVECP,MODE,ERR)
+C***BEGIN PROLOGUE  CHKDER
+C***DATE WRITTEN   800301   (YYMMDD)
+C***REVISION DATE  830608   (YYMMDD)
+C***CATEGORY NO.  F3,G4C
+C***KEYWORDS  GRADIENTS,JACOBIAN,MINPACK,NONLINEAR
+C***AUTHOR  HIEBERT K.L. (SNLA)
+C***PURPOSE  Checks the gradients of M nonlinear functions in N
+C            variables, evaluated at a point X, for consistency
+C            with the functions themselves.
+C***DESCRIPTION
+C
+C   This subroutine is a companion routine to SNLS1,SNLS1E,SNSQ,and
+C   SNSQE which may be used to check the calculation of the Jacobian.
+C
+C     SUBROUTINE CHKDER
+C
+C     This subroutine checks the gradients of M nonlinear functions
+C     in N variables, evaluated at a point X, for consistency with
+C     the functions themselves. The user must call CKDER twice,
+C     first with MODE = 1 and then with MODE = 2.
+C
+C     MODE = 1. On input, X must contain the point of evaluation.
+C               On output, XP is set to a neighboring point.
+C
+C     MODE = 2. On input, FVEC must contain the functions and the
+C                         rows of FJAC must contain the gradients
+C                         of the respective functions each evaluated
+C                         at X, and FVECP must contain the functions
+C                         evaluated at XP.
+C               On output, ERR contains measures of correctness of
+C                          the respective gradients.
+C
+C     The subroutine does not perform reliably if cancellation or
+C     rounding errors cause a severe loss of significance in the
+C     evaluation of a function. Therefore, none of the components
+C     of X should be unusually small (in particular, zero) or any
+C     other value which may cause loss of significance.
+C
+C     The SUBROUTINE statement is
+C
+C       SUBROUTINE CHKDER(M,N,X,FVEC,FJAC,LDFJAC,XP,FVECP,MODE,ERR)
+C
+C     where
+C
+C       M is a positive integer input variable set to the number
+C         of functions.
+C
+C       N is a positive integer input variable set to the number
+C         of variables.
+C
+C       X is an input array of length N.
+C
+C       FVEC is an array of length M. On input when MODE = 2,
+C         FVEC must contain the functions evaluated at X.
+C
+C       FJAC is an M by N array. On input when MODE = 2,
+C         the rows of FJAC must contain the gradients of
+C         the respective functions evaluated at X.
+C
+C       LDFJAC is a positive integer input parameter not less than M
+C         which specifies the leading dimension of the array FJAC.
+C
+C       XP is an array of length N. On output when MODE = 1,
+C         XP is set to a neighboring point of X.
+C
+C       FVECP is an array of length M. On input when MODE = 2,
+C         FVECP must contain the functions evaluated at XP.
+C
+C       MODE is an integer input variable set to 1 on the first call
+C         and 2 on the second. Other values of MODE are equivalent
+C         to MODE = 1.
+C
+C       ERR is an array of length M. On output when MODE = 2,
+C         ERR contains measures of correctness of the respective
+C         gradients. If there is no severe loss of significance,
+C         then if ERR(I) is 1.0 the I-th gradient is correct,
+C         while if ERR(I) is 0.0 the I-th gradient is incorrect.
+C         For values of ERR between 0.0 and 1.0, the categorization
+C         is less certain. In general, a value of ERR(I) greater
+C         than 0.5 indicates that the I-th gradient is probably
+C         correct, while a value of ERR(I) less than 0.5 indicates
+C         that the I-th gradient is probably incorrect.
+C
+C     Subprograms called
+C
+C       SLATEC supplied ... R1MACH
+C
+C       FORTRAN supplied ... ABS,ALOG10,SQRT
+C
+C     Argonne National Laboratory. MINPACK Project. March 1980.
+C     Burton S. Garbow, Kenneth E. Hillstrom, Jorge J. More
+C***REFERENCES  POWELL, M. J. D., *A HYBRID METHOD FOR NONLINEAR
+C                 EQUATIONS*, 'NUMERICAL METHODS FOR NONLINEAR
+C                 ALGEBRAIC EQUATIONS', P. RABINOWITZ, EDITOR,
+C                 GORDON AND BREACH, 1970.
+C***ROUTINES CALLED  R1MACH
+C***END PROLOGUE  CHKDER
+ 
+ 

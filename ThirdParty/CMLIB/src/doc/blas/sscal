@@ -1,0 +1,36 @@
+ 
+      SUBROUTINE SSCAL(N,SA,SX,INCX)
+C***BEGIN PROLOGUE  SSCAL
+C***DATE WRITTEN   791001   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D1A6
+C***KEYWORDS  BLAS,LINEAR ALGEBRA,SCALE,VECTOR
+C***AUTHOR  LAWSON, C. L., (JPL)
+C           HANSON, R. J., (SNLA)
+C           KINCAID, D. R., (U. OF TEXAS)
+C           KROGH, F. T., (JPL)
+C***PURPOSE  S.P. vector scale x = a*x
+C***DESCRIPTION
+C
+C                B L A S  Subprogram
+C    Description of Parameters
+C
+C     --Input--
+C        N  number of elements in input vector(s)
+C       SA  single precision scale factor
+C       SX  single precision vector with N elements
+C     INCX  storage spacing between elements of SX
+C
+C     --Output--
+C       SX  single precision result (unchanged if N .LE. 0)
+C
+C     Replace single precision SX by single precision SA*SX.
+C     For I = 0 to N-1, replace SX(1+I*INCX) with  SA * SX(1+I*INCX)
+C***REFERENCES  LAWSON C.L., HANSON R.J., KINCAID D.R., KROGH F.T.,
+C                 *BASIC LINEAR ALGEBRA SUBPROGRAMS FOR FORTRAN USAGE*,
+C                 ALGORITHM NO. 539, TRANSACTIONS ON MATHEMATICAL
+C                 SOFTWARE, VOLUME 5, NUMBER 3, SEPTEMBER 1979, 308-323
+C***ROUTINES CALLED  (NONE)
+C***END PROLOGUE  SSCAL
+ 
+ 

@@ -1,0 +1,423 @@
+ 
+C
+C                      * * * * * * * * * * * * *
+C                      *                       *
+C                      *         HS3CRT        *
+C                      *                       *
+C                      * * * * * * * * * * * * *
+C
+C
+C                       (VERSION 1, AUGUST 1985)
+C
+C     A VECTORIZED PACKAGE OF FORTRAN SUBPROGRAMS FOR THE SOLUTION
+C     OF A THREE-DIMENSIONAL HELMHOLTZ EQUATION ON A STAGGERED GRID
+C
+C                                  BY
+C
+C                           ROLAND A. SWEET
+C                    SCIENTIFIC COMPUTING DIVISION
+C                     NATIONAL BUREAU OF STANDARDS
+C                       BOULDER, COLORADO 80303
+C
+C
+C                       * * * * * * * * * * * * *
+C                       *                       *
+C                       *       PURPOSE         *
+C                       *                       *
+C                       * * * * * * * * * * * * *
+C
+C
+C     THIS PACKAGE SOLVES THE STANDARD SEVEN-POINT FINITE DIFFERENCE
+C  APPROXIMATION ON A STAGGERED GRID TO THE HELMHOLTZ EQUATION IN
+C  CARTESIAN COORDINATES
+C
+C     (D/DX)(DU/DX)+(D/DY)(DU/DY)+(D/DZ)(DU/DZ) + LAMBDA*U = F(X,Y,Z)
+C
+C  WITH A VARIETY OF POSSIBLE BOUNDARY CONDITIONS.
+C
+C                * * * * * * * * * * * * * * * * * * * *
+C                *                                     *
+C                *       DESCRIPTION OF PACKAGE        *
+C                *                                     *
+C                * * * * * * * * * * * * * * * * * * * *
+C
+C
+C     THIS PACKAGE CONSISTS OF TWO USER-CALLABLE FORTRAN SUBROUTINES
+C  FOR THE SOLUTION OF FINITE DIFFERENCE APPROXIMATIONS ON A STAGGERED
+C  (CELL-CENTERED) GRID TO THREE-DIMENSIONAL HELMHOLTZ EQUATIONS.
+C  THE PACKAGE IS USED TO SOLVE A PARTICULAR PROBLEM BY CALLING:
+C
+C    1) SUBROUTINE HS3CRI(XS,XF,L,LBDCND,YS,YF,M,MBDCND,ZS,ZF,N,NBDCND,
+C                         ELMBDA,LDIMF,MDIMF,IERROR,W)
+C
+C  THAT DEFINES THE LINEAR OPERATOR REPRESENTING THE FINITE DIFFERENCE
+C  APPROXIMATION, AND
+C
+C    2) SUBROUTINE HS3CRT(BDXS,BDXF,BDYS,BDYF,BDZS,BDZF,
+C                         LDIMF,MDIMF,F,PERTRB,W)
+C
+C  THAT DEFINES THE DATA FOR THE LINEAR SYSTEM OF EQUATIONS AND SOLVES
+C  THE SYSTEM BY INVOKING THE SUBROUTINE PACKAGE PSTG3D.
+C
+C     THE USER MUST CALL SUBROUTINE HS3CRI TO DEFINE THE APPROXIMATION
+C  AND FOLLOW THAT BY A CALL TO SUBROUTINE HS3CRT TO SOLVE A PARTICULAR
+C  PROBLEM.  SUBSEQUENT SOLUTIONS TO THE SAME FINITE DIFFERENCE
+C  APPROXIMATION BUT WITH DIFFERENT DATA MAY BE OBTAINED BY ONLY CALLING
+C  SUBROUTINE HS3CRT.  SUCH SEPARATION OF TASKS RESULTS IN FASTER
+C  REPEATED SOLUTIONS.
+C
+C
+C
+C              * * * * * * * * * * * * * * * * * * * * *
+C              *                                       *
+C              *         PARAMETER DESCRIPTION         *
+C              *                                       *
+C              * * * * * * * * * * * * * * * * * * * * *
+C
+C
+C    INPUT PARAMETERS
+C
+C    XS,XF
+C      THE RANGE OF X, I.E. XS .LE. X .LE. XF.  XS MUST BE LESS THAN XF.
+C
+C    L
+C      THE NUMBER OF GRID POINTS IN THE INTERVAL (XS,XF).  THE GRID
+C      POINTS IN THE X-DIRECTION ARE GIVEN BY X(I) = XS + (I-0.5)DX FOR
+C      I=1,2,...,L WHERE DX =(XF-XS)/L.   L MUST BE AT LEAST 3.
+C
+C    LBDCND
+C      INDICATES THE TYPE OF BOUNDARY CONDITIONS AT X = XS AND X = XF.
+C
+C      = 0  IF THE SOLUTION IS PERIODIC IN X,
+C           U(L+I,J,K) = U(I,J,K).
+C
+C      = 1  IF THE SOLUTION IS SPECIFIED AT X = XS AND X = XF.
+C
+C      = 2  IF THE SOLUTION IS SPECIFIED AT X = XS AND THE DERIVATIVE
+C           OF THE SOLUTION WITH RESPECT TO X IS SPECIFIED AT X = XF.
+C
+C      = 3  IF THE DERIVATIVE OF THE SOLUTION WITH RESPECT TO X IS
+C           SPECIFIED AT X = XS  AND X = XF.
+C
+C      = 4  IF THE DERIVATIVE OF THE SOLUTION WITH RESPECT TO X IS
+C           SPECIFIED AT X = XS  AND THE SOLUTION IS SPECIFIED AT X = XF.
+C
+C    BDXS
+C      A TWO-DIMENSIONAL ARRAY THAT SPECIFIES THE BOUNDARY VALUES
+C      (IF ANY) OF THE SOLUTION AT X = XS.  WHEN LBDCND = 1 OR 2,
+C
+C               BDXS(J,K) = U(XS,Y(J),Z(K)) ,          J=1,2,...,M,
+C                                                      K=1,2,...,N.
+C
+C      WHEN LBDCND = 3 OR 4,
+C
+C               BDXS(J,K) = (D/DX)U(XS,Y(J),Z(K)) ,    J=1,2,...,M,
+C                                                      K=1,2,...,N.
+C
+C      WHEN LBDCND = 0, BDXS IS A DUMMY VARIABLE.  BDXS MUST BE
+C      DIMENSIONED MDIMF X N.
+C
+C    BDXF
+C      A TWO-DIMENSIONAL ARRAY THAT SPECIFIES THE BOUNDARY VALUES OF
+C      THE SOLUTION AT X = XF.  WHEN LBDCND = 1 OR 4
+C
+C               BDXF(J,K) = U(XF,Y(J),Z(K)) ,          J=1,2,...,M,
+C                                                      K=1,2,...,N.
+C
+C      WHEN LBDCND = 2 OR 3
+C
+C               BDXF(J,K) = (D/DX)U(XF,Y(J),Z(K)) ,    J=1,2,...,M,
+C                                                      K=1,2,...,N.
+C
+C      WHEN LBDCND = 0, BDXF IS A DUMMY VARIABLE.  BDXF MUST BE
+C      DIMENSIONED MDIMF X N.
+C
+C    YS,YF
+C      THE RANGE OF Y, I.E. YS. LE. Y .LE. YF.  YS MUST BE LESS
+C      THAN YF.
+C
+C    M
+C      THE NUMBER OF UNKNOWNS IN THE INTERVAL (YS,YF).  THE UNKNOWNS IN
+C      THE Y-DIRECTION ARE GIVEN BY Y(J) = YS + (J-0.5)DY,
+C      J=1,2,...,M,  WHERE DY = (YF-YS)/M.   M MUST BE AT LEAST 3.
+C
+C    MBDCND
+C      INDICATES THE TYPE OF BOUNDARY CONDITIONS AT Y = YS
+C      AND Y = YF.
+C
+C      = 0  IF THE SOLUTION IS PERIODIC IN Y, I.E.
+C           U(I,M+J,K) = U(I,J,K).
+C
+C      = 1  IF THE SOLUTION IS SPECIFIED AT Y = YS AND Y = YF.
+C
+C      = 2  IF THE SOLUTION IS SPECIFIED AT Y = YS AND THE DERIVATIVE
+C           OF THE SOLUTION WITH RESPECT TO Y IS SPECIFIED AT Y = YF.
+C
+C      = 3  IF THE DERIVATIVE OF THE SOLUTION WITH RESPECT TO Y IS
+C           SPECIFIED AT Y = YS AND Y = YF.
+C
+C      = 4  IF THE DERIVATIVE OF THE SOLUTION WITH RESPECT TO Y IS
+C           SPECIFIED AT Y = YS AND THE SOLUTION IS SPECIFIED AT Y = YF.
+C
+C    BDYS
+C      A TWO-DIMENSIONAL ARRAY THAT SPECIFIES THE BOUNDARY VALUES OF THE
+C      SOLUTION AT Y = YS.   WHEN MBDCND = 1 OR 2,
+C
+C               BDYS(I,K) = U(X(I),YS,Z(K)) ,              I=1,2,...,L,
+C                                                          K=1,2,...,N.
+C
+C      WHEN MBDCND = 3 OR 4,
+C
+C               BDYS(I,K) = (D/DY)U(X(I),YS,Z(K)),         I=1,2,...,L,
+C                                                          K=1,2,...,N.
+C
+C      WHEN MBDCND = 0, BDYS IS A DUMMY VARIABLE.  BDYS MUST BE
+C      DIMENSIONED LDIMF X N.
+C
+C    BDYF
+C      A TWO-DIMENSIONAL ARRAY THAT SPECIFIES THE BOUNDARY VALUES OF THE
+C      SOLUTION AT Y = YF.  WHEN MBDCND = 1 OR 4,
+C
+C               BDYF(I,K) = U(X(I),YF,Z(K)) ,              I=1,2,...,L,
+C                                                          K=1,2,...,N.
+C
+C      WHEN MBDCND = 2 OR 3,
+C
+C               BDYF(I,K) = (D/DY)U(X(I),YF,Z(K)) ,        I=1,2,...,L,
+C                                                          K=1,2,...,N.
+C
+C      WHEN MBDCND = 0, BDYF IS A DUMMY VARIABLE.  BDYF MUST BE
+C      DIMENSIONED LDIMF X N.
+C
+C    ZS,ZF
+C      THE RANGE OF X, I.E. ZS. LE. Z .LE. ZF.  ZS MUST BE LESS
+C      THAN ZF.
+C
+C    N
+C      THE NUMBER OF UNKNOWNS IN THE INTERVAL (ZS,ZF).  THE UNKNOWNS IN
+C      THE Z-DIRECTION ARE GIVEN BY Z(J) = ZS + (K-0.5)DZ,
+C      K=1,2,...,N, WHERE DZ = (ZF-ZS)/N.  N MUST BE AT LEAST 3.
+C
+C    NBDCND
+C      INDICATES THE TYPE OF BOUNDARY CONDITIONS AT Z = ZS
+C      AND Z = ZF.
+C
+C      = 0  IF THE SOLUTION IS PERIODIC IN Z, I.E.
+C           U(I,J,N+K) = U(I,J,K).
+C
+C      = 1  IF THE SOLUTION IS SPECIFIED AT Z = ZS AND Z = ZF.
+C
+C      = 2  IF THE SOLUTION IS SPECIFIED AT Z = ZS AND THE DERIVATIVE
+C           OF THE SOLUTION WITH RESPECT TO Z IS SPECIFIED AT Z = ZF.
+C
+C      = 3  IF THE DERIVATIVE OF THE SOLUTION WITH RESPECT TO Z IS
+C           SPECIFIED AT Z = ZS AND Z = ZF.
+C
+C      = 4  IF THE DERIVATIVE OF THE SOLUTION WITH RESPECT TO Z IS
+C           SPECIFIED AT Z = ZS AND THE SOLUTION IS SPECIFIED AT Z = ZF.
+C
+C    BDZS
+C      A TWO-DIMENSIONAL ARRAY THAT SPECIFIES THE BOUNDARY VALUES OF THE
+C      SOLUTION AT Z = ZS.   WHEN NBDCND = 1 OR 2,
+C
+C               BDZS(I,J) = U(X(I),Y(J),ZS) ,              I=1,2,...,L,
+C                                                          J=1,2,...,M.
+C
+C      WHEN NBDCND = 3 OR 4,
+C
+C               BDZS(I,J) = (D/DZ)U(X(I),Y(J),ZS),         I=1,2,...,L,
+C                                                          J=1,2,...,M.
+C
+C      WHEN NBDCND = 0, BDZS IS A DUMMY VARIABLE.  BDZS MUST BE
+C      DIMENSIONED LDIMF X M.
+C
+C    BDZF
+C      A TWO-DIMENSIONAL ARRAY THAT SPECIFIES THE BOUNDARY VALUES OF THE
+C      SOLUTION AT Z = ZF.  WHEN NBDCND = 1 OR 4,
+C
+C               BDZF(I,J) = U(X(I),Y(J),ZF) ,              I=1,2,...,L,
+C                                                          J=1,2,...,M.
+C
+C      WHEN NBDCND = 2 OR 3,
+C
+C               BDZF(I,J) = (D/DZ)U(X(I),Y(J),ZF) ,        I=1,2,...,L,
+C                                                          J=1,2,...,M.
+C
+C      WHEN NBDCND = 0, BDZF IS A DUMMY VARIABLE.  BDZF MUST BE
+C      DIMENSIONED LDIMF X M.
+C
+C    ELMBDA
+C      THE CONSTANT LAMBDA IN THE HELMHOLTZ EQUATION.  IF LAMBDA IS
+C      GREATER THAN 0, A SOLUTION MAY NOT EXIST.  HOWEVER, HS3CRT WILL
+C      ATTEMPT TO FIND A SOLUTION.
+C
+C    F
+C      A THREE-DIMENSIONAL ARRAY THAT SPECIFIES THE VALUES OF THE RIGHT
+C      SIDE OF THE HELMHOLTZ EQUATION.  FOR I=1,2,...,L, J=1,2,...,M,
+C      AND K=1,2,...,N
+C
+C               F(I,J,K) = F(X(I),Y(J),Z(K)) .
+C
+C      F MUST BE DIMENSIONED LDIMF X MDIMF X N.
+C
+C    LDIMF
+C      THE ROW (OR FIRST) DIMENSION OF THE ARRAYS F, BDYS, BDYF, BDZS,
+C      AND BDZF AS THEY APPEAR IN THE PROGRAM CALLING HS3CRT.  THIS
+C      PARAMETER IS USED TO SPECIFY THE VARIABLE DIMENSION OF THESE
+C      ARRAYS.  LDIMF MUST BE AT LEAST L.
+C
+C    MDIMF
+C      THE COLUMN (OR SECOND) DIMENSION OF THE ARRAY F AND THE ROW
+C      (OR FIRST) DIMENSION OF THE ARRAYS BDXS AND BDXF AS THEY APPEAR
+C      IN THE PROGRAM CALLING HS3CRT.  THIS PARAMETER IS USED TO SPECIFY
+C      THE VARIABLE DIMENSION OF THESE ARRAYS.  MDIMF MUST BE AT
+C      LEAST M.
+C
+C    W
+C      A ONE-DIMENSIONAL ARRAY THAT MUST BE PROVIDED BY THE USER FOR
+C      WORK SPACE.  THE LENGTH OF W MUST BE AT LEAST 2*L*M*N + 6*L +
+C      5*(M+N) + 46.
+C
+C
+C    OUTPUT PARAMETERS
+C
+C    F
+C      CONTAINS THE SOLUTION U(I,J,K) OF THE FINITE DIFFERENCE
+C      APPROXIMATION FOR THE GRID POINT (X(I),Y(J),Z(K)) FOR
+C      I=1,2,...,L, J=1,2,...,M, AND K=1,2,...,N.
+C
+C    PERTRB
+C      IF A COMBINATION OF PERIODIC OR DERIVATIVE BOUNDARY CONDITIONS IS
+C      SPECIFIED FOR A POISSON EQUATION (LAMBDA = 0), A SOLUTION MAY NOT
+C      EXIST.  PERTRB IS A CONSTANT, CALCULATED AND SUBTRACTED FROM F,
+C      WHICH ENSURES THAT A SOLUTION EXISTS.  HS3CRT THEN COMPUTES THIS
+C      SOLUTION, WHICH IS A LEAST SQUARES SOLUTION TO THE ORIGINAL
+C      APPROXIMATION.  THIS SOLUTION PLUS ANY CONSTANT IS ALSO A
+C      SOLUTION; HENCE, THE SOLUTION IS NOT UNIQUE.  THE VALUE OF PERTRB
+C      SHOULD BE SMALL COMPARED TO THE RIGHT SIDE F.  OTHERWISE, A
+C      SOLUTION IS OBTAINED TO AN ESSENTIALLY DIFFERENT PROBLEM.  THIS
+C      COMPARISON SHOULD ALWAYS BE MADE TO INSURE THAT A MEANINGFUL
+C      SOLUTION HAS BEEN OBTAINED.
+C
+C    IERROR
+C      AN ERROR FLAG THAT INDICATES INVALID INPUT PARAMETERS.
+C      EXCEPT FOR NUMBERS 0 AND 10, A SOLUTION IS NOT ATTEMPTED.
+C
+C      =  0  NO ERROR
+C
+C      =  1  XS .GT. XF
+C
+C      =  2  L .LT. 3
+C
+C      =  3  LBDCND .NE. 0, 1, 2, 3, OR 4
+C
+C      =  4  YS .GT. YF
+C
+C      =  5  M .LT. 3
+C
+C      =  6  MBDCND .NE. 0, 1, 2, 3, OR 4
+C
+C      =  7  ZS .GT. ZF
+C
+C      =  8  N .LT. 3
+C
+C      =  9  NBDCND .NE. 0, 1, 2, 3, OR 4
+C
+C      = 10  ELMBDA .GT. 0.
+C
+C      = 11  LDIMF .LT. L
+C
+C      = 12  MDIMF .LT. M
+C
+C      SINCE THIS IS THE ONLY MEANS OF INDICATING A POSSIBLY
+C      INCORRECT CALL TO HS3CRI, THE USER SHOULD TEST IERROR AFTER
+C      THE CALL.
+C
+C    W
+C      CONTAINS INTERMEDIATE QUANTITIES (CALCULATED IN ROUTINE HS3CRI)
+C      THAT MUST NOT BE DESTROYED IF THIS SUBROUTINE WILL BE USED FOR
+C      REPEAT SOLUTIONS.
+C
+C
+C              * * * * * * * * * * * * * * * * * * * * *
+C              *                                       *
+C              *         PROGRAM SPECIFICATIONS        *
+C              *                                       *
+C              * * * * * * * * * * * * * * * * * * * * *
+C
+C
+C     DIMENSION OF   BDXS(MDIMF,N), BDXF(MDIMF,N), BDYS(LDIMF,N),
+C     ARGUMENTS      BDYF(LDIMF,N), BDZS(LDIMF,M), BDZF(LDIMF,M),
+C                    F(LDIMF,MDIMF,N), W(2*L*M*N+6*L+5*(M+N)+46)
+C
+C     LATEST         OCTOBER 1, 1984
+C     REVISION
+C
+C     SUBPROGRAMS    HS3CRT,HS3CRI,PSTG3D(PACKAGE)
+C     REQUIRED       VSFFTI(PACKAGE),VSFFT(PACKAGE),
+C                    VRFFTI(PACKAGE),VRFFT(PACKAGE)
+C
+C     SPECIAL        NONE
+C     CONDITIONS
+C
+C     COMMON         NONE
+C     BLOCKS
+C
+C     I/O            NONE
+C
+C     PRECISION      SINGLE
+C
+C     SPECIALIST     ROLAND SWEET
+C
+C     LANGUAGE       FORTRAN
+C
+C     HISTORY        WRITTEN BY ROLAND SWEET AT THE NATIONAL BUREAU OF
+C                    STANDARDS (BOULDER).
+C
+C     ALGORITHM      THIS SUBROUTINE DEFINES THE FINITE-DIFFERENCE
+C                    EQUATIONS (AS DEFINED BELOW), INCORPORATES BOUNDARY
+C                    DATA, ADJUSTS THE RIGHT SIDE WHEN THE SYSTEM IS
+C                    SINGULAR AND CALLS PSTG3D WHICH SOLVES THE LINEAR
+C                    SYSTEM OF EQUATIONS.
+C
+C     PORTABILITY    AMERICAN NATIONAL STANDARDS INSTITUTE FORTRAN 77.
+C                    ALL MACHINE DEPENDENT CONSTANTS ARE LOCATED IN THE
+C                    FUNCTION PIMACH.
+C
+C     REQUIRED       COS,SIN
+C     RESIDENT
+C     ROUTINES
+C
+C        * * * * * * * * * * * * * * * * * * * * * * * * * * *
+C        *                                                   *
+C        *         FINITE  DIFFERENCE APPROXIMATIONS         *
+C        *                                                   *
+C        * * * * * * * * * * * * * * * * * * * * * * * * * * *
+C
+C     AT INTERIOR GRIDPOINTS (X(I),Y(J),Z(K)) THE SECOND DERIVATIVES IN
+C     THE POISSON EQUATION ARE REPLACED BY STANDARD SECOND-ORDER CENTRAL
+C     DIFFERENCE APPROXIMATIONS TO YIELD THE LINEAR EQUATIONS
+C
+C                (U(I-1,J,K) - 2*U(I,J,K) + U(I+1,J,K))/(DX**2)
+C              + (U(I,J-1,K) - 2*U(I,J,K) + U(I,J+1,K))/(DY**2)
+C              + (U(I,J,K-1) - 2*U(I,J,K) + U(I,J,K+1))/(DZ**2)
+C              + ELMBDA*U(I,J,K) = F(I,J,K)
+C
+C     FOR I=2,...,L-1, J=2,...,M-1, AND K=2,...,N-1.  NEAR THE
+C     BOUNDARIES THE APPROXIMATIONS TO THE BOUNDARY CONDITIONS ARE USED
+C     TO ELIMINATE FICTIOUS POINTS.  THE APPROXIMATIONS TO THE
+C     BOUNDARY CONDITIONS ARE (FOR, SAY, THE X-BOUNDARIES):
+C
+C     1)  IF U(XS,Y(J),Z(K)) IS SPECIFIED, THEN BY AVERAGING
+C
+C              (U(0,J,K) + U(1,J,K))/2 = U(XS,Y(J),Z(K)).
+C
+C     2)  IF (D/DX)U(XS,Y(J),Z(K)) IS SPECIFIED, THEN BY A CENTRAL
+C     DIFFERENCE APPROXIMATION
+C
+C           (U(1,J,K) - U(0,J,K))/DX = (D/DX)U(XS,Y(J),Z(K)).
+C
+C
+C
+ 
+ 

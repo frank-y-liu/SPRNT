@@ -1,0 +1,21 @@
+ 
+      SUBROUTINE DDCOR (DFDY,EL,FA,H,IMPL,IPVT,MATDIM,MITER,ML,MU,N,
+     8   NDE,NQ,T,Y,YH,YWT,EVALFA,SAVE1,SAVE2,A,D)
+C***BEGIN PROLOGUE  DDCOR
+C***REFER TO  DDRIV3
+C  Subroutine DDCOR is called to compute corrections to the Y array.
+C  In the case of functional iteration, update Y directly from the
+C  result of the last call to F.
+C  In the case of the chord method, compute the corrector error and
+C  solve the linear system with that as right hand side and DFDY as
+C  coefficient matrix, using the LU decomposition if MITER is 1, 2, 4,
+C  or 5.
+C***ROUTINES CALLED  DGESL,DGBSL,DNRM2
+C***DATE WRITTEN   790601   (YYMMDD)
+C***REVISION DATE  841119   (YYMMDD)
+C***CATEGORY NO.  I1A2,I1A1B
+C***AUTHOR  KAHANER, D. K., NATIONAL BUREAU OF STANDARDS,
+C           SUTHERLAND, C. D., LOS ALAMOS NATIONAL LABORATORY
+C***END PROLOGUE  DDCOR
+ 
+ 

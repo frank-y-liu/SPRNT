@@ -1,0 +1,18 @@
+#!/bin/sh
+#  This procedure creates a Makefile in the sublibrary
+#  directories to compile all the .f files
+#
+dirs=`ls src`
+for dname in $dirs ; do
+   files=`cd src/$dname;ls -m *.f|sed -e 's/\.f/\.o/g' -e 's/,//g' -e '\$,\$!s/\$/\\\/'`
+   echo 'include ../../make.inc' > src/$dname/Makefile
+   echo '#' >> src/$dname/Makefile
+   echo '#' >> src/$dname/Makefile
+   echo '' >> src/$dname/Makefile
+   echo 'all: \' >> src/$dname/Makefile
+   echo "$files" >> src/$dname/Makefile
+   echo '' >> src/$dname/Makefile
+   echo '.f.o: ' >> src/$dname/Makefile
+   echo '	$(FORTRAN) $(OPTS) -c $<' >> src/$dname/Makefile
+   echo '' >> src/$dname/Makefile
+done

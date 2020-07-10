@@ -1,0 +1,64 @@
+ 
+      SUBROUTINE PCHCI(N,H,SLOPE,D,INCFD)
+C***BEGIN PROLOGUE  PCHCI
+C***REFER TO  PCHIC
+C***ROUTINES CALLED  PCHST
+C***REVISION DATE  870707   (YYMMDD)
+C***DESCRIPTION
+C
+C          PCHCI:  PCHIC Initial Derivative Setter.
+C
+C    Called by PCHIC to set derivatives needed to determine a monotone
+C    piecewise cubic Hermite interpolant to the data.
+C
+C    Default boundary conditions are provided which are compatible
+C    with monotonicity.  If the data are only piecewise monotonic, the
+C    interpolant will have an extremum at each point where monotonicity
+C    switches direction.
+C
+C    To facilitate two-dimensional applications, includes an increment
+C    between successive values of the D-array.
+C
+C    The resulting piecewise cubic Hermite function should be identical
+C    (within roundoff error) to that produced by PCHIM.
+C
+C ----------------------------------------------------------------------
+C
+C  Calling sequence:
+C
+C        PARAMETER  (INCFD = ...)
+C        INTEGER  N
+C        REAL  H(N), SLOPE(N), D(INCFD,N)
+C
+C        CALL  PCHCI (N, H, SLOPE, D, INCFD)
+C
+C   Parameters:
+C
+C     N -- (input) number of data points.
+C           If N=2, simply does linear interpolation.
+C
+C     H -- (input) real array of interval lengths.
+C     SLOPE -- (input) real array of data slopes.
+C           If the data are (X(I),Y(I)), I=1(1)N, then these inputs are:
+C                  H(I) =  X(I+1)-X(I),
+C              SLOPE(I) = (Y(I+1)-Y(I))/H(I),  I=1(1)N-1.
+C
+C     D -- (output) real array of derivative values at the data points.
+C           If the data are monotonic, these values will determine a
+C           a monotone cubic Hermite function.
+C           The value corresponding to X(I) is stored in
+C                D(1+(I-1)*INCFD),  I=1(1)N.
+C           No other entries in D are changed.
+C
+C     INCFD -- (input) increment between successive values in D.
+C           This argument is provided primarily for 2-D applications.
+C
+C    -------
+C    WARNING:  This routine does no validity-checking of arguments.
+C    -------
+C
+C  Fortran intrinsics used:  ABS, AMAX1, AMIN1.
+C
+C***END PROLOGUE  PCHCI
+ 
+ 

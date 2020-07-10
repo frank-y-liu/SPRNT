@@ -1,0 +1,84 @@
+ 
+      SUBROUTINE CINVIT(NM,N,AR,AI,WR,WI,SELECT,MM,M,ZR,ZI,IERR,RM1,
+     1   RM2,RV1,RV2)
+C***BEGIN PROLOGUE  CINVIT
+C***DATE WRITTEN   760101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  D4C2B
+C***KEYWORDS  EIGENVALUES,EIGENVECTORS,EISPACK
+C***AUTHOR  SMITH, B. T., ET AL.
+C***PURPOSE  Computes eigenvectors of a complex upper Hessenberg
+C            associated with specified eigenvalues using inverse
+C            iteration.
+C***DESCRIPTION
+C
+C     This subroutine is a translation of the ALGOL procedure CXINVIT
+C     by Peters and Wilkinson.
+C     HANDBOOK FOR AUTO. COMP. VOL.II-LINEAR ALGEBRA, 418-439(1971).
+C
+C     This subroutine finds those eigenvectors of A COMPLEX UPPER
+C     Hessenberg matrix corresponding to specified eigenvalues,
+C     using inverse iteration.
+C
+C     On INPUT
+C
+C        NM must be set to the row dimension of two-dimensional
+C          array parameters as declared in the calling program
+C          dimension statement.
+C
+C        N is the order of the matrix.
+C
+C        AR and AI contain the real and imaginary parts,
+C          respectively, of the Hessenberg matrix.
+C
+C        WR and WI contain the real and imaginary parts, respectively,
+C          of the eigenvalues of the matrix.  The eigenvalues must be
+C          stored in a manner identical to that of subroutine  COMLR,
+C          which recognizes possible splitting of the matrix.
+C
+C        SELECT specifies the eigenvectors to be found.  The
+C          eigenvector corresponding to the J-th eigenvalue is
+C          specified by setting SELECT(J) to .TRUE.
+C
+C        MM should be set to an upper bound for the number of
+C          eigenvectors to be found.
+C
+C     On OUTPUT
+C
+C        AR, AI, WI, and SELECT are unaltered.
+C
+C        WR may have been altered since close eigenvalues are perturbed
+C          slightly in searching for independent eigenvectors.
+C
+C        M is the number of eigenvectors actually found.
+C
+C        ZR and ZI contain the real and imaginary parts, respectively,
+C          of the eigenvectors.  The eigenvectors are normalized
+C          so that the component of largest magnitude is 1.
+C          Any vector which fails the acceptance test is set to zero.
+C
+C        IERR is set to
+C          Zero       for normal return,
+C          -(2*N+1)   if more than MM eigenvectors have been specified,
+C          -K         if the iteration corresponding to the K-th
+C                     value fails,
+C          -(N+K)     if both error situations occur.
+C
+C        RM1, RM2, RV1, and RV2 are temporary storage arrays.
+C
+C     The ALGOL procedure GUESSVEC appears in CINVIT in line.
+C
+C     Calls PYTHAG(A,B) for sqrt(A**2 + B**2).
+C     Calls CDIV for complex division.
+C
+C     Questions and comments should be directed to B. S. Garbow,
+C     APPLIED MATHEMATICS DIVISION, ARGONNE NATIONAL LABORATORY
+C     ------------------------------------------------------------------
+C***REFERENCES  B. T. SMITH, J. M. BOYLE, J. J. DONGARRA, B. S. GARBOW,
+C                 Y. IKEBE, V. C. KLEMA, C. B. MOLER, *MATRIX EIGEN-
+C                 SYSTEM ROUTINES - EISPACK GUIDE*, SPRINGER-VERLAG,
+C                 1976.
+C***ROUTINES CALLED  CDIV,PYTHAG
+C***END PROLOGUE  CINVIT
+ 
+ 

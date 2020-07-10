@@ -1,0 +1,282 @@
+
+def options metric=1 end
+def options timestep=15 timestepunit=minute end
+def options prtq=1 prta=1 prtdepth=1 prtsurfelevz=1 end
+def options stoptime=100 stoptimeunit=hour end
+def options prtinteval=15 prtintervalunit=minute end
+
+
+def node id=200 sR=0.0065569 n=0.05 zR=151.2235 hR=9.88749
+ def xy
+  x=0   y=10
+  x=0   y=0
+  x=10  y=0
+  x=10  y=10
+   end
+end 
+
+def node id=201 sR=0.0064115 n=0.05 zR=150.8638 hR=9.55777
+ def xy
+  x=0   y=10
+  x=0   y=0
+  x=10  y=0
+  x=10  y=10 
+ end
+end 
+
+def node id=203 sR=0.0064388 n=0.045 zR=150.1109 hR=9.61772
+ def xy
+  x=0   y=10
+  x=0   y=0
+  x=10  y=0
+  x=10  y=10
+ end
+end 
+
+def node id=208 sR=0.0064821 n=0.045 zR=148.9862 hR=9.86025
+ def xy
+  x=0   y=10
+  x=0   y=0
+  x=10  y=0
+  x=10  y=10
+ end
+end 
+
+def node id=217 sR=0.0065383 n=0.055 zR=146.9989 hR=10.69171
+ def xy
+  x=0   y=10
+  x=0   y=0
+  x=10  y=0
+  x=10  y=10
+ end
+end 
+
+def node id=221 sR=0.0065751 n=0.055 zR=145.8681 hR=11.0608
+ def xy
+  x=0   y=10
+  x=0   y=0
+  x=10  y=0
+  x=10  y=10
+ end
+end 
+
+def node id=225 sR=0.006607 n=0.055 zR=146.3192 hR=9.947146
+ def xy
+  x=0   y=10
+  x=0   y=0
+  x=10  y=0
+  x=10  y=10
+ end
+end 
+
+def node id=230 sR=0.0066495 n=0.05 zR=145.667 hR=9.70966
+ def xy
+  x=0   y=10
+  x=0   y=0
+  x=10  y=0
+  x=10  y=10
+ end
+end 
+
+def node id=234 sR=0.0066895 n=0.04 zR=144.1704 hR=10.3639
+ def xy
+  x=0   y=10
+  x=0   y=0
+  x=10  y=0
+  x=10  y=10
+ end
+end 
+
+def node id=243 sR=0.0067332 n=0.04 zR=144.1704 hR=9.43789
+ def xy
+  x=0   y=10
+  x=0   y=0
+  x=10  y=0
+  x=10  y=10
+ end
+end 
+
+def node id=247 sR=0.0067736 n=0.04 zR=142.3416 hR=10.40475
+ def xy
+  x=0   y=10
+  x=0   y=0
+  x=10  y=0
+  x=10  y=10
+ end
+end 
+
+def node id=255 sR=0.0068252 n=0.045 zR=141.732 hR=9.906507
+ def xy
+  x=0   y=10
+  x=0   y=0
+  x=10  y=0
+  x=10  y=10
+ end
+end 
+
+def node id=265 sR=0.0068863 n=0.04 zR=140.5128 hR=9.80395
+ def xy
+  x=0   y=10
+  x=0   y=0
+  x=10  y=0
+  x=10  y=10
+ end
+end 
+
+def node id=270 sR=0.0069336 n=0.04 zR=139.2509 hR=10.034323
+ def xy
+  x=0   y=10
+  x=0   y=0
+  x=10  y=0
+  x=10  y=10
+ end
+end 
+
+def node id=274 sR=0.0069786 n=0.04 zR=138.3853 hR=9.910788
+ def xy
+  x=0   y=10
+  x=0   y=0
+  x=10  y=0
+  x=10  y=10 
+ end
+end 
+
+def node id=282 sR=0.0070379 n=0.035 zR=137.8885 hR=9.09538
+ def xy
+  x=0   y=10
+  x=0   y=0
+  x=10  y=0
+  x=10  y=10
+ end
+end 
+
+def node id=291 sR=0.007095 n=0.02 zR=135.4958 hR=10.21637
+ def xy
+  x=0   y=10
+  x=0   y=0
+  x=10  y=0
+  x=10  y=10
+ end
+end 
+
+def node id=295 sR=0.0071319 n=0.04 zR=133.5725 hR=11.3109
+ def xy
+  x=0   y=10
+  x=0   y=0
+  x=10  y=0
+  x=10  y=10
+ end
+end 
+
+def node id=301 sR=0.0071858 n=0.04 zR=133.3409 hR=10.32402
+ def xy
+  x=0   y=10
+  x=0   y=0
+  x=10  y=0
+  x=10  y=10
+ end
+end 
+
+def node id=303 sR=0.0072223 n=0.04 zR=132.3533 hR=10.4801
+ def xy
+  x=0   y=10
+  x=0   y=0
+  x=10  y=0
+  x=10  y=10
+ end
+end 
+
+def node id=307 sR=0.007259 n=0.04 zR=131.1493 hR=10.84657
+ def xy
+  x=0   y=10
+  x=0   y=0
+  x=10  y=0
+  x=10  y=10
+ end
+end 
+
+def node id=310 sR=0.0072933 n=0.04 zR=131.2621 hR=9.944673
+ def xy
+  x=0   y=10
+  x=0   y=0
+  x=10  y=0
+  x=10  y=10
+ end
+end 
+
+def node id=312 sR=0.00734 n=0.04 zR=130.6952 hR=9.43457
+ def xy
+  x=0   y=10
+  x=0   y=0
+  x=10  y=0
+  x=10  y=10
+ end
+end 
+
+def node id=318 sR=0.0073761 n=0.04 zR=130.3447 hR=8.9453
+ def xy
+  x=0   y=10
+  x=0   y=0
+  x=10  y=0
+  x=10  y=10
+ end
+end 
+
+
+def node id=319 sR=0.0073761 n=0.04 zR=130 hR=8.9453
+ def xy
+  x=0   y=10
+  x=0   y=0
+  x=10  y=0
+  x=10  y=10
+ end
+end
+
+
+def segment up=200 down=201 length=106.3174 end
+def segment up=201 down=203 length=107.8966 end
+def segment up=203 down=208 length=136.5521 end
+def segment up=208 down=217 length=177.5427 end
+def segment up=217 down=221 length=116.167  end
+def segment up=221 down=225 length=100.5291 end
+def segment up=225 down=230 length=134.2378 end
+def segment up=230 down=234 length=126.2958 end
+def segment up=234 down=243 length=137.9635 end
+def segment up=243 down=247 length=127.6444 end
+def segment up=247 down=255 length=162.9313 end
+def segment up=255 down=265 length=192.7951 end
+def segment up=265 down=270 length=149.2772 end
+def segment up=270 down=274 length=142.2011 end
+def segment up=274 down=282 length=187.2402 end
+def segment up=282 down=291 length=179.9618 end
+def segment up=291 down=295 length=116.5072 end
+def segment up=295 down=301 length=170.2127 end
+def segment up=301 down=303 length=115.4169 end
+def segment up=303 down=307 length=115.6655 end
+def segment up=307 down=310 length=108.4529 end
+def segment up=310 down=312 length=147.2035 end
+def segment up=312 down=318 length=114.1283 end
+def segment up=318 down=319 length=304.8    end
+
+
+def qsource
+  location=200 timeunit=hour
+  def timeseries
+    timeunit=hour
+    t=0 v=1.41584235
+    t=100 v=1.41584235
+  end
+end
+  
+
+def boundarycondition
+	location=319 type=depth
+	def timeseries
+		timeunit = hour
+		t=0 v=0.5
+		t=2880 v=0.5
+	end
+end
+
+
+## *

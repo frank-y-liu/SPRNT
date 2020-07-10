@@ -1,0 +1,25 @@
+ 
+      DOUBLE PRECISION FUNCTION DGAMI(A,X)
+C***BEGIN PROLOGUE  DGAMI
+C***DATE WRITTEN   770701   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C7E
+C***KEYWORDS  DOUBLE PRECISION,GAMMA,GAMMA FUNCTION,
+C             INCOMPLETE GAMMA FUNCTION,SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Calculates the d.p. incomplete Gamma function.
+C***DESCRIPTION
+C
+C Evaluate the incomplete gamma function defined by
+C
+C DGAMI = integral from T = 0 to X of EXP(-T) * T**(A-1.0) .
+C
+C DGAMI is evaluated for positive values of A and non-negative values
+C of X.  A slight deterioration of 2 or 3 digits accuracy will occur
+C when DGAMI is very large or very small, because logarithmic variables
+C are used.  The function and both arguments are double precision.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  DGAMIT,DLNGAM,XERROR
+C***END PROLOGUE  DGAMI
+ 
+ 

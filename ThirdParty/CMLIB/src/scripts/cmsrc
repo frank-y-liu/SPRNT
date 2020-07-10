@@ -1,0 +1,40 @@
+#! /bin/csh -f
+
+#  usage: cmsrc <subprogram> ...
+
+#  retrieves source for CMLIB subprograms whose name(s)
+#  are listed on the command line. The requested items are
+#  written to standard output.
+
+#  The environment variable CMLIBDIR, if set, is taken to be the
+#  directory where CMLIB source and documentation is stored.  The
+#  named directory is presumed to have CMLIB's src subdirectory.
+#  If CMLIBDIR is not set, then /usr/local/apps/cmlib is used.
+
+#  Ron Boisvert, CAML, NIST
+#  05 Dec 90 (Revised 15 Jan 91)
+
+set nonomatch
+
+set srcdir = /usr/local/apps/cmlib/src
+
+set userdir = `printenv CMLIBDIR`
+if ("$userdir" != "") set srcdir = $userdir/src
+if (! -d $srcdir) then
+  echo "CMLIB source directory $srcdir does not exist."
+  exit
+endif
+
+foreach name ($argv)
+
+   set name = `echo $name | tr A-Z a-z`
+   if ("$name" == "vssnqi") set name = "vscsqi"
+
+   set look = `glob $srcdir/*/$name.f`   
+   if ("$look" == "$srcdir/*/$name.f") then
+      echo "$name not found" > /dev/tty
+   else
+      cat $look
+   endif
+
+end

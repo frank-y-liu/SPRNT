@@ -1,0 +1,23 @@
+ 
+     BOCLS is a package of Fortran subroutines for solving, in
+double precision, bounded and constrained linear least squares
+problems. That is, it finds a least squares solution to a system
+of linear equations subject to general linear constraints and to
+simple bounds on the variables.  The mathematical statement is
+                 min ||Ex - f||
+         subject to: Cx = y
+                     l(i) <= x(i) <= b(i), i=1,...,n.
+where
+     ||.|| denotes the Euclidean norm (sum of squares)
+     E     is an m by n matrix with m > n
+     x     is an n-vector
+     f     is an m-vector
+     C     is a  k by n matrix with k < n
+     y     is a k-vector.
+The l(i) and the b(i) are lower and upper bounds respectively for the
+corresponding x(i). They may be negative infinity or positive infinity
+respectively indicating that there is no bound constraint.
+     There are two user callable routines - DBOCLS for the general
+problem and DBOLS for problems with only bounds.
+ 
+ 

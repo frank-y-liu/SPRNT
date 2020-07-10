@@ -1,0 +1,122 @@
+ 
+C
+C
+C             * * * * * * * * * * * * * * * * * * * * * *
+C             *                                         *
+C             * SUBROUTINE VRFFTF(M,N,R,RT,MDIMR,WSAVE) *
+C             *                                         *
+C             * * * * * * * * * * * * * * * * * * * * * *
+C
+C
+C     SUBROUTINE VRFFTF COMPUTES THE FOURIER COEFFICIENTS (FORWARD
+C     TRANSFORM) OF A NUMBER OF REAL PERIODIC SEQUENCES.  SPECIFICALLY,
+C     FOR EACH SEQUENCE THE SUBROUTINE CALCULATES THE INDEPENDENT
+C     FOURIER COEFFICIENTS DESCRIBED ABOVE.
+C
+C
+C     INPUT PARAMETERS
+C
+C     M       THE NUMBER OF TRANSFORMS TO BE COMPUTED.
+C
+C     N       THE LENGTH OF THE TRANSFORMS.  THE METHOD IS MOST
+C             EFFICIENT WHEN N IS A PRODUCT OF SMALL PRIMES, HOWEVER N
+C             MAY BE ANY POSITIVE INTEGER.
+C
+C     R       A REAL TWO-DIMENSIONAL ARRAY OF SIZE MDIMR X N THAT
+C             CONTAINS THE SEQUENCES TO BE TRANSFORMED.  THE I-TH
+C             SEQUENCE TO BE TRANSFORMED, X(I,J), J=0,1,...,N-1, IS
+C             STORED AS
+C
+C               R(I,J) = X(I,J-1) , J=1, 2, . . . , N.
+C
+C     RT      A REAL TWO-DIMENSIONAL WORK ARRAY OF SIZE MDIMR X N.
+C
+C     MDIMR   THE ROW (OR FIRST) DIMENSION OF THE ARRAYS R AND RT AS
+C             THEY APPEAR IN THE CALLING PROGRAM.  THIS PARAMETER IS
+C             USED TO SPECIFY THE VARIABLE DIMENSION OF THESE ARRAYS.
+C
+C     WSAVE   A REAL ONE-DIMENSIONAL WORK ARRAY THAT MUST BE DIMENSIONED
+C             AT LEAST N+15.  THE WSAVE ARRAY MUST BE INITIALIZED BY
+C             CALLING SUBROUTINE VRFFTI.  A DIFFERENT WSAVE ARRAY MUST
+C             BE USED FOR EACH DIFFERENT VALUE OF N. THIS INITIALIZATION
+C             DOES NOT HAVE TO BE REPEATED SO LONG AS N REMAINS
+C             UNCHANGED.  THE SAME WSAVE ARRAY CAN BE USED BY VRFFTF AND
+C             VRFFTB.
+C
+C
+C     OUTPUT PARAMETERS
+C
+C     R       CONTAINS THE FOURIER COEFFICIENTS F(K) DESCRIBED ABOVE
+C             FOR EACH OF THE M INPUT SEQUENCES.  SPECIFICALLY, ROW I
+C             OF R, R(I,J), J=1,2,..,N, CONTAINS THE INDEPENDENT
+C             FOURIER COEFFICIENTS F(I,K), FOR THE I-TH INPUT SEQUENCE
+C             STORED AS
+C
+C             R(I,1) = REAL( F(I,0) ),
+C                    = SQRT(1/N)*SUM(J=0,N-1)[ X(I,J) ],
+C
+C             R(I,2*K) = REAL( F(I,K) )
+C                      = SQRT(1/N)*SUM(J=0,N-1)[X(I,J)*COS(2J*K*PI/N)]
+C
+C             R(I,2*K+1) = IMAG( F(I,K) )
+C                        =-SQRT(1/N)*SUM(J=0,N-1)[X(I,J)*SIN(2J*K*PI/N)]
+C
+C                   FOR K = 1, 2, . . . , M-1,
+C
+C              AND, WHEN N IS EVEN,
+C
+C              R(I,N) = REAL( F(I,N/2) ).
+C                     = SQRT(1/N)*SUM(J=0,N-1)[ (-1)**J*X(I,J) ].
+C
+C     WSAVE   CONTAINS RESULTS THAT MUST NOT BE DESTROYED BETWEEN
+C             CALLS TO VRFFTF OR VRFFTB.
+C
+C
+C              * * * * * * * * * * * * * * * * * * * * *
+C              *                                       *
+C              *         PROGRAM SPECIFICATIONS        *
+C              *                                       *
+C              * * * * * * * * * * * * * * * * * * * * *
+C
+C
+C
+C     DIMENSION OF    R(MDIMR,N), RT(MDIMR,N), WSAVE(N+15)
+C     ARGUMENTS
+C
+C     LATEST          AUGUST 1, 1985
+C     REVISION
+C
+C     SUBPROGRAMS     VRFFTI, VRFTI1, VRFFTF, VRFTF1, VRADF2, VRADF3,
+C     REQUIRED        VRADF4, VRADF5, VRADFG, VRFFTB, VRFTB1, VRADB2,
+C                     VRADB3, VRADB4, VRADB5, VRADBG, PIMACH
+C
+C     SPECIAL         NONE
+C     CONDITIONS
+C
+C     COMMON          NONE
+C     BLOCKS
+C
+C     I/O             NONE
+C
+C     PRECISION       SINGLE
+C
+C     SPECIALIST      ROLAND SWEET
+C
+C     LANGUAGE        FORTRAN
+C
+C     HISTORY         WRITTEN BY LINDA LINDGREN AND ROLAND SWEET AT THE
+C                     NATIONAL BUREAU OF STANDARDS (BOULDER).
+C
+C     ALGORITHM       A REAL VARIANT OF THE STOCKHAM AUTOSORT VERSION
+C                     OF THE COOLEY-TUKEY FAST FOURIER TRANSFORM.
+C
+C     PORTABILITY     AMERICAN NATIONAL STANDARDS INSTITUTE FORTRAN 77.
+C                     THE ONLY MACHINE DEPENDENT CONSTANT IS LOCATED IN
+C                     THE FUNCTION PIMACH.
+C
+C     REQUIRED        COS,SIN
+C     RESIDENT
+C     ROUTINES
+C
+ 
+ 

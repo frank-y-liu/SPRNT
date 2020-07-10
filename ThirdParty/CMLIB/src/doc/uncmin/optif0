@@ -1,0 +1,79 @@
+ 
+      SUBROUTINE OPTIF0(NR,N,X,FCN,XPLS,FPLS,GPLS,ITRMCD,A,WRK)
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+C
+C PURPOSE
+C -------
+C PROVIDE SIMPLEST INTERFACE TO MINIMIZATION PACKAGE.
+C USER HAS NO CONTROL OVER OPTIONS.
+C
+C OPTIF0 is designed to solve the unconstrained nonlinear optimization
+C problem.  This problem involves finding the minimums of a twice
+C continuously differentiable real-valued function f of n variables
+C from a given start point x(0).
+C
+C
+C PARAMETERS
+C ----------
+C NR        --> Row dimension of matrix.
+C               A positive integer specifying the row dimension of the
+C               matrices A and WRK in the user's calling program.  NR
+C               must satisfy the relation NR >= N (see N).  The provision
+C               of this variable allows the user the flexibility of
+C               solving several problems of different order N one after
+C               the other.
+C
+C N         --> Dimension of problem.  A positive integer specifying
+C               the order or dimension of the problem.  The program will
+C               abort if N <= 0.  The program is inefficient for the
+C               one-dimensional case (N=1); the user is advised to find
+C               more efficient software.  The package will abort for
+C               N=1 unless the parameter MSG is appropriately set; in
+C               this instance the interface OPTIF9 must be utilized.
+C
+C X(N)      --> Initial estimate of minimum
+C
+C FCN       --> The name of a user supplied subroutine that evaluates
+C               the optimization function at an arbitrary vector X.
+C               The subroutine must be declared EXTERNAL in the user's
+C               calling program and must conform to the usage:
+C                    CALL FCN (N,X,F)
+C               where X is a vector of length N.  The subroutine must
+C               not alter the values of X or N.  On return F is the
+C               value of the optimization function at X.
+C
+C XPLS(N)     <--  Local minimum
+C
+C FPLS        <--  Funtion value at local minimum XPLS
+C
+C GPLS(N)     <--  Gradient at local minimum XPLS
+C ITRMCD      <--  Termination code
+C               = 0  Erroneous input detected
+C               = 1  Relative gradient is close to zero.  Current
+C                    iterate is probably solution.
+C               = 2  Successive iterates within tolerance.  Current
+C                    iterate is probably solution.
+C               = 3  Last global step failed to locate a point lower
+C                    than XPLS.  Either XPLS is an approximate local
+C                    minimum of the function, the function is too
+C                    non-linear for this algorithm, or STEPTL is too
+C                    large.
+C               = 4  Iteration limit exceeded.
+C               = 5  Maximum step size STEPMX exceeded five consecutive
+C                    times.  Either the functon is unbounded below,
+C                    becomes asymtotic to a finite value from above
+C                    in some direction, or STEPMX is too small.
+C
+C
+C A(N,N)    --> Workspace. A real matrix array which is used to store
+C               the Hessian and its Cholesky decomposition.
+C WRK(N,9)  --> Workspace
+C
+C For a more detailed description of the parameters, see:
+C
+C  AN UNCONSTRAINED NON-LINEAR OPTIMIZATION SOLVER: A USER'S GUIDE
+C
+C available through Richard Jackson, Operations Research Division
+C National Bureau of Standards, Washington, DC  (301)921-3855.
+ 
+ 

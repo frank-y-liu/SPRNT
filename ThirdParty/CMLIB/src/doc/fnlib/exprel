@@ -1,0 +1,22 @@
+ 
+      FUNCTION EXPREL(X)
+C***BEGIN PROLOGUE  EXPREL
+C***DATE WRITTEN   770801   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C4B
+C***KEYWORDS  ELEMENTARY FUNCTION,EXPONENTIAL,RELATIVE ERROR
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Evaluates EXPREL(X) = (EXP(X)-1)/X)
+C***DESCRIPTION
+C
+C Evaluate  EXPREL(X) = (EXP(X) - 1.0) / X.   For small ABS(X) the
+C Taylor series is used.  If X is negative, the reflection formula
+C         EXPREL(X) = EXP(X) * EXPREL(ABS(X))
+C may be used.  This reflection formula will be of use when the
+C evaluation for small ABS(X) is done by Chebyshev series rather than
+C Taylor series.  EXPREL and X are single precision.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  R1MACH
+C***END PROLOGUE  EXPREL
+ 
+ 

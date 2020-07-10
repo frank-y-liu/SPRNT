@@ -1,0 +1,19 @@
+ 
+      DOUBLE PRECISION FUNCTION DSINDG(X)
+C***BEGIN PROLOGUE  DSINDG
+C***DATE WRITTEN   770601   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C4A
+C***KEYWORDS  DEGREE,DOUBLE PRECISION,ELEMENTARY FUNCTION,SINE,
+C             TRIGONOMETRIC SINE
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the d.p. Sine for degree arguments.
+C***DESCRIPTION
+C
+C DSINDG(X) calculates the double precision sine for double
+C precision argument X where X is in degrees.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  (NONE)
+C***END PROLOGUE  DSINDG
+ 
+ 

@@ -1,0 +1,269 @@
+ 
+ 
+                     * * * * * * * * * * * * * *
+                     *                         *
+                     *          VFFTPK         *
+                     *                         *
+                     * * * * * * * * * * * * * *
+ 
+                       (Version 2  March 1987)
+ 
+          A vectorized package of Fortran subprograms for the
+      fast Fourier transform of multiple real periodic sequences
+ 
+                                  by
+ 
+                Roland A. Sweet and Linda L. Lindgren
+ 
+                    Scientific Computing Division
+                     National Bureau of Standards
+                       Boulder, Colorado 80303
+ 
+                         Ronald F. Boisvert
+ 
+                    Scientific Computing Division
+                     National Bureau of Standards
+                     Gaithersburg, Maryland 20899
+ 
+ 
+ 
+                     * * * * * * * * * * * * * *
+                     *                         *
+                     *       Background        *
+                     *                         *
+                     * * * * * * * * * * * * * *
+ 
+ 
+  NOTATION
+  --------
+ 
+  To simulate the mathematical symbol 'sigma' that represents
+  summation, we define the notation
+ 
+       SUM(l=is,if)[ y(l) ] = y(is) + y(is+1) + . . . + y(if) .
+ 
+ 
+  DISCRETE FOURIER TRANSFORM
+  --------------------------
+ 
+  Given a complex periodic sequence x(j), j=0,1,...,n-1, the
+  discrete Fourier transform is defined by
+ 
+      x(j) = sqrt(1/n)*SUM(k=0,n-1)[ f(k)*exp(2j*k*i*pi/n) ] ,
+ 
+  for j = 0, 1, . . . , n-1 , where i = sqrt(-1).  The discrete
+  Fourier coefficients, f(k), are given by
+ 
+      f(k) = sqrt(1/n)*SUM(j=0,n-1)[ x(j)*exp(-2j*k*i*pi/n) ] ,
+ 
+  for k = 0, 1, . . . , n-1 .
+ 
+ 
+  REAL PERIODIC TRANSFORM
+  -----------------------
+ 
+  To facilitate the following discussion we define the integer m by
+ 
+         m = n/2 when n is even, and
+ 
+         m = (n+1)/2 when n is odd.
+ 
+  If the given sequence x(j) is real, the Fourier coefficients are
+  conjugate symmetric, i.e. f(n-k) is equal to the complex conjugate
+  of f(k).  This relation implies that the sequence x(j) can be
+  completely determined from the n real quantities
+ 
+      real(f(0)) =  sqrt(1/n)*SUM(j=0,n-1)[ x(j) ],
+ 
+      real(f(k)) =  sqrt(1/n)*SUM(j=0,n-1)[ x(j)*cos(2j*k*pi/n) ]
+ 
+      imag(f(k)) = -sqrt(1/n)*SUM(j=0,n-1)[ x(j)*sin(2j*k*pi/n) ]
+ 
+  for k = 1, 2, . . . , m-1, and, when n is even,
+ 
+      real(f(n/2)) = sqrt(1/n)*SUM(j=0,n-1)[ (-1)**j*x(j) ].
+ 
+ 
+  TRIGONOMETRIC REPRESENTATION
+  ----------------------------
+ 
+  When the sequence x(j) is real the discrete Fourier transform may
+  be re-written as the trigonometric series
+ 
+      x(j) = sqrt(2/n)* c(0)/2 + (-1)**j*c(n-1)/2 + SUM(k=1,m-1)
+ 
+             [c(2k-1)*cos(2j*k*pi/n) + c(2k)*sin(2j*k*pi/n)]
+ 
+  when n is an even integer (n = 2*m), or as
+ 
+      x(j) = sqrt(2/n)* c(0)/2 + SUM(k=1,m-1)
+ 
+             [c(2k-1)*cos(2j*k*pi/n) + c(2k)*sin(2j*k*pi/n)]
+ 
+  when n is an odd integer (n = 2*m-1),
+ 
+  for j = 0, 1, . . . , n-1 .
+ 
+ 
+  The coefficients c(k) are defined by the relations
+ 
+      c(0) = sqrt(2/n)*SUM(j=0,n-1)[ x(j) ]
+ 
+  for k = 1, 2, . . . , m-1 ,
+ 
+      c(2*k-1) = sqrt(2/n)*SUM(j=0,n-1)[ x(j)*cos(2j*k*pi/n) ]
+ 
+      c(2*k)   = sqrt(2/n)*SUM(j=0,n-1)[ x(j)*sin(2j*k*pi/n) ]
+ 
+  and, when n is even
+ 
+      c(n-1) = sqrt(2/n)*SUM(j=0,n-1)[ (-1)**j*x(j) ] .
+ 
+ 
+  The relationship between the coefficients c(k) and the conjugate
+  symmetric Fourier coefficients f(k) is
+ 
+      c(0) = sqrt(2)*f(0) ,
+ 
+      c(2*k-1) = sqrt(2)*real(f(k)) and c(2*k) = -sqrt(2)*imag(f(k))
+ 
+  for k = 1, 2, . . . , m-1, and when n is even
+ 
+      c(n-1) = sqrt(2)*f(n/2) .
+ 
+ 
+  SINE TRANSFORM OF AN ODD SEQUENCE
+  ---------------------------------
+ 
+  Let x(k) be a real odd sequence, that is, it can be expanded in terms
+  of a trigonometric series that contains only sine terms.  The discrete
+  odd Fourier transform is given by
+ 
+     c(k) = SUM(j=1,n-1)[ 2x(j)*sin(j*k*pi/n) ]/sqrt(2n).
+ 
+  for k = 1, 2, . . ., n-1.
+ 
+  The inverse transform is identical, that is,
+ 
+     x(k) = SUM(j=1,n-1)[ 2c(j)*sin(j*k*pi/n) ]/sqrt(2n)
+ 
+  for k = 1, 2, . . ., n-1.
+ 
+ 
+  COSINE TRANSFORM OF AN EVEN SEQUENCE
+  ------------------------------------
+ 
+  Let x(k) be a real even sequence, that is, it can be expanded in terms
+  of a trigonometric series that contains only cosine terms. The discrete
+  even Fourier transform is given by
+ 
+     c(k) = ( x(0) + (-1)**k*x(n) +
+ 
+            SUM(j=1,n-1)[ 2x(j)*cos(j*k*pi/n) ] )/sqrt(2n)
+ 
+  for k = 0, 1, 2, . . ., n.
+ 
+  The inverse transform is identical, that is,
+ 
+     x(k) = ( c(0) + (-1)**k*c(n) +
+ 
+            SUM(j=1,n-1)[ 2c(j)*cos(j*k*pi/n) ] )/sqrt(2n)
+ 
+  for k = 0, 1, 2, . . ., n.
+ 
+ 
+  QUARTER-WAVE COSINE TRANSFORM
+  -----------------------------
+ 
+  Let x(k) be a real even quarter-wave sequence, that is, it can be
+  expanded in terms of a cosine series with only odd wave numbers.
+  The discrete cosine quarter-wave Fourier transform is given by
+ 
+     c(k) =  ( x(1) +
+ 
+             SUM(j=2,n)[ 2x(j)*cos((j-1)*(2k-1)*pi/2n) ] )/sqrt(4n)
+ 
+  for k = 1, 2, . . ., n. The inverse transform is given by
+ 
+     x(k) =  SUM(j=1,n)[ 4c(j)*cos((2j-1)*(k-1)*pi/2n) ]/sqrt(4n)
+ 
+  for k = 1, 2, . . ., n.
+ 
+ 
+  QUARTER-WAVE SINE TRANSFORM
+  ---------------------------
+ 
+  Let x(k) be a real odd quarter-wave sequence; that is, it can be
+  expanded in terms of a sine series with only odd wave numbers.
+  The discrete quarter-wave sine transform is given by
+ 
+     c(k) =  ( SUM(j=1,n-1)[ 2x(j)*sin(j*(2k-1)*pi/2n) ]
+ 
+               + (-1)**(k-1)*x(n) )/sqrt(4n)
+ 
+  for k = 1, 2, . . ., n.  The inverse transform is given by
+ 
+     x(k) =  ( SUM(j=1,n) [ 4c(j)*sin((2j-1)*k*pi/2n) ] )/sqrt(4n)
+ 
+  for k = 1, 2, . . ., n.
+ 
+ 
+ 
+ 
+              * * * * * * * * * * * * * * * * * * * * *
+              *                                       *
+              *         Description of Package        *
+              *                                       *
+              * * * * * * * * * * * * * * * * * * * * *
+ 
+ 
+  This package consists of subroutines that compute the transforms
+  between sequences x(j) and the Fourier coefficients f(k)
+  described above for multiple real sequences.  The real periodic
+  transform is a variant of the Stockham autosort algorithm.
+  There is no restriction on the length of the sequence.  The
+  other specialized transforms are implemented by preprocessing
+  and postprocessing.
+ 
+  In the description below we use the following terms:
+ 
+    forward transform  = Fourier analysis. Computation of Fourier
+                         coefficients f(k) from the sequence x(k).
+    backward transform = Fourier synthesis. Computation of the
+                         sequence x(k) from its Fourier coefficients
+                         f(k).
+ 
+  The user-callable subroutines are :
+ 
+     1.  VRFFTI     Initialization routine for VRFFTF and VRFFTB
+     2.  VRFFTF     Forward transform of multiple real periodic
+                    sequences
+     3.  VRFFTB     Backward transform for  multiple  real periodic
+                    sequences
+     4.  VSINTI     Initialization routine for VSINT
+     5.  VSINT      Forward or backward transform for multiple odd
+                    sequences
+     6.  VCOSTI     Initialization routine for VCOST
+     7.  VCOST      Forward or backward transform for multiple even
+                    sequences
+     8.  VSINQI     Initialization routine for VSINQF and VSINQB
+     9.  VSINQF     Forward transform of multiple odd sequences with
+                    only odd wave numbers (quarter-wave sine transform)
+    10.  VSINQB     Backward transform for multiple odd sequences with
+                    only odd wave numbers (quarter-wave sine transform)
+    11   VCOSQI     Initialization routine for VCOSQF and VCOSQB
+    12   VCOSQF     Forward transform of multiple even sequences with
+                    only odd wave numbers (quarter-wave cosine
+                    transform)
+    13.  VCOSQB     Backward transform of multiple even sequences with
+                    only odd wave numbers (quarter-wave cosine
+                    transform)
+ 
+ This package is a straightforward vectorization of the scalar package
+ FFTPACK (Version 3, June 1979) written by Paul N. Swarztrauber of the
+ National Center for Atmospheric Research, Boulder, Colorado, 80307.
+ All vector lengths are equal to the number of vectors being
+ transformed. One slight change has been made; symmetric scaling has
+ been incorporated into the forward and backward transforms.
+ 
+ 

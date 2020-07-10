@@ -1,0 +1,40 @@
+ 
+      DOUBLE PRECISION FUNCTION DSPENC(X)
+C***BEGIN PROLOGUE  DSPENC
+C***DATE WRITTEN   780201   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C5
+C***KEYWORDS  DOUBLE PRECISION,SPECIAL FUNCTION,SPENCES INTEGRAL
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes a d.p. form of Spence's integral due to
+C            K. Mitchell.
+C***DESCRIPTION
+C
+C DSPENC(X) calculates the double precision Spence's integral
+C for double precision argument X.  Spence's function defined by
+C        integral from 0 to X of  -ALOG(1-Y)/Y  DY.
+C For ABS(X) .LE. 1, the uniformly convergent expansion
+C        DSPENC = sum K=1,infinity  X**K / K**2     is valid.
+C This is a form of Spence's integral due to K. Mitchell which differs
+C from the definition in the NBS Handbook of Mathematical Functions.
+C
+C Spence's function can be used to evaluate much more general integral
+C forms.  For example,
+C        integral from 0 to Z of  ALOG(A*X+B)/(C*X+D)  DX  =
+C             ALOG(ABS(B-A*D/C))*ALOG(ABS(A*(C*X+D)/(A*D-B*C)))/C
+C             - DSPENC (A*(C*Z+D)/(A*D-B*C)) / C.
+C
+C Ref -- K. Mitchell, Philosophical Magazine, 40, p.351 (1949).
+C        Stegun and Abromowitz, AMS 55, p.1004.
+C
+C
+C Series for SPEN       on the interval  0.          to  5.00000E-01
+C                                        with weighted error   4.74E-32
+C                                         log weighted error  31.32
+C                               significant figures required  30.37
+C                                    decimal places required  32.11
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D1MACH,DCSEVL,INITDS
+C***END PROLOGUE  DSPENC
+ 
+ 

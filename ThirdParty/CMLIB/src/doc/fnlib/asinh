@@ -1,0 +1,23 @@
+ 
+      FUNCTION ASINH(X)
+C***BEGIN PROLOGUE  ASINH
+C***DATE WRITTEN   770401   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C4C
+C***KEYWORDS  ARC HYPERBOLIC SINE,ASINH,ELEMENTARY FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the arc hyperbolic Sine.
+C***DESCRIPTION
+C
+C ASINH(X) computes the arc hyperbolic sine of X.
+C
+C Series for ASNH       on the interval  0.          to  1.00000D+00
+C                                        with weighted error   2.19E-17
+C                                         log weighted error  16.66
+C                               significant figures required  15.60
+C                                    decimal places required  17.31
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  CSEVL,INITS,R1MACH
+C***END PROLOGUE  ASINH
+ 
+ 

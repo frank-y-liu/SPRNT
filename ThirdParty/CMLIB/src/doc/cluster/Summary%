@@ -1,0 +1,267 @@
+ 
+ 
+    CLUSTER is a sublibrary of Fortran subroutines for cluster analysis
+  and related line printer graphics.  It includes routines for clustering
+  variables and/or observations using algorithms such as direct joining
+  and splitting, Fisher's exact optimization, single-link, K-means, and
+  minimum mutations, and routines for estimating missing values.
+ 
+    The subroutines in CLUSTER are described in the book "CLUSTERING
+  ALGORITHMS" by J. A. Hartigan.  Major modifications that have been
+  made to the original code found in the book include:
+ 
+       The elimination of Hartigan's "bordered matrix".  The data matrix
+     has been placed in a separate matrix, the borders have been placed in
+     their own character vectors, and the title has been placed in its own
+     character variable.
+ 
+       The amalgamation of extra vectors and matrices into work vectors
+     and matrices for shorter call sequences.
+ 
+       Setup and plotting subroutines incorporated into the primary
+     subroutines rather than being explicitly called from the user's
+     main program.  Results are automatically produced on a user-specified
+     unit.
+ 
+ 
+    A cluster is a set of similar objects.  One principal function of
+  clustering is to summarize data by referring to properties of clusters
+  rather than to properties of individual objects.  If some objects in a
+  cluster have a certain property, other objects in the cluster will be
+  expected to have the same property.
+ 
+    The standard data structure of the input is a set of observations
+  on each of which a number of variables is measured.  Some routines
+  require the values to be categorical, the others allow continuous
+  data.
+ 
+    Two clustering structures that are used are the partition and the
+  tree.  A partition is a family of clusters such that each observation
+  lies in exactly one member of the partition.  A tree is a family of
+  clusters, which includes the set of all observations, for which any
+  two clusters are disjoint or one includes the other.  The structure can
+  be drawn as a tree with clusters as the nodes, where the direct ancestor
+  of a node is the smallest cluster that contains it, and the cluster of
+  all observations is at the root.
+ 
+    The types of clustering algorithms used are:
+ 
+  Sorting --   An important variable is chosen somehow, and the observations
+                  are partitioned according to the values taken by this
+                  variable.  Within each of the clusters of the partition,
+                  further partitioning takes place according to further
+                  important variables.  Example: SPARSE
+ 
+  Switching -- An initial partition of the observations is given, and new
+                  partitions are obtained by switching an observation from one
+                  cluster to another, with the algorithm terminating when no
+                  further switche improves some criterion.  Examples:  BUILD,
+                  MIX, and DITTO
+ 
+  Joining   -- Initially each observation is a cluster and the closest pair
+                  of clusters are joined to form a new cluster, continuing
+                  this step until a single cluster containing all the original
+                  observations is obtained.  Examples:  SLINK, JOIN, JOIN2,
+                  and DOT
+ 
+  Splitting -- Initially all observations are one cluster and then a cluster
+                  is chosen according to some criterion and split into
+                  smaller clusters.  Examples:  SPLIT1, SPLIT2, and MIXIND
+ 
+  Adding    -- A clustering structure (partition or tree) already exists,
+                  and each object is added to the closest cluster by some
+                  criterion in turn.  Examples:  QUICK, LETREE, SEARCH, and LINK
+ 
+  Searching -- Search over a subset of all possible clusters for the optimal
+                  one.  Example:  FISH
+ 
+  CLUSTERING ROUTINES
+  -------------------
+ 
+  Unconstrained
+ 
+    Partitions (non-nested)
+ 
+      QUICK    produces a quick partition based on a threshold
+ 
+      BUILD    creates clusters by K-means algorithm
+ 
+      MIX      creates clusters by fitting a maximum likelihood criterion
+               to the mixture model under various constraints on the
+               within-cluster covariances
+ 
+      MIXIND   creates clusters by fitting the mixture model where the
+               variables have constant variances and zero within-cluster
+               covariances
+ 
+      DITTO    clusters category data to maximize the matches between
+               observations in a cluster and the cluster mode
+ 
+      SPLIT1   clusters observations within each variable by splitting the
+               cluster with the largest variance at each iteration
+ 
+      SPLIT2   clusters the data matrix by splitting both observations and
+               variables in the cluster with the largest variance at each
+               iteration.  contains user-controlled constraint options
+ 
+      JOIN2    clusters the data matrix by joining either the observations
+               or the  variables of the two closest clusters at each iteration
+ 
+      SPARSE   clusters variables to approximate the loading matrix for factor
+               analysis
+ 
+    Trees (nested)
+ 
+      LETREE   creates tree of clusters based on a set of threshold variances
+ 
+      SEARCH   creates clusters by finding the tree which predicts the most
+               correct triads (expensive to run)
+ 
+      SLINK    creates tree of clusters by single-linkage algorithm
+ 
+      JOIN     creates tree of clusters of observations by joining the two
+               closest clusters at each iteration
+ 
+      DOT      creates tree of clusters of category data using minimum
+               mutation fits to the variables
+ 
+      LINK     creates tree by adding observations which minimize the sum of
+               the link distances
+ 
+  Constrained
+ 
+      FISH     partitions sequence of observations into subsequences by
+               Fisher's method of exact optimization
+ 
+      SPLIT2   clusters the data matrix by splitting both observations and
+               variables in the cluster with the largest variance at each
+               iteration.  contains user-controlled constraint options
+ 
+ 
+    The cluster approach to prediction is to partition the data into
+  clusters according to the variable to be predicted.  Assign an existing
+  observation to a cluster, and use the value associated with that cluster
+  as the value for the predicted variable for the existing observation.
+ 
+  PREDICTION ROUTINES
+  -------------------
+ 
+    AID      uses the automatic interaction detection technique to split
+             data to best predict a variable for an existing observation
+ 
+    VARCO    uses the variance components algorithm to a set of clusters
+             to assign values for the mean and variance of the predicted
+             variable for each cluster
+ 
+ 
+    Profiles can be used as an inexpensive method of suggesting possible
+  clusters, or they may suggest reasonable weights for variables.  Profiles
+  may be best described as histograms on each variable, connected between
+  variables by identifying observations.
+ 
+    One model for clusters in multivariate data is that the data are
+  sampled from a density with many modes, one mode for each cluster.
+  Methods of estimating multivariate densities may therefore be converted
+  to clustering techniques.  Univariate, bivariate, and multivariate
+  histograms are useful in suggesting modes.
+ 
+    Another approach is to represent each observation as a three-dimensional
+  box.  If the observations are ordered by some other clustering technique,
+  the similarity of neighboring boxes suggests or denies clusters.
+ 
+  STATISTICAL PLOTTING ROUTINES
+  -----------------------------
+ 
+    PROF     constructs linearly optimal profiles of the variables
+ 
+    RANK     constructs rank profiles of the variables
+ 
+    LINE     constructs line profiles of the cases
+ 
+    HIST     constructs a univariate histogram
+ 
+    MODAL    constructs a bivariate block histogram for a pair of variables
+ 
+    MHIST    constructs multivariate block histograms
+ 
+    BOXES    constructs multivariate plots of the observations in the form
+             of three-dimensional boxes
+ 
+    PLOT     constructs scatter plot of a sequence of paired variables
+ 
+    PMANY    constructs a matrix of pairwise plots of the variables
+ 
+  MISCELLANEOUS ROUTINES
+  ----------------------
+ 
+    TWO      computes overall means and covariances, replacing missing values
+                by the overall mean
+ 
+    WCOV     computes within-cluster covariances
+ 
+    DIST     computes Euclidean distance between two observations or variables
+ 
+    WDIST    computes Mahalanobis distance between two observations
+ 
+    MISS     estimates missing values by the cluster mean
+ 
+    STAND    standardizes each variable to have zero mean and unit variance
+ 
+    SCALE    discretizes the data into classes
+ 
+    ASSIGN   assigns an observation to its closest cluster
+ 
+    RELOC    sets each cluster center equal to the cluster mean
+ 
+    INVERT   computes the inverse of a covariance matrix and its determinant
+ 
+    IN       reads a data matrix with appropriate labels
+ 
+    OUT      outputs a data matrix with appropriate labels
+ 
+ 
+  NOTE:  "The subroutines in 'Clustering Algorithms' were written as
+          research tools.  Speed of execution and storage requirements
+          are not necessarily optimized.  These subroutines should NOT
+          be used routinely to analyze large data sets."
+ 
+    Programs giving examples of each of the above routines (except IN
+  which every sample program uses) exist in the file SAMPLE under the
+  CMLIB account.  The commands
+ 
+    ATTACH,SAMPLE/UN=CMLIB.
+    GTR,SAMPLE,<lfn>.<subroutine>.
+ 
+  will place a program which calls <subroutine> into the local file <lfn>.
+  All sample programs use the CLUSTER subroutine IN which expects input
+  data on Fortran unit 5 (see documentation of IN for format of the input
+  data file), and places output on a user-specified unit .  The sample
+  data set that was used in each sample program can be gotten with the
+  commands:
+ 
+    ATTACH,SMPIN/UN=CMLIB.
+    GTR,SMPIN,TAPE5.<subroutine>.
+ 
+    All tests were run on the data set in the SMPIN file.  The corres-
+  ponding output can be found in the SMPOUT file.  The commands
+ 
+    ATTACH,SMPOUT/UN=CMLIB.
+    GTR,SMPOUT,<lfn>.<subroutine>.
+ 
+  will place the output from the sample program which calls <subroutine>
+  into the local file <lfn>.
+ 
+  Parts of the above text were taken from the following (the last two
+     are available from Greg Rhoads of the Scientific Computing Division
+     FTS 921-3395).
+ 
+  Hartigan, J. A. (1975).  Clustering Algorithms, John Wiley &
+     Sons, Inc., New York.
+ 
+  Hartigan, J. A. (1975) Printer Graphics for Clustering. Journal of
+     Statistical Computation and Simulation. Volume 4, Pages 187-213.
+ 
+  Dallal, Gerard E. A User's Guide to J. A. Hartigan's "Clustering
+     Algorithms".  Yale University.
+ 
+ 

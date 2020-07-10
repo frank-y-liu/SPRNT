@@ -1,0 +1,148 @@
+ 
+      SUBROUTINE DQAGE(F,A,B,EPSABS,EPSREL,KEY,LIMIT,RESULT,ABSERR,
+     1   NEVAL,IER,ALIST,BLIST,RLIST,ELIST,IORD,LAST)
+C***BEGIN PROLOGUE  DQAGE
+C***DATE WRITTEN   800101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  H2A1A1
+C***KEYWORDS  AUTOMATIC INTEGRATOR,GAUSS-KRONROD,GENERAL-PURPOSE,
+C             GLOBALLY ADAPTIVE,INTEGRAND EXAMINATOR
+C***AUTHOR  PIESSENS, ROBERT, APPLIED MATH. AND PROGR. DIV. -
+C             K. U. LEUVEN
+C           DE DONCKER, ELISE, APPLIED MATH. AND PROGR. DIV. -
+C             K. U. LEUVEN
+C***PURPOSE  The routine calculates an approximation result to a given
+C            definite integral   I = Integral of F over (A,B),
+C            hopefully satisfying following claim for accuracy
+C            ABS(I-RESLT).LE.MAX(EPSABS,EPSREL*ABS(I)).
+C***DESCRIPTION
+C
+C        Computation of a definite integral
+C        Standard fortran subroutine
+C        Double precision version
+C
+C        PARAMETERS
+C         ON ENTRY
+C            F      - Double precision
+C                     Function subprogram defining the integrand
+C                     function F(X). The actual name for F needs to be
+C                     declared E X T E R N A L in the driver program.
+C
+C            A      - Double precision
+C                     Lower limit of integration
+C
+C            B      - Double precision
+C                     Upper limit of integration
+C
+C            EPSABS - Double precision
+C                     Absolute accuracy requested
+C            EPSREL - Double precision
+C                     Relative accuracy requested
+C                     If  EPSABS.LE.0
+C                     and EPSREL.LT.MAX(50*REL.MACH.ACC.,0.5D-28),
+C                     the routine will end with IER = 6.
+C
+C            KEY    - Integer
+C                     Key for choice of local integration rule
+C                     A Gauss-Kronrod pair is used with
+C                          7 - 15 points if KEY.LT.2,
+C                         10 - 21 points if KEY = 2,
+C                         15 - 31 points if KEY = 3,
+C                         20 - 41 points if KEY = 4,
+C                         25 - 51 points if KEY = 5,
+C                         30 - 61 points if KEY.GT.5.
+C
+C            LIMIT  - Integer
+C                     Gives an upperbound on the number of subintervals
+C                     in the partition of (A,B), LIMIT.GE.1.
+C
+C         ON RETURN
+C            RESULT - Double precision
+C                     Approximation to the integral
+C
+C            ABSERR - Double precision
+C                     Estimate of the modulus of the absolute error,
+C                     which should equal or exceed ABS(I-RESULT)
+C
+C            NEVAL  - Integer
+C                     Number of integrand evaluations
+C
+C            IER    - Integer
+C                     IER = 0 Normal and reliable termination of the
+C                             routine. It is assumed that the requested
+C                             accuracy has been achieved.
+C                     IER.GT.0 Abnormal termination of the routine
+C                             The estimates for result and error are
+C                             less reliable. It is assumed that the
+C                             requested accuracy has not been achieved.
+C            ERROR MESSAGES
+C                     IER = 1 Maximum number of subdivisions allowed
+C                             has been achieved. One can allow more
+C                             subdivisions by increasing the value
+C                             of LIMIT.
+C                             However, if this yields no improvement it
+C                             is rather advised to analyze the integrand
+C                             in order to determine the integration
+C                             difficulties. If the position of a local
+C                             difficulty can be determined(e.g.
+C                             SINGULARITY, DISCONTINUITY within the
+C                             interval) one will probably gain from
+C                             splitting up the interval at this point
+C                             and calling the integrator on the
+C                             subranges. If possible, an appropriate
+C                             special-purpose integrator should be used
+C                             which is designed for handling the type of
+C                             difficulty involved.
+C                         = 2 The occurrence of roundoff error is
+C                             detected, which prevents the requested
+C                             tolerance from being achieved.
+C                         = 3 Extremely bad integrand behaviour occurs
+C                             at some points of the integration
+C                             interval.
+C                         = 6 The input is invalid, because
+C                             (EPSABS.LE.0 and
+C                              EPSREL.LT.MAX(50*REL.MACH.ACC.,0.5D-28),
+C                             RESULT, ABSERR, NEVAL, LAST, RLIST(1) ,
+C                             ELIST(1) and IORD(1) are set to zero.
+C                             ALIST(1) and BLIST(1) are set to A and B
+C                             respectively.
+C
+C            ALIST   - Double precision
+C                      Vector of dimension at least LIMIT, the first
+C                       LAST  elements of which are the left
+C                      end points of the subintervals in the partition
+C                      of the given integration range (A,B)
+C
+C            BLIST   - Double precision
+C                      Vector of dimension at least LIMIT, the first
+C                       LAST  elements of which are the right
+C                      end points of the subintervals in the partition
+C                      of the given integration range (A,B)
+C
+C            RLIST   - Double precision
+C                      Vector of dimension at least LIMIT, the first
+C                       LAST  elements of which are the
+C                      integral approximations on the subintervals
+C
+C            ELIST   - Double precision
+C                      Vector of dimension at least LIMIT, the first
+C                       LAST  elements of which are the moduli of the
+C                      absolute error estimates on the subintervals
+C
+C            IORD    - Integer
+C                      Vector of dimension at least LIMIT, the first K
+C                      elements of which are pointers to the
+C                      error estimates over the subintervals,
+C                      such that ELIST(IORD(1)), ...,
+C                      ELIST(IORD(K)) form a decreasing sequence,
+C                      with K = LAST if LAST.LE.(LIMIT/2+2), and
+C                      K = LIMIT+1-LAST otherwise
+C
+C            LAST    - Integer
+C                      Number of subintervals actually produced in the
+C                      subdivision process
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D1MACH,DQK15,DQK21,DQK31,DQK41,DQK51,DQK61,DQPSRT
+C***END PROLOGUE  DQAGE
+ 
+ 

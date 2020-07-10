@@ -1,0 +1,40 @@
+ 
+      FUNCTION BESK1E(X)
+C***BEGIN PROLOGUE  BESK1E
+C***DATE WRITTEN   770401   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C10B1
+C***KEYWORDS  BESSEL FUNCTION,EXPONENTIALLY SCALED,
+C             HYPERBOLIC BESSEL FUNCTION,MODIFIED BESSEL FUNCTION,
+C             ORDER ONE,THIRD KIND
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the exponentially scaled hyperbolic Bessel
+C            function of the third kind of order one.
+C***DESCRIPTION
+C
+C BESK1E(X) computes the exponentially scaled modified (hyperbolic)
+C Bessel function of third kind of order one for real argument
+C X .GT. 0.0, i.e., EXP(X)*K1(X).
+C
+C Series for BK1        on the interval  0.          to  4.00000D+00
+C                                        with weighted error   7.02E-18
+C                                         log weighted error  17.15
+C                               significant figures required  16.73
+C                                    decimal places required  17.67
+C
+C Series for AK1        on the interval  1.25000D-01 to  5.00000D-01
+C                                        with weighted error   6.06E-17
+C                                         log weighted error  16.22
+C                               significant figures required  15.41
+C                                    decimal places required  16.83
+C
+C Series for AK12       on the interval  0.          to  1.25000D-01
+C                                        with weighted error   2.58E-17
+C                                         log weighted error  16.59
+C                               significant figures required  15.22
+C                                    decimal places required  17.16
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  BESI1,CSEVL,INITS,R1MACH,XERROR
+C***END PROLOGUE  BESK1E
+ 
+ 

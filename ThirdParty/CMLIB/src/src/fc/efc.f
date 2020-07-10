@@ -1,0 +1,265 @@
+      SUBROUTINE EFC(NDATA,XDATA,YDATA,SDDATA,NORD,NBKPT,BKPT,MDEIN,
+     1   MDEOUT,COEFF,LW,W)
+C***BEGIN PROLOGUE  EFC
+C***DATE WRITTEN   800801   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***REVISION HISTORY  (YYMMDD)
+C   000330  Modified array declarations.  (JEC)
+C
+C***CATEGORY NO.  K1A1A1,K1A2A,L8A3
+C***KEYWORDS  B-SPLINES,CONSTRAINED LEAST SQUARES,CURVE FITTING,
+C             LEAST SQUARES
+C***AUTHOR  HANSON, R. J., (SNLA)
+C***PURPOSE  Fits a piece-wise polynomial curve to discrete
+C            data.  The piece-wise polynomials are represented
+C            as B-splines.  The fitting is done in a weighted
+C            least squares sense.
+C***DESCRIPTION
+C
+C     Revised 800905-1300
+C     Revised YYMMDD-HHMM
+C     DIMENSION XDATA(NDATA),YDATA(NDATA),SDDATA(NDATA),  BKPT(NBKPT),
+C    1  COEFF(NBKPT-NORD),W(*)
+C
+C      This subprogram fits a piece-wise polynomial curve
+C      to discrete data.  The piece-wise polynomials are
+C      represented as B-splines.
+C      The fitting is done in a weighted least squares sense.
+C
+C      The data can be processed in groups of modest size.
+C      The size of the group is chosen by the user.  This feature
+C      may be necessary for purposes of using constrained curve fitting
+C      with subprogram FC( ) on a very large data set.
+C      For a description of the B-splines and usage instructions to
+C      evaluate them, see
+C
+C      C. W. de Boor, Package for Calculating with B-Splines.
+C                     SIAM J. Numer. Anal., p. 441, (June, 1977).
+C
+C      For further discussion of (constrained) curve fitting using
+C      B-splines, see
+C
+C      R. J. Hanson, Constrained Least Squares Curve Fitting
+C                   to Discrete Data Using B-Splines, a User's
+C                   Guide. Sandia Labs. Tech. Rept. SAND-78-1291,
+C                   December, (1978).
+C
+C  Input..
+C      NDATA,XDATA(*),
+C      YDATA(*),
+C      SDDATA(*)
+C                         The NDATA discrete (X,Y) pairs and
+C                         the Y value standard deviation or
+C                         uncertainty, SD, are in the respective
+C                         arrays XDATA(*), YDATA(*), and SDDATA(*).
+C                         No sorting of XDATA(*) is required.  Any
+C                         non-negative value of NDATA is allowed.  A
+C                         negative value of NDATA is an error.
+C                         A zero value for any entry of SDDATA(*)
+C                         will weight that data point as 1.
+C                         Otherwise the weight of that data point is
+C                         the reciprocal of this entry.
+C
+C      NORD,NBKPT,
+C      BKPT(*)
+C                         The NBKPT knots of the B-spline of order
+C                         NORD are in the array BKPT(*).  Normally
+C                         the problem data interval will be included
+C                         between the limits BKPT(NORD) and
+C                         BKPT(NBKPT-NORD+1).  The additional end knots
+C                         BKPT(I),I=1,...,NORD-1 and I=NBKPT-NORD+2,...,
+C                         NBKPT, are required to compute the functions
+C                         used to fit the data.
+C                         No sorting of BKPT(*) is required.  Internal
+C                         to EFC( ) the extreme end knots may be slight-
+C                         ly reduced and increased respectively to
+C                         accomodate any data values that are exterior
+C                         to the given knot values.  The contents of
+C                         BKPT(*) are not changed.
+C
+C                         The value of NORD must lie between 1 and 20.
+C                         The value of NBKPT must satisfy NBKPT .GE.
+C                         2*NORD.  Other values are considered errors.
+C
+C                         (The order of the spline is one more
+C                         than the degree of the piece-wise polynomial
+C                         defined on each interval.  This is consistent
+C                         with the B-spline package convention.  For
+C                         example, NORD=4 when we are using piece-wise
+C                         cubics.)
+C
+C        MDEIN
+C                         An integer flag, with one of two possible
+C                         values (1 or 2), that directs the subprogram
+C                         action with regard to new data points provided
+C                         by the user.
+C
+C                         =1  The first time that EFC( ) has been
+C                         entered.  There are NDATA points to process.
+C
+C                         =2  This is another entry to EFC( ).  The sub-
+C                         program EFC( ) has been entered with MDEIN=1
+C                         exactly once before for this problem.  There
+C                         are NDATA new additional points to merge and
+C                         process with any previous points.
+C                         (When using EFC( ) with MDEIN=2 it is import-
+C                         ant that the set of knots remain fixed at the
+C                         same values for all entries to EFC( ).)
+C       LW
+C                         The amount of working storage actually
+C                         allocated for the working array W(*).
+C                         This quantity is compared with the
+C                         actual amount of storage needed in EFC( ).
+C                         Insufficient storage allocated for W(*) is
+C                         an error.  This feature was included in EFC( )
+C                         because misreading the storage formula
+C                         for W(*) might very well lead to subtle
+C                         and hard-to-find programming bugs.
+C
+C                         The length of the array W(*) must satisfy
+C
+C                         LW .GE. (NBKPT-NORD+3)*(NORD+1)+
+C                                 (NBKPT+1)*(NORD+1)+
+C                               2*MAX0(NDATA,NBKPT)+NBKPT+NORD**2
+C  Output..
+C      MDEOUT
+C                         An output flag that indicates the status
+C                         of the constrained curve fit.
+C
+C                         =-1  A usage error of EFC( ) occurred.  The
+C                         offending condition is noted with the SLATEC
+C                         library error processor, XERROR( ).
+C                         In case the working array W(*) is
+C                         not long enough, the minimal acceptable length
+C                         is printed using the error processing subpro-
+C                         gram XERRWV( ).
+C
+C                         =1  The B-spline coefficients for the fitted
+C                         curve have been returned in array COEFF(*).
+C
+C                         =2  Not enough data has been processed to
+C                         determine the B-spline coefficients.
+C                         The user has one of two options.  Continue
+C                         to process more data until a unique set
+C                         of coefficients is obtained, or use the
+C                         subprogram FC( ) to obtain a specific
+C                         set of coefficients.  The user should read
+C                         the usage instructions for FC( ) for further
+C                         details if this second option is chosen.
+C      COEFF(*)
+C                         If the output value of MDEOUT=1, this array
+C                         contains the unknowns obtained from the least
+C                         squares fitting process.  These N=NBKPT-NORD
+C                         parameters are the B-spline coefficients.
+C                         For MDEOUT=2, not enough data was processed to
+C                         uniquely determine the B-spline coefficients.
+C                         In this case, and also when MDEOUT=-1, all
+C                         values of COEFF(*) are set to zero.
+C
+C                         If the user is not satisfied with the fitted
+C                         curve returned by EFC( ), the constrained
+C                         least squares curve fitting subprogram FC( )
+C                         may be required.  The work done within EFC( )
+C                         to accumulate the data can be utilized by
+C                         the user, if so desired.  This involves
+C                         saving the first (NBKPT-NORD+3)*(NORD+1)
+C                         entries of W(*) and providing this data
+C                         to FC( ) with the "old problem" designation.
+C                         The user should read the usage instructions
+C                         for subprogram FC( ) for further details.
+C
+C  Working Array..
+C      W(*)
+C                         This array is typed REAL.  Its
+C                         length is specified as an input
+C                         parameter in LW as noted above.
+C                         The contents of W(*) must not be modified
+C                         by the user between calls to EFC( ) with
+C                         values of MDEIN=1,2,2,... .  The first
+C                         (NBKPT-NORD+3)*(NORD+1) entries of W(*) are
+C                         acceptable as direct input to FC( ) for an
+C                         "old problem" only when MDEOUT=1 or 2.
+C
+C  Evaluating the
+C  Fitted Curve..
+C                         To evaluate derivative number IDER at XVAL
+C                         use the function subprogram BVALU( ).
+C
+C                           F = BVALU(BKPT,COEFF,NBKPT-NORD,NORD,IDER,
+C                                      XVAL,INBV,WORKB)
+C
+C                         The output of this subprogram will not be
+C                         defined unless an output value of MDEOUT=1
+C                         was obtained from EFC( ), XVAL is in the data
+C                         interval, and IDER is nonnegative and .LT.
+C                         NORD.
+C                         The first time BVALU( ) is called, INBV=1
+C                         must be specified.  This value of INBV is the
+C                         overwritten by BVALU( ).  The array WORKB(*)
+C                         must be of length at least 3*NORD, and must
+C                         not be the same as the W(*) array used
+C                         in the call to EFC( ).
+C
+C                         BVALU( ) expects the breakpoint array BKPT(*
+C                         to be sorted.
+C***REFERENCES  HANSON R.J., *CONSTRAINED LEAST SQUARES CURVE FITTING
+C                 TO DISCRETE DATA USING B-SPLINES, A USERS GUIDE*,
+C                 SAND78-1291, DECEMBER,1978.
+C***ROUTINES CALLED  EFCMN
+C***END PROLOGUE  EFC
+C
+C+-+-+-+-
+C     THE USER-PROVIDED USAGE INSTRUCTIONS CAN END HERE.
+C      SUBROUTINE           FUNCTION/REMARKS
+C
+C      BSPLVN( )          COMPUTE FUNCTION VALUES OF B-SPLINES.  FROM
+C                         THE B-SPLINE PACKAGE OF DE BOOR NOTED ABOVE.
+C
+C      BNDACC( ),         BANDED LEAST SQUARES MATRIX PROCESSORS.
+C      BNDSOL( )          FROM LAWSON-HANSON, SOLVING LEAST
+C                         SQUARES PROBLEMS.
+C
+C      SSORT( )           DATA SORTING SUBROUTINE, FROM THE
+C                         SANDIA MATH. LIBRARY, SAND77-1441.
+C      XERROR( ),         ERROR HANDLING ROUTINES
+C      XERRWV( )          FOR THE SLATEC MATH. LIBRARY.
+C                         SEE SAND78-1189, BY R. E. JONES.
+C
+C      SCOPY( ),SSCAL( )  SUBROUTINES FROM THE BLAS PACKAGE.
+C                         LOCATED ON SANDIA. MATH. LIBRARY. SEE
+C                         SAND77-0898 FOR DESCRIPTION.
+C
+C                         WRITTEN BY R. HANSON, SANDIA NATL. LABS.,
+C                         ALB., N. M., AUGUST-SEPTEMBER, 1980.
+      DIMENSION XDATA(*),YDATA(*),SDDATA(*),BKPT(*)
+      DIMENSION COEFF(*),W(*)
+C***FIRST EXECUTABLE STATEMENT  EFC
+      MDG=NBKPT+1
+      MDW=NBKPT-NORD+3
+C     LWW=1               USAGE IN EFCMN( ) OF W(*)..
+C     LWW,...,LG-1        W(*,*)
+C
+C     LG,...,LXTEMP-1     G(*,*)
+C
+C     LXTEMP,...,LPTEMP-1 XTEMP(*)
+C
+C     LPTEMP,...,LBKPT-1  PTEMP(*)
+C
+C     LBKPT,...,LBF       BKPT(*) (LOCAL TO EFCMN( ))
+C
+C     LBF,...,LBF+NORD**2 BF(*,*)
+C
+      LWW=1
+      LG=LWW+MDW*(NORD+1)
+      LXTEMP=LG+MDG*(NORD+1)
+      LPTEMP=LXTEMP+MAX0(NDATA,NBKPT)
+      LBKPT=LPTEMP+MAX0(NDATA,NBKPT)
+      LBF=LBKPT+NBKPT
+      CALL EFCMN(NDATA,XDATA,YDATA,SDDATA,
+     1         NORD,NBKPT,BKPT,
+     2         MDEIN,MDEOUT,
+     3         COEFF,
+     4         W(LBF),W(LXTEMP),W(LPTEMP),W(LBKPT),
+     5         W(LG),MDG,W(LWW),MDW,LW)
+      RETURN
+      END

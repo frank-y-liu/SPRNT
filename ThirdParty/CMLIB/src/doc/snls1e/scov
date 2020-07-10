@@ -1,0 +1,142 @@
+ 
+      SUBROUTINE SCOV(FCN,IOPT,M,N,X,FVEC,R,LDR,INFO,WA1,WA2,WA3,WA4)
+C***BEGIN PROLOGUE  SCOV
+C***DATE WRITTEN   810522   (YYMMDD)
+C***REVISION DATE  830608   (YYMMDD)
+C***CATEGORY NO.  K1B1
+C***KEYWORDS  COVARIANCE MATRIX,NONLINEAR DATA FITTING,
+C             NONLINEAR LEAST SQUARES
+C***AUTHOR  HIEBERT,K.L., (SNLA)
+C***PURPOSE  SCOV calculates the covariance matrix for a nonlinear
+C            data fitting problem.  It is intended to be used after
+C            a successful return from either SNLS1 or SNLS1E.
+C***DESCRIPTION
+C
+C  1. Purpose.
+C
+C     SCOV calculates the covariance matrix for a nonlinear data
+C     fitting problem.  It is intended to be used after a
+C     successful return from either SNLS1 or SNLS1E. SCOV
+C     and SNLS1 (and SNLS1E) have compatible parameters.  The
+C     required external subroutine, FCN, is the same
+C     for all three codes, SCOV, SNLS1, and SNLS1E.
+C
+C  2. Subroutine and Type Statements.
+C
+C     SUBROUTINE SCOV(FCN,IOPT,M,N,X,FVEC,R,LDR,INFO,
+C                     WA1,WA2,WA3,WA4)
+C     INTEGER IOPT,M,N,LDR,INFO
+C     REAL X(N),FVEC(M),R(LDR,N),WA1(N),WA2(N),WA3(N),WA4(M)
+C     EXTERNAL FCN
+C
+C  3. Parameters.
+C
+C       FCN is the name of the user-supplied subroutine which calculates
+C         the functions.  If the user wants to supply the Jacobian
+C         (IOPT=2 or 3), then FCN must be written to calculate the
+C         Jacobian, as well as the functions.  See the explanation
+C         of the IOPT argument below.
+C         If the user wants the iterates printed in SNLS1 or SNLS1E,
+C         then, FCN must do the printing.  See the explanation of NPRINT
+C         in SNLS1 or SNLS1E.  FCN must be declared in an EXTERNAL
+C         statement in the calling program and should be written as
+C         follows.
+C
+C         SUBROUTINE FCN(IFLAG,M,N,X,FVEC,FJAC,LDFJAC)
+C         INTEGER IFLAG,LDFJAC,M,N
+C         REAL X(N),FVEC(M)
+C         ----------
+C         FJAC and LDFJAC may be ignored     , if IOPT=1.
+C         REAL FJAC(LDFJAC,N)                , if IOPT=2.
+C         REAL FJAC(N)                       , if IOPT=3.
+C         ----------
+C           If IFLAG=0, the values in X and FVEC are available
+C           for printing in SNLS1 or SNLS1E.
+C           IFLAG will never be zero when FCN is called by SCOV.
+C           The values of X and FVEC must not be changed.
+C         RETURN
+C         ----------
+C           If IFLAG=1, calculate the functions at X and return
+C           this vector in FVEC.
+C         RETURN
+C         ----------
+C           If IFLAG=2, calculate the full Jacobian at X and return
+C           this matrix in FJAC.  Note that IFLAG will never be 2 unless
+C           IOPT=2.  FVEC contains the function values at X and must
+C           not be altered.  FJAC(I,J) must be set to the derivative
+C           of FVEC(I) with respect to X(J).
+C         RETURN
+C         ----------
+C           If IFLAG=3, calculate the LDFJAC-th row of the Jacobian
+C           and return this vector in FJAC.  Note that IFLAG will
+C           never be 3 unless IOPT=3.  FJAC(J) must be set to
+C           the derivative of FVEC(LDFJAC) with respect to X(J).
+C         RETURN
+C         ----------
+C         END
+C
+C
+C         The value of IFLAG should not be changed by FCN unless the
+C         user wants to terminate execution of SCOV.  In this case, set
+C         IFLAG to a negative integer.
+C
+C
+C       IOPT is an input variable which specifies how the Jacobian will
+C         be calculated.  If IOPT=2 or 3, then the user must supply the
+C         Jacobian, as well as the function values, through the
+C         subroutine FCN.  If IOPT=2, the user supplies the full
+C         Jacobian with one call to FCN.  If IOPT=3, the user supplies
+C         one row of the Jacobian with each call.  (In this manner,
+C         storage can be saved because the full Jacobian is not stored.)
+C         If IOPT=1, the code will approximate the Jacobian by forward
+C         differencing.
+C
+C       M is a positive integer input variable set to the number of
+C         functions.
+C
+C       N is a positive integer input variable set to the number of
+C         variables.  N must not exceed M.
+C
+C       X is an array of length N.  On input X must contain the value
+C         at which the covariance matrix is to be evaluated.  This is
+C         usually the value for X returned from a successful run of
+C         SNLS1 (or SNLS1E).  The value of X will not be changed.
+C
+C    FVEC is an output array of length M which contains the functions
+C         evaluated at X.
+C
+C       R is an output array.  For IOPT=1 and 2, R is an M by N array.
+C         For IOPT=3, R is an N by N array.  On output, if INFO=1,
+C         the upper N by N submatrix of R contains the covariance
+C         matrix evaluated at X.
+C
+C     LDR is a positive integer input variable which specifies
+C         the leading dimension of the array R.  For IOPT=1 and 2,
+C         LDR must not be less than M.  For IOPT=3, LDR must not
+C         be less than N.
+C
+C    INFO is an integer output variable.  If the user has terminated
+C         execution, INFO is set to the (negative) value of IFLAG.  See
+C         description of FCN. Otherwise, INFO is set as follows.
+C
+C         INFO = 0 Improper input parameters (M.LE.0 or N.LE.0).
+C
+C         INFO = 1 Successful return.  The covariance matrix has been
+C                  calculated and stored in the upper N by N
+C                  submatrix of R.
+C
+C         INFO = 2 The Jacobian matrix is singular for the input value
+C                  of X.  The covariance matrix cannot be calculated.
+C                  The upper N by N submatrix of R contains the QR
+C                  factorization of the Jacobian (probably not of
+C                  interest to the user).
+C
+C WA1,WA2 are work arrays of length N.
+C and WA3
+C
+C     WA4 is a work array of length M.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  ENORM,FDJAC3,QRFAC,RWUPDT,XERROR
+C***END PROLOGUE  SCOV
+ 
+ 

@@ -1,0 +1,88 @@
+ 
+      REAL FUNCTION PCHID(N,X,F,D,INCFD,SKIP,IA,IB,IERR)
+C***BEGIN PROLOGUE  PCHID
+C***DATE WRITTEN   820723   (YYMMDD)
+C***REVISION DATE  870707   (YYMMDD)
+C***CATEGORY NO.  E1B,H2A2
+C***KEYWORDS  LIBRARY=SLATEC(PCHIP),
+C             TYPE=SINGLE PRECISION(PCHID-S DPCHID-D),
+C             CUBIC HERMITE INTERPOLATION,NUMERICAL INTEGRATION,
+C             QUADRATURE
+C***AUTHOR  FRITSCH, F. N., (LLNL)
+C             MATHEMATICS AND STATISTICS DIVISION
+C             LAWRENCE LIVERMORE NATIONAL LABORATORY
+C             P.O. BOX 808  (L-316)
+C             LIVERMORE, CA  94550
+C             FTS 532-4275, (415) 422-4275
+C***PURPOSE  Evaluate the definite integral of a piecewise cubic
+C            Hermite function over an interval whose endpoints are
+C            data points.
+C***DESCRIPTION
+C
+C          PCHID:  Piecewise Cubic Hermite Integrator, Data limits
+C
+C     Evaluates the definite integral of the cubic Hermite function
+C     defined by  N, X, F, D  over the interval [X(IA), X(IB)].
+C
+C     To provide compatibility with PCHIM and PCHIC, includes an
+C     increment between successive values of the F- and D-arrays.
+C
+C ----------------------------------------------------------------------
+C
+C  Calling sequence:
+C
+C        PARAMETER  (INCFD = ...)
+C        INTEGER  N, IA, IB, IERR
+C        REAL  X(N), F(INCFD,N), D(INCFD,N)
+C        LOGICAL  SKIP
+C
+C        VALUE = PCHID (N, X, F, D, INCFD, SKIP, IA, IB, IERR)
+C
+C   Parameters:
+C
+C     VALUE -- (output) value of the requested integral.
+C
+C     N -- (input) number of data points.  (Error return if N.LT.2 .)
+C
+C     X -- (input) real array of independent variable values.  The
+C           elements of X must be strictly increasing:
+C                X(I-1) .LT. X(I),  I = 2(1)N.
+C           (Error return if not.)
+C
+C     F -- (input) real array of function values.  F(1+(I-1)*INCFD) is
+C           the value corresponding to X(I).
+C
+C     D -- (input) real array of derivative values.  D(1+(I-1)*INCFD) is
+C           the value corresponding to X(I).
+C
+C     INCFD -- (input) increment between successive values in F and D.
+C           (Error return if  INCFD.LT.1 .)
+C
+C     SKIP -- (input/output) logical variable which should be set to
+C           .TRUE. if the user wishes to skip checks for validity of
+C           preceding parameters, or to .FALSE. otherwise.
+C           This will save time in case these checks have already
+C           been performed (say, in PCHIM or PCHIC).
+C           SKIP will be set to .TRUE. on return with IERR = 0 or -4.
+C
+C     IA,IB -- (input) indices in X-array for the limits of integration.
+C           both must be in the range [1,N].  (Error return if not.)
+C           No restrictions on their relative values.
+C
+C     IERR -- (output) error flag.
+C           Normal return:
+C              IERR = 0  (no errors).
+C           "Recoverable" errors:
+C              IERR = -1  if N.LT.2 .
+C              IERR = -2  if INCFD.LT.1 .
+C              IERR = -3  if the X-array is not strictly increasing.
+C              IERR = -4  if IA or IB is out of range.
+C                (Value has not been computed in any of these cases.)
+C               NOTE:  The above errors are checked in the order listed,
+C                   and following arguments have **NOT** been validated.
+C
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  XERROR
+C***END PROLOGUE  PCHID
+ 
+ 

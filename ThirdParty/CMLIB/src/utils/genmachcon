@@ -1,0 +1,111 @@
+#! /bin/csh -f
+
+#  Usage : genmachcon [machine]
+
+#  Generates machine constants routines ([rid]1mach.f) for a particular 
+#  machine, where machine is a supported machine name.  The names appear
+#  as comments of the form   "C === MACHINE = name"  in the files
+#  [rid]1mach.template.
+
+#  If machine is not specified then a menu of possibilities is presented.
+
+set thisfile = $0
+if ($thisfile == genmachcon) then
+   set sourcedir = .
+else
+   set sourcedir = ${thisfile:h}
+endif
+
+set listfile = /tmp/genm.list.$$
+set typefile = /tmp/genm.types.$$
+set awkinput = /tmp/genm.awkinput.$$
+
+set noglob
+
+set source = $sourcedir/i1mach.template
+
+if ($#argv == 0) then
+
+#  get list of machines ...
+
+   set pattern = '=== MACHINE = '
+   grep "$pattern" $source | sed -e "s/^C $pattern//" | sort > $listfile
+
+#  prompt for general type ...
+
+   set types = ( `cat $listfile | sed -e 's/\..*$//' | uniq` )
+   set i = 0
+   foreach type ($types)
+      @ i = $i + 1
+      echo "$i $type" >> $typefile
+   end
+   echo " "
+   cat $typefile | pr -3 -l9 -t
+   echo " "
+   echo -n "Which general machine type? (Enter number) : "
+   set ans = $<
+   if ("$ans" == "") then
+      rm $listfile $typefile
+      exit
+   endif
+   set type = $types[$ans]
+
+#  prompt for specific type ...
+
+   set shortlist = (`grep "^$type" $listfile`)
+   if ($#shortlist == 1) then
+      set ans = 1
+   else
+      rm $typefile
+      set i = 0
+      foreach type ($shortlist)
+         @ i = $i + 1
+         echo "$i $type" >> $typefile
+      end
+      echo " "
+      cat $typefile
+      echo " "      
+      echo -n "Which specific machine type? (Enter number) : "
+      set ans = $<
+      if ("$ans" == "") then
+         rm $listfile $typefile
+         exit
+      endif
+   endif
+   set machine = $shortlist[$ans]
+else
+   set machine = `echo $1 | tr a-z A-Z`
+endif
+
+#  do I have a legal machine type? ...
+
+set eol = '$'
+set check = `grep "^C === MACHINE = $machine$eol" $source | wc -l`
+if ("$check" != "1") then
+   echo "I do not have a machine named $machine"
+   rm -f $listfile $typefile
+   exit
+endif
+
+#  edit template files to produce desired machine constants ...
+
+set mawk = `echo $machine | sed -e "s/\//\\\//g" `
+
+cat > $awkinput << ENDAWKINPUT
+/^C === MACHINE = $mawk *\$/,/^C *\$/ \
+     {if (substr(\$0,1,12) == "C      DATA ") 
+          {print substr(\$0,2)
+           next}}
+
+     {print}
+ENDAWKINPUT
+
+foreach x (i1mach r1mach d1mach)
+   awk -f $awkinput $sourcedir/$x.template > $x.f
+end
+
+cleanup:
+
+rm -f $listfile $typefile $awkinput
+
+

@@ -1,0 +1,71 @@
+ 
+      REAL FUNCTION RNOR(JD)
+C***BEGIN PROLOGUE  RNOR
+C***DATE WRITTEN   810915
+C***REVISION DATE  830805
+C***CATEGORY NO.  L6A14
+C***KEYWORDS  RANDOM NUMBERS, UNIFORM RANDOM NUMBERS
+C***AUTHOR    KAHANER, DAVID, SCIENTIFIC COMPUTING DIVISION, NBS
+C             MARSAGLIA, GEORGE, COMPUTER SCIENCE DEPT., WASH STATE UNIV
+C
+C***PURPOSE  GENERATES QUASI NORMAL RANDOM NUMBERS, WITH MEAN ZERO AND
+C             UNIT STANDARD DEVIATION, AND CAN BE USED WITH ANY COMPUTER
+C             WITH INTEGERS AT LEAST AS LARGE AS 32767.
+C***DESCRIPTION
+C
+C       RNOR generates quasi normal random numbers with zero mean and
+C       unit standard deviation.
+C       It can be used with any computer with integers at least as
+C       large as 32767.
+C
+C
+C   Use
+C       First time....
+C                   Z = RNOR(JD)
+C                     Here JD is any  n o n - z e r o  integer.
+C                     This causes initialization of the program
+C                     and the first random number to be returned as Z.
+C       Subsequent times...
+C                   Z = RNOR(0)
+C                     Causes the next random number to be returned as Z.
+C
+C.....................................................................
+C
+C    Note: Users who wish to transport this program to other
+C           computers should read the following ....
+C
+C   Machine dependencies...
+C      MDIG = A lower bound on the number of binary digits available
+C              for representing integers, including the sign bit.
+C              This must be at least 16, but can be increased in
+C              line with remark A below.
+C
+C   Remarks...
+C     A. This program can be used in two ways:
+C        (1) To obtain repeatable results on different computers,
+C            set 'MDIG' to the smallest of its values on each, or,
+C        (2) To allow the longest sequence of random numbers to be
+C            generated without cycling (repeating) set 'MDIG' to the
+C            largest possible value.
+C     B. The sequence of numbers generated depends on the initial
+C          input 'JD' as well as the value of 'MDIG'.
+C          If MDIG=16 one should find that
+C            the first evaluation
+C              Z=RNOR(87) gives  Z=-.40079207...
+C            The second evaluation
+C              Z=RNOR(0) gives   Z=-1.8728870...
+C            The third evaluation
+C              Z=RNOR(0) gives   Z=1.8216004...
+C            The fourth evaluation
+C              Z=RNOR(0) gives   Z=.69410355...
+C            The thousandth evaluation
+C              Z=RNOR(0) gives   Z=.96782424...
+C
+C***REFERENCES  MARSAGLIA & TSANG, "A FAST, EASILY IMPLEMENTED
+C                 METHOD FOR SAMPLING FROM DECREASING OR
+C                 SYMMETRIC UNIMODAL DENSITY FUNCTIONS", TO BE
+C                 PUBLISHED IN SIAM J SISC 1983.
+C***ROUTINES CALLED  I1MACH,XERROR
+C***END PROLOGUE  RNOR
+ 
+ 

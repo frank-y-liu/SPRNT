@@ -1,0 +1,78 @@
+ 
+ 
+ 
+P A C K A G E      BLAS
+ 
+(Version 1979 )
+ 
+Basic linear algebra subroutines. Perform various elementary matrix  and
+vector opertaions.
+ 
+ 
+CAXPY.........Compute a constant times  a  vector  plus  a  vector,  all
+              complex.
+CCOPY.........Copy a vector X to a vector Y, both complex.
+CDOTC.........Compute  complex  dot  product  using  conjugated   vector
+              components.
+CDOTU.........Compute complex  dot  product  using  unconjugated  vector
+              components.
+CROTG.........Construct Givens plane rotation of complex matrix.
+CSCAL.........Compute complex constant times complex vector.
+CSSCAL........Compute real constant times complex vector.
+CSWAP.........Interchange vectors X and Y, both complex.
+DASUM.........Compute double precision sum of absolute values of vector.
+DAXPY.........Compute a constant times  a  vector  plus  a  vector,  all
+              double precision.
+DCOPY.........Copy a vector X to a vector Y, both double precision.
+DDOT..........Compute double precision dot product.
+DNRM2.........Compute the Euclidean  length  or  L2  norm  of  a  double
+              precision vector.
+DQDOTA........Compute dot product of 2 double precision vectors  plus  a
+              double  precision   constant   plus   extended   precision
+              constant.
+DQDOTI........Compute in extended precision  dot  product  of  2  double
+              precision vectors plus d.p.  constant.  Result  is  double
+              precision.
+DROT..........Apply Givens plane rotation to double precision vector.
+DROTG.........Construct  Givens  plane  rotation  of  double   precision
+              matrix.
+DROTM.........Apply modified Givens plane rotation to  double  precision
+              vector.
+DROTMG........Construct  modified  Givens  plane  rotation   of   double
+              precision matrix.
+DSCAL.........Compute a constant times a vector, both double precision.
+DSDOT.........Compute  single  precision  dot   product   using   double
+              precision accumulation.
+DSWAP.........Interchange vectors X and Y, both double precision.
+ICAMAX........Find smallest index of maximum magnitude  component  of  a
+              complex vector.
+IDAMAX........Find smallest index of maximum magnitude  component  of  a
+              double precision vector.
+ISAMAX........Find smallest index of maximum magnitude  component  of  a
+              single precision vector.
+SASUM.........Compute  single  precision  sum  of  absolute  values   of
+              components of vector.
+SAXPY.........Compute a constant times  a  vector  plus  a  vector,  all
+              single precision.
+SCASUM........Compute complex sum of absolute values  of  components  of
+              vector.
+SCNRM2........Compute the Euclidean length  or  L2  norm  of  a  complex
+              vector.
+SCOPY.........Copy a vector X to a vector Y, both single precision.
+SDOT..........Compute single precision dot product.
+SDSDOT........Compute single precision dot product and  add  a  constant
+              using double precision accumulation.
+SNRM2.........Compute the Euclidean  length  or  L2  norm  of  a  single
+              precision vector.
+SROT..........Apply Givens plane rotation to a single precision vector.
+SROTG.........Construct  Givens  plane  rotation  of  single   precision
+              matrix.
+SROTM.........Apply modified Givens plane rotation to  single  precision
+              vector.
+SROTMG........Construct  modified  Givens  plane  rotation   of   single
+              precision matrix.
+SSCAL.........Compute a constant times a vector, both single precision.
+SSWAP.........Interchange vectors X and Y, both single precision.
+ 
+ 
+ 

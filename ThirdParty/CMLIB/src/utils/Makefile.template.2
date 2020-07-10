@@ -1,0 +1,24 @@
+
+SPECIALS = machcon
+SPECIALRECORDS = $(SPECIALS:%=timestamp/%)
+
+testall := FFLAGS = -g
+test := FFLAGS = -g
+
+# --------------------------------------------------------------------------
+
+
+#  ... Macros pertaining to CMLIB make
+
+SRCDIR = ../../src
+TESTDIR = ../../test
+SCRIPTDIR = ../../utils
+
+COMPILE = \
+  @echo " " ; echo "Compiling $(@F) on $(HOST) ..." ; echo " " ; \
+  echo "$(COMPILER) -c $(FFLAGS) $?" > Compile ; \
+  echo "touch $@" >> Compile ; \
+  rsh $(HOST) "cd $(THISDIR) ; csh -x Compile" ; \
+  rm Compile
+
+SUBLIBS = \

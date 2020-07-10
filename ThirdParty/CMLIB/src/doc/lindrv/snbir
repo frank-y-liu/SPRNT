@@ -1,0 +1,171 @@
+ 
+      SUBROUTINE SNBIR(ABE,LDA,N,ML,MU,V,ITASK,IND,WORK,IWORK)
+C***BEGIN PROLOGUE  SNBIR
+C***DATE WRITTEN   800815   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D2A2
+C***KEYWORDS  BAND,LINEAR EQUATIONS,NONSYMMETRIC
+C***AUTHOR  VOORHEES, E., (LANL)
+C***PURPOSE  SNBIR solves a GENERAL NONSYMMETRIC BANDED
+C            NXN system of linear equations.  Iterative
+C            refinement is used to obtain an error estimate.
+C***DESCRIPTION
+C
+C    Subroutine SNBIR solves a general nonsymmetric banded NxN
+C    system of single precision real linear equations using
+C    SLATEC subroutines SNBFA and SNBSL.  These are adaptations
+C    of the LINPACK subroutines SGBFA and SGBSL, which require
+C    a different format for storing the matrix elements.
+C    One pass of iterative refinement is used only to obtain an
+C    estimate of the accuracy.  If  A  is an NxN real banded
+C    matrix and if  X  and  B  are real N-vectors, then SNBIR
+C    solves the equation
+C
+C                          A*X=B.
+C
+C    A band matrix is a matrix whose nonzero elements are all
+C    fairly near the main diagonal, specifically  A(I,J) = 0
+C    if  I-J is greater than  ML  or  J-I  is greater than
+C    MU .  The integers ML and MU are called the lower and upper
+C    band widths and  M = ML+MU+1  is the total band width.
+C    SNBIR uses less time and storage than the corresponding
+C    program for general matrices (SGEIR) if 2*ML+MU .LT. N .
+C
+C    The matrix A is first factored into upper and lower tri-
+C    angular matrices U and L using partial pivoting.  These
+C    factors and the pivoting information are used to find the
+C    solution vector X .  Then the residual vector is found and used
+C    to calculate an estimate of the relative error, IND .  IND esti-
+C    mates the accuracy of the solution only when the input matrix
+C    and the right hand side are represented exactly in the computer
+C    and does not take into account any errors in the input data.
+C
+C    If the equation A*X=B is to be solved for more than one vector
+C    B, the factoring of A does not need to be performed again and
+C    the option to only solve (ITASK .GT. 1) will be faster for
+C    the succeeding solutions.  In this case, the contents of A, LDA,
+C    N, work and IWORK must not have been altered by the user follow-
+C    ing factorization (ITASK=1).  IND will not be changed by SNBIR
+C    in this case.
+C
+C
+C    Band Storage
+C
+C          If  A  is a band matrix, the following program segment
+C          will set up the input.
+C
+C                  ML = (band width below the diagonal)
+C                  MU = (band width above the diagonal)
+C                  DO 20 I = 1, N
+C                     J1 = MAX0(1, I-ML)
+C                     J2 = MIN0(N, I+MU)
+C                     DO 10 J = J1, J2
+C                        K = J - I + ML + 1
+C                        ABE(I,K) = A(I,J)
+C               10    CONTINUE
+C               20 CONTINUE
+C
+C          This uses columns  1  Through  ML+MU+1  of ABE .
+C
+C    Example:  If the original matrix is
+C
+C          11 12 13  0  0  0
+C          21 22 23 24  0  0
+C           0 32 33 34 35  0
+C           0  0 43 44 45 46
+C           0  0  0 54 55 56
+C           0  0  0  0 65 66
+C
+C     then  N = 6, ML = 1, MU = 2, LDA .GE. 5  and ABE should contain
+C
+C           * 11 12 13        , * = not used
+C          21 22 23 24
+C          32 33 34 35
+C          43 44 45 46
+C          54 55 56  *
+C          65 66  *  *
+C
+C
+C  Argument Description ***
+C
+C    ABE    REAL(LDA,MM)
+C             on entry, contains the matrix in band storage as
+C               described above.  MM  must not be less than  M =
+C               ML+MU+1 .  The user is cautioned to dimension  ABE
+C               with care since MM is not an argument and cannot
+C               be checked by SNBIR.  The rows of the original
+C               matrix are stored in the rows of  ABE  and the
+C               diagonals of the original matrix are stored in
+C               columns  1  through  ML+MU+1  of  ABE .  ABE  is
+C               not altered by the program.
+C    LDA    INTEGER
+C             the leading dimension of array ABE.  LDA must be great-
+C             er than or equal to N.  (terminal error message IND=-1)
+C    N      INTEGER
+C             the order of the matrix A.  N must be greater
+C             than or equal to 1 .  (terminal error message IND=-2)
+C    ML     INTEGER
+C             the number of diagonals below the main diagonal.
+C             ML  must not be less than zero nor greater than or
+C             equal to  N .  (terminal error message IND=-5)
+C    MU     INTEGER
+C             the number of diagonals above the main diagonal.
+C             MU  must not be less than zero nor greater than or
+C             equal to  N .  (terminal error message IND=-6)
+C    V      REAL(N)
+C             on entry, the singly subscripted array(vector) of di-
+C               mension N which contains the right hand side B of a
+C               system of simultaneous linear equations A*X=B.
+C             on return, V contains the solution vector, X .
+C    ITASK  INTEGER
+C             If ITASK=1, the matrix A is factored and then the
+C               linear equation is solved.
+C             If ITASK .GT. 1, the equation is solved using the existing
+C               factored matrix A and IWORK.
+C             If ITASK .LT. 1, then terminal error message IND=-3 is
+C               printed.
+C    IND    INTEGER
+C             GT. 0  IND is a rough estimate of the number of digits
+C                     of accuracy in the solution, X .  IND=75 means
+C                     that the solution vector  X  is zero.
+C             LT. 0  See error message corresponding to IND below.
+C    WORK   REAL(N*(NC+1))
+C             a singly subscripted array of dimension at least
+C             N*(NC+1)  where  NC = 2*ML+MU+1 .
+C    IWORK  INTEGER(N)
+C             a singly subscripted array of dimension at least N.
+C
+C  Error Messages Printed ***
+C
+C    IND=-1  terminal   N is greater than LDA.
+C    IND=-2  terminal   N is less than 1.
+C    IND=-3  terminal   ITASK is less than 1.
+C    IND=-4  terminal   the matrix A is computationally singular.
+C                         A solution has not been computed.
+C    IND=-5  terminal   ML is less than zero or is greater than
+C                         or equal to N .
+C    IND=-6  terminal   MU is less than zero or is greater than
+C                         or equal to N .
+C    IND=-10 warning    the solution has no apparent significance.
+C                         The solution may be inaccurate or the matrix
+C                         A may be poorly scaled.
+C
+C               Note-  The above terminal(*fatal*) error messages are
+C                      designed to be handled by XERRWV in which
+C                      LEVEL=1 (recoverable) and IFLAG=2 .  LEVEL=0
+C                      for warning error messages from XERROR.  Unless
+C                      the user provides otherwise, an error message
+C                      will be printed followed by an abort.
+C***REFERENCES  SUBROUTINE SNBIR WAS DEVELOPED BY GROUP C-3, LOS ALAMOS
+C                 SCIENTIFIC LABORATORY, LOS ALAMOS, NM 87545.
+C                 THE SLATEC SUBROUTINES USED BY SNBIR ARE SIMILAR
+C                 (EXCEPT FOR MATRIX STORAGE FORMAT) TO THE CORRESPON-
+C                 DING LINPACK SUBROUTINES (SGBFA AND SGBSL) DESCRIBED
+C                 IN DETAIL IN THE *LINPACK USERS GUIDE* PUBLISHED BY
+C                 THE SOCIETY FOR INDUSTRIAL AND APPLIED MATHEMATICS
+C                 (SIAM) DATED 1979.
+C***ROUTINES CALLED  R1MACH,SASUM,SCOPY,SDSDOT,SNBFA,SNBSL,XERROR,
+C                    XERRWV
+C***END PROLOGUE  SNBIR
+ 
+ 

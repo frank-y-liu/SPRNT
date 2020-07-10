@@ -1,0 +1,19 @@
+ 
+      DOUBLE PRECISION FUNCTION DCOSDG(X)
+C***BEGIN PROLOGUE  DCOSDG
+C***DATE WRITTEN   770601   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C4A
+C***KEYWORDS  COSINE,DEGREE,DOUBLE PRECISION,ELEMENTARY FUNCTION,
+C             TRIGONOMETRIC COSINE
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the d.p. Cosine for degree arguments.
+C***DESCRIPTION
+C
+C DCOSDG(X) calculates the double precision trigonometric cosine
+C for double precision argument X in units of degrees.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  (NONE)
+C***END PROLOGUE  DCOSDG
+ 
+ 

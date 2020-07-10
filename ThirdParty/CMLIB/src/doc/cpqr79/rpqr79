@@ -1,0 +1,46 @@
+ 
+      SUBROUTINE RPQR79(NDEG,COEFF,ROOT,IERR,WORK)
+C***BEGIN PROLOGUE  RPQR79
+C***DATE WRITTEN   800601   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  F1A1A
+C***KEYWORDS  POLYNOMIAL ROOTS,REAL,ROOTS,ZEROES,ZEROS
+C***AUTHOR  VANDEVENDER, W. H., (SNLA)
+C***PURPOSE  To find the zeros of a polynomial with real coefficients.
+C***DESCRIPTION
+C
+C     This routine is an interface to an eigenvalue routine in EISPACK.
+C     This interface was written by Walter H. Vandevender.
+C
+C     Abstract
+C
+C         This routine computes all roots of a polynomial with real
+C         coefficients by computing the eigenvalues of the
+C         companion matrix.
+C
+C     Description of Parameters
+C         The user must dimension all arrays appearing in the call list
+C              COEFF(NDEG+1),ROOT(NDEG),WORK(NDEG*NDEG+2*NDEG)
+C
+C      Input -
+C       NDEG   degree of polynomial
+C
+C       COEFF  array of coeffficients in order of descending powers of
+C              Z,   i.e. COEFF(1)*(Z**NDEG) + ... + COEFF(NDEG+1)
+C
+C       WORK   real work vector of length at least NDEG*(NDEG+2)
+C
+C     Output-
+C       ROOT   complex vector of computed roots.
+C
+C       IERR   output error code
+C             - normal code
+C              0  means the roots were computed.
+C             - abnormal codes
+C              1  more than 30 QR iterations on some eigenvalue
+C                 of the companion matrix
+C              2  COEF(1) = 0.0
+C              3  NDEG invalid (less than 0).
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  HQR,XERROR
+C***END PROLOGUE  RPQR79

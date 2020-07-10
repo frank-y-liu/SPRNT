@@ -1,0 +1,96 @@
+      SUBROUTINE REL(N, U, V, C, SSQ, X, Y)
+C
+C<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+C
+C   PURPOSE
+C   -------
+C
+C      SPLITS ON A VARIABLE TO PREDICT ANOTHER VARIABLE
+C
+C   DESCRIPTION
+C   -----------
+C
+C   1.  THE VARIABLE V IS SPLIT AT EACH CASE AND THE SUM OF SQUARES FOR
+C       EACH SPLIT IS CALCULATED.  THE CASE AND SUM OF SQUARES WHICH
+C       YIELDS THE LARGEST REDUCTION ARE RETURNED.  THE VALUE OF THAT
+C       CASE WILL BE THE SPLIT POINT.
+C
+C   INPUT PARAMETERS
+C   ----------------
+C
+C   N     INTEGER SCALAR (UNCHANGED ON OUTPUT).
+C         THE NUMBER OF ELEMENTS IN VARIABLE VECTORS.
+C
+C   U     REAL VECTOR DIMENSIONED AT LEAST N (UNCHANGED ON OUTPUT).
+C         THE DATA VALUES FOR THE VARIABLE TO BE PREDICTED.
+C
+C   V     REAL VECTOR DIMENSIONED AT LEAST N (UNCHANGED ON OUTPUT).
+C         THE DATA VALUES FOR THE VARIABLE TO BE USED TO SPLIT UPON.
+C
+C   X     REAL VECTOR DIMENSIONED AT LEAST N.
+C         WORK VECTOR.
+C
+C   Y     REAL VECTOR DIMENSIONED AT LEAST N.
+C         WORK VECTOR.
+C
+C   OUTPUT PARAMETERS
+C   -----------------
+C
+C   C     REAL SCALAR.
+C         THE SPLIT POINT.
+C
+C   SSQ   REAL SCALAR.
+C         THE REDUCTION IN THE SUM OF SQUARES DUE TO THE SPLITTING.
+C
+C   REFERENCES
+C   ----------
+C
+C     HARTIGAN, J. A. (1975).  CLUSTERING ALGORITHMS, JOHN WILEY &
+C        SONS, INC., NEW YORK.  PAGE 346.
+C
+C     SONQUIST, J. A. (1971).  "MULTIVARIATE MODEL BUILDING: THE
+C        VALIDATION OF A SEARCH STRATEGY."  INSTITUTE FOR SOCIAL
+C        RESEARCH, THE UNIVERSITY OF MICHIGAN, ANN ARBOR, MICH.
+C
+C<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+C
+      DIMENSION U(*), V(*), X(*), Y(*)
+C
+      DO 10 I=1,N
+         X(I)=U(I)
+   10    Y(I)=V(I)
+C
+C     REORDER X AND Y VECTORS BY Y VECTOR
+C
+      DO 20 I=1,N
+         DO 20 J=I,N
+            IF (Y(I).GT.Y(J)) THEN
+               C=X(I)
+               X(I)=X(J)
+               X(J)=C
+               C=Y(I)
+               Y(I)=Y(J)
+               Y(J)=C
+            ENDIF
+   20 CONTINUE
+C
+C     FIND BEST SPLIT
+C
+      SSQ=0.
+      AVE=0.
+      DO 30 I=1,N
+   30    AVE=AVE+X(I)
+      XN=REAL(N)
+      AVE=AVE/XN
+      A=0.
+      DO 40 I=1,N-1
+         A=A+X(I)
+         XI=REAL(I)
+         B=(AVE-A/XI)**2*XN*XI/(XN-XI)
+         IF (Y(I).NE.Y(I+1).AND.B.GT.SSQ) THEN
+            SSQ=B
+            C=Y(I)
+         ENDIF
+   40 CONTINUE
+      RETURN
+      END

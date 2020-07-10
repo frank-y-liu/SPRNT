@@ -1,0 +1,78 @@
+ 
+      SUBROUTINE SGBSL(ABD,LDA,N,ML,MU,IPVT,B,JOB)
+C***BEGIN PROLOGUE  SGBSL
+C***DATE WRITTEN   780814   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D2A2
+C***KEYWORDS  BANDED,LINEAR ALGEBRA,LINPACK,MATRIX,SOLVE
+C***AUTHOR  MOLER, C. B., (U. OF NEW MEXICO)
+C***PURPOSE  Solves the real BAND system A*X=B or TRANS(A)*X=B
+C            using the factors computed by SGBCO or SGBFA.
+C***DESCRIPTION
+C
+C     SGBSL solves the real band system
+C     A * X = B  or  TRANS(A) * X = B
+C     using the factors computed by SBGCO or SGBFA.
+C
+C     On Entry
+C
+C        ABD     REAL(LDA, N)
+C                the output from SBGCO or SGBFA.
+C
+C        LDA     INTEGER
+C                the leading dimension of the array  ABD .
+C
+C        N       INTEGER
+C                the order of the original matrix.
+C
+C        ML      INTEGER
+C                number of diagonals below the main diagonal.
+C
+C        MU      INTEGER
+C                number of diagonals above the main diagonal.
+C
+C        IPVT    INTEGER(N)
+C                the pivot vector from SBGCO or SGBFA.
+C
+C        B       REAL(N)
+C                the right hand side vector.
+C
+C        JOB     INTEGER
+C                = 0         to solve  A*X = B ,
+C                = nonzero   to solve  TRANS(A)*X = B , where
+C                            TRANS(A)  is the transpose.
+C
+C     On Return
+C
+C        B       the solution vector  X .
+C
+C     Error Condition
+C
+C        A division by zero will occur if the input factor contains a
+C        zero on the diagonal.  Technically, this indicates singularity,
+C        but it is often caused by improper arguments or improper
+C        setting of LDA .  It will not occur if the subroutines are
+C        called correctly and if SBGCO has set RCOND .GT. 0.0
+C        or SGBFA has set INFO .EQ. 0 .
+C
+C     To compute  INVERSE(A) * C  where  C  is a matrix
+C     with  P  columns
+C           CALL SBGCO(ABD,LDA,N,ML,MU,IPVT,RCOND,Z)
+C           If (RCOND is too small) GO TO ...
+C           DO 10 J = 1, P
+C              CALL SGBSL(ABD,LDA,N,ML,MU,IPVT,C(1,J),0)
+C        10 CONTINUE
+C
+C     LINPACK.  This version dated 08/14/78 .
+C     Cleve Moler, University of New Mexico, Argonne National Lab.
+C
+C     Subroutines and Functions
+C
+C     BLAS SAXPY,SDOT
+C     Fortran MIN0
+C***REFERENCES  DONGARRA J.J., BUNCH J.R., MOLER C.B., STEWART G.W.,
+C                 *LINPACK USERS  GUIDE*, SIAM, 1979.
+C***ROUTINES CALLED  SAXPY,SDOT
+C***END PROLOGUE  SGBSL
+ 
+ 

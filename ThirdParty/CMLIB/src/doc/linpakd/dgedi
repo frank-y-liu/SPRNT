@@ -1,0 +1,71 @@
+ 
+      SUBROUTINE DGEDI(A,LDA,N,IPVT,DET,WORK,JOB)
+C***BEGIN PROLOGUE  DGEDI
+C***DATE WRITTEN   780814   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D3A1,D2A1
+C***KEYWORDS  DETERMINANT,DOUBLE PRECISION,FACTOR,INVERSE,
+C             LINEAR ALGEBRA,LINPACK,MATRIX
+C***AUTHOR  MOLER, C. B., (U. OF NEW MEXICO)
+C***PURPOSE  Computes the determinant and inverse of a matrix using
+C            factors computed by DGECO or DGEFA.
+C***DESCRIPTION
+C
+C     DGEDI computes the determinant and inverse of a matrix
+C     using the factors computed by DGECO or DGEFA.
+C
+C     On Entry
+C
+C        A       DOUBLE PRECISION(LDA, N)
+C                the output from DGECO or DGEFA.
+C
+C        LDA     INTEGER
+C                the leading dimension of the array  A .
+C
+C        N       INTEGER
+C                the order of the matrix  A .
+C
+C        IPVT    INTEGER(N)
+C                the pivot vector from DGECO or DGEFA.
+C
+C        WORK    DOUBLE PRECISION(N)
+C                work vector.  Contents destroyed.
+C
+C        JOB     INTEGER
+C                = 11   both determinant and inverse.
+C                = 01   inverse only.
+C                = 10   determinant only.
+C
+C     On Return
+C
+C        A       inverse of original matrix if requested.
+C                Otherwise unchanged.
+C
+C        DET     DOUBLE PRECISION(2)
+C                determinant of original matrix if requested.
+C                Otherwise not referenced.
+C                Determinant = DET(1) * 10.0**DET(2)
+C                with  1.0 .LE. DABS(DET(1)) .LT. 10.0
+C                or  DET(1) .EQ. 0.0 .
+C
+C     Error Condition
+C
+C        A division by zero will occur if the input factor contains
+C        a zero on the diagonal and the inverse is requested.
+C        It will not occur if the subroutines are called correctly
+C        and if DGECO has set RCOND .GT. 0.0 or DGEFA has set
+C        INFO .EQ. 0 .
+C
+C     LINPACK.  This version dated 08/14/78 .
+C     Cleve Moler, University of New Mexico, Argonne National Lab.
+C
+C     Subroutines and Functions
+C
+C     BLAS DAXPY,DSCAL,DSWAP
+C     Fortran DABS,MOD
+C***REFERENCES  DONGARRA J.J., BUNCH J.R., MOLER C.B., STEWART G.W.,
+C                 *LINPACK USERS  GUIDE*, SIAM, 1979.
+C***ROUTINES CALLED  DAXPY,DSCAL,DSWAP
+C***END PROLOGUE  DGEDI
+ 
+ 

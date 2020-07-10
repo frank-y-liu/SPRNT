@@ -1,0 +1,54 @@
+ 
+      SUBROUTINE DROTM(N,DX,INCX,DY,INCY,DPARAM)
+C***BEGIN PROLOGUE  DROTM
+C***DATE WRITTEN   791001   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D1A8
+C***KEYWORDS  BLAS,LINEAR ALGEBRA,MODIFIED GIVENS ROTATION,VECTOR
+C***AUTHOR  LAWSON, C. L., (JPL)
+C           HANSON, R. J., (SNLA)
+C           KINCAID, D. R., (U. OF TEXAS)
+C           KROGH, F. T., (JPL)
+C***PURPOSE  Apply d.p. modified Givens transformation
+C***DESCRIPTION
+C
+C                B L A S  Subprogram
+C    Description of Parameters
+C
+C     --Input--
+C        N  number of elements in input vector(s)
+C       DX  double precision vector with N elements
+C     INCX  storage spacing between elements of DX
+C       DY  double precision vector with N elements
+C     INCY  storage spacing between elements of DY
+C   DPARAM  5-element D.P. vector.  DPARAM(1) is DFLAG described below.
+C            Elements 2-5 form the transformation matrix H.
+C
+C     --Output--
+C       DX  rotated vector (unchanged if N .LE. 0)
+C       DY  rotated vector (unchanged if N .LE. 0)
+C
+C     Apply the modified Givens transformation, H, to the 2 by N matrix
+C
+C     (DX**T), where **T indicates transpose.  The elements of DX are in
+C     (DY**T)
+C
+C     DX(LX+I*INCX), I = 0 to N-1, where LX = 1 if INCX .GE. 0, else
+C     LX = (-INCX)*N, and similarly for SY using LY and INCY.
+C     With DPARAM(1)=DFLAG, H has one of the following forms.
+C
+C     DFLAG=-1.D0     DFLAG=0.D0        DFLAG=1.D0     DFLAG=-2.D0
+C
+C       (DH11  DH12)    (1.D0  DH12)    (DH11  1.D0)    (1.D0  0.D0)
+C     H=(          )    (          )    (          )    (          )
+C       (DH21  DH22),   (DH21  1.D0),   (-1.D0 DH22),   (0.D0  1.D0).
+C
+C     See DROTMG for a description of data storage in DPARAM.
+C***REFERENCES  LAWSON C.L., HANSON R.J., KINCAID D.R., KROGH F.T.,
+C                 *BASIC LINEAR ALGEBRA SUBPROGRAMS FOR FORTRAN USAGE*,
+C                 ALGORITHM NO. 539, TRANSACTIONS ON MATHEMATICAL
+C                 SOFTWARE, VOLUME 5, NUMBER 3, SEPTEMBER 1979, 308-323
+C***ROUTINES CALLED  (NONE)
+C***END PROLOGUE  DROTM
+ 
+ 

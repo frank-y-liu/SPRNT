@@ -1,0 +1,82 @@
+ 
+      SUBROUTINE DEXINT(X,N,KODE,M,TOL,EN,IERR)
+C***BEGIN PROLOGUE  DEXINT
+C***DATE WRITTEN   800501   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C5
+C***KEYWORDS  DOUBLE PRECISION,EXPONENTIAL INTEGRAL,SPECIAL FUNCTION
+C***AUTHOR  AMOS, D. E., (SNLA)
+C***PURPOSE  DEXINT computes M member sequences of exponential integrals
+C            E(N+K,X), K=0,1,...,M-1 for N.GE.1 and X.GE.0.
+C***DESCRIPTION
+C
+C     Written by D. E. Amos, Sandia Laboratories, Albuquerque, NM 87185
+C
+C     Reference
+C         Computation of Exponential Integrals by D. E. Amos, ACM
+C         Trans. Math. Software, 1980
+C
+C     Abstract      *** a double precision routine ***
+C         DEXINT computes M member sequences of exponential integrals
+C         E(N+K,X), K=0,1,...,M-1 for N .GE. 1 and X .GE. 0.  The power
+C         series is implemented for X .LE. XCUT and the confluent
+C         hypergeometric representation
+C
+C                     E(A,X) = DEXP(-X)*(X**(A-1))*U(A,A,X)
+C
+C         is computed for X .GT. XCUT.  Since sequences are computed in
+C         a stable fashion by recurring away from X, A is selected as
+C         the integer closest to X within the constraint N .LE. A .LE.
+C         N-M+1.  For the U computation  A is further modified to be the
+C         nearest even integer.  Indices are carried forward or
+C         backward by the two term recursion relation
+C
+C                     K*E(K+1,X) + X*E(K,X) = DEXP(-X)
+C
+C         once E(A,X) is computed.  The U function is computed by means
+C         of the backward recursive Miller algorithm applied to the
+C         three term contiguous relation for U(A+K,A,X), K=0,1,...
+C         This produces accurate ratios and determines U(A+K,A,X),and
+C         hence E(A,X), to within a multiplicative constant C.
+C         Another contiguous relation applied to C*U(A,A,X) and
+C         C*U(A+1,A,X) gets C*U(A+1,A+1,X), a quantity proportional to
+C         E(A+1,X).  The normalizing constant C is obtained from the
+C         two term recursion relation above with K=A.
+C
+C         The maximum number of significant digits obtainable
+C         is the smaller of 14 and the number of digits carried in
+C         double precision arithmetic.
+C
+C         DEXINT calls I1MACH, D1MACH, DPSIXN, XERROR
+C
+C     Description of Arguments
+C
+C         Input     * X and TOL are double precision *
+C           X       X .GT. 0.0 for N=1 and  X .GE. 0.0 for N .GE. 2
+C           N       order of the first member of the sequence, N .GE. 1
+C           KODE    a selection parameter for scaled values
+C                   KODE=1   returns        E(N+K,X), K=0,1,...,M-1.
+C                       =2   returns DEXP(X)*E(N+K,X), K=0,1,...,M-1.
+C           M       number of exponential integrals in the sequence,
+C                   M .GE. 1
+C           TOL     relative accuracy wanted, ETOL .LE. TOL .LE. 0.1
+C                   ETOL is the larger of double precision unit
+C                   roundoff = D1MACH(4) and 1.0D-18
+C
+C         Output    * EN is a double precision vector *
+C           EN      a vector of dimension at least M containing values
+C                   EN(K) = E(N+K-1,X) or DEXP(X)*E(N+K-1,X), K=1,M
+C                   depending on KODE
+C           IERR    underflow indicator
+C                   IERR=0   a normal return
+C                       =1   X exceeds XLIM and an underflow occurs.
+C                            EN(K)=0.0D0 , K=1,M returned on KODE=1
+C
+C     Error Conditions
+C         An improper input parameter is a fatal error
+C         Underflow is a non fatal error. Zero answers are returned.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D1MACH,DPSIXN,I1MACH,XERROR
+C***END PROLOGUE  DEXINT
+ 
+ 

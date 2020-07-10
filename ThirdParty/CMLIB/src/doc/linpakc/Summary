@@ -1,0 +1,110 @@
+ 
+ 
+P A C K A G E      LINPAKC
+ 
+(Version 1978 )
+ 
+Analyse  and  solve  various  systems  of  linear  algebraic  equations.
+(Complex precision version of LINPACK).
+ 
+ 
+CCHDC.........Compute  Cholesky  decomposition   of   complex   positive
+              definite matrix with optional pivoting.
+CCHDD.........Downdates  Cholesky  factorization  of  positive  definite
+              complex matrix.
+CCHEX.........Updates  Cholesky  factorization  of   positive   definite
+              complex matrix.
+CCHUD.........Updates  Cholesky  factorization  of   positive   definite
+              matrix.
+CGBCO.........Compute  LU  factorization  of  complex  band  matrix  and
+              extimate its condition
+CGBDI.........Compute determinant of complex band  matrix  from  its  LU
+              factors. (No provision for computing inverse directly.)
+CGBFA.........Compute LU factorization of general complex band matrix.
+CGBSL.........Uses LU factorization of  complex  band  matrix  to  solve
+              systems.
+CGECO.........Compute LU factorization of  general  complex  matrix  and
+              estimate its condition.
+CGEDI.........Compute determinant  and/or  inverse  of  general  complex
+              matrix from its LU factors.
+CGEFA.........Compute LU factorization of general complex matrix.
+CGESL.........Use LU factorization of general complex  matrix  to  solve
+              systems.
+CGTSL.........Solves systems with general complex tridiagonal matrix.
+CHICO.........Computes factorization  of  complex  Hermitian  indefinite
+              matrix and estimates its condition.
+CHIDI.........Uses factorization of complex Hermitian indefinite  matrix
+              to compute its inertia, determinant, and/or inverse.
+CHIFA.........Computes factorization  of  complex  Hermitian  indefinite
+              matrix.
+CHISL.........Uses factorization of complex Hermitian indefinite  matrix
+              to solve systems.
+CHPCO.........Computes factorization  of  complex  Hermitian  indefinite
+              matrix stored in packed form and estimates its condition.
+CHPDI.........Uses factorization of complex Hermitian indefinite  matrix
+              stored in packed form to compute its inertia, determinant,
+              and inverse.
+CHPFA.........Computes factorization  of  complex  Hermitian  indefinite
+              matrix stored in packed form.
+CHPSL.........Uses factorization of complex Hermitian indefinite  matrix
+              stored in packed form to solve systems.
+CPBCO.........Uses  Cholesky  algorithm  to  compute  factorization   of
+              complex positive definite band matrix  and  estimates  its
+              condition.
+CPBDI.........Uses  factorization  of  complex  positive  definite  band
+              matrix to compute determinant. (No provision for computing
+              inverse.)
+CPBFA.........Uses  Cholesky  algorithm  to  compute  factorization   of
+              complex positive definite band matrix.
+CPBSL.........Uses  factorization  of  complex  positive  definite  band
+              matrix to solve systems.
+CPOCO.........Uses  Cholesky  algorithm  to  compute  factorization   of
+              complex  positive  definite  matrix  and   estimates   its
+              condition.
+CPODI.........Uses factorization of complex positive definite matrix  to
+              compute its determinant and/or inverse.
+CPOFA.........Uses  Cholesky  algorithm  to  compute  factorization   of
+              complex positive definite matrix.
+CPOSL.........Uses factorization of complex positive definite matrix  to
+              solve systems.
+CPPCO.........Uses  Cholesky  algorithm  to  factor   complex   positive
+              definite matrix stored in packed form.
+CPPDI.........Uses factorization of  complex  positive  definite  matrix
+              stored  in  packed  form  to  compute  determinant  and/or
+              inverse.
+CPPFA.........Uses  Cholesky  algorithm  to  factor   complex   positive
+              definite matrix stored in packed form.
+CPPSL.........Uses factorization of  complex  positive  definite  matrix
+              stored in packed form to solve systems.
+CPTSL.........Solves systems with complex positive  definite  triangular
+              matrix.
+CQRDC.........Computes QR decomposition of general complex matrix.
+CQRSL.........Manipulates truncated QR decomposition of general  complex
+              matrix obtained as output from CQRDC.
+CSICO.........Computes factorization  of  complex  symmetric  indefinite
+              matrix and estimates its condition.
+CSIDI.........Uses factorization of complex symmetric indefinite  matrix
+              to compute its determinant and/or inverse.
+CSIFA.........Computes factorization  of  complex  symmetric  indefinite
+              matrix.
+CSISL.........Uses factorization of complex symmetric indefinite  matrix
+              to solve systems.
+CSPCO.........Computes factorization  of  complex  symmetric  indefinite
+              matrix stored in packed form and computes its condition.
+CSPDI.........Uses factorization of complex symmetric indefinite  matrix
+              stored in packed form to compute  its  determinant  and/or
+              inverse.
+CSPFA.........Computes factorization  of  complex  symmetric  indefinite
+              matrix stored in packed form.
+CSPSL.........Uses factorization of complex symmetric indefinite  matrix
+              stored in packed form to solve systems.
+CSVDC.........Computes Singular Value Decomposition of  general  complex
+              matrix.
+CTRCO.........Estimates condition of complex triangular matrix.
+CTRDI.........Computes determinant and/or inverse of complex  triangular
+              matrix.
+CTRSL.........Solves systems with complex triangular matrix.
+ 
+ 
+ 
+ 

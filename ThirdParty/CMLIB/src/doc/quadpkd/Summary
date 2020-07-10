@@ -1,0 +1,17 @@
+ 
+               Q U A D D P   P A C K A G E
+ 
+ 
+  QUADPKD is a package of Fortran programs for computing definite
+  integrals of various forms.  These programs are the double
+  precision analogues of programs in the QUADPKS package. Please
+  refer to documentation of QUADPKS for an overview of its
+  capabilities.
+ 
+  The double precision subprogram names are the same as their
+  single precision counterparts except that they are preceded by
+  a "D".  Thus the single precision program QAG is DQAG in
+  double precision.
+'
+ 
+ 

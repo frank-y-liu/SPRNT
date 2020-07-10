@@ -1,0 +1,89 @@
+      SUBROUTINE RGG(NM,N,A,B,ALFR,ALFI,BETA,MATZ,Z,IERR)
+C***BEGIN PROLOGUE  RGG
+C***DATE WRITTEN   760101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  D4B2
+C***KEYWORDS  EIGENVALUES,EIGENVECTORS,EISPACK
+C***AUTHOR  SMITH, B. T., ET AL.
+C***PURPOSE  Computes eigenvalues and eigenvectors for real generalized
+C            eigenproblem: A*X=(LAMBDA)*B*X.
+C***DESCRIPTION
+C
+C     This subroutine calls the recommended sequence of
+C     subroutines from the eigensystem subroutine package (EISPACK)
+C     to find the eigenvalues and eigenvectors (if desired)
+C     for the REAL GENERAL GENERALIZED eigenproblem  Ax = (LAMBDA)Bx.
+C
+C     On Input
+C
+C        NM  must be set to the row dimension of the two-dimensional
+C        array parameters as declared in the calling program
+C        dimension statement.
+C
+C        N  is the order of the matrices  A  and  B.
+C
+C        A  contains a real general matrix.
+C
+C        B  contains a real general matrix.
+C
+C        MATZ  is an integer variable set equal to zero if
+C        only eigenvalues are desired.  Otherwise it is set to
+C        any non-zero integer for both eigenvalues and eigenvectors.
+C
+C     On Output
+C
+C        ALFR  and  ALFI  contain the real and imaginary parts,
+C        respectively, of the numerators of the eigenvalues.
+C
+C        BETA  contains the denominators of the eigenvalues,
+C        which are thus given by the ratios  (ALFR+I*ALFI)/BETA.
+C        Complex conjugate pairs of eigenvalues appear consecutively
+C        with the eigenvalue having the positive imaginary part first.
+C
+C        Z  contains the real and imaginary parts of the eigenvectors
+C        if MATZ is not zero.  If the J-th eigenvalue is real, the
+C        J-th column of  Z  contains its eigenvector.  If the J-th
+C        eigenvalue is complex with positive imaginary part, the
+C        J-th and (J+1)-th columns of  Z  contain the real and
+C        imaginary parts of its eigenvector.  The conjugate of this
+C        vector is the eigenvector for the conjugate eigenvalue.
+C
+C        IERR  is an integer output variable set equal to an
+C        error completion code described in section 2B of the
+C        documentation.  The normal completion code is zero.
+C
+C     Questions and comments should be directed to B. S. Garbow,
+C     APPLIED MATHEMATICS DIVISION, ARGONNE NATIONAL LABORATORY
+C     ------------------------------------------------------------------
+C***REFERENCES  B. T. SMITH, J. M. BOYLE, J. J. DONGARRA, B. S. GARBOW,
+C                 Y. IKEBE, V. C. KLEMA, C. B. MOLER, *MATRIX EIGEN-
+C                 SYSTEM ROUTINES - EISPACK GUIDE*, SPRINGER-VERLAG,
+C                 1976.
+C***ROUTINES CALLED  QZHES,QZIT,QZVAL,QZVEC
+C***END PROLOGUE  RGG
+C
+      INTEGER N,NM,IERR,MATZ
+      REAL A(NM,N),B(NM,N),ALFR(N),ALFI(N),BETA(N),Z(NM,N)
+      LOGICAL TF
+C
+C***FIRST EXECUTABLE STATEMENT  RGG
+      IF (N .LE. NM) GO TO 10
+      IERR = 10 * N
+      GO TO 50
+C
+   10 IF (MATZ .NE. 0) GO TO 20
+C     .......... FIND EIGENVALUES ONLY ..........
+      TF = .FALSE.
+      CALL  QZHES(NM,N,A,B,TF,Z)
+      CALL  QZIT(NM,N,A,B,0.0E0,TF,Z,IERR)
+      CALL  QZVAL(NM,N,A,B,ALFR,ALFI,BETA,TF,Z)
+      GO TO 50
+C     .......... FIND BOTH EIGENVALUES AND EIGENVECTORS ..........
+   20 TF = .TRUE.
+      CALL  QZHES(NM,N,A,B,TF,Z)
+      CALL  QZIT(NM,N,A,B,0.0E0,TF,Z,IERR)
+      CALL  QZVAL(NM,N,A,B,ALFR,ALFI,BETA,TF,Z)
+      IF (IERR .NE. 0) GO TO 50
+      CALL  QZVEC(NM,N,A,B,ALFR,ALFI,BETA,Z)
+   50 RETURN
+      END

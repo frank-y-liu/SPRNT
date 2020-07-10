@@ -1,0 +1,44 @@
+#! /bin/csh
+#
+#  Upar host remotedir file
+#
+#  Puts all .o files in src/sublib where sublib is a cmlib sublibrary named
+#  directory into an archive file.
+#
+#
+
+set echo
+
+set file = $1
+set file2 = ""
+
+if ( `echo $file|grep -c so` == 1 ) then
+   set file2 = $file
+   set file = `echo $file2|sed -e 's/so/a/'`
+endif
+
+set back = `pwd`
+
+# add all the sublibrary's .o to the library
+if ( ! -f $file) then
+   cd ../../src
+   ar qv $back/$file [a-e]*/*.o
+   ar qv $back/$file [f-l]*/*.o
+   ar qv $back/$file [m-z]*/*.o
+endif
+
+cd $back
+
+# update the library with any special versions
+set specials="`../../utils/findspdirs`"
+foreach dir ( $specials )
+   cd $dir
+   make -f Makefile
+   cd $back
+   ar rv $file $dir/*.o
+end
+
+if ( "$file2" == 'libcm.so' ) then
+   ar x $file; ld -o $file2 -G -ztext *.o
+   rm *.o
+endif

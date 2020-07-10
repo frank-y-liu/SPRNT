@@ -1,0 +1,24 @@
+ 
+      FUNCTION COT(X)
+C***BEGIN PROLOGUE  COT
+C***DATE WRITTEN   770601   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C4A
+C***KEYWORDS  COTANGENT,ELEMENTARY FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the Cotangent.
+C***DESCRIPTION
+C
+C COT(X) calculates the cotangent of the real argument X.  X is in
+C units of radians.
+C
+C Series for COT        on the interval  0.          to  6.25000D-02
+C                                        with weighted error   3.76E-17
+C                                         log weighted error  16.42
+C                               significant figures required  15.51
+C                                    decimal places required  16.88
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  CSEVL,INITS,R1MACH,XERROR
+C***END PROLOGUE  COT
+ 
+ 

@@ -1,0 +1,53 @@
+ 
+      SUBROUTINE DROTMG(DD1,DD2,DX1,DY1,DPARAM)
+C***BEGIN PROLOGUE  DROTMG
+C***DATE WRITTEN   780301   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D1B10
+C***KEYWORDS  BLAS,LINEAR ALGEBRA,MODIFIED GIVENS ROTATION,VECTOR
+C***AUTHOR  LAWSON, C. L., (JPL)
+C           HANSON, R. J., (SNLA)
+C           KINCAID, D. R., (U. OF TEXAS)
+C           KROGH, F. T., (JPL)
+C***PURPOSE  Construct d.p. modified Givens transformation
+C***DESCRIPTION
+C
+C                B L A S  Subprogram
+C    Description of Parameters
+C
+C     --Input--
+C      DD1  double precision scalar
+C      DD2  double precision scalar
+C      DX1  double precision scalar
+C      DX2  double precision scalar
+C   DPARAM  D.P. 5-vector. DPARAM(1)=DFLAG defined below.
+C             Elements 2-5  define the transformation matrix H.
+C
+C     --Output--
+C      DD1  changed to represent the effect of the transformation
+C      DD2  changed to reflect the transformation
+C      DX1  changed to reflect the transformation
+C      DX2  unchanged
+C
+C     Construct the modified Givens transformation matrix H which zeros
+C     the second component of the 2-vector  (DSQRT(DD1)*DX1,DSQRT(DD2)*
+C     DY2)**T.
+C     With DPARAM(1)=DFLAG, H has one of the following forms..
+C
+C     DFLAG=-1.D0     DFLAG=0.D0        DFLAG=1.D0     DFLAG=-2.D0
+C
+C       (DH11  DH12)    (1.D0  DH12)    (DH11  1.D0)    (1.D0  0.D0)
+C     H=(          )    (          )    (          )    (          )
+C       (DH21  DH22),   (DH21  1.D0),   (-1.D0 DH22),   (0.D0  1.D0).
+C
+C     Locations 2-5 of DPARAM contain DH11, DH21, DH12, and DH22
+C     respectively.  (Values of 1.D0, -1.D0, or 0.D0 implied by the
+C     value of DPARAM(1) are not stored in DPARAM.)
+C***REFERENCES  LAWSON C.L., HANSON R.J., KINCAID D.R., KROGH F.T.,
+C                 *BASIC LINEAR ALGEBRA SUBPROGRAMS FOR FORTRAN USAGE*,
+C                 ALGORITHM NO. 539, TRANSACTIONS ON MATHEMATICAL
+C                 SOFTWARE, VOLUME 5, NUMBER 3, SEPTEMBER 1979, 308-323
+C***ROUTINES CALLED  (NONE)
+C***END PROLOGUE  DROTMG
+ 
+ 

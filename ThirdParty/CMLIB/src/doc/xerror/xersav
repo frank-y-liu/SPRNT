@@ -1,0 +1,35 @@
+ 
+      SUBROUTINE XERSAV(MESSG,NMESSG,NERR,LEVEL,ICOUNT)
+C***BEGIN PROLOGUE  XERSAV
+C***DATE WRITTEN   800319   (YYMMDD)
+C***REVISION DATE  840405   (YYMMDD)
+C***CATEGORY NO.  Z
+C***KEYWORDS  ERROR,XERROR PACKAGE
+C***AUTHOR  JONES, R. E., (SNLA)
+C***PURPOSE  Records that an error occurred.
+C***DESCRIPTION
+C
+C     Abstract
+C        Record that this error occurred.
+C
+C     Description of Parameters
+C     --Input--
+C       MESSG, NMESSG, NERR, LEVEL are as in XERROR,
+C       except that when NMESSG=0 the tables will be
+C       dumped and cleared, and when NMESSG is less than zero the
+C       tables will be dumped and not cleared.
+C     --Output--
+C       ICOUNT will be the number of times this message has
+C       been seen, or zero if the table has overflowed and
+C       does not contain this message specifically.
+C       When NMESSG=0, ICOUNT will not be altered.
+C
+C     Written by Ron Jones, with SLATEC Common Math Library Subcommittee
+C     Latest revision ---  19 Mar 1980
+C***REFERENCES  JONES R.E., *SLATEC COMMON MATHEMATICAL LIBRARY ERROR
+C                 HANDLING PACKAGE*, SAND78-1189, SANDIA LABORATORIES,
+C                1978.
+C***ROUTINES CALLED  I1MACH,S88FMT,XGETUA
+C***END PROLOGUE  XERSAV
+ 
+ 

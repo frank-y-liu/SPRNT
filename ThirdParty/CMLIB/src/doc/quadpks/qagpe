@@ -1,0 +1,192 @@
+ 
+      SUBROUTINE QAGPE(F,A,B,NPTS2,POINTS,EPSABS,EPSREL,LIMIT,RESULT,
+     1   ABSERR,NEVAL,IER,ALIST,BLIST,RLIST,ELIST,PTS,IORD,LEVEL,NDIN,
+     2   LAST)
+C***BEGIN PROLOGUE  QAGPE
+C***DATE WRITTEN   800101   (YYMMDD)
+C***REVISION DATE  840425   (YYMMDD)
+C***CATEGORY NO.  H2A2A1
+C***KEYWORDS  AUTOMATIC INTEGRATOR,EXTRAPOLATION,GENERAL-PURPOSE,
+C             GLOBALLY ADAPTIVE.,SINGULARITIES AT USER SPECIFIED POINTS
+C***AUTHOR  PIESSENS, ROBERT, APPLIED MATH. AND PROGR. DIV. -
+C             K. U. LEUVEN
+C           DE DONCKER, ELISE, APPLIED MATH. AND PROGR. DIV. -
+C             K. U. LEUVEN
+C***PURPOSE  The routine calculates an approximation result to a given
+C            definite integral I = Integral of F over (A,B),hopefully
+C            satisfying following claim for accuracy ABS(I-RESULT).LE.
+C            MAX(EPSABS,EPSREL*ABS(I)). Break points of the integration
+C            interval, where local difficulties of the integrand may
+C            occur(e.g. singularities,discontinuities),provided by user.
+C***DESCRIPTION
+C
+C        Computation of a definite integral
+C        Standard fortran subroutine
+C        Real version
+C
+C        PARAMETERS
+C         ON ENTRY
+C            F      - Real
+C                     Function subprogram defining the integrand
+C                     function F(X). The actual name for F needs to be
+C                     declared E X T E R N A L in the driver program.
+C
+C            A      - Real
+C                     Lower limit of integration
+C
+C            B      - Real
+C                     Upper limit of integration
+C
+C            NPTS2  - Integer
+C                     Number equal to two more than the number of
+C                     user-supplied break points within the integration
+C                     range, NPTS2.GE.2.
+C                     If NPTS2.LT.2, the routine will end with IER = 6.
+C
+C            POINTS - Real
+C                     Vector of dimension NPTS2, the first (NPTS2-2)
+C                     elements of which are the user provided break
+C                     POINTS. If these POINTS do not constitute an
+C                     ascending sequence there will be an automatic
+C                     sorting.
+C
+C            EPSABS - Real
+C                     Absolute accuracy requested
+C            EPSREL - Real
+C                     Relative accuracy requested
+C                     If  EPSABS.LE.0
+C                     and EPSREL.LT.MAX(50*REL.MACH.ACC.,0.5D-28),
+C                     the routine will end with IER = 6.
+C
+C            LIMIT  - Integer
+C                     Gives an upper bound on the number of subintervals
+C                     in the partition of (A,B), LIMIT.GE.NPTS2
+C                     If LIMIT.LT.NPTS2, the routine will end with
+C                     IER = 6.
+C
+C         ON RETURN
+C            RESULT - Real
+C                     Approximation to the integral
+C
+C            ABSERR - Real
+C                     Estimate of the modulus of the absolute error,
+C                     which should equal or exceed ABS(I-RESULT)
+C
+C            NEVAL  - Integer
+C                     Number of integrand evaluations
+C
+C            IER    - Integer
+C                     IER = 0 Normal and reliable termination of the
+C                             routine. It is assumed that the requested
+C                             accuracy has been achieved.
+C                     IER.GT.0 Abnormal termination of the routine.
+C                             The estimates for integral and error are
+C                             less reliable. It is assumed that the
+C                             requested accuracy has not been achieved.
+C            ERROR MESSAGES
+C                     IER = 1 Maximum number of subdivisions allowed
+C                             has been achieved. One can allow more
+C                             subdivisions by increasing the value of
+C                             LIMIT (and taking the according dimension
+C                             adjustments into account). However, if
+C                             this yields no improvement it is advised
+C                             to analyze the integrand in order to
+C                             determine the integration difficulties. If
+C                             the position of a local difficulty can be
+C                             determined (i.e. SINGULARITY,
+C                             DISCONTINUITY within the interval), it
+C                             should be supplied to the routine as an
+C                             element of the vector points. If necessary
+C                             an appropriate special-purpose integrator
+C                             must be used, which is designed for
+C                             handling the type of difficulty involved.
+C                         = 2 The occurrence of roundoff error is
+C                             detected, which prevents the requested
+C                             tolerance from being achieved.
+C                             The error may be under-estimated.
+C                         = 3 Extremely bad integrand behaviour occurs
+C                             At some points of the integration
+C                             interval.
+C                         = 4 The algorithm does not converge.
+C                             Roundoff error is detected in the
+C                             extrapolation table. It is presumed that
+C                             the requested tolerance cannot be
+C                             achieved, and that the returned result is
+C                             the best which can be obtained.
+C                         = 5 The integral is probably divergent, or
+C                             slowly convergent. It must be noted that
+C                             divergence can occur with any other value
+C                             of IER.GT.0.
+C                         = 6 The input is invalid because
+C                             NPTS2.LT.2 or
+C                             Break points are specified outside
+C                             the integration range or
+C                             (EPSABS.LE.0 and
+C                              EPSREL.LT.MAX(50*REL.MACH.ACC.,0.5D-28))
+C                             or LIMIT.LT.NPTS2.
+C                             RESULT, ABSERR, NEVAL, LAST, RLIST(1),
+C                             and ELIST(1) are set to zero. ALIST(1) and
+C                             BLIST(1) are set to A and B respectively.
+C
+C            ALIST  - Real
+C                     Vector of dimension at least LIMIT, the first
+C                      LAST  elements of which are the left end points
+C                     of the subintervals in the partition of the given
+C                     integration range (A,B)
+C
+C            BLIST  - Real
+C                     Vector of dimension at least LIMIT, the first
+C                      LAST  elements of which are the right end points
+C                     of the subintervals in the partition of the given
+C                     integration range (A,B)
+C
+C            RLIST  - Real
+C                     Vector of dimension at least LIMIT, the first
+C                      LAST  elements of which are the integral
+C                     approximations on the subintervals
+C
+C            ELIST  - Real
+C                     Vector of dimension at least LIMIT, the first
+C                      LAST  elements of which are the moduli of the
+C                     absolute error estimates on the subintervals
+C
+C            PTS    - Real
+C                     Vector of dimension at least NPTS2, containing the
+C                     integration limits and the break points of the
+C                     interval in ascending sequence.
+C
+C            LEVEL  - Integer
+C                     Vector of dimension at least LIMIT, containing the
+C                     subdivision levels of the subinterval, i.e. if
+C                     (AA,BB) is a subinterval of (P1,P2) where P1 as
+C                     well as P2 is a user-provided break point or
+C                     integration limit, then (AA,BB) has level L if
+C                     ABS(BB-AA) = ABS(P2-P1)*2**(-L).
+C
+C            NDIN   - Integer
+C                     Vector of dimension at least NPTS2, after first
+C                     integration over the intervals (PTS(I)),PTS(I+1),
+C                     I = 0,1, ..., NPTS2-2, the error estimates over
+C                     some of the intervals may have been increased
+C                     artificially, in order to put their subdivision
+C                     forward. If this happens for the subinterval
+C                     numbered K, NDIN(K) is put to 1, otherwise
+C                     NDIN(K) = 0.
+C
+C            IORD   - Integer
+C                     Vector of dimension at least LIMIT, the first K
+C                     elements of which are pointers to the
+C                     error estimates over the subintervals,
+C                     such that ELIST(IORD(1)), ..., ELIST(IORD(K))
+C                     form a decreasing sequence, with K = LAST
+C                     If LAST.LE.(LIMIT/2+2), and K = LIMIT+1-LAST
+C                     otherwise
+C
+C            LAST   - Integer
+C                     Number of subintervals actually produced in the
+C                     subdivisions process
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  QELG,QK21,QPSRT,R1MACH
+C***END PROLOGUE  QAGPE
+ 
+ 

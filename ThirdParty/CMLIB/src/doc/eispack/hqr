@@ -1,0 +1,66 @@
+ 
+      SUBROUTINE HQR(NM,N,LOW,IGH,H,WR,WI,IERR)
+C***BEGIN PROLOGUE  HQR
+C***DATE WRITTEN   760101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  D4C2B
+C***KEYWORDS  EIGENVALUES,EIGENVECTORS,EISPACK
+C***AUTHOR  SMITH, B. T., ET AL.
+C***PURPOSE  Computes eigenvalues of a real upper Hessenberg matrix
+C            using the QR method.
+C***DESCRIPTION
+C
+C     This subroutine is a translation of the ALGOL procedure HQR,
+C     NUM. MATH. 14, 219-231(1970) by Martin, Peters, and Wilkinson.
+C     HANDBOOK FOR AUTO. COMP., VOL.II-LINEAR ALGEBRA, 359-371(1971).
+C
+C     This subroutine finds the eigenvalues of a REAL
+C     UPPER Hessenberg matrix by the QR method.
+C
+C     On INPUT
+C
+C        NM must be set to the row dimension of two-dimensional
+C          array parameters as declared in the calling program
+C          dimension statement.
+C
+C        N is the order of the matrix.
+C
+C        LOW and IGH are integers determined by the balancing
+C          subroutine  BALANC.  If  BALANC  has not been used,
+C          set LOW=1, IGH=N.
+C
+C        H contains the upper Hessenberg matrix.  Information about
+C          the transformations used in the reduction to Hessenberg
+C          form by  ELMHES  or  ORTHES, if performed, is stored
+C          in the remaining triangle under the Hessenberg matrix.
+C
+C     On OUTPUT
+C
+C        H has been destroyed.  Therefore, it must be saved
+C          before calling  HQR  if subsequent calculation and
+C          back transformation of eigenvectors is to be performed.
+C
+C        WR and WI contain the real and imaginary parts,
+C          respectively, of the eigenvalues.  The eigenvalues
+C          are unordered except that complex conjugate pairs
+C          of values appear consecutively with the eigenvalue
+C          having the positive imaginary part first.  If an
+C          error exit is made, the eigenvalues should be correct
+C          for indices IERR+1,...,N.
+C
+C        IERR is set to
+C          Zero       for normal return,
+C          J          if the J-th eigenvalue has not been
+C                     determined after a total of 30*N iterations.
+C
+C     Questions and comments should be directed to B. S. Garbow,
+C     APPLIED MATHEMATICS DIVISION, ARGONNE NATIONAL LABORATORY
+C     ------------------------------------------------------------------
+C***REFERENCES  B. T. SMITH, J. M. BOYLE, J. J. DONGARRA, B. S. GARBOW,
+C                 Y. IKEBE, V. C. KLEMA, C. B. MOLER, *MATRIX EIGEN-
+C                 SYSTEM ROUTINES - EISPACK GUIDE*, SPRINGER-VERLAG,
+C                 1976.
+C***ROUTINES CALLED  (NONE)
+C***END PROLOGUE  HQR
+ 
+ 

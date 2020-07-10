@@ -1,0 +1,79 @@
+ 
+      SUBROUTINE CHPFA(AP,N,KPVT,INFO)
+C***BEGIN PROLOGUE  CHPFA
+C***DATE WRITTEN   780814   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D2D1A
+C***KEYWORDS  COMPLEX,FACTOR,HERMITIAN,LINEAR ALGEBRA,LINPACK,MATRIX,
+C             PACKED
+C***AUTHOR  BUNCH, J., (UCSD)
+C***PURPOSE  Factors a COMPLEX HERMITIAN matrix (packed form) by
+C            elimination with symmetric pivoting.
+C***DESCRIPTION
+C
+C     CHPFA factors a complex Hermitian matrix stored in
+C     packed form by elimination with symmetric pivoting.
+C
+C     To solve  A*X = B , follow CHPFA by CHPSL.
+C     To compute  INVERSE(A)*C , follow CHPFA by CHPSL.
+C     To compute  DETERMINANT(A) , follow CHPFA by CHPDI.
+C     To compute  INERTIA(A) , follow CHPFA by CHPDI.
+C     To compute  INVERSE(A) , follow CHPFA by CHPDI.
+C
+C     On Entry
+C
+C        AP      COMPLEX (N*(N+1)/2)
+C                the packed form of a Hermitian matrix  A .  The
+C                columns of the upper triangle are stored sequentially
+C                in a one-dimensional array of length  N*(N+1)/2 .
+C                See comments below for details.
+C
+C        N       INTEGER
+C                the order of the matrix  A .
+C
+C     Output
+C
+C        AP      A block diagonal matrix and the multipliers which
+C                were used to obtain it stored in packed form.
+C                The factorization can be written  A = U*D*CTRANS(U)
+C                where  U  is a product of permutation and unit
+C                upper triangular matrices , CTRANS(U) is the
+C                conjugate transpose of  U , and  D  is block diagonal
+C                with 1 by 1 and 2 by 2 blocks.
+C
+C        KVPT    INTEGER(N)
+C                an integer vector of pivot indices.
+C
+C        INFO    INTEGER
+C                = 0  normal value.
+C                = K  if the K-th pivot block is singular.  This is
+C                     not an error condition for this subroutine,
+C                     but it does indicate that CHPSL or CHPDI may
+C                     divide by zero if called.
+C
+C     Packed Storage
+C
+C          The following program segment will pack the upper
+C          triangle of a Hermitian matrix.
+C
+C                K = 0
+C                DO 20 J = 1, N
+C                   DO 10 I = 1, J
+C                      K = K + 1
+C                      AP(K)  = A(I,J)
+C             10    CONTINUE
+C             20 CONTINUE
+C
+C     LINPACK.  This version dated 08/14/78 .
+C     James Bunch, Univ. Calif. San Diego, Argonne Nat. Lab.
+C
+C     Subroutines and Functions
+C
+C     BLAS CAXPY,CSWAP,ICAMAX
+C     Fortran ABS,AIMAG,AMAX1,CMPLX,CONJG,REAL,SQRT
+C***REFERENCES  DONGARRA J.J., BUNCH J.R., MOLER C.B., STEWART G.W.,
+C                 *LINPACK USERS  GUIDE*, SIAM, 1979.
+C***ROUTINES CALLED  CAXPY,CSWAP,ICAMAX
+C***END PROLOGUE  CHPFA
+ 
+ 

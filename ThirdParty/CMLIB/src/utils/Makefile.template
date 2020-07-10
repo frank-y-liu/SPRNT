@@ -1,0 +1,250 @@
+
+# ================================
+# Makefile for generic Unix system
+# ================================
+
+#  Set the macro FC      to the compiler you would like to use
+#  Set the macro FFLAGS  to the compiler options you would like to use
+#  Set the macro RANLIB  to the processor that writes tables-of-contents 
+#                        on archive files.
+#  Set the macro MACHCON to the machine type (see the file 
+#                        ../../utils/r1mach.template)
+
+#  Some example settings :
+
+# ... Sun   
+
+##=sun4_begin
+# FC = f77
+# FFLAGS = -O3
+# RANLIB = ranlib
+# MACHCON = SUN
+##=sun4_end
+
+# ... Sun  (with -r8 option)   
+
+##=sun4.r8_begin
+# FC = f77
+# FFLAGS = -O3 -r8
+# RANLIB = echo
+# MACHCON = SUN.F77-WITH-R8-OPTION
+##=sun4.r8_end
+
+# ... Sun for SPARCworks compiler (Solaris 2)
+
+##=sun.sparc_begin
+# FC = f77
+# FFLAGS = -O3
+# RANLIB = echo
+# MACHCON = SUN
+##=sun.sparc_end
+
+# ... Sun (with -r8 option) for SPARCworks compiler (Solaris 2)
+
+##=sun4.sparc.r8_begin
+# FC = f77
+# FFLAGS = -O3 -r8
+# RANLIB = ranlib
+# MACHCON = SUN.F77-WITH-R8-OPTION
+##=sun.sparc.r8_end
+
+
+# ... Sun for Solaris 2.5
+
+##=sun.sun.solaris2-v4_begin
+# FC = f77
+# FFLAGS = -O3 -PIC
+# RANLIB = echo
+# MACHCON = SUN
+##=sun.sun.solaris2-v4_end
+
+# ... Sun (with -r8 option) Solaris 2.5
+
+##=sun.sun.solaris2-v4.r8_begin
+# FC = f77
+# FFLAGS = -O3 -r8 -PIC
+# RANLIB = ranlib
+# MACHCON = SUN.F77-WITH-R8-OPTION
+##=sun.sun.solaris2-v4.r8_end
+
+# ... Silicon Graphics  (Iris, Indigo)
+
+##=sgi_begin
+# FC = f77
+# FFLAGS = -O2 static
+# RANLIB = ar tls
+# MACHCON = IEEE.MOST-SIG-BYTE-FIRST
+##=sgi_end
+
+# ... Cray  (UNICOS)
+
+# FC = cf77
+# FFLAGS = 
+# RANLIB = echo
+# MACHCON = CRAY
+
+# ... Convex  (Native mode)
+
+# FC = fc
+# FFLAGS = -fn -O2 -or none
+# RANLIB = ranlib
+# MACHCON = CONVEX
+
+# ... HP9000  (Series 300 or 700)
+
+##=hp9000s300_begin
+##=hp9000s700_begin
+# FC = f77
+# FFLAGS = -K -O
+# RANLIB = ranlib
+# MACHCON = IEEE.MOST-SIG-BYTE-FIRST
+##=hp9000s700_end
+##=hp9000s300_end
+
+# ... IBM RS/6000  
+
+##=rs6000_begin
+# FC = xlf
+# FFLAGS = -O
+# RANLIB = ranlib
+# MACHCON = IEEE.MOST-SIG-BYTE-FIRST
+##=rs6000_end
+
+# ... IBM RS/6000 with automatic precision doubling 
+
+##=rs6000.autodbl_begin
+# FC = xlf
+# FFLAGS = -O -qautodbl=dblpad
+# RANLIB = ranlib
+# MACHCON = IBM.RS6000.XLF-WITH-AUTODBL-OPTION
+##=rs6000.autodbl_end
+
+# --------------------------------------------------------------------------
+
+SRCDIR = ../../src
+SCRIPTDIR = ../../utils
+
+# --------------------------------------------------------------------------
+
+libcm.a : checkall
+	@echo " " ; echo "Updating library file ..." ; echo " "
+	csh $(SCRIPTDIR)/Update.local $@ '$(RANLIB)'
+
+checkall : sublibs
+	date > sublibs
+
+veryclean :
+	rm -f -r sublibs libcm.a src
+
+# --------------------------------------------------------------------------
+
+# ... special replacement sources for this machine
+
+sublibs :: src/machcon/i1mach.f src/machcon/d1mach.f src/machcon/r1mach.f
+	$(FC) -c $(FFLAGS) $?
+
+src/machcon/i1mach.f : src/machcon
+	csh $(SCRIPTDIR)/genmachcon $(MACHCON)
+	mv i1mach.f r1mach.f d1mach.f src/machcon
+
+src/machcon/r1mach.f src/machcon/d1mach.f :
+
+src/machcon : src
+	mkdir $@
+
+src :
+	mkdir $@
+
+
+# --------------------------------------------------------------------------
+
+# ... library proper (one entry for each sublibrary)
+
+#  Some cmlib sublibraries may fail to compile at the highest compiler
+#  optimization level.  For those that fail, change $(FFLAGS) below to
+#  a lower optimization level.
+
+#  Some known problems :
+
+#    on Sun Fortran 1.3.1  :  compile cdriv with -O1
+#    on SGI Iris           :  compile fnlib with -O1 static
+
+sublibs :: $(SRCDIR)/adapt/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/amoslib/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/blas/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/bocls/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/bspline/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/bvsup/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/cdriv/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/cluster/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/cpqr79/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/cpzero/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/dbsplin/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/ddassl/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/ddriv/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/depac/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/dnl2sn/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/dqrlss/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/dtensbs/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/eispack/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/fc/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/fcnpak/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/fftpkg/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/fishpak/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/fnlib/*.f ; $(FC) -c -O1 -static $?
+sublibs :: $(SRCDIR)/licepak/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/lindrv/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/linpakc/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/linpakd/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/linpaks/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/lotps/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/mxentrp/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/nl2sn/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/odrpack/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/pchipd/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/pchips/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/q1da/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/quadpkd/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/quadpks/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/rv/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/sdassl/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/sdriv/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/sglss/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/slrpack/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/slvblk/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/snls1e/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/splp/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/sqrlss/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/ssort/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/sudsods/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/tensbs/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/twodq/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/uncmin/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/vfft/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/vhs3/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/vsfft/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/xblas/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/xerror/*.f ; $(FC) -c $(FFLAGS) $?
+sublibs :: $(SRCDIR)/zeroin/*.f ; $(FC) -c $(FFLAGS) $?
+
+# --------------------------------------------------------------------------
+
+#  ... the following targets run the cmlib quickchecks
+
+testall : 
+	@echo " "
+	@echo "Testing all of cmlib (this make take a while) ..."
+	@echo " "
+	csh $(SCRIPTDIR)/Testall "" "$(FC)" "$(FFLAGS)" ""
+
+test :
+	@csh $(SCRIPTDIR)/Test "" "$(FC)" "$(FFLAGS)" ""
+
+# --------------------------------------------------------------------------
+
+make clean :
+	rm -r -f core *.o *.trace bintmp
+
+veryclean :
+	make clean
+	rm -r -f libcm.a src/machcon

@@ -1,0 +1,131 @@
+# This test case is generated base on case UT4 in MacDonald (1995) (https://www.reading.ac.uk/web/files/maths/02-95.pdf)
+# The purpose of this test case is to examine the change of flow regime between subcritical and supercritical.
+def options metric=2 verbose=1 end
+def options timestep=30 timestepunit=second end
+def options prtq=1 prta=1 prtdepth=1 prtsurfelevz=1 end
+def options stoptime=100 stoptimeunit=hour end
+def options prtinteval=1 prtintervalunit=minute end
+
+
+def node id=1 sR=0.00182 n=0.020000 zR=3.719000, hR=0
+   def Trapezoidal slope=1.00 BottomWidth=10.000000
+   end
+end
+def node id=2 sR=0.00214 n=0.020000 zR=3.628000, hR=0
+   def Trapezoidal slope=1.00 BottomWidth=10.000000
+   end
+end
+def node id=3 sR=0.00254 n=0.020000 zR=3.521000, hR=0
+   def Trapezoidal slope=1.00 BottomWidth=10.000000
+   end
+end
+def node id=4 sR=0.00302 n=0.020000 zR=3.394000, hR=0
+   def Trapezoidal slope=1.00 BottomWidth=10.000000
+   end
+end
+def node id=5 sR=0.00362 n=0.020000 zR=3.243000, hR=0
+   def Trapezoidal slope=1.00 BottomWidth=10.000000
+   end
+end
+def node id=6 sR=0.00436 n=0.020000 zR=3.062000, hR=0
+   def Trapezoidal slope=1.00 BottomWidth=10.000000
+   end
+end
+def node id=7 sR=0.00526 n=0.020000 zR=2.844000, hR=0
+   def Trapezoidal slope=1.00 BottomWidth=10.000000
+   end
+end
+def node id=8 sR=0.00624 n=0.020000 zR=2.581000, hR=0
+   def Trapezoidal slope=1.00 BottomWidth=10.000000
+   end
+end
+def node id=9 sR=0.00710 n=0.020000 zR=2.269000, hR=0
+   def Trapezoidal slope=1.00 BottomWidth=10.000000
+   end
+end
+def node id=10 sR=0.00776 n=0.020000 zR=1.914000, hR=0
+   def Trapezoidal slope=1.00 BottomWidth=10.000000
+   end
+end
+def node id=11 sR=0.00818 n=0.020000 zR=1.526000, hR=0
+   def Trapezoidal slope=1.00 BottomWidth=10.000000
+   end
+end
+def node id=12 sR=0.00842 n=0.020000 zR=1.117000, hR=0
+   def Trapezoidal slope=1.00 BottomWidth=10.000000
+   end
+end
+def node id=13 sR=0.00482 n=0.020000 zR=0.696000, hR=0
+   def Trapezoidal slope=1.00 BottomWidth=10.000000
+   end
+end
+def node id=14 sR=0.00182 n=0.020000 zR=0.455000, hR=0
+   def Trapezoidal slope=1.00 BottomWidth=10.000000
+   end
+end
+def node id=15 sR=0.00142 n=0.020000 zR=0.364000, hR=0
+   def Trapezoidal slope=1.00 BottomWidth=10.000000
+   end
+end
+def node id=16 sR=0.00126 n=0.020000 zR=0.293000, hR=0
+   def Trapezoidal slope=1.00 BottomWidth=10.000000
+   end
+end
+def node id=17 sR=0.00120 n=0.020000 zR=0.230000, hR=0
+   def Trapezoidal slope=1.00 BottomWidth=10.000000
+   end
+end
+def node id=18 sR=0.00116 n=0.020000 zR=0.170000, hR=0
+   def Trapezoidal slope=1.00 BottomWidth=10.000000
+   end
+end
+def node id=19 sR=0.00112 n=0.020000 zR=0.112000, hR=0
+   def Trapezoidal slope=1.00 BottomWidth=10.000000
+   end
+end
+def node id=20 sR=0.00112 n=0.020000 zR=0.056000, hR=0
+   def Trapezoidal slope=1.00 BottomWidth=10.000000
+   end
+end
+def node id=21 sR=0.00112 n=0.020000 zR=0.000000, hR=0
+   def Trapezoidal slope=1.00 BottomWidth=10.000000
+   end
+end
+def segment up=1 down=2 length=50.00 end
+def segment up=2 down=3 length=50.00 end
+def segment up=3 down=4 length=50.00 end
+def segment up=4 down=5 length=50.00 end
+def segment up=5 down=6 length=50.00 end
+def segment up=6 down=7 length=50.00 end
+def segment up=7 down=8 length=50.00 end
+def segment up=8 down=9 length=50.00 end
+def segment up=9 down=10 length=50.00 end
+def segment up=10 down=11 length=50.00 end
+def segment up=11 down=12 length=50.00 end
+def segment up=12 down=13 length=50.00 end
+def segment up=13 down=14 length=50.00 end
+def segment up=14 down=15 length=50.00 end
+def segment up=15 down=16 length=50.00 end
+def segment up=16 down=17 length=50.00 end
+def segment up=17 down=18 length=50.00 end
+def segment up=18 down=19 length=50.00 end
+def segment up=19 down=20 length=50.00 end
+def segment up=20 down=21 length=50.00 end
+def qsource
+ location=1
+ def timeseries
+     timeunit=minute
+     t=0 v=20.0
+     t=100 v=20.0
+ end
+end
+
+
+def boundarycondition
+  location=21 type=depth
+  def timeseries
+      timeunit=minute
+      t=0 v=1.349963 
+      t=100 v=1.349963 
+  end
+end

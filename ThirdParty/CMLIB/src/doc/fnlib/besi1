@@ -1,0 +1,26 @@
+ 
+      FUNCTION BESI1(X)
+C***BEGIN PROLOGUE  BESI1
+C***DATE WRITTEN   770401   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C10B1
+C***KEYWORDS  BESSEL FUNCTION,FIRST KIND,HYPERBOLIC BESSEL FUNCTION,
+C             MODIFIED BESSEL FUNCTION,ORDER ONE
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the hyperbolic Bessel function of first kind of
+C            order one
+C***DESCRIPTION
+C
+C BESI1(X) calculates the modified (hyperbolic) Bessel function
+C of the first kind of order one for real argument X.
+C
+C Series for BI1        on the interval  0.          to  9.00000D+00
+C                                        with weighted error   2.40E-17
+C                                         log weighted error  16.62
+C                               significant figures required  16.23
+C                                    decimal places required  17.14
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  BESI1E,CSEVL,INITS,R1MACH,XERROR
+C***END PROLOGUE  BESI1
+ 
+ 

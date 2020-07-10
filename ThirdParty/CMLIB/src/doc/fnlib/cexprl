@@ -1,0 +1,22 @@
+ 
+      COMPLEX FUNCTION CEXPRL(Z)
+C***BEGIN PROLOGUE  CEXPRL
+C***DATE WRITTEN   770801   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C4B
+C***KEYWORDS  COMPLEX,ELEMENTARY FUNCTION,EXPONENTIAL,FIRST ORDER,
+C             RELATIVE ERROR
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Evaluates (CEXP(Z)-1)/Z so that EXP(Z) = 1 + Z*CEXPRL(Z)
+C***DESCRIPTION
+C
+C Evaluate  (CEXP(Z)-1)/Z .  For small CABS(Z), we use the Taylor
+C series.  We could instead use the expression
+C        CEXPRL(Z) = (EXP(X)*EXP(I*Y)-1)/Z
+C                  = (X*EXPREL(X) * (1 - 2*SIN(Y/2)**2) - 2*SIN(Y/2)**2
+C                                    + I*SIN(Y)*(1+X*EXPREL(X))) / Z
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  R1MACH
+C***END PROLOGUE  CEXPRL
+ 
+ 

@@ -1,0 +1,42 @@
+ 
+      INTEGER FUNCTION DCHFMC(D1,D2,DELTA)
+C***BEGIN PROLOGUE  DCHFMC
+C***REFER TO  DPCHMC
+C***ROUTINES CALLED  D1MACH
+C***REVISION DATE  870707   (YYMMDD)
+C***DESCRIPTION
+C
+C          DCHFMC:  Cubic Hermite Function Monotonicity Checker.
+C
+C    Called by  DPCHMC  to determine the monotonicity properties of the
+C    cubic with boundary derivative values D1,D2 and chord slope DELTA.
+C
+C ----------------------------------------------------------------------
+C
+C  Calling sequence:
+C
+C        DOUBLE PRECISION  D1, D2, DELTA
+C        INTEGER  ISMON, DCHFMC
+C
+C        ISMON = DCHFMC (D1, D2, DELTA)
+C
+C   Parameters:
+C
+C     D1,D2 -- (input) derivative values at the ends of an interval.
+C
+C     DELTA -- (input) data slope over that interval.
+C
+C     ISMON -- (output) integer function value, indicating the monoto-
+C           nicity of the cubic segment:
+C             ISMON = -1  if function is strictly decreasing;
+C             ISMON =  0  if function is constant;
+C             ISMON =  1  if function is strictly increasing;
+C             ISMON =  2  if function is non-monotonic;
+C             ISMON =  3  if unable to determine.
+C
+C  Fortran intrinsics used:  DSIGN.
+C  Other routines used:  D1MACH.
+C
+C***END PROLOGUE  DCHFMC
+ 
+ 

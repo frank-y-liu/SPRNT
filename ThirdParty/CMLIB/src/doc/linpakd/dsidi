@@ -1,0 +1,81 @@
+ 
+      SUBROUTINE DSIDI(A,LDA,N,KPVT,DET,INERT,WORK,JOB)
+C***BEGIN PROLOGUE  DSIDI
+C***DATE WRITTEN   780814   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D2B1A,D3B1A
+C***KEYWORDS  DETERMINANT,DOUBLE PRECISION,FACTOR,INVERSE,
+C             LINEAR ALGEBRA,LINPACK,MATRIX,SYMMETRIC
+C***AUTHOR  BUNCH, J., (UCSD)
+C***PURPOSE  Computes the determinant, inertia and inverse of a d.p.
+C            SYMMETRIC matrix using the factors from DSIFA.
+C***DESCRIPTION
+C
+C     DSIDI computes the determinant, inertia and inverse
+C     of a double precision symmetric matrix using the factors from
+C     DSIFA.
+C
+C     On Entry
+C
+C        A       DOUBLE PRECISION(LDA,N)
+C                the output from DSIFA.
+C
+C        LDA     INTEGER
+C                the leading dimension of the array A.
+C
+C        N       INTEGER
+C                the order of the matrix A.
+C
+C        KPVT    INTEGER(N)
+C                the pivot vector from DSIFA.
+C
+C        WORK    DOUBLE PRECISION(N)
+C                work vector.  Contents destroyed.
+C
+C        JOB     INTEGER
+C                JOB has the decimal expansion  ABC  where
+C                   if  C .NE. 0, the inverse is computed,
+C                   if  B .NE. 0, the determinant is computed,
+C                   if  A .NE. 0, the inertia is computed.
+C
+C                For example, JOB = 111  gives all three.
+C
+C     On Return
+C
+C        Variables not requested by JOB are not used.
+C
+C        A      contains the upper triangle of the inverse of
+C               the original matrix.  The strict lower triangle
+C               is never referenced.
+C
+C        DET    DOUBLE PRECISION(2)
+C               determinant of original matrix.
+C               DETERMINANT = DET(1) * 10.0**DET(2)
+C               with 1.0 .LE. DABS(DET(1)) .LT. 10.0
+C               or DET(1) = 0.0.
+C
+C        INERT  INTEGER(3)
+C               the inertia of the original matrix.
+C               INERT(1)  =  number of positive eigenvalues.
+C               INERT(2)  =  number of negative eigenvalues.
+C               INERT(3)  =  number of zero eigenvalues.
+C
+C     Error Condition
+C
+C        A division by zero may occur if the inverse is requested
+C        and  DSICO  has set RCOND .EQ. 0.0
+C        or  DSIFA  has set  INFO .NE. 0 .
+C
+C     LINPACK.  This version dated 08/14/78 .
+C     James Bunch, Univ. Calif. San Diego, Argonne Nat. Lab
+C
+C     Subroutines and Functions
+C
+C     BLAS DAXPY,DCOPY,DDOT,DSWAP
+C     Fortran DABS,IABS,MOD
+C***REFERENCES  DONGARRA J.J., BUNCH J.R., MOLER C.B., STEWART G.W.,
+C                 *LINPACK USERS  GUIDE*, SIAM, 1979.
+C***ROUTINES CALLED  DAXPY,DCOPY,DDOT,DSWAP
+C***END PROLOGUE  DSIDI
+ 
+ 

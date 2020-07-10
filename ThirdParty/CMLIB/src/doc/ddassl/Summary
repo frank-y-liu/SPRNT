@@ -1,0 +1,44 @@
+ 
+      SUBROUTINE DDASSL (RES,NEQ,T,Y,YPRIME,TOUT,
+     *  INFO,RTOL,ATOL,IDID,
+     *  RWORK,LRW,IWORK,LIW,RPAR,IPAR,
+     *  JAC)
+C
+C***BEGIN PROLOGUE  DDASSL
+C***DATE WRITTEN   830315   (YYMMDD)
+C***REVISION DATE  830315   (YYMMDD)
+C***CATEGORY NO.  D2A2
+C***KEYWORDS  DIFFERENTIAL/ALGEBRAIC,BACKWARD DIFFERENTIATION FORMULAS
+C             IMPLICIT DIFFERENTIAL SYSTEMS
+C***AUTHOR  PETZOLD,LINDA R.,APPLIED MATH DIV,SANDIA NAT. LAB,LIVERMORE,CA 94550
+C***PURPOSE  DIFFERENTIAL/ALGEBRAIC SYSTEM SOLVER
+C***DESCRIPTION
+C  ---------------------------------------------------------------------
+C
+C  this code solves a system of differential/
+C  algebraic equations of the form
+C  g(t,y,yprime) = 0.
+C
+C  subroutine ddassl uses the backward
+C  differentiation formulas of orders one
+C  through five to solve a system of the above
+C  form for y and yprime. values for y
+C  and yprime at the initial time must
+C  be given as input. these values must
+C  be consistent, (that is. if t,y,yprime
+C  are the given initial values, they must
+C  satisfy g(t,y,yprime) = 0.)
+C  the subroutine solves the system from t to tout. it is
+C  easy to continue the solution to get results
+C  at additional tout. this is the interval
+C  mode of operation. intermediate results can
+C  also be obtained easily by using the intermediate-
+C  output capability.
+C***REFERENCES  A DESCRIPTION OF DASSL: A DIFFERENTIAL/ALGEBRAIC
+C                  SYSTEM SOLVER, L. R. PETZOLD, SAND82-8637,
+C                  SANDIA NATIONAL LABORATORIES, SEPTEMBER 1982.
+C***ROUTINES CALLED  DDASTP,DDAINI,DDANRM,DDAWTS,DDATRP,XERRWV,D1MACH
+C***COMMON BLOCKS    DDA001
+C***END PROLOGUE DDASSL
+ 
+ 

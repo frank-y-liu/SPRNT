@@ -1,0 +1,35 @@
+ 
+      FUNCTION ERFC (X)
+C***BEGIN PROLOGUE  ERFC
+C***DATE WRITTEN   770701   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C8A,L5A1E
+C***KEYWORDS  COMPLEMENTARY ERROR FUNCTION,ERFC,SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the complementary error function (ERFC).
+C***DESCRIPTION
+C ERFC(X) calculates the single precision complementary error
+C function for single precision argument X.
+C
+C Series for ERF        on the interval  0.          to  1.00000D+00
+C                                        with weighted error   7.10E-18
+C                                         log weighted error  17.15
+C                               significant figures required  16.31
+C                                    decimal places required  17.71
+C
+C Series for ERFC       on the interval  0.          to  2.50000D-01
+C                                        with weighted error   4.81E-17
+C                                         log weighted error  16.32
+C                        approx significant figures required  15.0
+C
+C
+C Series for ERC2       on the interval  2.50000D-01 to  1.00000D+00
+C                                        with weighted error   5.22E-17
+C                                         log weighted error  16.28
+C                        approx significant figures required  15.0
+C                                    decimal places required  16.96
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  CSEVL,INITS,R1MACH,XERROR
+C***END PROLOGUE  ERFC
+ 
+ 

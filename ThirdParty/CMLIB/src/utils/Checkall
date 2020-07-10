@@ -1,0 +1,24 @@
+#  Checkall testdir compiler fflags
+
+#    Runs all cmlib tests.
+
+#      testdir  = location of test programs (cmlib/export/test)
+#      compiler = name of compiler
+#      fflags   = compiler flags
+
+set testdir = $1
+set compiler = $2
+set fflags = $argv[3-]
+
+if ("$testdir" == "")  set testdir = /local/fs2/cmlib/export/test
+if ("$compiler" == "")  set compiler = f77
+
+set tests = ` (cd $testdir ; ls *.f | sed -e "s/\.f//") `
+
+foreach pgm ( $tests )
+
+  $compiler -o $pgm $fflags $testdir/$pgm.f -lcm
+  echo 11 | $pgm
+  rm -f $pgm
+
+end
