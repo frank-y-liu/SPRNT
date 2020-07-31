@@ -576,11 +576,13 @@ int MomStvEqn::Evaluate(Node **n, double *X, double *Xp, double *RHS,
   int idx_dn_a = DN->AIdx();
   int idx_dn_q = DN->QIdx();
 
-  double Qupsq = X[idx_up_q] * ABS(X[idx_up_q]);
-  double Qdnsq = X[idx_dn_q] * ABS(X[idx_dn_q]);
+  double Qupsq = X[idx_up_q] * X[idx_up_q];
+  double Qdnsq = X[idx_dn_q] * X[idx_dn_q];
+  double Qupsqdiva = Qupsq / X[idx_up_a];
+  double Qdnsqdiva = Qdnsq / X[idx_dn_a];
 
-  double Qupsqdiva = ABS(Qupsq / X[idx_up_a]);
-  double Qdnsqdiva = ABS(Qdnsq / X[idx_dn_a]);
+  double Qupsqabs = X[idx_up_q] * ABS(X[idx_up_q]);
+  double Qdnsqabs = X[idx_dn_q] * ABS(X[idx_dn_q]);
 
   double Efdn = DN->XS()->GetEqFriction(X[idx_dn_a] + OPT.EpsilonA());
   double Efup = UP->XS()->GetEqFriction(X[idx_up_a] + OPT.EpsilonA());
@@ -619,8 +621,8 @@ int MomStvEqn::Evaluate(Node **n, double *X, double *Xp, double *RHS,
       (half_g / _dx) * (X[idx_dn_a] + X[idx_up_a]) *
           (DN->GetDepth(X[idx_dn_a]) - UP->GetDepth(X[idx_up_a])) -
       half_g * (DN->GetSR() * (X[idx_dn_a]) + UP->GetSR() * (X[idx_up_a])) +
-      half_g * (DN->Nsq() * dn_n_corr * Qdnsq * Efdn +
-                UP->Nsq() * up_n_corr * Qupsq * Efup);
+      half_g * (DN->Nsq() * dn_n_corr * Qdnsqabs * Efdn +
+                UP->Nsq() * up_n_corr * Qupsqabs * Efup);
 
   double up_fric_da = UP->XS()->GetEqFrictiondA(X[idx_up_a] + OPT.EpsilonA());
   double dn_fric_da = DN->XS()->GetEqFrictiondA(X[idx_dn_a] + OPT.EpsilonA());
@@ -631,7 +633,7 @@ int MomStvEqn::Evaluate(Node **n, double *X, double *Xp, double *RHS,
           (DN->GetDepth(X[idx_dn_a]) - UP->GetDepth(X[idx_up_a]) -
            (X[idx_up_a] + X[idx_dn_a]) * UP->GetDepthdA(X[idx_up_a])) -
       half_g * UP->GetSR() +
-      half_g * UP->Nsq() * up_n_corr * Qupsq * up_fric_da;
+      half_g * UP->Nsq() * up_n_corr * Qupsqabs * up_fric_da;
 
   double dmdadn =
       (-OPT.Beta() / _dx) * Qdnsqdiva / (X[idx_dn_a]) +
@@ -639,7 +641,7 @@ int MomStvEqn::Evaluate(Node **n, double *X, double *Xp, double *RHS,
           (DN->GetDepth(X[idx_dn_a]) - UP->GetDepth(X[idx_up_a]) +
            (X[idx_up_a] + X[idx_dn_a]) * DN->GetDepthdA(X[idx_dn_a])) -
       half_g * DN->GetSR() +
-      half_g * DN->Nsq() * dn_n_corr * Qdnsq * dn_fric_da;
+      half_g * DN->Nsq() * dn_n_corr * Qdnsqabs * dn_fric_da;
 
   M->CreateEntryNC(_row, UP->AIdx(), dmdaup);
   M->CreateEntryNC(_row, DN->AIdx(), dmdadn);
@@ -660,11 +662,13 @@ int MomStvEqn::EvaluateRHS(Node **n, double *X, double *Xp, double *RHS) {
   int idx_dn_a = DN->AIdx();
   int idx_dn_q = DN->QIdx();
 
-  double Qupsq = X[idx_up_q] * ABS(X[idx_up_q]);
-  double Qdnsq = X[idx_dn_q] * ABS(X[idx_dn_q]);
+  double Qupsq = X[idx_up_q] * X[idx_up_q];
+  double Qdnsq = X[idx_dn_q] * X[idx_dn_q];
+  double Qupsqdiva = Qupsq / X[idx_up_a];
+  double Qdnsqdiva = Qdnsq / X[idx_dn_a];
 
-  double Qupsqdiva = ABS(Qupsq / X[idx_up_a]);
-  double Qdnsqdiva = ABS(Qdnsq / X[idx_dn_a]);
+  double Qupsqabs = X[idx_up_q] * ABS(X[idx_up_q]);
+  double Qdnsqabs = X[idx_dn_q] * ABS(X[idx_dn_q]);
 
   double Efdn = DN->XS()->GetEqFriction(X[idx_dn_a] + OPT.EpsilonA());
   double Efup = UP->XS()->GetEqFriction(X[idx_up_a] + OPT.EpsilonA());
@@ -703,8 +707,8 @@ int MomStvEqn::EvaluateRHS(Node **n, double *X, double *Xp, double *RHS) {
       (half_g / _dx) * (X[idx_dn_a] + X[idx_up_a]) *
           (DN->GetDepth(X[idx_dn_a]) - UP->GetDepth(X[idx_up_a])) -
       half_g * (DN->GetSR() * (X[idx_dn_a]) + UP->GetSR() * (X[idx_up_a])) +
-      half_g * (DN->Nsq() * dn_n_corr * Qdnsq * Efdn +
-                UP->Nsq() * up_n_corr * Qupsq * Efup);
+      half_g * (DN->Nsq() * dn_n_corr * Qdnsqabs * Efdn +
+                UP->Nsq() * up_n_corr * Qupsqabs * Efup);
 
   return OK;
 }
