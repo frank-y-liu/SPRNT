@@ -1,0 +1,587 @@
+#!/bin/sh
+#
+#  Make wrapper for mutiple host/arch cmlib builds
+#  Based on LAPACK RunMake
+#
+
+#
+# Print usage message if invalid arguments specified
+#
+usage () {
+        echo 'RunMake [-d sourcedir]'
+        echo '        [-h host]'
+        echo '        [-m libcm | testall | test | clean]'
+        echo '        [-i nn (nn is test input)]'
+        echo '        [-r rshcmd]'
+        exit 1
+}
+
+cleanup () {
+        $cmd rm -f LOCK $SRCDIR/LOCK
+        exit
+}
+
+batcmd () {
+   if [ `$cmd which qsub|grep -c no` -eq 0 -a `echo $platform|grep -c linux` -ne 1 ];then
+      echo 'qsub -lT 2:00:00 -me job.cmd'
+   elif [ `$cmd which at|grep -c no` -eq 0 ];then
+      chmod u-x job.cmd
+      if [ `echo $platform|grep -c sun4` -eq 1 ]; then
+        echo 'at -s -m now + 5 minutes job.cmd'
+      elif [ `echo $platform|grep -c irix64` -eq 1 -o `echo $platform|grep -c linux` -eq 1 ]; then
+        echo 'at -m -f job.cmd now + 2 minutes'
+      elif [ `echo $platform|grep -c irix` -eq 1 ]; then
+        echo 'cat job.cmd | at now + 2 minutes'
+      else
+        echo 'at -s -m -f job.cmd now + 2 minutes'
+      fi
+   else
+      echo './job.cmd'
+   fi
+}
+#if test "$#" = 0
+#then
+#make cmlib on the current host with all the defaults
+#   host=""
+#fi
+
+# get options
+while getopts d:h:i:m:r: c
+do
+   case $c in
+      d)   SRCDIR=$OPTARG;;
+      h)   host=$OPTARG;;
+      i)   inpt=$OPTARG;;
+      m)   mopt=$OPTARG
+           if [ "$mopt" != "libcm" -a "$mopt" != "test" -a "$mopt" != "testall" -a "$mopt" != "clean" ]; then
+           usage
+           fi
+           ;;
+      r)   rshcmd=$OPTARG;;
+      \?)  usage;;
+   esac
+done
+shift `expr $OPTIND - 1`
+SRCDIR=${SRCDIR:-`pwd`}
+rshcmd=${rshcmd:-rsh}
+if [ ! -z "$host" ]; then
+   if [ `echo "$rshcmd"|grep -c rsh` -eq 1 ]; then
+      rcpcmd=rcp
+   elif [ `echo "$rshcmd"|grep -c ssh` -eq 1 ]; then
+      rcpcmd=scp
+   else
+#  Don't forget to remove the 'exit 2' if you set rcpcmd
+      echo 'rsh|ssh' assumed to be part of rshcmd
+      echo you need to change this echo command in RunMake
+      echo to set rcpcmd
+      exit 2
+   fi
+fi
+if [ -z "$host" ]; then
+   arch=`utils/itl-arch`
+   cmd=""
+else
+   rshperm=`$rshcmd $host "echo go" `
+   if [ $? -ne 0 ];then
+      echo You do not have $rshcmd permission to $host
+      echo $rshcmd permission is required to use the -h option
+      exit 1
+   fi
+   exist=`$rshcmd $host "sh -c 'if [ ! -d $SRCDIR ];then echo no $SRCDIR;fi'"`
+   if [ ! -z "$exist" ]; then echo 'source directory does not exist' ;cleanup; fi
+   arch=`$rshcmd $host $SRCDIR/utils/itl-arch`
+   cmd="$rshcmd $host"
+fi
+
+
+if [ -z "$host" ]; then
+   if [ -f LOCK ]; then
+     echo 'Cannot run. Files in use by another make: '
+     cat LOCK
+     exit 1
+   fi
+   if [ "$mopt" = "clean" ]; then
+      touch make.inc
+      make -f Makefile clean
+      exit
+   fi
+else
+   stat=`$rshcmd $host cat $SRCDIR/LOCK 2>/dev/null`
+   if [ ! -z "$stat" ]; then
+     echo 'Cannot run. Files in use by another make: '
+     echo $stat
+     exit 1
+   fi
+   if [ "$mopt" = "clean" ]; then
+      $cmd "cd $SRCDIR;touch make.inc;make -f Makefile clean;rm -f make.inc"
+      exit
+   fi
+fi
+
+osname=`echo $arch | cut -f1 -d'-' `
+
+trap cleanup 1 2 3 4 6 9 15 24 25
+
+#
+# For IRIX/IRIX64 OS release 6.x or greater
+# Compilers can make mips3/mips4 binaries so
+# for the purpose of the menu IRIX is considered
+# OS level 5 and IRIX64 is considered OS level >= 6
+#
+if [ "$osname" = "IRIX" -a `$cmd uname -r|cut -f1 -d'.'` -gt 5 ]; then
+  osname=IRIX64
+fi
+
+case "$osname" in
+    'SunOS')
+#  SunOS 5.5 or higher make virtual
+      if [ `$cmd uname -r|cut -f1 -d'.'` -gt 4 ]; then
+        cat <<EOF
+
+      A Solaris version of CMLIB will be built and/or tested.
+      ( -O3 optimization is being used )
+  
+      Please select the compiler and options you want:
+
+        1.  f77          (libcm.so)
+        2.  f77 -r8      (libcm.so)
+        3.  f90          (libcm.a)
+
+        0.  Exit
+
+EOF
+        echo "    Select:\c"
+        read answer
+        case $answer in
+
+          1) platform=solaris2
+             libdir=lib
+             ;;
+
+          2) platform=solaris2_r8
+             libdir=lib_r8
+             ;;
+
+          3) platform=solaris2_f90
+             libdir=lib_f90
+             ;;
+
+          *) exit
+             ;;
+        esac
+      else
+        cat <<EOF
+
+      A Sun 4 version of CMLIB (libcm.a) will be built and/or tested.
+      ( -O3 optimization is being used )
+  
+      Please select the compiler option you want:
+
+        1.  f77 
+        2.  f77 -r8
+
+        0.  Exit
+
+EOF
+        echo "    Select:\c"
+        read answer
+        case $answer in
+
+          1) platform=sun4_f77
+             libdir=lib_f77
+             ;;
+
+          2) platform=sun4_f77r8
+             libdir=lib_f77r8
+             ;;
+
+          *) exit
+             ;;
+        esac
+
+      fi
+      ;;
+
+    'AIX')
+#  AIX 4.2 or higher make virtual
+      if [ `$cmd uname -r|cut -c1` -ge 2 ]; then
+        cat <<EOF
+
+      An AIX version of CMLIB will be built and/or tested.
+      (-O -qtune=pwr -qmaxmem=8192 is being used for all compilations)
+  
+      Please select the compiler and options you want:
+
+        1.  xlf
+        2.  xlf -qautodbl=dblpad
+        3.  xlf90
+        4.  xlf90 -qautodbl=dblpad
+
+        0.  Exit
+
+EOF
+        echo "    Select:\c"
+        read answer
+        case $answer in
+
+          1) platform=aix
+             libdir=lib
+             ;;
+
+          2) platform=aix_autodbl
+             libdir=lib_autodbl
+             ;;
+
+          3) platform=aix_f90
+             libdir=lib_f90
+             ;;
+
+          4) platform=aix_f90_autodbl
+             libdir=lib_f90_autodbl
+             ;;
+
+          *) exit
+             ;;
+        esac
+      else
+
+         echo no where to create that version of AIX
+
+      fi
+      ;;
+
+    'IRIX64')
+#  IRIX64 6.x or higher
+      cat <<EOF
+
+      Please select mips:
+
+        1. mips4
+        2. mips3
+
+        0. Exit
+EOF
+       echo "    Select:\c"
+       read answer
+       case $answer in
+
+         1) mips=mips4
+            ;;
+  
+         2) mips=mips3
+            ;;
+
+         *) exit
+             ;;
+       esac
+
+      cat <<EOF
+
+      An IRIX64 version of CMLIB will be built and/or tested.
+      (default options include -64 -O2 -OPT:IEEE_arithmetic=2 -static) 
+  
+      Please select the compiler and options you want:
+
+        1.  f77						[mips4 only]
+        2.  f77 -i8 -r8 -d16				[mips4 only]
+        3.  f77 -n32
+        4.  f77 -n32 -i8 -r8 -d16
+        5.  f90						[mips4 only]
+        6.  f90 default64 (equivalent to -i8 -r8 -d16)	[mips4 only]
+        7.  f90 -n32
+        8.  f90 -n32 -i8 -r8 -d16
+
+        0.  Exit
+
+EOF
+       echo "    Select:\c"
+       read answer
+       if [ "$mips" = "mips3" ]; then
+         if [ $answer -eq 1 -o $answer -eq 2 -o $answer -eq 5 -o $answer -eq 6 ]; then
+          echo  Option $answer is for mips4 only
+          exit
+         fi
+       fi
+       case $answer in
+
+         1) platform=irix64_$mips
+            libdir=lib_$mips
+            ;;
+
+         2) platform=irix64_i8r8d16_$mips
+            libdir=lib_i8r8d16_$mips
+            ;;
+
+         3) platform=irix64_n32_$mips
+            libdir=lib_n32_$mips
+            ;;
+
+         4) platform=irix64_n32_i8r8d16_$mips
+            libdir=lib_n32_i8r8d16_$mips
+            ;;
+
+         5) platform=irix64_f90_$mips
+            libdir=lib_f90_$mips
+            ;;
+
+         6) platform=irix64_f90_default64_$mips
+            libdir=lib_f90_default64_$mips
+            ;;
+
+         7) platform=irix64_f90n32_$mips
+            libdir=lib_f90n32_$mips
+            ;;
+
+         8) platform=irix64_f90n32_i8r8d16_$mips
+            libdir=lib_f90n32_i8r8d16_$mips
+            ;;
+
+         *) exit
+             ;;
+        esac
+        ;;
+
+
+    'IRIX')
+#  IRIX lower than version 6
+      cat <<EOF
+
+      An IRIX version of CMLIB will be built and/or tested.
+      (default options include -O2 -static)
+ 
+      Please select the compiler and options you want:
+
+        1.  f77
+        2.  f77 -mips2
+
+        0.  Exit
+
+EOF
+       echo "    Select:\c"
+       read answer
+       case $answer in
+
+         1) platform=irix_mips1
+            libdir=lib_mips1
+            ;;
+
+         2) platform=irix_mips2
+            libdir=lib_mips2
+            ;;
+
+         *) exit
+             ;;
+        esac
+        ;;
+
+   'HP')
+#  HP-UX   B.10.20 E 9000/735
+      cat <<EOF
+
+      An HP-UX version of CMLIB will be built and/or tested
+      using the f77 compiler with options "-O -K -w".
+
+      Please select the 1 to Continue:
+
+        1.  Make/Test CMLIB
+
+        0.  Exit
+
+EOF
+       echo "    Select:\c"
+       read answer
+       case $answer in
+
+         1) platform=hpux
+            libdir=lib
+            ;;
+
+         *) exit
+             ;;
+        esac
+        ;;
+
+
+   'Linux')
+#  Linux
+      cat <<EOF
+
+      A Linux version of CMLIB will be built and/or tested
+      using the g77 compiler with options "-g".
+
+      Please select the 1 to Continue:
+
+        1.  Make/Test CMLIB
+
+        0.  Exit
+
+EOF
+       echo "    Select:\c"
+       read answer
+       case $answer in
+
+         1) platform=linux
+            libdir=lib
+            ;;
+
+         *) exit
+             ;;
+        esac
+        ;;
+
+
+    *) echo RunMake needs to be modified to support $osname
+       exit 1
+        ;;
+esac
+#
+#
+# check platform
+#
+if [ -z "$host" ]; then
+   WP="`cat WorkingPlatform 2>/dev/null`"
+else
+   WP="`$rshcmd $host cat $SRCDIR/WorkingPlatform 2>/dev/null`"
+fi
+if [ ! -z "$WP" ]; then
+  if [ "$WP" != "$platform" -a "$mopt" != "test" -a "$mopt" != "testall" ]; then
+    echo 'Not same as last platform. Cleanup for new? (y or n)\c '
+    read ans 
+    if [ "$ans" != "y" ]; then
+       exit 2
+    fi
+
+    if [ -z "$host" ]; then
+       touch make.inc
+       make -f Makefile clean
+       rm -f make.inc
+    else
+       $cmd "cd $SRCDIR;touch make.inc;make -f Makefile clean;rm -f make.inc"
+    fi
+  fi
+
+fi
+
+if [ -z "$host" ]; then
+   echo $platform > WorkingPlatform
+   echo Making $platform on `hostname`. > LOCK
+else
+   $rshcmd $host echo $platform ">" $SRCDIR/WorkingPlatform
+   $rshcmd $host echo Making $platform on $host. ">" $SRCDIR/LOCK
+fi
+
+# start command command file
+rm -f job.cmd.tmp
+echo '#'>job.cmd.tmp
+chmod u+x job.cmd.tmp
+if [ `$cmd which qsub|grep -c no` -eq 0 -a `echo $platform|grep -c linux` -ne 1 ];then
+    echo cd $SRCDIR >>job.cmd.tmp
+fi
+echo utils/mkarchdir $arch >>job.cmd.tmp
+echo cd $arch >>job.cmd.tmp
+echo ../utils/mkarchdir $libdir >>job.cmd.tmp
+echo cd $libdir >>job.cmd.tmp
+if [ -z "$mopt" ]; then
+#stub subroutines needed to make a Solaris shared library
+   if [ `echo $platform|grep -c solaris` -eq 1 -a `echo $platform|grep -c f90` -eq 0 ]; then
+      if [ `$cmd file $SRCDIR/$arch/$libdir/src/stubs/Makefile |grep -c No` -eq 1 ];then
+         echo ../../utils/mkarchdir src >>job.cmd.tmp
+         echo ../../utils/mkarchdir src/stubs >>job.cmd.tmp
+         echo 'cp ../../sun.stubs/* src/stubs' >>job.cmd.tmp
+      fi
+   fi
+# relaxed versions of inits and initds need when auto-doubling used
+   if [ `echo $platform|grep -c r8` -eq 1 -o `echo $platform|grep -c default64` -eq 1 \
+    -o `echo $platform|grep -c autodbl` -eq 1 -o `echo $platform|grep -c i8r8d16` -eq 1 ]; then
+      if [ `$cmd file $SRCDIR/$arch/$libdir/src/fnlib/initds.f |grep -i -c cannot` -eq 1 ];then
+         echo ../../utils/mkarchdir src >>job.cmd.tmp
+         echo ../../utils/mkarchdir src/fnlib >>job.cmd.tmp
+         echo 'cp ../../relaxed.inits/* src/fnlib' >>job.cmd.tmp
+         echo 'rm -f src/fnlib/info' >>job.cmd.tmp
+      fi
+   fi
+fi
+#echo /usr/bin/rm -f ../../make.inc make.inc >>job.cmd.tmp
+echo rm -f make.inc ../../make.inc >>job.cmd.tmp
+echo ln -s ../../make.inc_$platform make.inc >>job.cmd.tmp
+echo ln -s make.inc_$platform ../../make.inc >>job.cmd.tmp
+
+if [ "$mopt" = test ]; then
+    ls test/*.f | sed -e "s/\.f//" -e "s/test\///" > test.names
+
+    echo " "
+    cat test.names | pr -3 -l9 -t > /dev/tty
+    rm test.names
+    echo " "
+    echo "Which test would you like to run? (Enter name) : \c" > /dev/tty
+    read ans
+    if [ -z "$ans" ]; then
+       echo "Exiting ...you didn't enter a test name."
+       rm -f LOCK job.cmd.tmp
+       exit
+    fi
+    if [ ! -f test/$ans.f ]; then
+       echo "There is no test named $ans"
+       rm -f LOCK job.cmd.tmp
+       exit
+    fi
+    pgm=$ans
+
+    if [ -z "$inpt" ]; then
+    echo "Output level? (1, 2, or 3) [2]:\c" > /dev/tty
+    read ans 
+    if [ -z "$ans" ]; then
+        ans=2
+        echo "Output level has been set to 2."
+    elif [ $ans -lt 1 -o $ans -gt 3 ]; then
+       echo "Exiting .... $ans is not 1, 2, or 3"
+       rm -f LOCK job.cmd.tmp
+       exit
+    fi
+    inpt="$ans""1"
+    fi
+
+    echo "Interactive or Batch? (I or B) [I]:\c" > /dev/tty
+    read ans 
+    if [ -z "$ans" ]; then
+        ans="I"
+        echo "Test will be run interactively"
+    elif [ "$ans" != "I" -a "$ans" != "i" -a "$ans" != "B" -a "$ans" != "b" ]; then
+        echo "Exiting ....  you did not chose I or B"
+        rm -f LOCK job.cmd.tmp
+        exit
+    fi
+    iorb=`echo $ans|tr "[:lower:]" "[:upper:]"`
+    echo " "
+
+    rm -f core
+
+fi
+if [ "$osname" = "IRIX" ]; then
+  echo make -f ../../Makefile $mopt PGM=\"$pgm\" INPT=\"$inpt\"  SHELL=/sbin/sh >>job.cmd.tmp
+else
+  echo make -f ../../Makefile $mopt PGM=\"$pgm\" INPT=\"$inpt\" >>job.cmd.tmp
+fi
+
+echo rm -f ../../LOCK >>job.cmd.tmp
+
+
+if [ -z "$host" ]; then
+   mv job.cmd.tmp job.cmd
+   if [ "$mopt" = "test" -a "$iorb" = "I" ]; then
+      ./job.cmd
+   else
+      bat="`batcmd`"
+      $bat
+   fi
+else
+   $rcpcmd job.cmd.tmp $host:$SRCDIR/job.cmd
+   rm -f job.cmd.tmp
+   if [ "$mopt" = "test" -a "$iorb" = "I" ]; then
+      $cmd "chmod u+x $SRCDIR/job.cmd"
+      $cmd "cd $SRCDIR;./job.cmd"
+   else
+      bat="`batcmd`"
+      $cmd "cd $SRCDIR;$bat"
+   fi
+fi

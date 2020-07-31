@@ -1,0 +1,46 @@
+ 
+      SUBROUTINE CPZERO(IN,A,R,T,IFLG,S)
+C***BEGIN PROLOGUE  CPZERO
+C***DATE WRITTEN   810223   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  F1A1B
+C***KEYWORDS  COMPLEX,POLYNOMIAL ROOTS,ROOTS,ZEROES,ZEROS
+C***AUTHOR  KAHANER, D. K., (NBS)
+C***PURPOSE  Find the zeros of a polynomial with complex coefficients.
+C***DESCRIPTION
+C
+C      Find the zeros of the complex polynomial
+C         P(Z)= A(1)*Z**N + A(2)*Z**(N-1) +...+ A(N+1)
+C
+C    Input...
+C       IN = degree of P(Z)
+C       A = complex vector containing coefficients of P(Z),
+C            A(I) = coefficient of Z**(N+1-i)
+C       R = N word complex vector containing initial estimates for zeros
+C            if these are known.
+C       T = 4(N+1) word array used for temporary storage
+C       IFLG = flag to indicate if initial estimates of
+C              zeros are input.
+C            If IFLG .EQ. 0, no estimates are input.
+C            If IFLG .NE. 0, the vector R contains estimates of
+C               the zeros
+C       ** WARNING ****** If estimates are input, they must
+C                         be separated, that is, distinct or
+C                         not repeated.
+C       S = an N word array
+C
+C    Output...
+C       R(I) = Ith zero,
+C       S(I) = bound for R(I) .
+C       IFLG = error diagnostic
+C    Error Diagnostics...
+C       If IFLG .EQ. 0 on return, all is well
+C       If IFLG .EQ. 1 on return, A(1)=0.0 or N=0 on input
+C       If IFLG .EQ. 2 on return, the program failed to coverge
+C                after 25*N iterations.  Best current estimates of the
+C                zeros are in R(I).  Error bounds are not calculated.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  CPEVL
+C***END PROLOGUE  CPZERO
+ 
+ 

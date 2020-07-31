@@ -1,0 +1,6 @@
+FORTRAN = /usr/bin/xlf
+OPTS = -O -qtune=pwr -qautodbl=dblpad -qmaxmem=8192
+NOPTS = -g -qtune=pwr -qautodbl=dblpad
+RANLIB = ranlib
+MACHCON = IBM.RS6000.XLF-WITH-AUTODBL-OPTION
+LIBRARY = libcm.a

@@ -1,0 +1,443 @@
+*SODPC1
+      SUBROUTINE SODPC1
+     +   (IPR,LUNRPT,
+     +   ANAJAC,CHKJAC,INITD,RESTRT,ISODR,
+     +   MSGB,MSGX,
+     +   N,M,NP,NPP,
+     +   X,LDX,IFIXX,LDIFX,DELTA,RHO,LDRHO,TT,LDTT,
+     +   Y,W,
+     +   BETA,IFIXB,SSF,
+     +   JOB,TAUFAC,SSTOL,PARTOL,MAXIT,
+     +   RNORM,DELWTD,FWTD)
+C***BEGIN PROLOGUE  SODPC1
+C***REFER TO  SODR,SODRC
+C***ROUTINES CALLED  SNRM2
+C***DATE WRITTEN   860529   (YYMMDD)
+C***REVISION DATE  870204   (YYMMDD)
+C***CATEGORY NO.  G2E,I1B1
+C***KEYWORDS  ORTHOGONAL DISTANCE REGRESSION,
+C             NONLINEAR LEAST SQUARES,
+C             ERRORS IN VARIABLES
+C***AUTHOR  BOGGS, PAUL T.
+C             OPTIMIZATION GROUP/SCIENTIFIC COMPUTING DIVISION
+C             NATIONAL BUREAU OF STANDARDS, GAITHERSBURG, MD 20899
+C           BYRD, RICHARD H.
+C             DEPARTMENT OF COMPUTER SCIENCE
+C             UNIVERSITY OF COLORADO, BOULDER, CO 80309
+C           DONALDSON, JANET R.
+C             OPTIMIZATION GROUP/SCIENTIFIC COMPUTING DIVISION
+C             NATIONAL BUREAU OF STANDARDS, BOULDER, CO 80303-3328
+C           SCHNABEL, ROBERT B.
+C             DEPARTMENT OF COMPUTER SCIENCE
+C             UNIVERSITY OF COLORADO, BOULDER, CO 80309
+C             AND
+C             OPTIMIZATION GROUP/SCIENTIFIC COMPUTING DIVISION
+C             NATIONAL BUREAU OF STANDARDS, BOULDER, CO 80303-3328
+C***PURPOSE  GENERATE INITIAL SUMMARY REPORT
+C***END PROLOGUE  SODPC1
+C
+C  FUNCTION DECLARATIONS
+C
+      REAL SNRM2
+C
+C  VARIABLE DECLARATIONS (ALPHABETICALLY)
+C
+      LOGICAL ANAJAC
+C        THE INDICATOR VARIABLE USED TO DESIGNATE WHETHER THE JACOBIANS
+C        ARE COMPUTED BY FINITE DIFFERENCES (ANAJAC=.FALSE.) OR NOT
+C        (ANAJAC=.TRUE.).
+      REAL BETA(NP)
+C        THE FUNCTION PARAMETERS.
+C        (FOR DETAILS, SEE ODRPACK REFERENCE GUIDE.)
+      LOGICAL CHKJAC
+C        THE INDICATOR VARIABLE USED TO DESIGNATE WHETHER THE USER-
+C        SUPPLIED JACOBIANS ARE TO BE CHECKED (CHKJAC=.TRUE.) OR NOT
+C        (CHKJAC=.FALSE.).
+      REAL DELTA(N,M)
+C        THE ESTIMATED ERRORS IN THE INDEPENDENT VARIABLES.
+      REAL DELWTD(N,M)
+C        THE WEIGHTED ESTIMATED ERRORS IN THE INDEPENDENT VARIABLES.
+      CHARACTER*90 FMT1
+C        A CHARACTER VARIABLE USED FOR FORMATS.
+      REAL FWTD(N)
+C        THE WEIGHTED ESTIMATED VALUES OF EPSILON.
+      INTEGER IFIXB(NP)
+C        THE INDICATOR VALUES USED TO DESIGNATE WHETHER THE INDIVIDUAL
+C        ELEMENTS OF BETA ARE FIXED AT THEIR INPUT VALUES OR NOT.
+C        (FOR DETAILS, SEE ODRPACK REFERENCE GUIDE.)
+      INTEGER IFIXX(LDIFX,M)
+C        THE INDICATOR VALUES USED TO DESIGNATE WHETHER THE INDIVIDUAL
+C        ELEMENTS OF DELTA ARE FIXED AT THEIR INPUT VALUES OR NOT.
+C        (FOR DETAILS, SEE ODRPACK REFERENCE GUIDE.)
+      LOGICAL INITD
+C        THE INDICATOR VARIABLE USED TO DESIGNATE WHETHER THE DELTA'S
+C        ARE TO BE INITIALIZED TO ZERO (INITD=.TRUE.) OR WHETHER THEY
+C        ARE TO BE INITIALIZED TO THE VALUES PASSED VIA THE FIRST N BY M
+C        ELEMENTS OF ARRAY WORK (INITD=.FALSE.).
+      INTEGER IPR
+C        THE VALUE WHICH CONTROLS THE REPORT BEING PRINTED.
+      LOGICAL ISODR
+C        THE INDICATOR VARIABLE USED TO DESIGNATE WHETHER THE SOLUTION
+C        IS TO BE FOUND BY ODR (ISODR=.TRUE.) OR BY OLS (ISODR=.FALSE.).
+      INTEGER J
+C        AN INDEXING VARIABLE.
+      INTEGER JOB
+C        THE PROBLEM INITIALIZATION AND COMPUTATIONAL
+C        METHOD CONTROL VARIABLE.
+C        (FOR DETAILS, SEE ODRPACK REFERENCE GUIDE.)
+      INTEGER K
+C        AN INDEXING VARIABLE.
+      INTEGER L
+C        AN INDEXING VARIABLE.
+      INTEGER LDIFX
+C        THE LEADING DIMENSION OF ARRAY IFIXX.
+C        (FOR DETAILS, SEE ODRPACK REFERENCE GUIDE.)
+      INTEGER LDRHO
+C        THE LEADING DIMENSION OF ARRAY RHO.
+C        (FOR DETAILS, SEE ODRPACK REFERENCE GUIDE.)
+      INTEGER LDTT
+C        THE LEADING DIMENSION OF ARRAY TT.
+      INTEGER LDX
+C        THE LEADING DIMENSION OF ARRAY X.
+C        (FOR DETAILS, SEE ODRPACK REFERENCE GUIDE.)
+      INTEGER LUNRPT
+C        THE LOGICAL UNIT NUMBER USED FOR COMPUTATION REPORTS.
+C        (FOR DETAILS, SEE ODRPACK REFERENCE GUIDE.)
+      INTEGER M
+C        THE NUMBER OF COLUMNS OF DATA IN THE INDEPENDENT VARIABLE.
+C        (FOR DETAILS, SEE ODRPACK REFERENCE GUIDE.)
+      INTEGER MAXIT
+C        THE MAXIMUM NUMBER OF ITERATIONS ALLOWED.
+C        (FOR DETAILS, SEE ODRPACK REFERENCE GUIDE.)
+      INTEGER MSGB(NP+1)
+C        THE ERROR CHECKING RESULTS FOR THE JACOBIAN WRT BETA.
+      INTEGER MSGX(M+1)
+C        THE ERROR CHECKING RESULTS FOR THE JACOBIAN WRT X.
+      INTEGER N
+C        THE NUMBER OF OBSERVATIONS.
+C        (FOR DETAILS, SEE ODRPACK REFERENCE GUIDE.)
+      INTEGER NP
+C        THE NUMBER OF FUNCTION PARAMETERS.
+C        (FOR DETAILS, SEE ODRPACK REFERENCE GUIDE.)
+      INTEGER NPLM1
+C        THE NUMBER OF ITEMS TO PRINT PER LINE, MINUS ONE.
+      INTEGER NPP
+C        THE NUMBER OF FUNCTION PARAMETERS ACTUALLY BEING ESTIMATED.
+      REAL ONE
+C        THE VALUE 1.0E0.
+      REAL PARTOL
+C        THE PARAMETER CONVERGENCE STOPPING CRITERIA.
+C        (FOR DETAILS, SEE ODRPACK REFERENCE GUIDE.)
+      LOGICAL RESTRT
+C        THE INDICATOR VARIABLE USED TO DESIGNATE WHETHER THE CALL IS
+C        A RESTART (RESTRT=TRUE) OR NOT (RESTRT=FALSE).
+      REAL RHO(LDRHO,M)
+C        THE DELTA WEIGHTS.
+C        (FOR DETAILS, SEE ODRPACK REFERENCE GUIDE.)
+      REAL RNORM
+C        THE NORM OF THE WEIGHTED OBSERVATIONAL ERRORS.
+      REAL SSF(NP)
+C        THE SCALE USED FOR THE BETA'S.
+C        (FOR DETAILS, SEE ODRPACK REFERENCE GUIDE.)
+      REAL SSTOL
+C        THE SUM-OF-SQUARES CONVERGENCE STOPPING CRITERIA.
+C        (FOR DETAILS, SEE ODRPACK REFERENCE GUIDE.)
+      REAL TAUFAC
+C        THE FACTOR USED TO COMPUTE THE INITIAL TRUST REGION DIAMETER.
+C        (FOR DETAILS, SEE ODRPACK REFERENCE GUIDE.)
+      CHARACTER*5 TEMPC(10)
+C        A TEMPORARY CHARACTER VECTOR.
+      REAL TT(LDTT,M)
+C        THE SCALE USED FOR THE DELTA'S.
+C        (FOR DETAILS, SEE ODRPACK REFERENCE GUIDE.)
+      REAL W(N)
+C        THE OBSERVATIONAL ERROR WEIGHTS.
+C        (FOR DETAILS, SEE ODRPACK REFERENCE GUIDE.)
+      REAL X(LDX,M)
+C        THE INDEPENDENT VARIABLE.
+C        (FOR DETAILS, SEE ODRPACK REFERENCE GUIDE.)
+      REAL Y(N)
+C        THE DEPENDENT VARIABLE.
+C        (FOR DETAILS, SEE ODRPACK REFERENCE GUIDE.)
+      REAL ZERO
+C          THE VALUE 0.0E0.
+C
+C
+      DATA ZERO,ONE/0.0E0,1.0E0/
+C
+C
+C***FIRST EXECUTABLE STATEMENT  SODPC1
+C
+C
+C  PRINT PROBLEM SIZE SPECIFICATION
+C
+      WRITE (LUNRPT,1000) N,M,NP,NPP
+C
+      IF (IPR.GE.2) THEN
+C
+C  PRINT INDEPENDENT VARIABLE DATA
+C
+         IF (ISODR) THEN
+            WRITE (LUNRPT,2010)
+         ELSE
+            WRITE (LUNRPT,2020)
+         END IF
+         NPLM1 = 1
+         DO 20 J = 1,M,NPLM1+1
+            IF (.NOT.ISODR) THEN
+               L = MIN(M,J+NPLM1) - J + 1
+               WRITE (FMT1,7000) 6,L
+               WRITE (LUNRPT,FMT1) (K,K=J,MIN(M,J+NPLM1))
+               WRITE (FMT1,8000) 5,L
+               WRITE (LUNRPT,FMT1)
+               WRITE (LUNRPT,2100) (X(1,K),X(N,K),K=J,MIN(M,J+NPLM1))
+            ELSE
+               L = MIN(M,J+NPLM1) - J + 1
+               WRITE (FMT1,7000) 20,L
+               WRITE (LUNRPT,FMT1) (K,K=J,MIN(M,J+NPLM1))
+               WRITE (FMT1,8000) 19,L
+               WRITE (LUNRPT,FMT1)
+               WRITE (LUNRPT,2200) (X(1,K),X(N,K),K=J,MIN(M,J+NPLM1))
+               IF (IFIXX(1,1).LT.0) THEN
+                  WRITE (LUNRPT,2300) ('   NO',K=1,2*L)
+               ELSE
+                  L = 0
+                  DO 10 K=J,MIN(M,J+NPLM1)
+                     L = L + 1
+                     IF (IFIXX(1,K).EQ.0) THEN
+                        TEMPC(2*L-1) = '  YES'
+                     ELSE
+                        TEMPC(2*L-1) = '   NO'
+                     END IF
+                     IF (LDIFX.EQ.1) THEN
+                        IF (IFIXX(1,K).EQ.0) THEN
+                           TEMPC(2*L) = '  YES'
+                        ELSE
+                           TEMPC(2*L) = '   NO'
+                        END IF
+                     ELSE
+                        IF (IFIXX(N,K).EQ.0) THEN
+                           TEMPC(2*L) = '  YES'
+                        ELSE
+                           TEMPC(2*L) = '   NO'
+                        END IF
+                     END IF
+   10             CONTINUE
+                  WRITE (LUNRPT,2300) (TEMPC(K),K=1,2*L)
+               END IF
+               WRITE (LUNRPT,2500) (DELTA(1,K),DELTA(N,K),
+     +                              K=J,MIN(M,J+NPLM1))
+               IF (TT(1,1).LT.0) THEN
+                  WRITE (LUNRPT,2600) (ABS(TT(1,1)),ABS(TT(1,1)),
+     +                                K=J,MIN(M,J+NPLM1))
+               ELSE
+                  IF (LDTT.EQ.1) THEN
+                     WRITE (LUNRPT,2600) (TT(1,K),TT(1,K),
+     +                                    K=J,MIN(M,J+NPLM1))
+                  ELSE
+                     WRITE (LUNRPT,2600) (TT(1,K),TT(N,K),
+     +                                    K=J,MIN(M,J+NPLM1))
+                  END IF
+               END IF
+               IF (RHO(1,1).LT.0) THEN
+                  WRITE (LUNRPT,2700) (ABS(RHO(1,1)),ABS(RHO(1,1)),
+     +                                K=J,MIN(M,J+NPLM1))
+               ELSE
+                  IF (LDRHO.EQ.1) THEN
+                     WRITE (LUNRPT,2700) (RHO(1,K),RHO(1,K),
+     +                                    K=J,MIN(M,J+NPLM1))
+                  ELSE
+                     WRITE (LUNRPT,2700) (RHO(1,K),RHO(N,K),
+     +                                    K=J,MIN(M,J+NPLM1))
+                  END IF
+               END IF
+            END IF
+   20    CONTINUE
+C
+C  PRINT DEPENDENT VARIABLE DATA AND OBSERVATION ERROR WEIGHTS
+C
+         WRITE (LUNRPT,3000)
+         WRITE (FMT1,8000) 19,1
+         WRITE (LUNRPT,FMT1)
+         WRITE (LUNRPT,3100) Y(1),Y(N)
+         IF (W(1).LT.ZERO) THEN
+            WRITE (LUNRPT,3200) ONE,ONE
+         ELSE
+            WRITE (LUNRPT,3200) W(1),W(N)
+         END IF
+C
+C  PRINT FUNCTION PARAMETER DATA
+C
+         WRITE (LUNRPT,4000)
+         NPLM1 = 3
+         DO 50 J=1,NP,NPLM1+1
+            WRITE (LUNRPT,4100) (K,K=J,MIN(NP,J+NPLM1))
+            WRITE (LUNRPT,4200) (BETA(K),K=J,MIN(NP,J+NPLM1))
+            L = 0
+            IF (IFIXB(1).LT.0) THEN
+               DO 30 K=J,MIN(NP,J+NPLM1)
+                  L = L + 1
+                  TEMPC(L) = '   NO'
+   30          CONTINUE
+            ELSE
+               DO 40 K=J,MIN(NP,J+NPLM1)
+                  L = L + 1
+                  IF (IFIXB(K).NE.0) THEN
+                     TEMPC(L) = '   NO'
+                  ELSE
+                     TEMPC(L) = '  YES'
+                  END IF
+   40          CONTINUE
+            END IF
+            WRITE (LUNRPT,4300) (TEMPC(K),K=1,L)
+            IF (SSF(1).LT.ZERO) THEN
+               WRITE (LUNRPT,4400) (ABS(SSF(1)),K=J,MIN(NP,J+NPLM1))
+            ELSE
+               WRITE (LUNRPT,4400) (SSF(K),K=J,MIN(NP,J+NPLM1))
+            END IF
+   50    CONTINUE
+      END IF
+C
+C  PRINT JOB SPECS AND STOPPING CRITERIA
+C
+      WRITE (LUNRPT,5000) JOB,TAUFAC,SSTOL,PARTOL,MAXIT
+      IF (RESTRT) THEN
+         WRITE (LUNRPT,5110)
+      ELSE
+         WRITE (LUNRPT,5120)
+      END IF
+      IF (ISODR) THEN
+         IF (INITD) THEN
+            WRITE (LUNRPT,5311)
+         ELSE
+            WRITE (LUNRPT,5312)
+         END IF
+      ELSE
+         WRITE (LUNRPT,5320)
+      END IF
+      IF (ANAJAC) THEN
+         WRITE (LUNRPT,5410)
+         IF (CHKJAC) THEN
+            WRITE (LUNRPT,5411)
+            IF (MSGB(1).EQ.2 .OR. MSGX(1).EQ.2) THEN
+               WRITE (LUNRPT,5412)
+            ELSE
+               WRITE (LUNRPT,5413)
+            END IF
+         ELSE
+            WRITE (LUNRPT,5414)
+         END IF
+      ELSE
+         WRITE (LUNRPT,5420)
+      END IF
+      IF (ISODR) THEN
+         WRITE (LUNRPT,5510)
+      ELSE
+         WRITE (LUNRPT,5520)
+      END IF
+C
+C  PRINT INITIAL SUM OF SQUARES
+C
+      WRITE (LUNRPT,6000)
+      WRITE (LUNRPT,6100) RNORM**2
+      IF (ISODR) THEN
+         WRITE (LUNRPT,6200) SNRM2(N*M,DELWTD,1)**2
+         WRITE (LUNRPT,6300) SNRM2(N,FWTD,1)**2
+      END IF
+C
+      RETURN
+C
+C  FORMAT STATEMENTS
+C
+ 1000 FORMAT
+     +   (///' PROBLEM SIZE:'/
+     +       ' -------------'//
+     +       ' NUMBER OF OBSERVATIONS                            ',I5/
+     +       ' NUMBER OF COLUMNS OF DATA IN INDEPENDENT VARIABLE ',I5/
+     +       ' NUMBER OF FUNCTION PARAMETERS                     ',I5/
+     +       ' NUMBER OF UNFIXED FUNCTION PARAMETERS             ',I5)
+ 2010 FORMAT
+     +   (///' INDEPENDENT VARIABLE AND DELTA WEIGHT SUMMARY:'/
+     +       ' ----------------------------------------------')
+ 2020 FORMAT
+     +   (///' INDEPENDENT VARIABLE SUMMARY:'/
+     +       ' -----------------------------')
+ 2100 FORMAT
+     +   (' X - ', 6E13.5)
+ 2200 FORMAT
+     +   ('               X - ', 6E13.5)
+ 2300 FORMAT
+     +   ('           FIXED - ', 6(8X,A5))
+ 2500 FORMAT
+     +   ('   INITIAL DELTA - ', 6E13.5)
+ 2600 FORMAT
+     +   ('     DELTA SCALE - ', 6E13.5)
+ 2700 FORMAT
+     +   ('   DELTA WEIGHTS - ', 6E13.5)
+ 3000 FORMAT
+     +   (///' DEPENDENT VARIABLE AND OBSERVATIONAL ERROR WEIGHT',
+     +   ' SUMMARY:'/
+     +       ' -------------------------------------------------',
+     +   '---------'/)
+ 3100 FORMAT
+     +   ('               Y - ', 6E13.5)
+ 3200 FORMAT
+     +   (' OBS. ERROR WTS. - ', 6E13.5)
+ 4000 FORMAT
+     +   (///' FUNCTION PARAMETER SUMMARY:'/
+     +       ' ---------------------------')
+ 4100 FORMAT
+     +   (/'        INDEX - ', 5I16)
+ 4200 FORMAT
+     +   (' INITIAL BETA - ', 5E16.8)
+ 4300 FORMAT
+     +   ('        FIXED - ', 5(11X,A5))
+ 4400 FORMAT
+     +   ('   BETA SCALE - ', 5E16.8)
+ 5000 FORMAT
+     +   (///' CONTROL VALUES AND STOPPING CRITERIA:'/
+     +       ' --------------------------------------'//
+     +       '       *                                     '/
+     +       '    JOB    TAUFAC     SSTOL    PARTOL  MAXIT'/
+     +       1X,I6.4,3E10.2,I7//' *')
+ 5110 FORMAT
+     +   ('  A.  FIT IS A RESTART.')
+ 5120 FORMAT
+     +   ('  A.  FIT IS NOT A RESTART.')
+ 5311 FORMAT
+     +   ('  B.  DELTAS ARE INITIALIZED TO ZERO.')
+ 5312 FORMAT
+     +   ('  B.  DELTAS ARE INITIALIZED BY USER.')
+ 5320 FORMAT
+     +   ('  B.  DELTAS ARE FIXED AT ZERO.')
+ 5410 FORMAT
+     +   ('  C.  DERIVATIVES ARE SUPPLIED BY USER.')
+ 5411 FORMAT
+     +   ('      USER-SUPPLIED DERIVATIVES WERE CHECKED.')
+ 5412 FORMAT
+     +   ('      THE CORRECTNESS OF SOME OF THE DERIVATIVES IS'/
+     +    '      QUESTIONABLE.  SEE ERROR MESSAGES FOR DETAILS.')
+ 5413 FORMAT
+     +   ('      THE DERIVATIVES APPEAR TO BE CORRECT.')
+ 5414 FORMAT
+     +   ('      USER-SUPPLIED DERIVATIVES WERE NOT CHECKED.')
+ 5420 FORMAT
+     +   ('  C.  DERIVATIVES ARE COMPUTED BY FINITE DIFFERENCES.')
+ 5510 FORMAT
+     +   ('  D.  FIT IS BY METHOD OF ORTHOGONAL DISTANCE REGRESSION.')
+ 5520 FORMAT
+     +   ('  D.  FIT IS BY METHOD OF ORDINARY LEAST SQUARES.')
+ 6000 FORMAT
+     +   (///' INITIAL SUMS OF SQUARES:'/
+     +       ' ------------------------'/)
+ 6100 FORMAT
+     +   (   ' SUM OF SQUARED WEIGHTED OBSERVATIONAL ERRORS ', E17.8)
+ 6200 FORMAT
+     +   (   ' SUM OF SQUARED WEIGHTED DELTAS               ', E17.8)
+ 6300 FORMAT
+     +   (   ' SUM OF SQUARED WEIGHTED EPSILONS             ', E17.8)
+ 7000 FORMAT
+     +   ('(/',I2,'X,',I2,'(''           COLUMN '',I3,''     ''))')
+ 8000 FORMAT
+     +   ('(',I2,'X,',I2,'(''        OBS 1        OBS N''))')
+      END

@@ -1,0 +1,113 @@
+ 
+      SUBROUTINE DSVDC(X,LDX,N,P,S,E,U,LDU,V,LDV,WORK,JOB,INFO)
+C***BEGIN PROLOGUE  DSVDC
+C***DATE WRITTEN   790319   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D6
+C***KEYWORDS  DOUBLE PRECISION,LINEAR ALGEBRA,LINPACK,MATRIX,
+C             SINGULAR VALUE DECOMPOSITION
+C***AUTHOR  STEWART, G. W., (U. OF MARYLAND)
+C***PURPOSE  Perform the singular value decomposition of a d.p. NXP
+C            matrix.
+C***DESCRIPTION
+C
+C     DSVDC is a subroutine to reduce a double precision NxP matrix X
+C     by orthogonal transformations U and V to diagonal form.  The
+C     diagonal elements S(I) are the singular values of X.  The
+C     columns of U are the corresponding left singular vectors,
+C     and the columns of V the right singular vectors.
+C
+C     On Entry
+C
+C         X         DOUBLE PRECISION(LDX,P), where LDX .GE. N.
+C                   X contains the matrix whose singular value
+C                   decomposition is to be computed.  X is
+C                   destroyed by DSVDC.
+C
+C         LDX       INTEGER.
+C                   LDX is the leading dimension of the array X.
+C
+C         N         INTEGER.
+C                   N is the number of columns of the matrix X.
+C
+C         P         INTEGER.
+C                   P is the number of rows of the matrix X.
+C
+C         LDU       INTEGER.
+C                   LDU is the leading dimension of the array U.
+C                   (See below).
+C
+C         LDV       INTEGER.
+C                   LDV is the leading dimension of the array V.
+C                   (See below).
+C
+C         WORK      DOUBLE PRECISION(N).
+C                   WORK is a scratch array.
+C
+C         JOB       INTEGER.
+C                   JOB controls the computation of the singular
+C                   vectors.  It has the decimal expansion AB
+C                   with the following meaning
+C
+C                        A .EQ. 0    do not compute the left singular
+C                                  vectors.
+C                        A .EQ. 1    return the N left singular vectors
+C                                  in U.
+C                        A .GE. 2    return the first MIN(N,P) singular
+C                                  vectors in U.
+C                        B .EQ. 0    do not compute the right singular
+C                                  vectors.
+C                        B .EQ. 1    return the right singular vectors
+C                                  in V.
+C
+C     On Return
+C
+C         S         DOUBLE PRECISION(MM), where MM=MIN(N+1,P).
+C                   The first MIN(N,P) entries of S contain the
+C                   singular values of X arranged in descending
+C                   order of magnitude.
+C
+C         E         DOUBLE PRECISION(P).
+C                   E ordinarily contains zeros.  However see the
+C                   discussion of INFO for exceptions.
+C
+C         U         DOUBLE PRECISION(LDU,K), where LDU .GE. N.
+C                   If JOBA .EQ. 1, then K .EQ. N.
+C                   If JOBA .GE. 2, then K .EQ. MIN(N,P).
+C                   U contains the matrix of right singular vectors.
+C                   U is not referenced if JOBA .EQ. 0.  If N .LE. P
+C                   or if JOBA .EQ. 2, then U may be identified with X
+C                   in the subroutine call.
+C
+C         V         DOUBLE PRECISION(LDV,P), where LDV .GE. P.
+C                   V contains the matrix of right singular vectors.
+C                   V is not referenced if JOB .EQ. 0.  If P .LE. N,
+C                   then V may be identified with X in the
+C                   subroutine call.
+C
+C         INFO      INTEGER.
+C                   The singular values (and their corresponding
+C                   singular vectors) S(INFO+1),S(INFO+2),...,S(M)
+C                   are correct (here M=MIN(N,P)).  Thus if
+C                   INFO .EQ. 0, all the singular values and their
+C                   vectors are correct.  In any event, the matrix
+C                   B = TRANS(U)*X*V is the bidiagonal matrix
+C                   with the elements of S on its diagonal and the
+C                   elements of E on its super-diagonal (TRANS(U)
+C                   is the transpose of U).  Thus the singular
+C                   values of X and B are the same.
+C
+C     LINPACK.  This version dated 03/19/79 .
+C     G. W. Stewart, University of Maryland, Argonne National Lab.
+C
+C     DSVDC uses the following functions and subprograms.
+C
+C     External DROT
+C     BLAS DAXPY,DDOT,DSCAL,DSWAP,DNRM2,DROTG
+C     Fortran DABS,DMAX1,MAX0,MIN0,MOD,DSQRT
+C***REFERENCES  DONGARRA J.J., BUNCH J.R., MOLER C.B., STEWART G.W.,
+C                 *LINPACK USERS  GUIDE*, SIAM, 1979.
+C***ROUTINES CALLED  DAXPY,DDOT,DNRM2,DROT,DROTG,DSCAL,DSWAP
+C***END PROLOGUE  DSVDC
+ 
+ 

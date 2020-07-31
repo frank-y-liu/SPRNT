@@ -1,0 +1,69 @@
+ 
+      SUBROUTINE CTRSL(T,LDT,N,B,JOB,INFO)
+C***BEGIN PROLOGUE  CTRSL
+C***DATE WRITTEN   780814   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D2C3
+C***KEYWORDS  COMPLEX,LINEAR ALGEBRA,LINPACK,MATRIX,SOLVE,TRIANGULAR
+C***AUTHOR  STEWART, G. W., (U. OF MARYLAND)
+C***PURPOSE  Solves systems of the form  T*X=B  or CTRANS(T)*X=B  where
+C            T is a triangular matrix. Here CTRANS(T) is conjugate
+C            transpose.
+C***DESCRIPTION
+C
+C     CTRSL solves systems of the form
+C
+C                   T * X = B
+C     or
+C                   CTRANS(T) * X = B
+C
+C     where T is a triangular matrix of order N.  Here CTRANS(T)
+C     denotes the conjugate transpose of the matrix T.
+C
+C     On Entry
+C
+C         T         COMPLEX(LDT,N)
+C                   T contains the matrix of the system.  The zero
+C                   elements of the matrix are not referenced, and
+C                   the corresponding elements of the array can be
+C                   used to store other information.
+C
+C         LDT       INTEGER
+C                   LDT is the leading dimension of the array T.
+C
+C         N         INTEGER
+C                   N is the order of the system.
+C
+C         B         COMPLEX(N).
+C                   B contains the right hand side of the system.
+C
+C         JOB       INTEGER
+C                   JOB specifies what kind of system is to be solved.
+C                   If JOB is
+C
+C                        00   solve T*X = B, T lower triangular,
+C                        01   solve T*X = B, T upper triangular,
+C                        10   solve CTRANS(T)*X = B, T lower triangular,
+C                        11   solve CTRANS(T)*X = B, T upper triangular.
+C
+C     On Return
+C
+C         B         B contains the solution, if INFO .EQ. 0.
+C                   Otherwise B is unaltered.
+C
+C         INFO      INTEGER
+C                   INFO contains zero if the system is nonsingular.
+C                   Otherwise INFO contains the index of
+C                   the first zero diagonal element of T.
+C
+C     LINPACK.  This version dated 08/14/78 .
+C     G. W. Stewart, University of Maryland, Argonne National Lab.
+C
+C     Subroutines and Functions
+C
+C     BLAS CAXPY,CDOTC
+C     Fortran ABS,AIMAG,CONJG,MOD,REAL
+C***REFERENCES  DONGARRA J.J., BUNCH J.R., MOLER C.B., STEWART G.W.,
+C                 *LINPACK USERS  GUIDE*, SIAM, 1979.
+C***ROUTINES CALLED  CAXPY,CDOTC
+C***END PROLOGUE  CTRSL

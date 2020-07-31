@@ -1,0 +1,135 @@
+ 
+      subroutine linfs(n, x, y, beta1, beta2, lambda, kount, p, q, r,
+     1                 ifault)
+ 
+------------------------------------------------------------------------
+ 
+    Package:  SLRPACK
+ 
+    Version:  October, 1985
+ 
+------------------------------------------------------------------------
+ 
+    PURPOSE
+    -------
+ 
+    This user-callable subroutine solves the simple model,
+    y = beta1 + (beta2)x, under the Chebychev norm criterion.
+ 
+    DESCRIPTION
+    -----------
+ 
+    1.  The Y's are observed values of the dependent variable and the
+        X's are the observed values of the independent variables, the
+        predictor variables.
+ 
+    2.  The general Chebychev problem is to minimize LAMBDA where
+ 
+             LAMBDA = MAX( |Y(i) - BETA1 - X(i)*BETA2| )  over all i
+ 
+        such that
+ 
+             Y(i)-LAMBDA <= BETA1 + X(i)*BETA2 <= Y(i)+LAMBDA
+ 
+    3.  The optimal value of (BETA1, BETA2)' will minimize the
+        maximum deviation and LAMBDA will be the value of this deviation.
+ 
+    INPUT PARAMETERS
+    ----------------
+ 
+    N      Integer scalar (unchanged on output).
+           Number of observations.
+ 
+           N must be at least 3.
+ 
+    X      Real vector dimensioned at least N (unchanged on output).
+           Observed values of the independent variable.
+ 
+    Y      Real vector dimensioned at least N (unchanged on output).
+           Observed values of the dependent variable.
+ 
+    OUTPUT PARAMETERS
+    -----------------
+ 
+    BETA1      Real scalar.
+               The estimated intercept term for the fitted line.
+ 
+    BETA2      Real scalar.
+               The estimated slope term for the fitted line.
+ 
+    LAMBDA     Real scalar.
+               The least maximum absolute deviation, also
+               the objective function value.
+ 
+    P          Integer scalar.
+               Indicates which row of X is the p-th constraint.
+ 
+    Q          Integer scalar.
+               Indicates which row of X is the q-th constraint.
+ 
+    R          Integer scalar.
+               Indicates which row of X is the r-th constraint.
+ 
+    KOUNT      Integer scalar.
+               The number of iterations.
+ 
+    IFAULT     Integer scalar.
+               Failure indicator.
+ 
+               = 0    normal termination
+ 
+               = 1    the data set is too small
+                      cannot compute BETA1, BETA2, LAMBDA, P, Q, R
+ 
+               = 2    all x values are equal
+                      cannot compute BETA1, BETA2, LAMBDA, P, Q, R
+ 
+               = 3    the data are collinear, all constraints are feasible
+                      cannot compute P, Q, R
+ 
+    PRECISION
+    ---------
+ 
+    All calculations are done in single precision.
+ 
+    LANGUAGE
+    --------
+ 
+    All code is written in standard Fortran 77.
+ 
+    OTHER SUBROUTINES
+    -----------------
+ 
+    PORT  subroutine  R1MACH
+ 
+    REFERENCE
+    ---------
+ 
+    Sklar, M. and R. Armstrong (1983). "A Linear Programming Algorithm
+         for the Simple Model for Discrete Chebychev Curve Fitting",
+         Computers and Operations Research 10, 237-248.
+ 
+    Sklar, M. and R. Armstrong (1984). "An Algorithm for Discrete
+       Chebychev Curve Fitting for the Simple Model Using A Dual
+       Linear Programming Approach", Communications in Statistics:
+       Simulation and Computation, 13(4), 555-569.
+ 
+    AUTHORS
+    -------
+ 
+    Michael G. Sklar and Ronald D. Armstrong
+    University of Georgia
+ 
+    NBS CONTACT
+    -----------
+ 
+    Sally E. Howe
+    Scientific Computing Division
+    Center for Applied Mathematics
+    National Engineering Labratory
+    301-921-3395
+ 
+----------------------------------------------------------------------
+ 
+ 
+ 

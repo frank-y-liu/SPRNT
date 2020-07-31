@@ -1,0 +1,43 @@
+ 
+      DOUBLE PRECISION FUNCTION DPOCH1(A,X)
+C***BEGIN PROLOGUE  DPOCH1
+C***DATE WRITTEN   770801   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C1,C7A
+C***KEYWORDS  DOUBLE PRECISION,FIRST ORDER,POCHHAMMER,SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Calculates a generalization of Pochhammer's symbol starting
+C            from first order. (double precision)
+C***DESCRIPTION
+C
+C Evaluate a double precision generalization of Pochhammer's symbol
+C for double precision A and X for special situations that require
+C especially accurate values when X is small in
+C        POCH1(A,X) = (POCH(A,X)-1)/X
+C                   = (GAMMA(A+X)/GAMMA(A) - 1.0)/X .
+C This specification is particularly suited for stably computing
+C expressions such as
+C        (GAMMA(A+X)/GAMMA(A) - GAMMA(B+X)/GAMMA(B))/X
+C             = POCH1(A,X) - POCH1(B,X)
+C Note that POCH1(A,0.0) = PSI(A)
+C
+C When ABS(X) is so small that substantial cancellation will occur if
+C the straightforward formula is used, we use an expansion due
+C to Fields and discussed by Y. L. Luke, The Special Functions and Their
+C Approximations, Vol. 1, Academic Press, 1969, page 34.
+C
+C The ratio POCH(A,X) = GAMMA(A+X)/GAMMA(A) is written by Luke as
+C        (A+(X-1)/2)**X * polynomial in (A+(X-1)/2)**(-2) .
+C In order to maintain significance in POCH1, we write for positive a
+C        (A+(X-1)/2)**X = EXP(X*ALOG(A+(X-1)/2)) = EXP(Q)
+C                       = 1.0 + Q*EXPREL(Q) .
+C Likewise the polynomial is written
+C        POLY = 1.0 + X*POLY1(A,X) .
+C Thus,
+C        POCH1(A,X) = (POCH(A,X) - 1) / X
+C                   = EXPREL(Q)*(Q/X + Q*POLY1(A,X)) + POLY1(A,X)
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D1MACH,DCOT,DEXPRL,DPOCH,DPSI,XERROR
+C***END PROLOGUE  DPOCH1
+ 
+ 

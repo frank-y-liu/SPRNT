@@ -1,0 +1,79 @@
+ 
+      SUBROUTINE SSPEV(A,N,E,V,LDV,WORK,JOB,INFO)
+C***BEGIN PROLOGUE  SSPEV
+C***DATE WRITTEN   800808   (YYMMDD)
+C***REVISION DATE  840425   (YYMMDD)
+C***CATEGORY NO.  D4A1
+C***KEYWORDS  EIGENVALUES,EIGENVECTORS,EISPACK,PACKED,REAL,SYMMETRIC
+C***AUTHOR  KAHANER, K. K., (NBS)
+C           MOLER, C. B., (U. OF NEW MEXICO)
+C           STEWART, G. W., (U. OF MARYLAND)
+C***PURPOSE  To compute the eigenvalues and, optionally, the eigen-
+C            vectors of a real SYMMETRIC matrix stored in packed form.
+C***DESCRIPTION
+C
+C     LICEPACK.  This version dated 08/08/80.
+C     David Kahaner, Cleve Moler, Pete Stewart
+C          N.B.S.       U.N.M.     N.B.S./U.MD.
+C
+C     Abstract
+C      SSPEV computes the eigenvalues and, optionally, the eigenvectors
+C      of a real symmetric matrix stored in packed form.
+C
+C     Call Sequence Parameters-
+C       (The values of parameters marked with * (star) will be  changed
+C         by SSPEV.)
+C
+C        A*      REAL(N*(N+1)/2)
+C                real symmetric packed input matrix.  Contains upper
+C                triangle and diagonal of A, by column (elements
+C                11, 12, 22, 13, 23, 33, ...).
+C
+C        N       INTEGER
+C                set by the user to
+C                the order of the matrix A.
+C
+C        E*      REAL(N)
+C                on return from SSPEV, E contains the eigenvalues of A.
+C                See also INFO below.
+C
+C        V*      REAL(LDV,N)
+C                on return from SSPEV, if the user has set JOB
+C                = 0        V is not referenced.
+C                = nonzero  the N eigenvectors of A are stored in the
+C                first N columns of V.  See also INFO below.
+C
+C        LDV     INTEGER
+C                set by the user to
+C                the leading dimension of the array V if JOB is also
+C                set nonzero.  In that case, N must be .LE. LDV.
+C                If JOB is set to zero, LDV is not referenced.
+C
+C        WORK*   REAL(2N)
+C                temporary storage vector.  Contents changed by SSPEV.
+C
+C        JOB     INTEGER
+C                set by the user to
+C                = 0        eigenvalues only to be calculated by SSPEV.
+C                           Neither V nor LDV are referenced.
+C                = nonzero  eigenvalues and vectors to be calculated.
+C                           In this case, A & V must be distinct arrays.
+C
+C       INFO*   INTEGER
+C               on return from SSPEV, the value of INFO is
+C               = 0 for normal return.
+C               = K if the eigenvalue iteration fails to converge.
+C                   Eigenvalues and vectors 1 through K-1 are correct.
+C
+C
+C     Error Messages-
+C          No. 1   recoverable  N is greater than LDV and JOB is nonzero
+C          No. 2   recoverable  N is less than one
+C
+C     Subroutines Used
+C
+C      EISPACK- IMTQL2, TQLRAT, TRBAK3, TRED3
+C      SLATEC- XERROR
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  IMTQL2,TQLRAT,TRBAK3,TRED3,XERROR
+C***END PROLOGUE  SSPEV

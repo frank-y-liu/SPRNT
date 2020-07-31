@@ -1,0 +1,30 @@
+ 
+      DOUBLE PRECISION FUNCTION DAI(X)
+C***BEGIN PROLOGUE  DAI
+C***DATE WRITTEN   770701   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C10D
+C***KEYWORDS  AIRY FUNCTION,DOUBLE PRECISION,SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Calculates the d.p. Airy function.
+C***DESCRIPTION
+C
+C DAI(X) calculates the double precision Airy function for double
+C precision argument X.
+C
+C Series for AIF        on the interval -1.00000E+00 to  1.00000E+00
+C                                        with weighted error   8.37E-33
+C                                         log weighted error  32.08
+C                               significant figures required  30.87
+C                                    decimal places required  32.63
+C
+C Series for AIG        on the interval -1.00000E+00 to  1.00000E+00
+C                                        with weighted error   7.47E-34
+C                                         log weighted error  33.13
+C                               significant figures required  31.50
+C                                    decimal places required  33.68
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D1MACH,D9AIMP,DAIE,DCSEVL,INITDS,XERROR
+C***END PROLOGUE  DAI
+ 
+ 

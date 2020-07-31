@@ -1,0 +1,48 @@
+ 
+      SUBROUTINE QCHEB(X,FVAL,CHEB12,CHEB24)
+C***BEGIN PROLOGUE  QCHEB
+C***REFER TO  QC25C,QC25F,QC25S
+C***ROUTINES CALLED  (NONE)
+C***REVISION DATE  830518   (YYMMDD)
+C***KEYWORDS  CHEBYSHEV SERIES EXPANSION,FAST FOURIER TRANSFORM
+C***AUTHOR  PIESSENS, ROBERT, APPLIED MATH. AND PROGR. DIV. -
+C             K. U. LEUVEN
+C           DE DONCKER, ELISE, APPLIED MATH. AND PROGR. DIV. -
+C             K. U. LEUVEN
+C***PURPOSE  This routine computes the CHEBYSHEV series expansion
+C            of degrees 12 and 24 of a function using A
+C            FAST FOURIER TRANSFORM METHOD
+C            F(X) = SUM(K=1,..,13) (CHEB12(K)*T(K-1,X)),
+C            F(X) = SUM(K=1,..,25) (CHEB24(K)*T(K-1,X)),
+C            Where T(K,X) is the CHEBYSHEV POLYNOMIAL OF DEGREE K.
+C***DESCRIPTION
+C
+C        Chebyshev Series Expansion
+C        Standard Fortran Subroutine
+C        Real version
+C
+C        PARAMETERS
+C          ON ENTRY
+C           X      - Real
+C                    Vector of dimension 11 containing the
+C                    Values COS(K*PI/24), K = 1, ..., 11
+C
+C           FVAL   - Real
+C                    Vector of dimension 25 containing the
+C                    function values at the points
+C                    (B+A+(B-A)*COS(K*PI/24))/2, K = 0, ...,24,
+C                    where (A,B) is the approximation interval.
+C                    FVAL(1) and FVAL(25) are divided by two
+C                    (these values are destroyed at output).
+C
+C          ON RETURN
+C           CHEB12 - Real
+C                    Vector of dimension 13 containing the
+C                    CHEBYSHEV coefficients for degree 12
+C
+C           CHEB24 - Real
+C                    Vector of dimension 25 containing the
+C                    CHEBYSHEV Coefficients for degree 24
+C***END PROLOGUE  QCHEB
+ 
+ 

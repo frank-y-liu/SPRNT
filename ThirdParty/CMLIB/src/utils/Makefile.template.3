@@ -1,0 +1,71 @@
+
+SUBLIBRECORDS = $(SUBLIBS:%=timestamp/%)
+
+
+# --------------------------------------------------------------------------
+
+
+.PRECIOUS : libcm.a
+
+libcm.a : timestamp sublibs
+	@echo " " ; echo "Updating library file ..." ; echo " "
+	csh $(SCRIPTDIR)/Update $@ $(SCRIPTDIR) $(HOST) '$(RANLIB)' $(THISDIR)/$@
+
+timestamp :
+	mkdir timestamp
+
+sublibs : $(SUBLIBRECORDS) $(SPECIALRECORDS)
+
+
+# --------------------------------------------------------------------------
+
+
+#  ... how to compile a sublibrary (default case)
+
+$(SUBLIBRECORDS) : $(SRCDIR)/$$(@F)/*.f ; $(COMPILE)
+
+
+# --------------------------------------------------------------------------
+
+
+#  ... sublibraries requiring special processing
+
+
+#  -------
+#  machcon  ... the machine-dependent constants for the Sun
+#  -------
+
+timestamp/machcon : src/machcon/*.f ; $(COMPILE)
+
+src/machcon/*.f :
+	echo "if (! -d src) mkdir src" | csh
+	echo "if (! -d src/machcon) mkdir src/machcon" | csh
+	csh $(SCRIPTDIR)/genmachcon $(MACHCON)
+	mv i1mach.f r1mach.f d1mach.f src/machcon
+
+
+# --------------------------------------------------------------------------
+
+
+#  ... the following targets run the cmlib quickchecks
+
+testall : testall.out
+
+testall.out : libcm.a
+	@echo " "
+	@echo "Testing all of cmlib for $(ARCH) (this make take a while) ..."
+	@echo " "
+	csh $(SCRIPTDIR)/Testall $(HOST) $(COMPILER) "$(FFLAGS)" $(THISDIR) \
+            >> testall.out
+
+test :
+	@csh $(SCRIPTDIR)/Test $(HOST) $(COMPILER) "$(FFLAGS)" $(THISDIR)
+
+# --------------------------------------------------------------------------
+
+make clean :
+	rm -f  core *.o *.trace Compile bintmp
+
+veryclean :
+	make clean
+	rm -r -f libcm.a timestamp src/machcon

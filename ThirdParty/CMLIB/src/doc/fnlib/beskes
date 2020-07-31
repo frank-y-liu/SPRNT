@@ -1,0 +1,24 @@
+ 
+      SUBROUTINE BESKES(XNU,X,NIN,BKE)
+C***BEGIN PROLOGUE  BESKES
+C***DATE WRITTEN   770601   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C10B3
+C***KEYWORDS  BESSEL FUNCTION,EXPONENTIALLY SCALED,FRACTIONAL ORDER,
+C             MODIFIED BESSEL FUNCTION,SEQUENCE,THIRD KIND
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes a sequence of exponentially scaled modified Bessel
+C            functions of the third kind of fractional order.
+C***DESCRIPTION
+C
+C BESKES computes a sequence of exponentially scaled
+C (i.e., multipled by EXP(X)) modified Bessel
+C functions of the third kind of order XNU + I at X, where X .GT. 0,
+C XNU lies in (-1,1), and I = 0, 1, ... , NIN - 1, if NIN is positive
+C and I = 0, -1, ... , NIN + 1, if NIN is negative.  On return, the
+C vector BKE(.) contains the results at X for order starting at XNU.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  R1MACH,R9KNUS,XERROR
+C***END PROLOGUE  BESKES
+ 
+ 

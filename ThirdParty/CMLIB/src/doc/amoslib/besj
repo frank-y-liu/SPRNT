@@ -1,0 +1,75 @@
+ 
+      SUBROUTINE BESJ(X,ALPHA,N,Y,NZ)
+C***BEGIN PROLOGUE  BESJ
+C***DATE WRITTEN   750101   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C10A3
+C***KEYWORDS  BESSEL FUNCTION,J BESSEL FUNCTION,SPECIAL FUNCTION
+C***AUTHOR  AMOS, D. E., (SNLA)
+C           DANIEL, S. L., (SNLA)
+C           WESTON, M. K., (SNLA)
+C***PURPOSE  BESJ computes an N member sequence of J Bessel functions
+C            J/SUB(ALPHA+K-1)/(X), K=1,..,N for non-negative ALPHA and X
+C***DESCRIPTION
+C
+C     Written by D. E. Amos, S. L. Daniel and M. K. Weston, January 1975
+C
+C     References
+C         SAND-75-0147
+C
+C         CDC 6600 subroutines IBESS and JBESS for Bessel functions
+C         I(NU,X) and J(NU,X), X .GE. 0, NU .GE. 0  by D. E. Amos, S. L.
+C         Daniel, M. K. Weston,  ACM Transactions on Mathematical
+C         Software, Vol. 3, pp. 76-92 (1977).
+C
+C         Tables of Bessel Functions of Moderate or Large Orders,
+C         NPL Mathematical Tables, Vol. 6, by F. W. J. Olver, Her
+C         Majesty's Stationery Office, London, 1962.
+C
+C     Abstract
+C         BESJ computes an N member sequence of J bessel functions
+C         J/sub(ALPHA+K-1)/(X), K=1,...,N for non-negative ALPHA and X.
+C         A combination of the power series, the asymptotic expansion
+C         for X to infinity and the uniform asymptotic expansion for
+C         NU to infinity are applied over subdivisions of the (NU,X)
+C         plane.  For values of (NU,X) not covered by one of these
+C         formulae, the order is incremented or decremented by integer
+C         values into a region where one of the formulae apply. Backward
+C         recursion is applied to reduce orders by integer values except
+C         where the entire sequence lies in the oscillatory region.  In
+C         this case forward recursion is stable and values from the
+C         asymptotic expansion for X to infinity start the recursion
+C         when it is efficient to do so.  Leading terms of the series
+C         and uniform expansion are tested for underflow.  If a sequence
+C         is requested and the last member would underflow, the result
+C         is set to zero and the next lower order tried, etc., until a
+C         member comes on scale or all members are set to zero.
+C         Overflow cannot occur.
+C
+C         BESJ calls ASYJY, JAIRY, ALNGAM, R1MACH, I1MACH, XERROR
+C
+C     Description of Arguments
+C
+C         Input
+C           X      - X .GE. 0.0E0
+C           ALPHA  - order of first member of the sequence,
+C                    ALPHA .GE. 0.0E0
+C           N      - number of members in the sequence, N .GE. 1
+C
+C         Output
+C           Y      - a vector whose first  N components contain
+C                    values for J/sub(ALPHA+K-1)/(X), K=1,...,N
+C           NZ     - number of components of Y set to zero due to
+C                    underflow,
+C                    NZ=0   , normal return, computation completed
+C                    NZ .NE. 0, last NZ components of Y set to zero,
+C                             Y(K)=0.0E0, K=N-NZ+1,...,N.
+C
+C     Error Conditions
+C         Improper input arguments - a fatal error
+C         Underflow  - a non-fatal error (NZ .NE. 0)
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  ALNGAM,ASYJY,I1MACH,JAIRY,R1MACH,XERROR
+C***END PROLOGUE  BESJ
+ 
+ 

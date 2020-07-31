@@ -1,0 +1,13 @@
+ 
+      DOUBLE PRECISION FUNCTION DPSIXN(N)
+C***BEGIN PROLOGUE  DPSIXN
+C***REFER TO  DEXINT
+C
+C     This subroutine returns values of PSI(X)=derivative of log
+C     GAMMA(X), X.GT.0.0 at integer arguments. A table look-up is
+C     performed for N .LE. 100, and the asymptotic expansion is
+C     evaluated for N.GT.100.
+C***ROUTINES CALLED  D1MACH
+C***END PROLOGUE  DPSIXN
+ 
+ 

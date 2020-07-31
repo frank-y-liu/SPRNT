@@ -1,0 +1,77 @@
+ 
+C
+C
+C                    * * * * * * * * * * * * * * * *
+C                    *                             *
+C                    * SUBROUTINE VRFFTI(N,WSAVE)  *
+C                    *                             *
+C                    * * * * * * * * * * * * * * * *
+C
+C
+C     SUBROUTINE VRFFTI INITIALIZES THE ARRAY WSAVE THAT IS USED IN
+C     BOTH VRFFTF AND VRFFTB. THE PRIME FACTORIZATION OF N AND A
+C     TABULATION OF CERTAIN TRIGONOMETRIC VALUES ARE COMPUTED AND STORED
+C     IN THE ARRAY WSAVE.
+C
+C     INPUT PARAMETER
+C
+C     N       THE LENGTH OF THE SEQUENCE TO BE TRANSFORMED.  THERE IS NO
+C             RESTRICTION ON N.
+C
+C     OUTPUT PARAMETER
+C
+C     WSAVE   A WORK ARRAY THAT MUST BE DIMENSIONED AT LEAST N+15.
+C             THE SAME WORK ARRAY CAN BE USED FOR BOTH VRFFTF AND VRFFTB
+C             AS LONG AS N REMAINS UNCHANGED.  DIFFERENT WSAVE ARRAYS
+C             ARE REQUIRED FOR DIFFERENT VALUES OF N. THE CONTENTS OF
+C             WSAVE MUST NOT BE CHANGED BETWEEN CALLS TO VRFFTF OR
+C             VRFFTB.
+C
+C
+C              * * * * * * * * * * * * * * * * * * * * *
+C              *                                       *
+C              *         PROGRAM SPECIFICATIONS        *
+C              *                                       *
+C              * * * * * * * * * * * * * * * * * * * * *
+C
+C
+C
+C     DIMENSION OF    R(MDIMR,N), RT(MDIMR,N), WSAVE(N+15)
+C     ARGUMENTS
+C
+C     LATEST          AUGUST 1, 1985
+C     REVISION
+C
+C     SUBPROGRAMS     VRFFTI, VRFTI1, VRFFTF, VRFTF1, VRADF2, VRADF3,
+C     REQUIRED        VRADF4, VRADF5, VRADFG, VRFFTB, VRFTB1, VRADB2,
+C                     VRADB3, VRADB4, VRADB5, VRADBG, PIMACH
+C
+C     SPECIAL         NONE
+C     CONDITIONS
+C
+C     COMMON          NONE
+C     BLOCKS
+C
+C     I/O             NONE
+C
+C     PRECISION       SINGLE
+C
+C     SPECIALIST      ROLAND SWEET
+C
+C     LANGUAGE        FORTRAN
+C
+C     HISTORY         WRITTEN BY LINDA LINDGREN AND ROLAND SWEET AT THE
+C                     NATIONAL BUREAU OF STANDARDS (BOULDER).
+C
+C     ALGORITHM       A REAL VARIANT OF THE STOCKHAM AUTOSORT VERSION
+C                     OF THE COOLEY-TUKEY FAST FOURIER TRANSFORM.
+C
+C     PORTABILITY     AMERICAN NATIONAL STANDARDS INSTITUTE FORTRAN 77.
+C                     THE ONLY MACHINE DEPENDENT CONSTANT IS LOCATED IN
+C                     THE FUNCTION PIMACH.
+C
+C     REQUIRED        COS,SIN
+C     RESIDENT
+C     ROUTINES
+C
+C

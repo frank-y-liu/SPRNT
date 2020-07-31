@@ -1,0 +1,20 @@
+ 
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+C
+C                  P A C K A G E    S G L S S
+C
+C
+C     This package solves systems of linear equations AX=B
+C   with matrices A and B.  The system may be overdetermined
+C   square and non singular or underdetermined.
+C   Emphasis is put on detecting possible rank deficiency.
+C   The package contains three user callable subroutines,
+C     SGLSS  for the general problem, with "easy" call sequence
+C     LLSIA  for the overdetermined system, flexible
+C     ULSIA  for the underdetermined system, flexible.
+C
+C   This package was written by T. Manteuffel of Los Alamos Nat. Lab.
+C
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+ 
+ 

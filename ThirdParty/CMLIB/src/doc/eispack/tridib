@@ -1,0 +1,90 @@
+ 
+      SUBROUTINE TRIDIB(N,EPS1,D,E,E2,LB,UB,M11,M,W,IND,IERR,RV4,RV5)
+C***BEGIN PROLOGUE  TRIDIB
+C***DATE WRITTEN   760101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  D4A5,D4C2A
+C***KEYWORDS  EIGENVALUES,EIGENVECTORS,EISPACK
+C***AUTHOR  SMITH, B. T., ET AL.
+C***PURPOSE  Computes eigenvalues of symmetric tridiagonal matrix
+C            given interval using Sturm sequencing.
+C***DESCRIPTION
+C
+C     This subroutine is a translation of the ALGOL procedure BISECT,
+C     NUM. MATH. 9, 386-393(1967) by Barth, Martin, and Wilkinson.
+C     HANDBOOK FOR AUTO. COMP., VOL.II-LINEAR ALGEBRA, 249-256(1971).
+C
+C     This subroutine finds those eigenvalues of a TRIDIAGONAL
+C     SYMMETRIC matrix between specified boundary indices,
+C     using bisection.
+C
+C     On Input
+C
+C        N is the order of the matrix.
+C
+C        EPS1 is an absolute error tolerance for the computed
+C          eigenvalues.  If the input EPS1 is non-positive,
+C          it is reset for each submatrix to a default value,
+C          namely, minus the product of the relative machine
+C          precision and the 1-norm of the submatrix.
+C
+C        D contains the diagonal elements of the input matrix.
+C
+C        E contains the subdiagonal elements of the input matrix
+C          in its last N-1 positions.  E(1) is arbitrary.
+C
+C        E2 contains the squares of the corresponding elements of E.
+C          E2(1) is arbitrary.
+C
+C        M11 specifies the lower boundary index for the desired
+C          eigenvalues.
+C
+C        M specifies the number of eigenvalues desired.  The upper
+C          boundary index M22 is then obtained as M22=M11+M-1.
+C
+C     On Output
+C
+C        EPS1 is unaltered unless it has been reset to its
+C          (last) default value.
+C
+C        D and E are unaltered.
+C
+C        ELEMENTS of E2, corresponding to elements of E regarded
+C          as negligible, have been replaced by zero causing the
+C          matrix to split into a direct sum of submatrices.
+C          E2(1) is also set to zero.
+C
+C        LB and UB DEFINE an interval containing exactly the desired
+C          eigenvalues.
+C
+C        W contains, in its first M positions, the eigenvalues
+C          between indices M11 and M22 in ascending order.
+C
+C        IND contains in its first M positions the submatrix indices
+C          associated with the corresponding eigenvalues in W --
+C          1 for eigenvalues belonging to the first submatrix from
+C          the top, 2 for those belonging to the second submatrix, etc.
+C
+C        IERR is set to
+C          Zero       for normal return,
+C          3*N+1      if multiple eigenvalues at index M11 make
+C                     unique selection impossible,
+C          3*N+2      if multiple eigenvalues at index M22 make
+C                     unique selection impossible.
+C
+C        RV4 and RV5 are temporary storage arrays.
+C
+C     Note that subroutine TQL1, IMTQL1, or TQLRAT is generally faster
+C     than TRIDIB, if more than N/4 eigenvalues are to be found.
+C
+C     Questions and comments should be directed to B. S. Garbow,
+C     APPLIED MATHEMATICS DIVISION, ARGONNE NATIONAL LABORATORY
+C     ------------------------------------------------------------------
+C***REFERENCES  B. T. SMITH, J. M. BOYLE, J. J. DONGARRA, B. S. GARBOW,
+C                 Y. IKEBE, V. C. KLEMA, C. B. MOLER, *MATRIX EIGEN-
+C                 SYSTEM ROUTINES - EISPACK GUIDE*, SPRINGER-VERLAG,
+C                 1976.
+C***ROUTINES CALLED  (NONE)
+C***END PROLOGUE  TRIDIB
+ 
+ 

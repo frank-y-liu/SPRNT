@@ -1,0 +1,105 @@
+ 
+      SUBROUTINE DPCHFE(N,X,F,D,INCFD,SKIP,NE,XE,FE,IERR)
+C***BEGIN PROLOGUE  DPCHFE
+C***DATE WRITTEN   811020   (YYMMDD)
+C***REVISION DATE  870707   (YYMMDD)
+C***CATEGORY NO.  E3
+C***KEYWORDS  LIBRARY=SLATEC(PCHIP),
+C             TYPE=DOUBLE PRECISION(PCHFE-S DPCHFE-D),
+C             CUBIC HERMITE EVALUATION,HERMITE INTERPOLATION,
+C             PIECEWISE CUBIC EVALUATION
+C***AUTHOR  FRITSCH, F. N., (LLNL)
+C             MATHEMATICS AND STATISTICS DIVISION
+C             LAWRENCE LIVERMORE NATIONAL LABORATORY
+C             P.O. BOX 808  (L-316)
+C             LIVERMORE, CA  94550
+C             FTS 532-4275, (415) 422-4275
+C***PURPOSE  Evaluate a piecewise cubic Hermite function at an array of
+C            points.  May be used by itself for Hermite interpolation,
+C            or as an evaluator for DPCHIM or DPCHIC.
+C***DESCRIPTION
+C
+C       **** Double Precision version of PCHFE ****
+C
+C          DPCHFE:  Piecewise Cubic Hermite Function Evaluator
+C
+C     Evaluates the cubic Hermite function defined by  N, X, F, D  at
+C     the points  XE(J), J=1(1)NE.
+C
+C     To provide compatibility with DPCHIM and DPCHIC, includes an
+C     increment between successive values of the F- and D-arrays.
+C
+C ----------------------------------------------------------------------
+C
+C  Calling sequence:
+C
+C        PARAMETER  (INCFD = ...)
+C        INTEGER  N, NE, IERR
+C        DOUBLE PRECISION  X(N), F(INCFD,N), D(INCFD,N), XE(NE), FE(NE)
+C        LOGICAL  SKIP
+C
+C        CALL  DPCHFE (N, X, F, D, INCFD, SKIP, NE, XE, FE, IERR)
+C
+C   Parameters:
+C
+C     N -- (input) number of data points.  (Error return if N.LT.2 .)
+C
+C     X -- (input) real*8 array of independent variable values.  The
+C           elements of X must be strictly increasing:
+C                X(I-1) .LT. X(I),  I = 2(1)N.
+C           (Error return if not.)
+C
+C     F -- (input) real*8 array of function values.  F(1+(I-1)*INCFD) is
+C           the value corresponding to X(I).
+C
+C     D -- (input) real*8 array of derivative values.  D(1+(I-1)*INCFD)
+C           is the value corresponding to X(I).
+C
+C     INCFD -- (input) increment between successive values in F and D.
+C           (Error return if  INCFD.LT.1 .)
+C
+C     SKIP -- (input/output) logical variable which should be set to
+C           .TRUE. if the user wishes to skip checks for validity of
+C           preceding parameters, or to .FALSE. otherwise.
+C           This will save time in case these checks have already
+C           been performed (say, in DPCHIM or DPCHIC).
+C           SKIP will be set to .TRUE. on normal return.
+C
+C     NE -- (input) number of evaluation points.  (Error return if
+C           NE.LT.1 .)
+C
+C     XE -- (input) real*8 array of points at which the function is to
+C           be evaluated.
+C
+C          NOTES:
+C           1. The evaluation will be most efficient if the elements
+C              of XE are increasing relative to X;
+C              that is,   XE(J) .GE. X(I)
+C              implies    XE(K) .GE. X(I),  all K.GE.J .
+C           2. If any of the XE are outside the interval [X(1),X(N)],
+C              values are extrapolated from the nearest extreme cubic,
+C              and a warning error is returned.
+C
+C     FE -- (output) real*8 array of values of the cubic Hermite
+C           function defined by  N, X, F, D  at the points  XE.
+C
+C     IERR -- (output) error flag.
+C           Normal return:
+C              IERR = 0  (no errors).
+C           Warning error:
+C              IERR.GT.0  means that extrapolation was performed at
+C                 IERR points.
+C           "Recoverable" errors:
+C              IERR = -1  if N.LT.2 .
+C              IERR = -2  if INCFD.LT.1 .
+C              IERR = -3  if the X-array is not strictly increasing.
+C              IERR = -4  if NE.LT.1 .
+C             (The FE-array has not been changed in any of these cases.)
+C               NOTE:  The above errors are checked in the order listed,
+C                   and following arguments have **NOT** been validated.
+C
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  DCHFEV,XERROR
+C***END PROLOGUE  DPCHFE
+ 
+ 

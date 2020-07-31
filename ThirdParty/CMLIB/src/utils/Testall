@@ -1,0 +1,51 @@
+#  Testall host compiler fflags thisdir
+
+#    Runs all cmlib tests remotely.  Must be run from the directory
+#    containing compiled library, i.e. cmlib/export/lib/ARCH
+
+#      host     = machine on which tests are to be run
+#      compiler = name of compiler
+#      fflags   = compiler flags
+#      thisdir  = location of this directory on host
+
+set compiler = $1
+set fflags = "$2"
+set thisdir = $3
+set testinpt = "$4"
+set libname = "$5"
+
+if ("$compiler" == "")  set compiler = f77
+if ("$thisdir" == "")  set thisdir = $cwd
+if ("$testinpt" == "")  set testinpt = '11'
+set arch = `../../utils/itl-arch`
+
+rm -f testall.$arch.out
+echo `date` |tee testall.$arch.out
+set testdir = ../../test
+
+set tests = ` (cd $testdir ; ls *.f | sed -e "s/\.f//") `
+
+#if ( $libname == 'libcm.so' ) then
+#   setenv LD_LIBRARY_PATH /itl/apps/spro-5.0/SUNWspro/lib
+#endif
+foreach pgm ( $tests )
+
+     cd $thisdir
+     $compiler -o $pgm $fflags $testdir/$pgm.f $thisdir/$libname
+     echo "  "|tee -a testall.$arch.out
+     echo " Processing test $pgm on `hostname` ...  "|tee -a testall.$arch.out
+     echo "  "|tee -a testall.$arch.out
+     echo $testinpt | ./$pgm | tee -a testall.$arch.out
+     rm -f $pgm $pgm.o
+
+end
+
+set passed = "`grep -c -i pass testall.$arch.out`"
+if ("$passed" < 48) then
+   echo "  "|tee -a testall.$arch.out
+   echo "  "|tee -a testall.$arch.out
+   echo '    *******************  WARNING  *****************'|tee -a testall.$arch.out
+   echo "     $passed tests passed, should be 48"|tee -a testall.$arch.out
+   echo "     Check testall.$arch.out for errors."|tee -a testall.$arch.out
+   echo '    ***********************************************'|tee -a testall.$arch.out
+endif

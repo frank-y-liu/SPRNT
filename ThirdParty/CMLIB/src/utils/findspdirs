@@ -1,0 +1,14 @@
+#!/bin/sh
+#  This procedure finds all the directories
+#  that either need special src versions or NOPT
+#
+spdir=""
+if [ -d src ]; then
+   dirs=`ls src`
+   for dir in $dirs ; do
+     if [ -d src/"$dir" ]; then
+        spdir="$spdir"src/"$dir "
+     fi
+   done
+fi
+echo "$spdir"

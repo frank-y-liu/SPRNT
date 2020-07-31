@@ -1,0 +1,35 @@
+ 
+      INTEGER FUNCTION ISAMAX(N,SX,INCX)
+C***BEGIN PROLOGUE  ISAMAX
+C***DATE WRITTEN   791001   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D1A2
+C***KEYWORDS  BLAS,LINEAR ALGEBRA,MAXIMUM COMPONENT,VECTOR
+C***AUTHOR  LAWSON, C. L., (JPL)
+C           HANSON, R. J., (SNLA)
+C           KINCAID, D. R., (U. OF TEXAS)
+C           KROGH, F. T., (JPL)
+C***PURPOSE  Find largest component of s.p. vector
+C***DESCRIPTION
+C
+C                B L A S  Subprogram
+C    Description of Parameters
+C
+C     --Input--
+C        N  number of elements in input vector(s)
+C       SX  single precision vector with N elements
+C     INCX  storage spacing between elements of SX
+C
+C     --Output--
+C   ISAMAX  smallest index (zero if N .LE. 0)
+C
+C     Find smallest index of maximum magnitude of single precision SX.
+C     ISAMAX =  first I, I = 1 to N, to minimize  ABS(SX(1-INCX+I*INCX)
+C***REFERENCES  LAWSON C.L., HANSON R.J., KINCAID D.R., KROGH F.T.,
+C                 *BASIC LINEAR ALGEBRA SUBPROGRAMS FOR FORTRAN USAGE*,
+C                 ALGORITHM NO. 539, TRANSACTIONS ON MATHEMATICAL
+C                 SOFTWARE, VOLUME 5, NUMBER 3, SEPTEMBER 1979, 308-323
+C***ROUTINES CALLED  (NONE)
+C***END PROLOGUE  ISAMAX
+ 
+ 

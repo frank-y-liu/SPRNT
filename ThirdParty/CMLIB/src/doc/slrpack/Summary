@@ -1,0 +1,24 @@
+ 
+ 
+ 
+P A C K A G E      SLRPACK
+ 
+(Version 1985 )
+ 
+A collection of FORTRAN subprograms for simple linear regression
+ 
+ 
+RGM...........computes estimates of simple linear regression  parameters
+              for a geometric mean regression
+RWILL.........estimates simple linear regression coefficients when  both
+              variables are subject to errors which are not  necessarily
+              homogeneous in variance (method due to Williamson)
+RYORK.........estimates simple linear regression coefficients when  both
+              variables are subject to errors which are not  necessarily
+              homogeneous in variance (method due to York)
+LINFS.........solves the model y = beta1 + (beta2)x  under the Chebyshev
+              norm criterion
+DLINFS........double precision version of LINFS
+ 
+ 
+ 

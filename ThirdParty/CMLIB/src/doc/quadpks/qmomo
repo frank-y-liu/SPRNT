@@ -1,0 +1,60 @@
+ 
+      SUBROUTINE QMOMO(ALFA,BETA,RI,RJ,RG,RH,INTEGR)
+C***BEGIN PROLOGUE  QMOMO
+C***DATE WRITTEN   810101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  H2A2A1,C3A2
+C***KEYWORDS  MODIFIED CHEBYSHEV MOMENTS
+C***AUTHOR  PIESSENS, ROBERT, APPLIED MATH. AND PROGR. DIV. -
+C             K. U. LEUVEN
+C           DE DONCKER, ELISE, APPLIED MATH. AND PROGR. DIV. -
+C             K. U. LEUVEN
+C***PURPOSE  This routine computes modified CHEBSYSHEV moments. The K-th
+C            modified CHEBYSHEV moment is defined as the integral over
+C            (-1,1) of W(X)*T(K,X), where T(K,X) is the CHEBYSHEV
+C            POLYNOMIAL of degree K.
+C***DESCRIPTION
+C
+C        MODIFIED CHEBYSHEV MOMENTS
+C        STANDARD FORTRAN SUBROUTINE
+C        REAL VERSION
+C
+C        PARAMETERS
+C           ALFA   - Real
+C                    Parameter in the weight function W(X), ALFA.GT.(-1)
+C
+C           BETA   - Real
+C                    Parameter in the weight functioN W(X), BETA.GT.(-1)
+C
+C           RI     - Real
+C                    Vector of dimension 25
+C                    RI(K) is the integral over (-1,1) of
+C                    (1+X)**ALFA*T(K-1,X), K = 1, ..., 25.
+C
+C           RJ     - Real
+C                    Vector of dimension 25
+C                    RJ(K) is the integral over (-1,1) of
+C                    (1-X)**BETA*T(K-1,X), K = 1, ..., 25.
+C
+C           RG     - Real
+C                    Vector of dimension 25
+C                    RG(K) is the integral over (-1,1) of
+C                    (1+X)**ALFA*LOG((1+X)/2)*T(K-1,X), K = 1, ..., 25.
+C
+C           RH     - Real
+C                    Vector of dimension 25
+C                    RH(K) is the integral over (-1,1) of
+C                    (1-X)**BETA*LOG((1-X)/2)*T(K-1,X), K = 1, ..., 25.
+C
+C           INTEGR - Integer
+C                    Input parameter indicating the modified
+C                    Moments to be computed
+C                    Integr = 1 compute RI, RJ
+C                           = 2 compute RI, RJ, RG
+C                           = 3 compute RI, RJ, RH
+C                           = 4 compute RI, RJ, RG, RH
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  (NONE)
+C***END PROLOGUE  QMOMO
+ 
+ 

@@ -1,0 +1,43 @@
+ 
+      SUBROUTINE H12(MODE,LPIVOT,L1,M,U,IUE,UP,C,ICE,ICV,NCV)
+C***BEGIN PROLOGUE  H12
+C***REFER TO  HFTI,LSEI,WNNLS
+C
+C     SUBROUTINE H12 (MODE,LPIVOT,L1,M,U,IUE,UP,C,ICE,ICV,NCV)
+C
+C     C.L.Lawson and R.J.Hanson, Jet Propulsion Laboratory, 1973 Jun 12
+C     to appear in 'Solving Least Squares Problems', Prentice-Hall, 1974
+C
+C     Modified at SANDIA LABS, May 1977, to --
+C
+C     1)  Remove double precision accumulation, and
+C     2)  Include usage of the Basic Linear Algebra Package for
+C         vectors longer than a particular threshold.
+C
+C     Construction and/or application of a single
+C     Householder transformation..     Q = I + U*(U**T)/B
+C
+C     MODE    = 1 or 2   to select algorithm  H1  or  H2 .
+C     LPIVOT is the index of the pivot element.
+C     L1,M   If L1 .LE. M   the transformation will be constructed to
+C            zero elements indexed from L1 through M.   If L1 GT. M
+C            THE SUBROUTINE DOES AN IDENTITY TRANSFORMATION.
+C     U(),IUE,UP    On entry to H1 U() contains the pivot vector.
+C                   IUE is the storage increment between elements.
+C                                       On exit from H1 U() and UP
+C                   contain quantities defining the vector U of the
+C                   Householder transformation.   On entry to H2 U()
+C                   and UP should contain quantities previously computed
+C                   by H1.  These will not be modified by H2.
+C     C()    On entry to H1 or H2 C() contains a matrix which will be
+C            regarded as a set of vectors to which the Householder
+C            transformation is to be applied.  On exit C() contains the
+C            set of transformed vectors.
+C     ICE    Storage increment between elements of vectors in C().
+C     ICV    Storage increment between vectors in C().
+C     NCV    Number of vectors in C() to be transformed. If NCV .LE. 0
+C            no operations will be done on C().
+C***ROUTINES CALLED  SAXPY,SDOT,SSWAP
+C***END PROLOGUE  H12
+ 
+ 

@@ -1,0 +1,6 @@
+FORTRAN = f90
+OPTS = -i8 -r8 -d16 -64 -mips4 -O2 -OPT:IEEE_arithmetic=2 -static
+NOPTS = -i8 -r8 -d16 -64 -mips4 -OPT:IEEE_arithmetic=2 -static
+RANLIB = echo
+MACHCON = SGI.ORIGIN.F77-WITH-R8-D16-OPTIONS
+LIBRARY = libcm.a

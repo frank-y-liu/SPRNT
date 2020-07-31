@@ -1,0 +1,23 @@
+      COMPLEX FUNCTION CACOS(Z)
+C***BEGIN PROLOGUE  CACOS
+C***DATE WRITTEN   770401   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C4A
+C***KEYWORDS  ARC COSINE,COMPLEX,ELEMEMTARY FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the complex arc Cosine.
+C***DESCRIPTION
+C
+C CACOS(Z) calculates the complex trigonometric arc cosine of Z.
+C The result is in units of radians, and the real part is in the
+C first or second quadrant.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  CASIN
+C***END PROLOGUE  CACOS
+      COMPLEX Z, CASIN
+      DATA PI2 /1.5707963267 9489661923E0/
+C***FIRST EXECUTABLE STATEMENT  CACOS
+      CACOS = PI2 - CASIN (Z)
+C
+      RETURN
+      END

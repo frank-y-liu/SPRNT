@@ -1,0 +1,152 @@
+ 
+      SUBROUTINE LLSIA(A,MDA,M,N,B,MDB,NB,RE,AE,KEY,MODE,NP,KRANK,
+     1   KSURE,RNORM,W,LW,IWORK,LIW,INFO)
+C***BEGIN PROLOGUE  LLSIA
+C***DATE WRITTEN   810801   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D9,D5
+C***KEYWORDS  LINEAR LEAST SQUARES,QR FACTORIZATION
+C***AUTHOR  MANTEUFFEL, T. A., (LANL)
+C***PURPOSE  Solves LINEAR LEAST SQUARES problems by performing
+C            a QR factorization of the matrix A using Householder
+C            transformations. Emphasis is put on detecting possible
+C            rank deficiency.
+C***DESCRIPTION
+C
+C     LLSIA computes the least squares solution(s) to the problem AX=B
+C     where A is an M by N matrix with M.GE.N and B is the M by NB
+C     matrix of right hand sides.  User input bounds on the uncertainty
+C     in the elements of A are used to detect numerical rank deficiency.
+C     The algorithm employs a row and column pivot strategy to
+C     minimize the growth of uncertainty and round-off errors.
+C
+C     LLSIA requires (MDA+6)*N + (MDB+1)*NB + M dimensioned space
+C
+C   ******************************************************************
+C   *                                                                *
+C   *         WARNING - All input arrays are changed on exit.        *
+C   *                                                                *
+C   ******************************************************************
+C     SUBROUTINE LLSIA(A,MDA,M,N,B,MDB,NB,RE,AE,KEY,MODE,NP,
+C    1   KRANK,KSURE,RNORM,W,LW,IWORK,LIW,INFO)
+C
+C     Input..
+C
+C     A(,)          Linear coefficient matrix of AX=B, with MDA the
+C      MDA,M,N      actual first dimension of A in the calling program.
+C                   M is the row dimension (no. of EQUATIONS of the
+C                   problem) and N the col dimension (no. of UNKNOWNS).
+C                   Must have MDA.GE.M and M.GE.N.
+C
+C     B(,)          Right hand side(s), with MDB the actual first
+C      MDB,NB       dimension of B in the calling program. NB is the
+C                   number of M by 1 right hand sides. Must have
+C                   MDB.GE.M. If NB = 0, B is never accessed.
+C
+C   ******************************************************************
+C   *                                                                *
+C   *         Note - Use of RE and AE are what make this             *
+C   *                code significantly different from               *
+C   *                other linear least squares solvers.             *
+C   *                However, the inexperienced user is              *
+C   *                advised to set RE=0.,AE=0.,KEY=0.               *
+C   *                                                                *
+C   ******************************************************************
+C     RE(),AE(),KEY
+C     RE()          RE() is a vector of length N such that RE(I) is
+C                   the maximum relative uncertainty in column I of
+C                   the matrix A. The values of RE() must be between
+C                   0 and 1. A minimum of 10*machine precision will
+C                   be enforced.
+C
+C     AE()          AE() is a vector of length N such that AE(I) is
+C                   the maximum absolute uncertainty in column I of
+C                   the matrix A. The values of AE() must be greater
+C                   than or equal to 0.
+C
+C     KEY           For ease of use, RE and AE may be input as either
+C                   vectors or scalars. If a scalar is input, the algo-
+C                   rithm will use that value for each column of A.
+C                   The parameter key indicates whether scalars or
+C                   vectors are being input.
+C                        KEY=0     RE scalar  AE scalar
+C                        KEY=1     RE vector  AE scalar
+C                        KEY=2     RE scalar  AE vector
+C                        KEY=3     RE vector  AE vector
+C
+C     MODE          The integer mode indicates how the routine
+C                   is to react if rank deficiency is detected.
+C                   If MODE = 0 return immediately, no solution
+C                             1 compute truncated solution
+C                             2 compute minimal length solution
+C                   The inexperienced user is advised to set MODE=0
+C
+C     NP            The first NP columns of A will not be interchanged
+C                   with other columns even though the pivot strategy
+C                   would suggest otherwise.
+C                   The inexperienced user is advised to set NP=0.
+C
+C     WORK()        A real work array dimensioned 5*N. However,if
+C                   RE or AE have been specified as vectors, dimension
+C                   WORK 4*N. If both RE and AE have been specified
+C                   as vectors, dimension WORK 3*N.
+C
+C     LW            Actual dimension of WORK
+C
+C     IWORK()       Integer work array dimensioned at least N+M.
+C
+C     LIW           Actual dimension of IWORK.
+C
+C     INFO          Is a flag which provides for the efficient
+C                   solution of subsequent problems involving the
+C                   same A but different B.
+C                   If INFO = 0 original call
+C                      INFO = 1 subsequent calls
+C                   On subsequent calls, the user must supply A, KRANK,
+C                   LW, IWORK, LIW, and the first 2*N locations of WORK
+C                   as output by the original call to LLSIA. MODE must
+C                   be equal to the value of MODE in the original call.
+C                   If MODE.LT.2, only the first N locations of WORK
+C                   are accessed. AE, RE, KEY, and NP are not accessed.
+C
+C     Output..
+C
+C     A(,)          Contains the upper triangular part of the reduced
+C                   matrix and the transformation information. It togeth
+C                   with the first N elements of WORK (see below)
+C                   completely specify the QR factorization of A.
+C
+C     B(,)          Contains the N by NB solution matrix for X.
+C
+C     KRANK,KSURE   The numerical rank of A,  based upon the relative
+C                   and absolute bounds on uncertainty, is bounded
+C                   above by KRANK and below by KSURE. The algorithm
+C                   returns a solution based on KRANK. KSURE provides
+C                   an indication of the precision of the rank.
+C
+C     RNORM()       Contains the Euclidean length of the NB residual
+C                   vectors  B(I)-AX(I), I=1,NB.
+C
+C     WORK()        The first N locations of WORK contain values
+C                   necessary to reproduce the Householder transformatio
+C
+C     IWORK()       The first N locations contain the order in
+C                   which the columns of A were used. The next
+C                   M locations contain the order in which the
+C                   rows of A were used.
+C
+C     INFO          Flag to indicate status of computation on completion
+C                  -1   Parameter error(s)
+C                   0 - Rank deficient, no solution
+C                   1 - Rank deficient, truncated solution
+C                   2 - Rank deficient, minimal length solution
+C                   3 - Numerical rank 0, zero solution
+C                   4 - Rank .LT. NP
+C                   5 - Full rank
+C***REFERENCES  MANTEUFFEL, T., *AN INTERVAL ANALYSIS APPROACH TO RANK
+C                 DETERMINATION IN LINEAR LEAST SQUARES PROBLEMS*,
+C                 SANDIA LABORATORIES REPORT SAND80-0655, JUNE, 1980.
+C***ROUTINES CALLED  R1MACH,U11LS,U12LS,XERROR
+C***END PROLOGUE  LLSIA
+ 
+ 

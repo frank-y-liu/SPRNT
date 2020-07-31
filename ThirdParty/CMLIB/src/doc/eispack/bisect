@@ -1,0 +1,90 @@
+ 
+      SUBROUTINE BISECT(N,EPS1,D,E,E2,LB,UB,MM,M,W,IND,IERR,RV4,RV5)
+C***BEGIN PROLOGUE  BISECT
+C***DATE WRITTEN   760101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  D4A5,D4C2A
+C***KEYWORDS  EIGENVALUES,EIGENVECTORS,EISPACK
+C***AUTHOR  SMITH, B. T., ET AL.
+C***PURPOSE  Compute eigenvalues of symmetric tridiagonal matrix
+C            given interval using Sturm sequencing.
+C***DESCRIPTION
+C
+C     This subroutine is a translation of the bisection technique
+C     in the ALGOL procedure TRISTURM by Peters and Wilkinson.
+C     HANDBOOK FOR AUTO. COMP., VOL.II-LINEAR ALGEBRA, 418-439(1971).
+C
+C     This subroutine finds those eigenvalues of a TRIDIAGONAL
+C     SYMMETRIC matrix which lie in a specified interval,
+C     using bisection.
+C
+C     On INPUT
+C
+C        N is the order of the matrix.
+C
+C        EPS1 is an absolute error tolerance for the computed
+C          eigenvalues.  If the input EPS1 is non-positive,
+C          it is reset for each submatrix to a default value,
+C          namely, minus the product of the relative machine
+C          precision and the 1-norm of the submatrix.
+C
+C        D contains the diagonal elements of the input matrix.
+C
+C        E contains the subdiagonal elements of the input matrix
+C          in its last N-1 positions.  E(1) is arbitrary.
+C
+C        E2 contains the squares of the corresponding elements of E.
+C          E2(1) is arbitrary.
+C
+C        LB and UB define the interval to be searched for eigenvalues.
+C          If LB is not less than UB, no eigenvalues will be found.
+C
+C        MM should be set to an upper bound for the number of
+C          eigenvalues in the interval.  WARNING. If more than
+C          MM eigenvalues are determined to lie in the interval,
+C          an error return is made with no eigenvalues found.
+C
+C     On OUTPUT
+C
+C        EPS1 is unaltered unless it has been reset to its
+C          (last) default value.
+C
+C        D and E are unaltered.
+C
+C        Elements of E2, corresponding to elements of E regarded
+C          as negligible, have been replaced by zero causing the
+C          matrix to split into a direct sum of submatrices.
+C          E2(1) is also set to zero.
+C
+C        M is the number of eigenvalues determined to lie in (LB,UB).
+C
+C        W contains the M eigenvalues in ascending order.
+C
+C        IND contains in its first M positions the submatrix indices
+C          associated with the corresponding eigenvalues in W --
+C          1 for eigenvalues belonging to the first submatrix from
+C          the top, 2 for those belonging to the second submatrix, etc.
+C
+C        IERR is set to
+C          Zero       for normal return,
+C          3*N+1      if M exceeds MM.
+C
+C        RV4 and RV5 are temporary storage arrays.
+C
+C     The ALGOL procedure STURMCNT contained in TRISTURM
+C     appears in BISECT in-line.
+C
+C     Note that subroutine TQL1 or IMTQL1 is generally faster than
+C     BISECT, if more than N/4 eigenvalues are to be found.
+C
+C     Questions and comments should be directed to B. S. Garbow,
+C     Applied Mathematics Division, ARGONNE NATIONAL LABORATORY
+C     ------------------------------------------------------------------
+C***REFERENCES  B. T. SMITH, J. M. BOYLE, J. J. DONGARRA, B. S. GARBOW,
+C                 Y. IKEBE, V. C. KLEMA, C. B. MOLER, *MATRIX EIGEN-
+C                 SYSTEM ROUTINES - EISPACK GUIDE*, SPRINGER-VERLAG,
+C                 1976.
+C***ROUTINES CALLED  (NONE)
+C***END PROLOGUE  BISECT
+ 
+ 

@@ -1,0 +1,18 @@
+ 
+c                           TWODQ
+c
+c     A set of routines for the evaluation of a definite integral over
+c  one or more triangles in the plane.
+c     This program assumes that the integrand is available as a Fortran
+c  Function.  The user describes the domain of integration by giving the
+c  vertices of the triangles and inputs an error tolerance, which may
+c  be absolute or relative.  He/she also has a choice of two quadrature
+c  routines which are used in the "guts" of TWODQ. One is particularly
+c  suitable for functions which have singularities on the boundary of
+c  the domain.
+c     The basic algorithm is "global adaption".
+c  Authors: D. K. Kahaner & O. W. Rechard, Center Appl Math, NBS.
+c
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+ 
+ 

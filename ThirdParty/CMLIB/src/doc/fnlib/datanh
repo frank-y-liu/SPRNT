@@ -1,0 +1,25 @@
+ 
+      DOUBLE PRECISION FUNCTION DATANH(X)
+C***BEGIN PROLOGUE  DATANH
+C***DATE WRITTEN   770601   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C4C
+C***KEYWORDS  DOUBLE PRECISION,ELEMENTARY FUNCTION,
+C             INVERSE HYPERBOLIC TANGENT
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the d.p. arc hyperbolic Tangent.
+C***DESCRIPTION
+C
+C DATANH(X) calculates the double precision arc hyperbolic
+C tangent for double precision argument X.
+C
+C Series for ATNH       on the interval  0.          to  2.50000E-01
+C                                        with weighted error   6.86E-32
+C                                         log weighted error  31.16
+C                               significant figures required  30.00
+C                                    decimal places required  31.88
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D1MACH,DCSEVL,INITDS,XERROR
+C***END PROLOGUE  DATANH
+ 
+ 

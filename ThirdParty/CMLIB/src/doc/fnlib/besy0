@@ -1,0 +1,37 @@
+ 
+      FUNCTION BESY0(X)
+C***BEGIN PROLOGUE  BESY0
+C***DATE WRITTEN   770401   (YYMMDD)
+C***REVISION DATE  840405   (YYMMDD)
+C***CATEGORY NO.  C10A1
+C***KEYWORDS  BESSEL FUNCTION,ORDER ZERO,SECOND KIND,SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the Bessel function of the second kind of order
+C            zero.
+C***DESCRIPTION
+C
+C BESY0(X) calculates the Bessel function of the second kind
+C of order zero for real argument X.
+C
+C Series for BY0        on the interval  0.          to  1.60000D+01
+C                                        with weighted error   1.20E-17
+C                                         log weighted error  16.92
+C                               significant figures required  16.15
+C                                    decimal places required  17.48
+C
+C Series for BM0        on the interval  0.          to  6.25000D-02
+C                                        with weighted error   4.98E-17
+C                                         log weighted error  16.30
+C                               significant figures required  14.97
+C                                    decimal places required  16.96
+C
+C Series for BTH0       on the interval  0.          to  6.25000D-02
+C                                        with weighted error   3.67E-17
+C                                         log weighted error  16.44
+C                               significant figures required  15.53
+C                                    decimal places required  17.13
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  BESJ0,CSEVL,INITS,R1MACH,XERROR
+C***END PROLOGUE  BESY0
+ 
+ 

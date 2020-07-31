@@ -1,0 +1,67 @@
+ 
+      DOUBLE PRECISION FUNCTION DBIE(X)
+C***BEGIN PROLOGUE  DBIE
+C***DATE WRITTEN   770701   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C10D
+C***KEYWORDS  BAIRY FUNCTION,DOUBLE PRECISION,EXPONENTIALLY SCALED,
+C             SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Calculates the d.p. Bairy function for negative X and an
+C            exponentially scaled Bairy function for positive X.
+C***DESCRIPTION
+C
+C DBIE(X) calculates the double precision Airy function of the
+C second kind or the double precision exponentially scaled Airy
+C function of the second kind, depending on the value of the
+C double precision argument X.
+C
+C Evaluate BI(X) for X .LE. 0.0  and  BI(X)*EXP(-ZETA)  where
+C ZETA = 2/3 * X**(3/2)  for X .GE. 0.0
+C
+C
+C Series for BIF        on the interval -1.00000E+00 to  1.00000E+00
+C                                        with weighted error   1.45E-32
+C                                         log weighted error  31.84
+C                               significant figures required  30.85
+C                                    decimal places required  32.40
+C
+C
+C Series for BIG        on the interval -1.00000E+00 to  1.00000E+00
+C                                        with weighted error   1.29E-33
+C                                         log weighted error  32.89
+C                               significant figures required  31.48
+C                                    decimal places required  33.45
+C
+C
+C Series for BIF2       on the interval  1.00000E+00 to  8.00000E+00
+C                                        with weighted error   6.08E-32
+C                                         log weighted error  31.22
+C                        approx significant figures required  30.8
+C                                    decimal places required  31.80
+C
+C
+C Series for BIG2       on the interval  1.00000E+00 to  8.00000E+00
+C                                        with weighted error   4.91E-33
+C                                         log weighted error  32.31
+C                        approx significant figures required  31.6
+C                                    decimal places required  32.90
+C
+C
+C Series for BIP1       on the interval  1.25000E-01 to  3.53553E-01
+C                                        with weighted error   1.06E-32
+C                                         log weighted error  31.98
+C                               significant figures required  30.61
+C                                    decimal places required  32.81
+C
+C
+C Series for BIP2       on the interval  0.          to  1.25000E-01
+C                                        with weighted error   4.04E-33
+C                                         log weighted error  32.39
+C                               significant figures required  31.15
+C                                    decimal places required  33.37
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D1MACH,D9AIMP,DCSEVL,INITDS
+C***END PROLOGUE  DBIE
+ 
+ 

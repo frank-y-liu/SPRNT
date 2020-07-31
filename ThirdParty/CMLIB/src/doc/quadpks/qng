@@ -1,0 +1,80 @@
+ 
+      SUBROUTINE QNG(F,A,B,EPSABS,EPSREL,RESULT,ABSERR,NEVAL,IER)
+C***BEGIN PROLOGUE  QNG
+C***DATE WRITTEN   800101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  H2A1A1
+C***KEYWORDS  AUTOMATIC INTEGRATOR,GAUSS-KRONROD(PATTERSON),
+C             NON-ADAPTIVE,SMOOTH INTEGRAND
+C***AUTHOR  PIESSENS, ROBERT, APPLIED MATH. AND PROGR. DIV. -
+C             K. U. LEUVEN
+C           DE DONCKER, ELISE, APPLIED MATH. AND PROGR. DIV. -
+C             K. U. LEUVEN
+C           KAHANER, DAVID, NBS - MODIFIED (2/82)
+C***PURPOSE  The routine calculates an approximation result to a
+C            given definite integral I = integral of F over (A,B),
+C            hopefully satisfying following claim for accuracy
+C            ABS(I-RESULT).LE.MAX(EPSABS,EPSREL*ABS(I)).
+C***DESCRIPTION
+C
+C NON-ADAPTIVE INTEGRATION
+C STANDARD FORTRAN SUBROUTINE
+C REAL VERSION
+C
+C           F      - Real version
+C                    Function subprogram defining the integrand function
+C                    F(X). The actual name for F needs to be declared
+C                    E X T E R N A L in the driver program.
+C
+C           A      - Real version
+C                    Lower limit of integration
+C
+C           B      - Real version
+C                    Upper limit of integration
+C
+C           EPSABS - Real
+C                    Absolute accuracy requested
+C           EPSREL - Real
+C                    Relative accuracy requested
+C                    If  EPSABS.LE.0
+C                    And EPSREL.LT.MAX(50*REL.MACH.ACC.,0.5D-28),
+C                    The routine will end with IER = 6.
+C
+C         ON RETURN
+C           RESULT - Real
+C                    Approximation to the integral I
+C                    Result is obtained by applying the 21-POINT
+C                    GAUSS-KRONROD RULE (RES21) obtained by optimal
+C                    addition of abscissae to the 10-POINT GAUSS RULE
+C                    (RES10), or by applying the 43-POINT RULE (RES43)
+C                    obtained by optimal addition of abscissae to the
+C                    21-POINT GAUSS-KRONROD RULE, or by applying the
+C                    87-POINT RULE (RES87) obtained by optimal addition
+C                    of abscissae to the 43-POINT RULE.
+C
+C           ABSERR - Real
+C                    Estimate of the modulus of the absolute error,
+C                    which should EQUAL or EXCEED ABS(I-RESULT)
+C
+C           NEVAL  - Integer
+C                    Number of integrand evaluations
+C
+C           IER    - IER = 0 normal and reliable termination of the
+C                            routine. It is assumed that the requested
+C                            accuracy has been achieved.
+C                    IER.GT.0 Abnormal termination of the routine. It is
+C                            assumed that the requested accuracy has
+C                            not been achieved.
+C           ERROR MESSAGES
+C                    IER = 1 The maximum number of steps has been
+C                            executed. The integral is probably too
+C                            difficult to be calculated by DQNG.
+C                        = 6 The input is invalid, because
+C                            EPSABS.LE.0 AND
+C                            EPSREL.LT.MAX(50*REL.MACH.ACC.,0.5D-28).
+C                            RESULT, ABSERR and NEVAL are set to zero.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  R1MACH,XERROR
+C***END PROLOGUE  QNG
+ 
+ 

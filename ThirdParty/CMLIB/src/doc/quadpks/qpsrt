@@ -1,0 +1,59 @@
+ 
+      SUBROUTINE QPSRT(LIMIT,LAST,MAXERR,ERMAX,ELIST,IORD,NRMAX)
+C***BEGIN PROLOGUE  QPSRT
+C***REFER TO  QAGE,QAGIE,QAGPE,QAGSE,QAWCE,QAWOE,QAWSE
+C***ROUTINES CALLED  (NONE)
+C***KEYWORDS  SEQUENTIAL SORTING
+C***DESCRIPTION
+C
+C 1.        QPSRT
+C           Ordering Routine
+C              Standard FORTRAN Subroutine
+C              REAL Version
+C
+C 2.        PURPOSE
+C              This routine maintains the descending ordering
+C              in the list of the local error estimates resulting from
+C              the interval subdivision process. At each call two error
+C              estimates are inserted using the sequential search
+C              method, top-down for the largest error estimate
+C              and bottom-up for the smallest error estimate.
+C
+C 3.        CALLING SEQUENCE
+C              CALL QPSRT(LIMIT,LAST,MAXERR,ERMAX,ELIST,IORD,NRMAX)
+C
+C           PARAMETERS (MEANING AT OUTPUT)
+C              LIMIT  - INTEGER
+C                       Maximum number of error estimates the list
+C                       can contain
+C
+C              LAST   - INTEGER
+C                       Number of error estimates currently
+C                       in the list
+C
+C              MAXERR - INTEGER
+C                       MAXERR points to the NRMAX-th largest error
+C                       estimate currently in the list
+C
+C              ERMAX  - REAL
+C                       NRMAX-th largest error estimate
+C                       ERMAX = ELIST(MAXERR)
+C
+C              ELIST  - REAL
+C                       Vector of dimension LAST containing
+C                       the error estimates
+C
+C              IORD   - INTEGER
+C                       Vector of dimension LAST, the first K
+C                       elements of which contain pointers
+C                       to the error estimates, such that
+C                       ELIST(IORD(1)),... , ELIST(IORD(K))
+C                       form a decreasing sequence, with
+C                       K = LAST if LAST.LE.(LIMIT/2+2), and
+C                       K = LIMIT+1-LAST otherwise
+C
+C              NRMAX  - INTEGER
+C                       MAXERR = IORD(NRMAX)
+C
+C 4.        No Subroutines or Functions Needed
+C***END PROLOGUE  QPSRT

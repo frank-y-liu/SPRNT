@@ -1,0 +1,77 @@
+ 
+      SUBROUTINE TINVIT(NM,N,D,E,E2,M,W,IND,Z,IERR,RV1,RV2,RV3,RV4,RV6)
+C***BEGIN PROLOGUE  TINVIT
+C***DATE WRITTEN   760101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  D4C3
+C***KEYWORDS  EIGENVALUES,EIGENVECTORS,EISPACK
+C***AUTHOR  SMITH, B. T., ET AL.
+C***PURPOSE  Eigenvectors of symmetric tridiagonal matrix corresponding
+C            to some specified eigenvalues, using inverse iteration
+C***DESCRIPTION
+C
+C     This subroutine is a translation of the inverse iteration tech-
+C     nique in the ALGOL procedure TRISTURM by Peters and Wilkinson.
+C     HANDBOOK FOR AUTO. COMP., VOL.II-LINEAR ALGEBRA, 418-439(1971).
+C
+C     This subroutine finds those eigenvectors of a TRIDIAGONAL
+C     SYMMETRIC matrix corresponding to specified eigenvalues,
+C     using inverse iteration.
+C
+C     On Input
+C
+C        NM must be set to the row dimension of two-dimensional
+C          array parameters as declared in the calling program
+C          dimension statement.
+C
+C        N is the order of the matrix.
+C
+C        D contains the diagonal elements of the input matrix.
+C
+C        E contains the subdiagonal elements of the input matrix
+C          in its last N-1 positions.  E(1) is arbitrary.
+C
+C        E2 contains the squares of the corresponding elements of E,
+C          with zeros corresponding to negligible elements of E.
+C          E(I) is considered negligible if it is not larger than
+C          the product of the relative machine precision and the sum
+C          of the magnitudes of D(I) and D(I-1).  E2(1) must contain
+C          0.0e0 if the eigenvalues are in ascending order, or 2.0e0
+C          if the eigenvalues are in descending order.  If  BISECT,
+C          TRIDIB, or  IMTQLV  has been used to find the eigenvalues,
+C          their output E2 array is exactly what is expected here.
+C
+C        M is the number of specified eigenvalues.
+C
+C        W CONTAINS the M eigenvalues in ascending or descending order.
+C
+C        IND contains in its first M positions the submatrix indices
+C          associated with the corresponding eigenvalues in W --
+C          1 for eigenvalues belonging to the first submatrix from
+C          the top, 2 for those belonging to the second submatrix, etc.
+C
+C     On Output
+C
+C       ** All input arrays are unaltered.**
+C
+C        Z contains the associated set of orthonormal eigenvectors.
+C          any vector which fails to converge is set to zero.
+C
+C        IERR is set to
+C          Zero       for normal return,
+C          -R         if the eigenvector corresponding to the R-th
+C                     eigenvalue fails to converge in 5 iterations.
+C
+C        RV1, RV2, RV3, RV4, and RV6 are temporary storage arrays.
+C
+C     Questions and comments should be directed to B. S. Garbow,
+C     APPLIED MATHEMATICS DIVISION, ARGONNE NATIONAL LABORATORY
+C     ------------------------------------------------------------------
+C***REFERENCES  B. T. SMITH, J. M. BOYLE, J. J. DONGARRA, B. S. GARBOW,
+C                 Y. IKEBE, V. C. KLEMA, C. B. MOLER, *MATRIX EIGEN-
+C                 SYSTEM ROUTINES - EISPACK GUIDE*, SPRINGER-VERLAG,
+C                 1976.
+C***ROUTINES CALLED  (NONE)
+C***END PROLOGUE  TINVIT
+ 
+ 

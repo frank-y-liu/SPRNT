@@ -1,0 +1,67 @@
+ 
+      SUBROUTINE CORTB(NM,LOW,IGH,AR,AI,ORTR,ORTI,M,ZR,ZI)
+C***BEGIN PROLOGUE  CORTB
+C***DATE WRITTEN   760101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  D4C4
+C***KEYWORDS  EIGENVALUES,EIGENVECTORS,EISPACK
+C***AUTHOR  SMITH, B. T., ET AL.
+C***PURPOSE  Forms eigenvectors of complex general matrix from
+C            eigenvectors of upper Hessenberg matrix output from
+C             CORTH
+C***DESCRIPTION
+C
+C     This subroutine is a translation of a complex analogue of
+C     the ALGOL procedure ORTBAK, NUM. MATH. 12, 349-368(1968)
+C     by Martin and Wilkinson.
+C     HANDBOOK FOR AUTO. COMP., VOL.II-LINEAR ALGEBRA, 339-358(1971).
+C
+C     This subroutine forms the eigenvectors of a COMPLEX GENERAL
+C     matrix by back transforming those of the corresponding
+C     upper Hessenberg matrix determined by  CORTH.
+C
+C     On INPUT
+C
+C        NM must be set to the row dimension of two-dimensional
+C          array parameters as declared in the calling program
+C          dimension statement.
+C
+C        LOW and IGH are integers determined by the balancing
+C          subroutine  CBAL.  If  CBAL  has not been used,
+C          set LOW=1 and IGH equal to the order of the matrix.
+C
+C        AR and AI contain information about the unitary
+C          transformations used in the reduction by  CORTH
+C          in their strict lower triangles.
+C
+C        ORTR and ORTI contain further information about the
+C          transformations used in the reduction by  CORTH.
+C          Only elements LOW through IGH are used.
+C
+C        M is the number of columns of ZR and ZI to be back transformed.
+C
+C        ZR and ZI contain the real and imaginary parts,
+C          respectively, of the eigenvectors to be
+C          back transformed in their first M columns.
+C
+C     On OUTPUT
+C
+C        ZR and ZI contain the real and imaginary parts,
+C          respectively, of the transformed eigenvectors
+C          in their first M columns.
+C
+C        ORTR and ORTI have been altered.
+C
+C     Note that CORTB preserves vector Euclidean norms.
+C
+C     Questions and comments should be directed to B. S. Garbow,
+C     APPLIED MATHEMATICS DIVISION, ARGONNE NATIONAL LABORATORY
+C     ------------------------------------------------------------------
+C***REFERENCES  B. T. SMITH, J. M. BOYLE, J. J. DONGARRA, B. S. GARBOW,
+C                 Y. IKEBE, V. C. KLEMA, C. B. MOLER, *MATRIX EIGEN-
+C                 SYSTEM ROUTINES - EISPACK GUIDE*, SPRINGER-VERLAG,
+C                 1976.
+C***ROUTINES CALLED  (NONE)
+C***END PROLOGUE  CORTB
+ 
+ 

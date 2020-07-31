@@ -1,0 +1,70 @@
+#! /bin/csh -f
+
+#  usage: cmsrcx <subprogram> ...
+
+#  retrieves source for CMLIB subprograms whose name(s)
+#  are listed on the command line, including all additional
+#  CMLIB subprograms which are required to run them.  The
+#  requested items are written to standard output.
+
+#  The environment variable CMLIBDIR, if set, is taken to be the
+#  directory where CMLIB source and documentation is stored.  The
+#  named directory is presumed to have CMLIB's scripts subdirectory.
+#  If CMLIBDIR is not set, then /usr/local/apps/cmlib is used.
+
+#  Ron Boisvert, CAML NIST
+#  05 Dec 90 (Revised 15 Jan 91)
+
+#  fc        == the fortran compiler
+#  mapoption == compiler option that generates BSD-type load map
+#  cmlib     == how cmlib is referenced on compiler command line
+
+set fc = f90
+set mapoption = "-m"
+
+set cmdir = /usr/local/apps/cmlib
+
+set userdir = `printenv CMLIBDIR`
+if ("$userdir" != "") set cmdir = $userdir
+set cmsrc = $cmdir/scripts/cmsrc
+set cmlib = "$cmdir/`$cmdir/utils/itl-arch`/lib_f90/libcm.a"
+if (! -f $cmsrc) then
+  echo "CMLIB source retrieval script $cmsrc does not exist."
+  exit
+endif
+
+onintr cleanup
+
+set tmpdir = /tmp/cmsrcx.$$
+
+mkdir $tmpdir
+cd $tmpdir
+
+# -------------------------------------------------------
+# generate fortran program which calls requested routines
+# -------------------------------------------------------
+
+foreach name ($argv)
+  echo "      call $name" >> prog.f
+end
+echo "      end" >> prog.f
+
+# -----------------------------------------------
+# compile this program and capture the loader map
+# -----------------------------------------------
+
+$fc prog.f $mapoption $cmlib >& prog.m
+
+# ------------------------------------------------
+# massage loader map into sequence of getsrc calls
+# ------------------------------------------------
+
+grep \.text prog.m | grep \libcm\.a | cut -f2 -d"(" >prog.M
+sed -e 's/\.o)//' \
+    -e "s#^#$cmsrc #" prog.M | csh -f -s
+
+cleanup:
+         cd
+         rm -r -f $tmpdir
+
+

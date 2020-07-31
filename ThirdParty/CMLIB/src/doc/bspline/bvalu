@@ -1,0 +1,63 @@
+ 
+      FUNCTION BVALU(T,A,N,K,IDERIV,X,INBV,WORK)
+C***BEGIN PROLOGUE  BVALU
+C***DATE WRITTEN   800901   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  E3,K6
+C***KEYWORDS  B-SPLINE,DATA FITTING,INTERPOLATION,SPLINE
+C***AUTHOR  AMOS, D. E., (SNLA)
+C***PURPOSE  Evaluates the B-representation of a B-spline at X for the
+C            function value or any of its derivatives.
+C***DESCRIPTION
+C
+C     Written by Carl de Boor and modified by D. E. Amos
+C
+C     Reference
+C         SIAM J. Numerical Analysis, 14, No. 3, June, 1977, pp.441-472.
+C
+C     Abstract
+C         BVALU is the BVALUE function of the reference.
+C
+C         BVALU evaluates the B-representation (T,A,N,K) of a B-spline
+C         at X for the function value on IDERIV = 0 or any of its
+C         derivatives on IDERIV = 1,2,...,K-1.  Right limiting values
+C         (right derivatives) are returned except at the right end
+C         point X=T(N+1) where left limiting values are computed.  The
+C         spline is defined on T(K) .LE. X .LE. T(N+1).  BVALU returns
+C         a fatal error message when X is outside of this interval.
+C
+C         To compute left derivatives or left limiting values at a
+C         knot T(I), replace N by I-1 and set X=T(I), I=K+1,N+1.
+C
+C         BVALU calls INTRV
+C
+C     Description of Arguments
+C         Input
+C          T       - knot vector of length N+K
+C          A       - B-spline coefficient vector of length N
+C          N       - number of B-spline coefficients
+C                    N = sum of knot multiplicities-K
+C          K       - order of the B-spline, K .GE. 1
+C          IDERIV  - order of the derivative, 0 .LE. IDERIV .LE. K-1
+C                    IDERIV=0 returns the B-spline value
+C          X       - argument, T(K) .LE. X .LE. T(N+1)
+C          INBV    - an initialization parameter which must be set
+C                    to 1 the first time BVALU is called.
+C
+C         Output
+C          INBV    - INBV contains information for efficient process-
+C                    ing after the initial call and INBV must not
+C                    be changed by the user.  Distinct splines require
+C                    distinct INBV parameters.
+C          WORK    - work vector of length 3*K.
+C          BVALU   - value of the IDERIV-th derivative at X
+C
+C     Error Conditions
+C         An improper input is a fatal error
+C***REFERENCES  C. DE BOOR, *PACKAGE FOR CALCULATING WITH B-SPLINES*,
+C                 SIAM JOURNAL ON NUMERICAL ANALYSIS, VOLUME 14, NO. 3,
+C                 JUNE 1977, PP. 441-472.
+C***ROUTINES CALLED  INTRV,XERROR
+C***END PROLOGUE  BVALU
+ 
+ 

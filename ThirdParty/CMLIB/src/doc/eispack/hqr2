@@ -1,0 +1,81 @@
+ 
+      SUBROUTINE HQR2(NM,N,LOW,IGH,H,WR,WI,Z,IERR)
+C***BEGIN PROLOGUE  HQR2
+C***DATE WRITTEN   760101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  D4C2B
+C***KEYWORDS  EIGENVALUES,EIGENVECTORS,EISPACK
+C***AUTHOR  SMITH, B. T., ET AL.
+C***PURPOSE  Computes eigenvalues and eigenvectors of real upper
+C            Hessenberg matrix using QR method.
+C***DESCRIPTION
+C
+C     This subroutine is a translation of the ALGOL procedure HQR2,
+C     NUM. MATH. 16, 181-204(1970) by Peters and Wilkinson.
+C     HANDBOOK FOR AUTO. COMP., VOL.II-LINEAR ALGEBRA, 372-395(1971).
+C
+C     This subroutine finds the eigenvalues and eigenvectors
+C     of a REAL UPPER Hessenberg matrix by the QR method.  The
+C     eigenvectors of a REAL GENERAL matrix can also be found
+C     if  ELMHES  and  ELTRAN  or  ORTHES  and  ORTRAN  have
+C     been used to reduce this general matrix to Hessenberg form
+C     and to accumulate the similarity transformations.
+C
+C     On INPUT
+C
+C        NM must be set to the row dimension of two-dimensional
+C          array parameters as declared in the calling program
+C          dimension statement.
+C
+C        N is the order of the matrix.
+C
+C        LOW and IGH are integers determined by the balancing
+C          subroutine  BALANC.  If  BALANC  has not been used,
+C          set LOW=1, IGH=N.
+C
+C        H contains the upper Hessenberg matrix.
+C
+C        Z contains the transformation matrix produced by  ELTRAN
+C          after the reduction by  ELMHES, or by  ORTRAN  after the
+C          reduction by  ORTHES, if performed.  If the eigenvectors
+C          of the Hessenberg matrix are desired, Z must contain the
+C          identity matrix.
+C
+C     On OUTPUT
+C
+C        H has been destroyed.
+C
+C        WR and WI contain the real and imaginary parts,
+C          respectively, of the eigenvalues.  The eigenvalues
+C          are unordered except that complex conjugate pairs
+C          of values appear consecutively with the eigenvalue
+C          having the positive imaginary part first.  If an
+C          error exit is made, the eigenvalues should be correct
+C          for indices IERR+1,...,N.
+C
+C        Z contains the real and imaginary parts of the eigenvectors.
+C          If the I-th eigenvalue is real, the I-th column of Z
+C          contains its eigenvector.  If the I-th eigenvalue is complex
+C          with positive imaginary part, the I-th and (I+1)-th
+C          columns of Z contain the real and imaginary parts of its
+C          eigenvector.  The eigenvectors are unnormalized.  If an
+C          error exit is made, none of the eigenvectors has been found.
+C
+C        IERR is set to
+C          Zero       for normal return,
+C          J          if the J-th eigenvalue has not been
+C                     determined after a total of 30*N iterations.
+C
+C     Calls CDIV for complex division.
+C
+C     Questions and comments should be directed to B. S. Garbow,
+C     APPLIED MATHEMATICS DIVISION, ARGONNE NATIONAL LABORATORY
+C     ------------------------------------------------------------------
+C***REFERENCES  B. T. SMITH, J. M. BOYLE, J. J. DONGARRA, B. S. GARBOW,
+C                 Y. IKEBE, V. C. KLEMA, C. B. MOLER, *MATRIX EIGEN-
+C                 SYSTEM ROUTINES - EISPACK GUIDE*, SPRINGER-VERLAG,
+C                 1976.
+C***ROUTINES CALLED  CDIV
+C***END PROLOGUE  HQR2
+ 
+ 

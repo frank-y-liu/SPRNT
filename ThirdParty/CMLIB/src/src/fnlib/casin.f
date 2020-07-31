@@ -1,0 +1,57 @@
+      COMPLEX FUNCTION CASIN(ZINP)
+C***BEGIN PROLOGUE  CASIN
+C***DATE WRITTEN   770701   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***REVISION HISTORY (YYMMDD)
+C   000601  Changed CSQRT/CLOG to generic SQRT/LOG  (JEC)
+C***CATEGORY NO.  C4A
+C***KEYWORDS  ARC SINE,COMPLEX,ELEMENTARY FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the complex arc Sine.
+C***DESCRIPTION
+C
+C CASIN(ZINP) calculates the complex trigonometric arc sine of ZINP.
+C The result is in units of radians, and the real part is in the first
+C or fourth quadrant.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  R1MACH
+C***END PROLOGUE  CASIN
+      COMPLEX ZINP, Z, Z2, SQZP1, CI
+      DATA PI2 /1.5707963267 9489661923E0/
+      DATA PI /3.1415926535 8979324E0/
+      DATA CI /(0.,1.)/
+      DATA NTERMS, RMIN / 0, 0.0 /
+C***FIRST EXECUTABLE STATEMENT  CASIN
+      IF (NTERMS.NE.0) GO TO 10
+C NTERMS = ALOG(EPS)/ALOG(RMAX)  WHERE RMAX = 0.1
+      NTERMS = -0.4343*ALOG(R1MACH(3))
+      RMIN = SQRT (6.0*R1MACH(3))
+C
+ 10   Z = ZINP
+      R = CABS (Z)
+      IF (R.GT.0.1) GO TO 30
+C
+      CASIN = Z
+      IF (R.LT.RMIN) RETURN
+C
+      CASIN = (0.0, 0.0)
+      Z2 = Z*Z
+      DO 20 I=1,NTERMS
+        TWOI = 2*(NTERMS-I) + 1
+        CASIN = 1.0/TWOI + TWOI*CASIN*Z2/(TWOI+1.0)
+ 20   CONTINUE
+      CASIN = Z*CASIN
+      RETURN
+C
+ 30   IF (REAL(ZINP).LT.0.0) Z = -ZINP
+C
+      SQZP1 = SQRT (Z+1.0)
+      IF (AIMAG(SQZP1).LT.0.) SQZP1 = -SQZP1
+      CASIN = PI2 - CI * LOG (Z + SQZP1*SQRT(Z-1.0))
+C
+      IF (REAL(CASIN).GT.PI2) CASIN = PI - CASIN
+      IF (REAL(CASIN).LE.(-PI2)) CASIN = -PI - CASIN
+      IF (REAL(ZINP).LT.0.) CASIN = -CASIN
+C
+      RETURN
+      END

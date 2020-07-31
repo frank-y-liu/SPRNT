@@ -1,0 +1,106 @@
+ 
+      SUBROUTINE PCHIM(N,X,F,D,INCFD,IERR)
+C***BEGIN PROLOGUE  PCHIM
+C***DATE WRITTEN   811103   (YYMMDD)
+C***REVISION DATE  870707   (YYMMDD)
+C***CATEGORY NO.  E1B
+C***KEYWORDS  LIBRARY=SLATEC(PCHIP),
+C             TYPE=SINGLE PRECISION(PCHIM-S DPCHIM-D),
+C             CUBIC HERMITE INTERPOLATION,MONOTONE INTERPOLATION,
+C             PIECEWISE CUBIC INTERPOLATION
+C***AUTHOR  FRITSCH, F. N., (LLNL)
+C             MATHEMATICS AND STATISTICS DIVISION
+C             LAWRENCE LIVERMORE NATIONAL LABORATORY
+C             P.O. BOX 808  (L-316)
+C             LIVERMORE, CA  94550
+C             FTS 532-4275, (415) 422-4275
+C***PURPOSE  Set derivatives needed to determine a monotone piecewise
+C            cubic Hermite interpolant to given data.  Boundary values
+C            are provided which are compatible with monotonicity.  The
+C            interpolant will have an extremum at each point where mono-
+C            tonicity switches direction.  (See PCHIC if user control is
+C            desired over boundary or switch conditions.)
+C***DESCRIPTION
+C
+C          PCHIM:  Piecewise Cubic Hermite Interpolation to
+C                  Monotone data.
+C
+C     Sets derivatives needed to determine a monotone piecewise cubic
+C     Hermite interpolant to the data given in X and F.
+C
+C     Default boundary conditions are provided which are compatible
+C     with monotonicity.  (See PCHIC if user control of boundary con-
+C     ditions is desired.)
+C
+C     If the data are only piecewise monotonic, the interpolant will
+C     have an extremum at each point where monotonicity switches direc-
+C     tion.  (See PCHIC if user control is desired in such cases.)
+C
+C     To facilitate two-dimensional applications, includes an increment
+C     between successive values of the F- and D-arrays.
+C
+C     The resulting piecewise cubic Hermite function may be evaluated
+C     by PCHFE or PCHFD.
+C
+C ----------------------------------------------------------------------
+C
+C  Calling sequence:
+C
+C        PARAMETER  (INCFD = ...)
+C        INTEGER  N, IERR
+C        REAL  X(N), F(INCFD,N), D(INCFD,N)
+C
+C        CALL  PCHIM (N, X, F, D, INCFD, IERR)
+C
+C   Parameters:
+C
+C     N -- (input) number of data points.  (Error return if N.LT.2 .)
+C           If N=2, simply does linear interpolation.
+C
+C     X -- (input) real array of independent variable values.  The
+C           elements of X must be strictly increasing:
+C                X(I-1) .LT. X(I),  I = 2(1)N.
+C           (Error return if not.)
+C
+C     F -- (input) real array of dependent variable values to be inter-
+C           polated.  F(1+(I-1)*INCFD) is value corresponding to X(I).
+C           PCHIM is designed for monotonic data, but it will work for
+C           any F-array.  It will force extrema at points where mono-
+C           tonicity switches direction.  If some other treatment of
+C           switch points is desired, PCHIC should be used instead.
+C                                     -----
+C     D -- (output) real array of derivative values at the data points.
+C           If the data are monotonic, these values will determine a
+C           a monotone cubic Hermite function.
+C           The value corresponding to X(I) is stored in
+C                D(1+(I-1)*INCFD),  I=1(1)N.
+C           No other entries in D are changed.
+C
+C     INCFD -- (input) increment between successive values in F and D.
+C           This argument is provided primarily for 2-D applications.
+C           (Error return if  INCFD.LT.1 .)
+C
+C     IERR -- (output) error flag.
+C           Normal return:
+C              IERR = 0  (no errors).
+C           Warning error:
+C              IERR.GT.0  means that IERR switches in the direction
+C                 of monotonicity were detected.
+C           "Recoverable" errors:
+C              IERR = -1  if N.LT.2 .
+C              IERR = -2  if INCFD.LT.1 .
+C              IERR = -3  if the X-array is not strictly increasing.
+C             (The D-array has not been changed in any of these cases.)
+C               NOTE:  The above errors are checked in the order listed,
+C                   and following arguments have **NOT** been validated.
+C
+C***REFERENCES  1. F.N.FRITSCH AND R.E.CARLSON, 'MONOTONE PIECEWISE
+C                 CUBIC INTERPOLATION,' SIAM J.NUMER.ANAL. 17, 2 (APRIL
+C                 1980), 238-246.
+C               2. F.N.FRITSCH AND J.BUTLAND, 'A METHOD FOR CONSTRUCTING
+C                 LOCAL MONOTONE PIECEWISE CUBIC INTERPOLANTS,' SIAM
+C                 J.SCI.STAT.COMPUT.5,2 (JUNE 1984), 300-304.
+C***ROUTINES CALLED  PCHST,XERROR
+C***END PROLOGUE  PCHIM
+ 
+ 

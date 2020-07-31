@@ -1,0 +1,26 @@
+ 
+C
+C
+C       P A C K A G E  :    DQRLSS
+C
+C       Solving linear least squares problems.
+C
+C     This package is a Double Precision version of the package
+C         SQRLSS.
+C
+C     This package is composed of two subroutines, DQRANK and DQRLSS
+C  for the factorization and solving of a system of equations Ax=b,
+C  where A is a rectangular matrix and x and b are vectors.  The
+C  solution is in the least squares sense.  That is if A is longer
+C  than wide not all the equations can be solved exactly and the
+C  solution x will be that one which minimizes the sum of squares of the
+C  residuals.  If A is wider than long then the solution is not unique
+C  and the solution x will be the one with minimum length.
+C  One advantage of these routines is that they use already existing
+C  routines in the LINPACK package to do most of the linear algebra.
+C  That is, they are mostly drivers for these other programs.
+C
+C  See the individual routines for detailed usage instructions.
+C
+ 
+ 

@@ -1,0 +1,41 @@
+ 
+      DOUBLE PRECISION FUNCTION DBSI0E(X)
+C***BEGIN PROLOGUE  DBSI0E
+C***DATE WRITTEN   770701   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C10B1
+C***KEYWORDS  BESSEL FUNCTION,DOUBLE PRECISION,EXPONENTIALLY SCALED,
+C             FIRST KIND,MODIFIED BESSEL FUNCTION,ORDER ZERO,
+C             SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the d.p. exponentially scaled hyperbolic Bessel
+C            function of the first kind of order zero.
+C***DESCRIPTION
+C
+C DBSI0E(X) calculates the double precision exponentially scaled
+C modified (hyperbolic) Bessel function of the first kind of order
+C zero for double precision argument X.  The result is the Bessel
+C function I0(X) multiplied by EXP(-ABS(X)).
+C
+C Series for BI0        on the interval  0.          to  9.00000E+00
+C                                        with weighted error   9.51E-34
+C                                         log weighted error  33.02
+C                               significant figures required  33.31
+C                                    decimal places required  33.65
+C
+C Series for AI0        on the interval  1.25000E-01 to  3.33333E-01
+C                                        with weighted error   2.74E-32
+C                                         log weighted error  31.56
+C                               significant figures required  30.15
+C                                    decimal places required  32.39
+C
+C Series for AI02       on the interval  0.          to  1.25000E-01
+C                                        with weighted error   1.97E-32
+C                                         log weighted error  31.71
+C                               significant figures required  30.15
+C                                    decimal places required  32.63
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D1MACH,DCSEVL,INITDS
+C***END PROLOGUE  DBSI0E
+ 
+ 

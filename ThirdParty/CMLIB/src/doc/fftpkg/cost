@@ -1,0 +1,60 @@
+ 
+      SUBROUTINE COST(N,X,WSAVE)
+C***BEGIN PROLOGUE  COST
+C***DATE WRITTEN   790601   (YYMMDD)
+C***REVISION DATE  830401   (YYMMDD)
+C***CATEGORY NO.  J1A3
+C***KEYWORDS  FOURIER TRANSFORM
+C***AUTHOR  SWARZTRAUBER, P. N., (NCAR)
+C***PURPOSE  Cosine transform of a real, even sequence.
+C***DESCRIPTION
+C
+C  Subroutine COST computes the discrete Fourier cosine transform
+C  of an even sequence X(I).  The transform is defined below at output
+C  parameter X.
+C
+C  COST is the unnormalized inverse of itself since a call of COST
+C  followed by another call of COST will multiply the input sequence
+C  X by 2*(N-1).  The transform is defined below at output parameter X.
+C
+C  The array WSAVE which is used by subroutine COST must be
+C  initialized by calling subroutine COSTI(N,WSAVE).
+C
+C  Input Parameters
+C
+C  N       the length of the sequence X.  N must be greater than 1.
+C          The method is most efficient when N-1 is a product of
+C          small primes.
+C
+C  X       an array which contains the sequence to be transformed
+C
+C  WSAVE   a work array which must be dimensioned at least 3*N+15
+C          in the program that calls COST.  The WSAVE array must be
+C          initialized by calling subroutine COSTI(N,WSAVE), and a
+C          different WSAVE array must be used for each different
+C          value of N.  This initialization does not have to be
+C          repeated so long as N remains unchanged.  Thus subsequent
+C          transforms can be obtained faster than the first.
+C
+C  Output Parameters
+C
+C  X       For I=1,...,N
+C
+C             X(I) = X(1)+(-1)**(I-1)*X(N)
+C
+C               + the sum from K=2 to K=N-1
+C
+C                   X(K)*COS((K-1)*(I-1)*PI/(N-1))
+C
+C               A call of COST followed by another call of
+C               COST will multiply the sequence X by 2*(N-1).
+C               Hence COST is the unnormalized inverse
+C               of itself.
+C
+C  WSAVE   contains initialization calculations which must not be
+C          destroyed between calls of COST.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  RFFTF
+C***END PROLOGUE  COST
+ 
+ 

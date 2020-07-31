@@ -1,0 +1,26 @@
+ 
+      FUNCTION BESI0(X)
+C***BEGIN PROLOGUE  BESI0
+C***DATE WRITTEN   770401   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C10B1
+C***KEYWORDS  BESSEL FUNCTION,FIRST KIND,HYPERBOLIC BESSEL FUNCTION,
+C             MODIFIED BESSEL FUNCTION,ORDER ZERO
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the hyperbolic Bessel function of the first kind
+C            of order zero
+C***DESCRIPTION
+C
+C BESI0(X) computes the modified (hyperbolic) Bessel function
+C of the first kind of order zero and real argument X.
+C
+C Series for BI0        on the interval  0.          to  9.00000D+00
+C                                        with weighted error   2.46E-18
+C                                         log weighted error  17.61
+C                               significant figures required  17.90
+C                                    decimal places required  18.15
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  BESI0E,CSEVL,INITS,R1MACH,XERROR
+C***END PROLOGUE  BESI0
+ 
+ 

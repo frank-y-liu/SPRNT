@@ -1,0 +1,19 @@
+#! /bin/csh -f
+#
+#  Update file remotedir scriptdir host ranlib
+#
+#  Used by cmlib Makefile.  If .o files exist in the current directory
+#  then they are used to update the archive named "file".  Then, a
+#  ranlib is executed on this file on the remote machine "host" using the
+#  given "ranlib".  "file" is located at "remotefile" on "host".
+
+set echo
+
+set file = $1
+set scriptdir = ../../utils
+set ranlib = "$2"
+
+$scriptdir/Upar "$file"
+if ( `echo $file|grep -c so` == 0 ) then
+   $scriptdir/Ranlib "$ranlib" $file
+endif

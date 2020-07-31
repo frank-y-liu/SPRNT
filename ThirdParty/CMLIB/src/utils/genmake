@@ -1,0 +1,41 @@
+#  generate a cmlib Makefile
+
+set templatedir = ../../utils
+
+echo -n "Architecture type : "
+set arch = $<
+echo -n "Compilation host : "
+set host = $<
+echo -n "Compiler name on $host : "
+set compiler = $<
+echo -n "Compiler flags on $host : "
+set flags = "$<"
+echo -n "Ranlib command on $host : "
+set ranlib = "$<"
+echo -n "Location of current directory on $host : "
+set thisdir = "$<"
+echo -n "Name of machine for machcon generation (if known) : "
+set machcon = "$<"
+
+set file = $cwd/Makefile
+
+cat $templatedir/Makefile.template.1 > $file
+
+echo "ARCH = $arch" >> $file
+echo "HOST = $host" >> $file
+echo "COMPILER = $compiler" >> $file
+echo "FFLAGS = $flags" >> $file
+echo "RANLIB = $ranlib" >> $file
+echo "THISDIR = $thisdir" >> $file
+echo "MACHCON = $machcon" >> $file
+
+cat $templatedir/Makefile.template.2 >> $file
+
+#  ... show dependence of library on each sublibrary
+
+pushd ../../src > /dev/null
+ls | grep -v machcon | fmt -65 \
+   | sed -e 's/^/   /' -e 's/$/ \\/' -e '$s/..$//' >> $file
+popd > /dev/null
+
+cat $templatedir/Makefile.template.3 >> $file

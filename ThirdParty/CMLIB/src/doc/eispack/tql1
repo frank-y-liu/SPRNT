@@ -1,0 +1,56 @@
+ 
+      SUBROUTINE TQL1(N,D,E,IERR)
+C***BEGIN PROLOGUE  TQL1
+C***DATE WRITTEN   760101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  D4A5,D4C2A
+C***KEYWORDS  EIGENVALUES,EIGENVECTORS,EISPACK
+C***AUTHOR  SMITH, B. T., ET AL.
+C***PURPOSE  Compute eigenvalues of symmetric tridiagonal matrix by QL
+C            method.
+C***DESCRIPTION
+C
+C     This subroutine is a translation of the ALGOL procedure TQL1,
+C     NUM. MATH. 11, 293-306(1968) by Bowdler, Martin, Reinsch, and
+C     Wilkinson.
+C     HANDBOOK FOR AUTO. COMP., VOL.II-LINEAR ALGEBRA, 227-240(1971).
+C
+C     This subroutine finds the eigenvalues of a SYMMETRIC
+C     TRIDIAGONAL matrix by the QL method.
+C
+C     On Input
+C
+C        N is the order of the matrix.
+C
+C        D contains the diagonal elements of the input matrix.
+C
+C        E contains the subdiagonal elements of the input matrix
+C          in its last N-1 positions.  E(1) is arbitrary.
+C
+C      On Output
+C
+C        D contains the eigenvalues in ascending order.  If an
+C          error exit is made, the eigenvalues are correct and
+C          ordered for indices 1,2,...IERR-1, but may not be
+C          the smallest eigenvalues.
+C
+C        E has been destroyed.
+C
+C        IERR is set to
+C          Zero       for normal return,
+C          J          if the J-th eigenvalue has not been
+C                     determined after 30 iterations.
+C
+C     Calls PYTHAG(A,B) for sqrt(A**2 + B**2).
+C
+C     Questions and comments should be directed to B. S. Garbow,
+C     APPLIED MATHEMATICS DIVISION, ARGONNE NATIONAL LABORATORY
+C     ------------------------------------------------------------------
+C***REFERENCES  B. T. SMITH, J. M. BOYLE, J. J. DONGARRA, B. S. GARBOW,
+C                 Y. IKEBE, V. C. KLEMA, C. B. MOLER, *MATRIX EIGEN-
+C                 SYSTEM ROUTINES - EISPACK GUIDE*, SPRINGER-VERLAG,
+C                 1976.
+C***ROUTINES CALLED  PYTHAG
+C***END PROLOGUE  TQL1
+ 
+ 

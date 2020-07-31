@@ -1,0 +1,88 @@
+ 
+      SUBROUTINE BINTK(X,Y,T,N,K,BCOEF,Q,WORK)
+C***BEGIN PROLOGUE  BINTK
+C***DATE WRITTEN   800901   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  E1A
+C***KEYWORDS  B-SPLINE,DATA FITTING,INTERPOLATION,SPLINE
+C***AUTHOR  AMOS, D. E., (SNLA)
+C***PURPOSE  Produces the B-spline coefficients, BCOEF, of the
+C            B-spline of order K with knots T(I), I=1,...,N+K, which
+C            takes on the value Y(I) at X(I), I=1,...,N.
+C***DESCRIPTION
+C
+C     Written by Carl de Boor and modified by D. E. Amos
+C
+C     References
+C
+C          A Practical Guide to Splines by C. de Boor, Applied
+C          Mathematics Series 27, Springer, 1979.
+C
+C     Abstract
+C
+C         BINTK is the SPLINT routine of the reference.
+C
+C         BINTK produces the B-spline coefficients, BCOEF, of the
+C         B-spline of order K with knots T(I), I=1,...,N+K, which
+C         takes on the value Y(I) at X(I), I=1,...,N.  The spline or
+C         any of its derivatives can be evaluated by calls to BVALU.
+C         The I-th equation of the linear system A*BCOEF = B for the
+C         coefficients of the interpolant enforces interpolation at
+C         X(I)), I=1,...,N.  Hence, B(I) = Y(I), all I, and A is
+C         a band matrix with 2K-1 bands if A is invertible. The matrix
+C         A is generated row by row and stored, diagonal by diagonal,
+C         in the rows of Q, with the main diagonal going into row K.
+C         The banded system is then solved by a call to BNFAC (which
+C         constructs the triangular factorization for A and stores it
+C         again in Q), followed by a call to BNSLV (which then
+C         obtains the solution BCOEF by substitution). BNFAC does no
+C         pivoting, since the total positivity of the matrix A makes
+C         this unnecessary.  The linear system to be solved is
+C         (theoretically) invertible if and only if
+C                 T(I) .LT. X(I)) .LT. T(I+K),        all I.
+C         Equality is permitted on the left for I=1 and on the right
+C         for I=N when K knots are used at X(1) or X(N).  Otherwise,
+C         violation of this condition is certain to lead to an error.
+C
+C         BINTK calls BSPVN, BNFAC, BNSLV, XERROR
+C
+C     Description of Arguments
+C         Input
+C           X       - vector of length N containing data point abscissa
+C                     in strictly increasing order.
+C           Y       - corresponding vector of length N containing data
+C                     point ordinates.
+C           T       - knot vector of length N+K
+C                     since T(1),..,T(K) .LE. X(1) and T(N+1),..,T(N+K)
+C                     .GE. X(N), this leaves only N-K knots (not nec-
+C                     essarily X(I)) values) interior to (X(1),X(N))
+C           N       - number of data points, N .GE. K
+C           K       - order of the spline, K .GE. 1
+C
+C         Output
+C           BCOEF   - a vector of length N containing the B-spline
+C                     coefficients
+C           Q       - a work vector of length (2*K-1)*N, containing
+C                     the triangular factorization of the coefficient
+C                     matrix of the linear system being solved.  The
+C                     coefficients for the interpolant of an
+C                     additional data set (X(I)),YY(I)), I=1,...,N
+C                     with the same abscissa can be obtained by loading
+C                     YY into BCOEF and then executing
+C                         call BNSLV(Q,2K-1,N,K-1,K-1,BCOEF)
+C           WORK    - work vector of length 2*K
+C
+C     Error Conditions
+C         Improper  input is a fatal error
+C         Singular system of equations is a fatal error
+C***REFERENCES  D.E. AMOS, *COMPUTATION WITH SPLINES AND B-SPLINES*,
+C                 SAND78-1968,SANDIA LABORATORIES,MARCH,1979.
+C               C. DE BOOR, *PACKAGE FOR CALCULATING WITH B-SPLINES*,
+C                 SIAM JOURNAL ON NUMERICAL ANALYSIS, VOLUME 14, NO. 3,
+C                 JUNE 1977, PP. 441-472.
+C               C. DE BOOR, *A PRACTICAL GUIDE TO SPLINES*, APPLIED
+C                 MATHEMATICS SERIES 27, SPRINGER, 1979.
+C***ROUTINES CALLED  BNFAC,BNSLV,BSPVN,XERROR
+C***END PROLOGUE  BINTK
+ 
+ 

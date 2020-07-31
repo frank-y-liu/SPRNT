@@ -1,0 +1,71 @@
+#! /bin/csh -f
+
+#  -------------------------------
+#  write a cmlib distribution tape
+#  -------------------------------
+
+if ("$0" != "utils/wtt") then
+   echo "You must run me from the cmlib/export directory."
+   exit
+endif
+
+#  ... which distribution?
+
+set list = (generic hp9000s300 hp9000s700 rs6000 rs6000.autodbl sgi sun4 sun4.r8 sun.sparc sun.sparc.r8 sun.solaris2-v4 sun.solaris4-v4.r8)
+
+echo " "
+echo "I know how to write tapes for the following machines."
+echo " "
+set i = 1
+while ($i <= $#list)
+   echo "   $i : $list[$i]"
+   @ i = $i + 1
+end
+echo " "
+echo -n "Enter numbers of desired implementations : "
+set selections = ($<)
+
+#  ... which output device ?
+
+echo " "
+echo -n "Name of output device or file (/dev/rst0 == cartridge tape) :"
+set device = $<
+if ("$device" == "") exit
+
+#  .. setup library directory for this distribution
+
+rm -rf library
+mkdir library
+
+foreach id ($selections)
+
+  set type = $list[$id]
+
+  mkdir library/$type
+
+  set from = ../../lib/$type
+  set to = library/$type
+
+  sed -e "/^##=${type}_begin/,/^##=${type}_end/s/^# //" utils/Makefile.template > $to/Makefile
+  ln -s ../../lib/generic/cmlib.l $to/cmlib.l
+  if (-e lib/$type/Version) ln -s $from/Version $to/Version
+  if (-e lib/$type/src) ln -s $from/src $to/src
+  if (-e lib/$type/libcm.a) ln -s $from/libcm.a $to/libcm.a
+  if (-e lib/$type/testall.out) ln -s $from/testall.out $to/testall.out
+  touch ./$to/sublibs
+
+end
+
+#  ... now write the tar file
+
+set xfile = /tmp/tarXfile.$$
+echo ./lib > $xfile
+echo ./README >> $xfile
+
+echo " "
+echo "Writing tar file ... "
+
+tar chvfX $device $xfile . 
+
+rm $xfile
+

@@ -1,0 +1,102 @@
+ 
+ 
+P A C K A G E      LINPAKD
+ 
+(Version 1978 )
+ 
+Analyse and solve various systems of linear algebraic equations. (Double
+precision version of LINPACK).
+ 
+ 
+DCHDC.........Compute Cholesky decomposition of positive definite double
+              precision matrix with optional pivoting.
+DCHDD.........Downdates  Cholesky  factorization  of  positive  definite
+              double precision matrix.
+DCHEX.........Updates Cholesky factorization of positive definite double
+              precision matrix.
+DCHUD.........Updates Cholesky factorization of positive definite double
+              precision matrix.
+DGBCO.........Computes LU factorization of general double precision band
+              matrix and estimates its condition.
+DGBDI.........Uses LU factorization of  general  double  precision  band
+              matrix to  compute  its  determinant.  (No  provision  for
+              inverse compution.)
+DGBFA.........Computes LU factorization of general double precision band
+              matrix.
+DGBSL.........Uses LU factorization of  general  double  precision  band
+              matrix to solve systems.
+DGECO.........Compute  LU  factorization  of  general  double  precision
+              matrix and estimate its condition.
+DGEDI.........Uses LU factorization of general double  precision  matrix
+              to compute its determinant and/or inverse.
+DGEFA.........Compute  LU  factorization  of  general  double  precision
+              matrix.
+DGESL.........Uses LU factorization of general double  precision  matrix
+              to solve systems.
+DGTSL.........Solve systems with tridiagonal double precision matrix.
+DPBCO.........Compute LU  factorization  of  double  precision  positive
+              definite band matrix and estimate its condition.
+DPBDI.........Use LU factorization of double precision positive definite
+              band matrix to  compute  determinant.  (No  provision  for
+              inverse.)
+DPBFA.........Computes LU factorization  of  double  precision  positive
+              definite band matrix.
+DPBSL.........Uses  LU  factorization  of  double   precision   positive
+              definite band matrix to solve systems.
+DPOCO.........Use Cholesky algorithm to factor double precision positive
+              definite matrix and estimate its condition.
+DPODI.........Use factorization of double  precision  positive  definite
+              matrix to compute determinant and/or inverse.
+DPOFA.........Use Cholesky algorithm to factor double precision positive
+              definite matrix.
+DPOSL.........Use factorization of double  precision  positive  definite
+              matrix to solve systems.
+DPPCO.........Use Cholesky algorithm to factor double precision positive
+              definite matrix stored in packed  form  and  estimate  its
+              condition.
+DPPDI.........Use factorization of double  precision  positive  definite
+              matrix stored in packed form to compute determinant and/or
+              inverse.
+DPPFA.........Use Cholesky algorithm to factor double precision positive
+              definite matrix stored in packed form.
+DPPSL.........Use factorization of double  precision  positive  definite
+              matrix stored in packed form to solve systems.
+DPTSL.........Decomposes double precision  symmetric  positive  definite
+              tridiagonal matrix and simultaneously solve a system.
+DQRDC.........Compute  QR  decomposition  of  general  double  precision
+              matrix.
+DQRSL.........Manipulates truncated QR decomposition of double precision
+              matrix output from DQRDC.
+DSICO.........Computes  factorization  of  double  precision   symmetric
+              indefinite matrix and estimate its condition.
+DSIDI.........Use factorization of double precision symmetric indefinite
+              matrix to compute determinant and/or inverse.
+DSIFA.........Compute  factorization  of  double   precision   symmetric
+              indefinite matrix.
+DSISL.........Use factorization of double precision symmetric indefinite
+              matrix to solve systems.
+DSPCO.........Compute  factorization  of  double   precision   symmetric
+              indefinite matrix stored in packed form and  estimate  its
+              condition.
+DSPDI.........Use factorization of double precision symmetric indefinite
+              matrix stored in packed form to compute determinant and/or
+              inverse.
+DSPFA.........Compute  factorization  of  double   precision   symmetric
+              indefinite matrix stored in packed form.
+DSPSL.........Use factorization of double precision symmetric indefinite
+              matrix stored in packed form to solve systems.
+DSVDC.........Compute Singular Value Decomposition of  double  precision
+              matrix.
+DTRCO.........Estimates condition of double precision triangular matrix.
+DTRDI.........Computes determinant and/or inverse  of  double  precision
+              triangular matrix.
+DTRSL.........Solves systems with double precision triangular matrix.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 

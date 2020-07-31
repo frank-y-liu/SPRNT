@@ -1,0 +1,72 @@
+ 
+      SUBROUTINE DBSPVD(T,K,NDERIV,X,ILEFT,LDVNIK,VNIKX,WORK)
+C***BEGIN PROLOGUE  DBSPVD
+C***DATE WRITTEN   800901   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  E3,K6
+C***KEYWORDS  B-SPLINE,DATA FITTING,DOUBLE PRECISION,INTERPOLATION,
+C             SPLINE
+C***AUTHOR  AMOS, D. E., (SNLA)
+C***PURPOSE  Calculates the value and all derivatives of order less than
+C            NDERIV of all basis functions which do not vanish at X.
+C***DESCRIPTION
+C
+C     Written by Carl de Boor and modified by D. E. Amos
+C
+C     Reference
+C         SIAM J. Numerical Analysis, 14, No. 3, June, 1977, pp.441-472.
+C
+C     Abstract    **** a double precision routine ****
+C
+C         DBSPVD is the BSPLVD routine of the reference.
+C
+C         DBSPVD calculates the value and all derivatives of order
+C         less than NDERIV of all basis functions which do not
+C         (possibly) vanish at X.  ILEFT is input such that
+C         T(ILEFT) .LE. X .LT. T(ILEFT+1).  A call to INTRV(T,N+1,X,
+C         ILO,ILEFT,MFLAG) will produce the proper ILEFT.  The output of
+C         DBSPVD is a matrix VNIKX(I,J) of dimension at least (K,NDERIV)
+C         whose columns contain the K nonzero basis functions and
+C         their NDERIV-1 right derivatives at X, I=1,K, J=1,NDERIV.
+C         These basis functions have indices ILEFT-K+I, I=1,K,
+C         K .LE. ILEFT .LE. N.  The nonzero part of the I-th basis
+C         function lies in (T(I),T(I+K)), I=1,N).
+C
+C         If X=T(ILEFT+1) then VNIKX contains left limiting values
+C         (left derivatives) at T(ILEFT+1).  In particular, ILEFT = N
+C         produces left limiting values at the right end point
+C         X=T(N+1).  To obtain left limiting values at T(I), I=K+1,N+1,
+C         set X= next lower distinct knot, call INTRV to get ILEFT,
+C         set X=T(I), and then call DBSPVD.
+C
+C         DBSPVD calls DBSPVN
+C
+C     Description of Arguments
+C         Input      T,X are double precision
+C          T       - knot vector of length N+K, where
+C                    N = number of B-spline basis functions
+C                    N = sum of knot multiplicities-K
+C          K       - order of the B-spline, K .GE. 1
+C          NDERIV  - number of derivatives = NDERIV-1,
+C                    1 .LE. NDERIV .LE. K
+C          X       - argument of basis functions,
+C                    T(K) .LE. X .LE. T(N+1)
+C          ILEFT   - largest integer such that
+C                    T(ILEFT) .LE. X .LT.  T(ILEFT+1)
+C          LDVNIK  - leading dimension of matrix VNIKX
+C
+C         Output     VNIKX,WORK are double precision
+C          VNIKX   - matrix of dimension at least (K,NDERIV) contain-
+C                    ing the nonzero basis functions at X and their
+C                    derivatives columnwise.
+C          WORK    - a work vector of length (K+1)*(K+2)/2
+C
+C     Error Conditions
+C         Improper input is a fatal error
+C***REFERENCES  C. DE BOOR, *PACKAGE FOR CALCULATING WITH B-SPLINES*,
+C                 SIAM JOURNAL ON NUMERICAL ANALYSIS, VOLUME 14, NO. 3,
+C                 JUNE 1977, PP. 441-472.
+C***ROUTINES CALLED  DBSPVN,XERROR
+C***END PROLOGUE  DBSPVD
+ 
+ 

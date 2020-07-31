@@ -1,0 +1,133 @@
+ 
+C
+C
+C             * * * * * * * * * * * * * * * * * * * * * *
+C             *                                         *
+C             * SUBROUTINE VRFFTB(M,N,R,RT,MDIMR,WSAVE) *
+C             *                                         *
+C             * * * * * * * * * * * * * * * * * * * * * *
+C
+C
+C     SUBROUTINE VRFFTB COMPUTES THE SYNTHESIS (BACKWARD TRANSFORM) OF
+C     A NUMBER OF REAL PERODIC SEQUENCES FROM THEIR FOURIER
+C     COEFFICIENTS.  SPECIFICALLY, FOR EACH SET OF INDEPENDENT FOURIER
+C     COEFFICIENTS F(K) DESCRIBED ABOVE, THE CORRESPONDING REAL PERIODIC
+C     SEQUENCE IS COMPUTED.
+C
+C
+C     INPUT PARAMETERS
+C
+C     M       THE NUMBER OF SETS OF COEFFIENTS.
+C
+C     N       THE NUMBER OF COEFFIENTS TO BE TRANSFORMED.  THE METHOD
+C             IS MOST EFFICIENT WHEN N IS A PRODUCT OF SMALL PRIMES,
+C             HOWEVER N MAY BE ANY POSITIVE INTEGER.
+C
+C     R       A REAL TWO-DIMENSIONAL ARRAY OF SIZE MDIMR X N THAT
+C             CONTAINS THE COEFFICIENTS TO BE TRANSFORMED.  EACH SET OF
+C             COEFFICIENTS F(K), K=0,1,...,N-1, IS STORED AS A ROW OF R.
+C             SPECIFICALLY, THE I-TH SET OF INDEPENDENT FOURIER
+C             COEFFICIENTS IS STORED
+C
+C                R(I,1) = REAL( F(I,0) ),
+C
+C                R(I,2*K) = REAL( F(I,K) )
+C
+C                R(I,2*K+1) = IMAG( F(I,K) )
+C
+C                   FOR K = 1, 2, . . . , M-1,
+C
+C                AND, WHEN N IS EVEN,
+C
+C                R(I,N) = REAL( F(I,N/2) ).
+C
+C     RT      A REAL TWO-DIMENSIONAL WORK ARRAY OF SIZE MDIMR X N.
+C
+C     MDIMR   THE ROW (OR FIRST) DIMENSION OF THE ARRAYS R AND RT AS
+C             THEY APPEAR IN THE CALLING PROGRAM.  THIS PARAMETER IS
+C             USED TO SPECIFY THE VARIABLE DIMENSION OF THESE ARRAYS.
+C
+C     WSAVE   A REAL ONE-DIMENSIONAL WORK ARRAY THAT MUST BE DIMENSIONED
+C             AT LEAST N+15.  THE WSAVE ARRAY MUST BE INITIALIZED BY
+C             CALLING SUBROUTINE VRFFTI.  A DIFFERENT WSAVE ARRAY MUST
+C             BE USED FOR EACH DIFFERENT VALUE OF N. THIS INITIALIZATION
+C             DOES NOT HAVE TO BE REPEATED SO LONG AS N REMAINS
+C             UNCHANGED.  THE SAME WSAVE ARRAY CAN BE USED BY VRFFTF
+C             AND VRFFTB.
+C
+C
+C     OUTPUT PARAMETERS
+C
+C     R       CONTAINS THE M REAL PERIODIC SEQUENCES CORRESPONDING TO
+C             THE GIVEN COEFFICIENTS.  SPECIFICALLY, THE I-TH ROW OF THE
+C             MATRIX R CONTAINS THE REAL PERIODIC SEQUENCE CORRESPONDING
+C             TO THE I-TH SET OF INDEPENDENT FOURIER COEFFICIENTS F(I,K)
+C             STORED AS
+C
+C               R(I,J) = X(I,J-1) ,   J = 1, 2, . . . , N, WHERE
+C
+C               X(I,J) = SQRT(1/N)* F(I,0) + (-1)**J*F(I,N/2)
+C                        + 2*SUM(K=1,M)[ REAL(F(I,2K))*COS(2K*J*PI/N)
+C                        - IMAG(F(I,2K+1))*SIN(2K*J*PI/N) ]  ,
+C
+C                 WHEN N IS EVEN, AND
+C
+C               X(I,J) = SQRT(1/N)* F(I,0) +
+C                        2*SUM(K=1,M)[ REAL(F(I,2K))*COS(2K*J*PI/N)
+C                        - IMAG(F(I,2K+1))*SIN(2K*J*PI/N) ]  ,
+C
+C                 WHEN N IS ODD.
+C
+C     WSAVE   CONTAINS RESULTS WHICH MUST NOT BE DESTROYED BETWEEN
+C             CALLS TO VRFFTB OR VRFFTF.
+C
+C
+C
+C              * * * * * * * * * * * * * * * * * * * * *
+C              *                                       *
+C              *         PROGRAM SPECIFICATIONS        *
+C              *                                       *
+C              * * * * * * * * * * * * * * * * * * * * *
+C
+C
+C
+C     DIMENSION OF    R(MDIMR,N), RT(MDIMR,N), WSAVE(N+15)
+C     ARGUMENTS
+C
+C     LATEST          AUGUST 1, 1985
+C     REVISION
+C
+C     SUBPROGRAMS     VRFFTI, VRFTI1, VRFFTF, VRFTF1, VRADF2, VRADF3,
+C     REQUIRED        VRADF4, VRADF5, VRADFG, VRFFTB, VRFTB1, VRADB2,
+C                     VRADB3, VRADB4, VRADB5, VRADBG, PIMACH
+C
+C     SPECIAL         NONE
+C     CONDITIONS
+C
+C     COMMON          NONE
+C     BLOCKS
+C
+C     I/O             NONE
+C
+C     PRECISION       SINGLE
+C
+C     SPECIALIST      ROLAND SWEET
+C
+C     LANGUAGE        FORTRAN
+C
+C     HISTORY         WRITTEN BY LINDA LINDGREN AND ROLAND SWEET AT THE
+C                     NATIONAL BUREAU OF STANDARDS (BOULDER).
+C
+C     ALGORITHM       A REAL VARIANT OF THE STOCKHAM AUTOSORT VERSION
+C                     OF THE COOLEY-TUKEY FAST FOURIER TRANSFORM.
+C
+C     PORTABILITY     AMERICAN NATIONAL STANDARDS INSTITUTE FORTRAN 77.
+C                     THE ONLY MACHINE DEPENDENT CONSTANT IS LOCATED IN
+C                     THE FUNCTION PIMACH.
+C
+C     REQUIRED        COS,SIN
+C     RESIDENT
+C     ROUTINES
+C
+ 
+ 

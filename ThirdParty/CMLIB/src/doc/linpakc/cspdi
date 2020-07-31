@@ -1,0 +1,72 @@
+ 
+      SUBROUTINE CSPDI(AP,N,KPVT,DET,WORK,JOB)
+C***BEGIN PROLOGUE  CSPDI
+C***DATE WRITTEN   780814   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D2D1A,D3D1A
+C***KEYWORDS  COMPLEX,DETERMINANT,FACTOR,INVERSE,LINEAR ALGEBRA,LINPACK,
+C             MATRIX,PACKED,SYMMETRIC
+C***AUTHOR  BUNCH, J., (UCSD)
+C***PURPOSE  Computes the determinant and inverse of a complex symmetric
+C            matrix stored in packed form using factors from CSPFA.
+C***DESCRIPTION
+C
+C     CSPDI computes the determinant and inverse
+C     of a complex symmetric matrix using the factors from CSPFA,
+C     where the matrix is stored in packed form.
+C
+C     On Entry
+C
+C        AP      COMPLEX (N*(N+1)/2)
+C                the output from CSPFA.
+C
+C        N       INTEGER
+C                the order of the matrix A .
+C
+C        KVPT    INTEGER(N)
+C                the pivot vector from CSPFA.
+C
+C        WORK    COMPLEX(N)
+C                work vector.  Contents ignored.
+C
+C        JOB     INTEGER
+C                JOB has the decimal expansion  AB  where
+C                   if  B .NE. 0, the inverse is computed,
+C                   if  A .NE. 0, the determinant is computed.
+C
+C                For example, JOB = 11  gives both.
+C
+C     On Return
+C
+C        Variables not requested by JOB are not used.
+C
+C        AP     contains the upper triangle of the inverse of
+C               the original matrix, stored in packed form.
+C               The columns of the upper triangle are stored
+C               sequentially in a one-dimensional array.
+C
+C        DET    COMPLEX(2)
+C               determinant of original matrix.
+C               Determinant = DET(1) * 10.0**DET(2)
+C               with 1.0 .LE. ABS(DET(1)) .LT. 10.0
+C               or DET(1) = 0.0.
+C
+C     Error Condition
+C
+C        A division by zero will occur if the inverse is requested
+C        and  CSPCO  has set RCOND .EQ. 0.0
+C        or  CSPFA  has set  INFO .NE. 0 .
+C
+C     LINPACK.  This version dated 08/14/78 .
+C     James Bunch, Univ. Calif. San Diego, Argonne Nat. Lab.
+C
+C     Subroutines and Functions
+C
+C     BLAS CAXPY,CCOPY,CDOTU,CSWAP
+C     Fortran ABS,CMPLX,IABS,MOD,REAL
+C***REFERENCES  DONGARRA J.J., BUNCH J.R., MOLER C.B., STEWART G.W.,
+C                 *LINPACK USERS  GUIDE*, SIAM, 1979.
+C***ROUTINES CALLED  CAXPY,CCOPY,CDOTU,CSWAP
+C***END PROLOGUE  CSPDI
+ 
+ 

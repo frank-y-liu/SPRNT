@@ -1,0 +1,71 @@
+ 
+      SUBROUTINE DPFQAD(F,LDC,C,XI,LXI,K,ID,X1,X2,TOL,QUAD,IERR)
+C***BEGIN PROLOGUE  DPFQAD
+C***DATE WRITTEN   800901   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  H2A2A1,E3,K6
+C***KEYWORDS  B-SPLINE,DATA FITTING,DOUBLE PRECISION,INTERPOLATION,
+C             QUADRATURE,SPLINE
+C***AUTHOR  AMOS, D. E., (SNLA)
+C***PURPOSE  Computes the integral on (X1,X2) of a product of a
+C            function F and the ID-th derivative of a B-spline,
+C            (PP-representation).
+C***DESCRIPTION
+C
+C     Written by D. E. Amos, June, 1979.
+C
+C     Reference SAND-79-1825
+C
+C     Abstract    **** a double precision routine ****
+C
+C         DPFQAD computes the integral on (X1,X2) of a product of a
+C         function F and the ID-th derivative of a B-spline, using the
+C         PP-representation (C,XI,LXI,K).  (X1,X2) is normally a sub-
+C         interval of XI(1) .LE. X .LE. XI(LXI+1).  An integration
+C         routine, DPPGQ8 (a modification of GAUS8), integrates the
+C         product on subintervals of (X1,X2) formed by the included
+C         break points.  Integration outside of (XI(1),XI(LXI+1)) is
+C         permitted provided F is defined.
+C
+C         The maximum number of significant digits obtainable in
+C         DBSQAD is the smaller of 18 and the number of digits
+C         carried in double precision arithmetic.
+C
+C         DPFQAD calls DINTRV, DPPVAL, DPPGQ8, D1MACH, XERROR
+C
+C     Description of arguments
+C         Input      F,C,XI,X1,X2,TOL are double precision
+C           F      - external function of one argument for the
+C                    integrand PF(X)=F(X)*DPPVAL(LDC,C,XI,LXI,K,ID,X,
+C                    INPPV)
+C           LDC    - leading dimension of matrix C, LDC .GE. K
+C           C(I,J) - right Taylor derivatives at XI(J), I=1,K , J=1,LXI
+C           XI(*)  - break point array of length LXI+1
+C           LXI    - number of polynomial pieces
+C           K      - order of B-spline, K .GE. 1
+C           ID     - order of the spline derivative, 0 .LE. ID .LE. K-1
+C                    ID=0 gives the spline function
+C           X1,X2  - end points of quadrature interval, normally in
+C                    XI(1) .LE. X .LE. XI(LXI+1)
+C           TOL    - desired accuracy for the quadrature, suggest
+C                    10.*DTOL .LT. TOL .LE. 0.1 where DTOL is the
+C                    maximum of 1.0D-18 and double precision unit
+C                    roundoff for the machine = D1MACH(4)
+C
+C         Output     QUAD is double precision
+C           QUAD   - integral of PF(X) on (X1,X2)
+C           IERR   - a status code
+C                    IERR=1 normal return
+C                         2 some quadrature does not meet the
+C                           requested tolerance
+C
+C     Error Conditions
+C         Improper input is a fatal error.
+C         Some quadrature does not meet the requested tolerance.
+C***REFERENCES  D.E. AMOS, *QUADRATURE SUBROUTINES FOR SPLINES AND
+C                 B-SPLINES*, SAND79-1825, SANDIA LABORATORIES,
+C                 DECEMBER 1979.
+C***ROUTINES CALLED  D1MACH,DINTRV,DPPGQ8,XERROR
+C***END PROLOGUE  DPFQAD
+ 
+ 

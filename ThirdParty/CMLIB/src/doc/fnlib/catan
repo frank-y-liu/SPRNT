@@ -1,0 +1,19 @@
+ 
+      COMPLEX FUNCTION CATAN(Z)
+C***BEGIN PROLOGUE  CATAN
+C***DATE WRITTEN   770801   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C4A
+C***KEYWORDS  ARC TANGENT,COMPLEX,ELEMENTARY FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the complex arc Tangent.
+C***DESCRIPTION
+C
+C CATAN(Z) calculates the complex trigonometric arc tangent of Z.
+C The result is in units of radians, and the real part is in the first
+C or fourth quadrant.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  R1MACH,XERROR
+C***END PROLOGUE  CATAN
+ 
+ 

@@ -1,0 +1,26 @@
+ 
+      FUNCTION ALNREL(X)
+C***BEGIN PROLOGUE  ALNREL
+C***DATE WRITTEN   770401   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C4B
+C***KEYWORDS  ELEMENTARY FUNCTION,LOGARITHM,RELATIVE
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Evaluates ln(1+X) accurate in the sense of relative error.
+C***DESCRIPTION
+C
+C ALNREL(X) evaluates ln(1+X) accurately in the sense of relative
+C error when X is very small.  This routine must be used to
+C maintain relative error accuracy whenever X is small and
+C accurately known.
+C
+C Series for ALNR       on the interval -3.75000D-01 to  3.75000D-01
+C                                        with weighted error   1.93E-17
+C                                         log weighted error  16.72
+C                               significant figures required  16.44
+C                                    decimal places required  17.40
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  CSEVL,INITS,R1MACH,XERROR
+C***END PROLOGUE  ALNREL
+ 
+ 

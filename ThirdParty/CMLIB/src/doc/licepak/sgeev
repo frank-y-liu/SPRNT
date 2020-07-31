@@ -1,0 +1,101 @@
+ 
+      SUBROUTINE SGEEV(A,LDA,N,E,V,LDV,WORK,JOB,INFO)
+C***BEGIN PROLOGUE  SGEEV
+C***DATE WRITTEN   800808   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D4A2
+C***KEYWORDS  EIGENVALUE,EIGENVECTOR,GENERAL MATRIX,REAL
+C***AUTHOR  KAHANER, D. K., (NBS)
+C           MOLER, C. B., (U. OF NEW MEXICO)
+C           STEWART, G. W., (U. OF MARYLAND)
+C***PURPOSE  To compute the eigenvalues and, optionally, the eigen-
+C            vectors of a GENERAL real matrix.
+C***DESCRIPTION
+C
+C     LICEPACK.    This version dated 08/08/80.
+C     David Kahaner, Cleve Moler, G. W. Stewart,
+C       N.B.S.         U.N.M.      N.B.S./U.MD.
+C
+C     Abstract
+C      SGEEV computes the eigenvalues and, optionally,
+C      the eigenvectors of a general real matrix.
+C
+C     Call Sequence Parameters-
+C       (The values of parameters marked with * (star) will be changed
+C         by SGEEV.)
+C
+C        A*      REAL(LDA,N)
+C                real nonsymmetric input matrix.
+C
+C        LDA     INTEGER
+C                set by the user to
+C                the leading dimension of the real array A.
+C
+C        N       INTEGER
+C                set by the user to
+C                the order of the matrices A and V, and
+C                the number of elements in E.
+C
+C        E*      COMPLEX(N)
+C                on return from SGEEV, E contains the eigenvalues of A.
+C                See also INFO below.
+C
+C        V*      COMPLEX(LDV,N)
+C                on return from SGEEV, if the user has set JOB
+C                = 0        V is not referenced.
+C                = nonzero  the N eigenvectors of A are stored in the
+C                first N columns of V.  See also INFO below.
+C                (Note that if the input matrix A is nearly degenerate,
+C                 V may be badly conditioned, i.e., may have nearly
+C                 dependent columns.)
+C
+C        LDV     INTEGER
+C                set by the user to
+C                the leading dimension of the array V if JOB is also
+C                set nonzero.  In that case, N must be .LE. LDV.
+C                If JOB is set to zero, LDV is not referenced.
+C
+C        WORK*   REAL(2N)
+C                temporary storage vector.  Contents changed by SGEEV.
+C
+C        JOB     INTEGER
+C                set by the user to
+C                = 0        eigenvalues only to be calculated by SGEEV.
+C                           Neither V nor LDV is referenced.
+C                = nonzero  eigenvalues and vectors to be calculated.
+C                           In this case, A & V must be distinct arrays.
+C                           Also, if LDA .GT. LDV, SGEEV changes all the
+C                           elements of A thru column N.  If LDA < LDV,
+C                           SGEEV changes all the elements of V through
+C                           column N. If LDA = LDV, only A(I,J) and V(I,
+C                           J) for I,J = 1,...,N are changed by SGEEV.
+C
+C        INFO*   INTEGER
+C                on return from SGEEV the value of INFO is
+C                = 0  normal return, calculation successful.
+C                = K  if the eigenvalue iteration fails to converge,
+C                     eigenvalues K+1 through N are correct, but
+C                     no eigenvectors were computed even if they were
+C                     requested (JOB nonzero).
+C
+C      Error Messages
+C           No. 1  recoverable  N is greater than LDA
+C           No. 2  recoverable  N is less than one.
+C           No. 3  recoverable  JOB is nonzero and N is greater than LDV
+C           No. 4  warning      LDA > LDV, elements of A other than the
+C                               N by N input elements have been changed.
+C           No. 5  warning      LDA < LDV, elements of V other than the
+C                               N x N output elements have been changed.
+C
+C
+C     Subroutines used
+C
+C     EISPACK-  BALANC,BALBAK, ORTHES, ORTRAN, HQR, HQR2
+C     BLAS-  SCOPY, SCOPYM
+C     SLATEC- XERROR
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  BALANC,BALBAK,HQR,HQR2,ORTHES,ORTRAN,SCOPY,SCOPYM,
+C                    XERROR
+C***END PROLOGUE  SGEEV
+ 
+ 

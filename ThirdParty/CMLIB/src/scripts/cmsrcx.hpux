@@ -1,0 +1,77 @@
+#! /bin/csh -f
+
+#  usage: cmsrcx <subprogram> ...
+
+#  retrieves source for CMLIB subprograms whose name(s)
+#  are listed on the command line, including all additional
+#  CMLIB subprograms which are required to run them.  The
+#  requested items are written to standard output.
+
+#  Ron Boisvert, CAML NIST
+#  20 Feb 92
+
+# This version is for HP-UX.
+
+set cmdir = /usr/local/apps/cmlib
+
+set userdir = `printenv CMLIBDIR`
+if ("$userdir" != "") set cmdir = $userdir
+
+set libdir = $cmdir/`$cmdir/utils/itl-arch`/lib
+set cmsrc = $cmdir/scripts/cmsrc
+
+if (! -f $cmsrc) then
+  echo "CMLIB source retrieval script $cmsrc does not exist."
+  exit
+endif
+
+#  fc        == the fortran compiler
+#  cmlib     == how cmlib is referenced on compiler command line
+
+set fc = /opt/fortran/bin/f77
+set cmlib =  $libdir/libcm.a
+setenv LDOPTS -v
+
+onintr cleanup
+
+set tmpdir = /tmp/cmsrcx.$$
+
+mkdir $tmpdir
+cd $tmpdir
+
+# -------------------------------------------------------
+# generate fortran program which calls requested routines
+# -------------------------------------------------------
+
+foreach name ($argv)
+  echo "      call $name" >> prog.f
+end
+echo "      end" >> prog.f
+
+# -----------------------------------------------
+# compile this program and capture the loader map
+# -----------------------------------------------
+
+$fc prog.f $cmlib >& prog.M
+
+# -----------------------------------------------
+# massage loader map into sequence of cmsrc calls
+# -----------------------------------------------
+
+grep "^Loading $cmlib" prog.M \
+  | sed -e 's/^L.*(//' \
+        -e 's/\.o)://'   > externals
+
+foreach x ($argv)
+  sed -e /^$x\$/d externals > externals.tmp
+  mv externals.tmp externals
+end
+
+$cmsrc $argv
+$cmsrc `cat externals`
+
+cleanup:
+         cd
+         rm -r -f $tmpdir
+
+

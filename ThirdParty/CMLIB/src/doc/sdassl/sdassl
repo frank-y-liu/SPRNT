@@ -1,0 +1,798 @@
+ 
+*DECK  SDASSL
+      SUBROUTINE SDASSL (RES,NEQ,T,Y,YPRIME,TOUT,
+     *  INFO,RTOL,ATOL,IDID,
+     *  RWORK,LRW,IWORK,LIW,RPAR,IPAR,
+     *  JAC)
+C
+C***BEGIN PROLOGUE  SDASSL
+C***DATE WRITTEN   830315   (YYMMDD)
+C***REVISION DATE  830315   (YYMMDD)
+C***CATEGORY NO.  D2A2
+C***KEYWORDS  DIFFERENTIAL/ALGEBRAIC,BACKWARD DIFFERENTIATION FORMULAS
+C             IMPLICIT DIFFERENTIAL SYSTEMS
+C***AUTHOR  PETZOLD,LINDA R.,APPLIED MATH DIV,SANDIA NAT LAB,LIVERMORE CA. 94550
+C***PURPOSE  DIFFERENTIAL/ALGEBRAIC SYSTEM SOLVER
+C***DESCRIPTION
+C  ---------------------------------------------------------------------
+C
+C  this code solves a system of differential/
+C  algebraic equations of the form
+C  g(t,y,yprime) = 0.
+C
+C  subroutine sdassl uses the backward
+C  differentiation formulas of orders one
+C  through five to solve a system of the above
+C  form for y and yprime. values for y
+C  and yprime at the initial time must
+C  be given as input. these values must
+C  be consistent, (that is. if t,y,yprime
+C  are the given initial values, they must
+C  satisfy g(t,y,yprime) = 0.)
+C  the subroutine solves the system from t to tout. it is
+C  easy to continue the solution to get results
+C  at additional tout. this is the interval
+C  mode of operation. intermediate results can
+C  also be obtained easily by using the intermediate-
+C  output capability.
+C
+C
+C  ------------description of arguments to sdassl-----------------------
+C  ------------(an overview)--------------------------------------------
+C
+C  the parameters are
+C
+C  res -- this is a subroutine which you provide
+C         to define the differential/algebraic
+C         system
+C
+C  neq -- this is the number of equations
+C         to be solved
+C
+C  t -- this is the current value of the
+C       independent variable.
+C
+C  tout -- this is a point at which a solution
+C      is desired.
+C
+C  info(*) -- the basic task of the code is
+C             to solve the system from t to
+C             tout and return an answer at tout.
+C             info(*) is an integer array which is
+C             used to communicate exactly how you
+C             want this task to be carried out.
+C
+C  y(*) -- this array contains the solution
+C          components at t
+C
+C  yprime(*) -- this array contains the derivatives
+C               of the solution components at t
+C
+C  rtol,atol -- these quantities represent
+C               absolute and relative error
+C               tolerances which you provide to indicate
+C               how accurately you wish the solution
+C               to be computed. you may choose them
+C               to be both scalars or else both
+C               vectors.
+C
+C  idid -- this scalar quantity is an indicator reporting
+C          what the code did. you must monitor this
+C          integer variable to decide what action to
+C          take next.
+C
+C  rwork(*),lrw -- rwork(*) is a real work array of
+C                  length lrw which provides the code
+C                  with needed storage space.
+C
+C  iwork(*),liw -- iwork(*) is an integer work array
+C                  of length liw which provides the code
+C                  with needed storage space.
+C
+C  rpar,ipar -- these are real and integer parameter
+C               arrays which you can use for
+C               communication between your calling
+C               program and the res subroutine
+C               (and the jac subroutine)
+C
+C  jac -- this is the name of a subroutine which you
+C         may choose to provide for defining
+C         a matrix of partial derivatives
+C         described below.
+C
+C  quantities which are used as input items are
+C     neq,t,y(*),yprime(*),tout,info(*),
+C     rtol,atol,rwork(1),rwork(2),rwork(3),lrw,iwork(1),
+C     iwork(2),iwork(3),and liw.
+C
+C  quantities which may be altered by the code are
+C     t,y(*),yprime(*),info(1),rtol,atol,
+C     idid,rwork(*) and iwork(*)
+C
+C  ----------input-what to do on the first call to sdassl---------------
+C
+C
+C  the first call of the code is defined to be the start of each new
+C  problem. read through the descriptions of all the following items,
+C  provide sufficient storage space for designated arrays, set
+C  appropriate variables for the initialization of the problem, and
+C  give information about how you want the problem to be solved.
+C
+C
+C  res -- provide a subroutine of the form
+C             subroutine res(t,y,yprime,delta,ires,rpar,ipar)
+C         to define the system of differential/algebraic
+C         equations which is to be solved. for the given values
+C         of t,y and yprime, the subroutine should
+C         return the residual of the differential/algebraic
+C         system
+C             delta = g(t,y,yprime)
+C         (delta(*) is a vector of length neq which is
+C         output for res.)
+C
+C         subroutine res must not alter t,y or yprime.
+C         you must declare the name res in an external
+C         statement in your program that calls sdassl.
+C         you must dimension y,yprime and delta in res.
+C
+C         ires is an integer flag which is always equal to
+C         zero on input.  subroutine res should alter ires
+C         only if it encounters an illegal value of y or
+C         a stop condition.  set ires = -1 if an input value
+C         is illegal, and sdassl will try to solve the problem
+C         without getting ires = -1.  if ires = -2, sdassl
+C         will return control to the calling program
+C         with idid = -11.
+C
+C         rpar and ipar are real and integer parameter arrays which
+C         you can use for communication between your calling program
+C         and subroutine res. they are not altered by sdassl. if you
+C         do not need rpar or ipar, ignore these parameters by treat-
+C         ing them as dummy arguments. if you do choose to use them,
+C         dimension them in your calling program and in res as arrays
+C         of appropriate length.
+C
+C  neq -- set it to the number of differential equations.
+C         (neq .ge. 1)
+C
+C  t -- set it to the initial point of the integration.
+C       t must be defined as a variable.
+C
+C  y(*) -- set this vector to the initial values of the neq solution
+C          components at the initial point. you must dimension y of
+C          length at least neq in your calling program.
+C
+C  yprime(*) -- set this vector to the initial values of
+C               the neq first derivatives of the solution
+C               components at the initial point. you
+C               must dimension yprime at least neq
+C               in your calling program.  if you do not
+C               know initial values of some of the solution
+C               components, see the explanation of info(11).
+C
+C  tout - set it to the first point at which a solution
+C         is desired. you can not take tout = t.
+C         integration either forward in t (tout .gt. t) or
+C         backward in t (tout .lt. t) is permitted.
+C
+C         the code advances the solution from t to tout using
+C         step sizes which are automatically selected so as to
+C         achieve the desired accuracy. if you wish, the code will
+C         return with the solution and its derivative at
+C         intermediate steps (intermediate-output mode) so that
+C         you can monitor them, but you still must provide tout in
+C         accord with the basic aim of the code.
+C
+C         the first step taken by the code is a critical one
+C         because it must reflect how fast the solution changes near
+C         the initial point. the code automatically selects an
+C         initial step size which is practically always suitable for
+C         the problem. by using the fact that the code will not step
+C         past tout in the first step, you could, if necessary,
+C         restrict the length of the initial step size.
+C
+C         for some problems it may not be permissable to integrate
+C         past a point tstop because a discontinuity occurs there
+C         or the solution or its derivative is not defined beyond
+C         tstop. when you have declared a tstop point (see info(4)
+C         and rwork(1)), you have told the code not to integrate
+C         past tstop. in this case any tout beyond tstop is invalid
+C         input.
+C
+C  info(*) - use the info array to give the code more details about
+C            how you want your problem solved. this array should be
+C            dimensioned of length 15, though sdassl uses
+C            only the first nine entries. you must respond to all of
+C            the following items which are arranged as questions. the
+C            simplest use of the code corresponds to answering all
+C            questions as yes ,i.e. setting all entries of info to 0.
+C
+C       info(1) - this parameter enables the code to initialize
+C              itself. you must set it to indicate the start of every
+C              new problem.
+C
+C          **** is this the first call for this problem ...
+C                yes - set info(1) = 0
+C                 no - not applicable here.
+C                      see below for continuation calls.  ****
+C
+C       info(2) - how much accuracy you want of your solution
+C              is specified by the error tolerances rtol and atol.
+C              the simplest use is to take them both to be scalars.
+C              to obtain more flexibility, they can both be vectors.
+C              the code must be told your choice.
+C
+C          **** are both error tolerances rtol, atol scalars ...
+C                yes - set info(2) = 0
+C                      and input scalars for both rtol and atol
+C                 no - set info(2) = 1
+C                      and input arrays for both rtol and atol ****
+C
+C       info(3) - the code integrates from t in the direction
+C              of tout by steps. if you wish, it will return the
+C              computed solution and derivative at the next
+C              intermediate step (the intermediate-output mode) or
+C              tout, whichever comes first. this is a good way to
+C              proceed if you want to see the behavior of the solution.
+C              if you must have solutions at a great many specific
+C              tout points, this code will compute them efficiently.
+C
+C          **** do you want the solution only at
+C                tout (and not at the next intermediate step) ...
+C                 yes - set info(3) = 0
+C                  no - set info(3) = 1 ****
+C
+C       info(4) - to handle solutions at a great many specific
+C              values tout efficiently, this code may integrate past
+C              tout and interpolate to obtain the result at tout.
+C              sometimes it is not possible to integrate beyond some
+C              point tstop because the equation changes there or it is
+C              not defined past tstop. then you must tell the code
+C              not to go past.
+C
+C           **** can the integration be carried out without any
+C                restrictions on the independent variable t ...
+C                 yes - set info(4)=0
+C                  no - set info(4)=1
+C                       and define the stopping point tstop by
+C                       setting rwork(1)=tstop ****
+C
+C       info(5) - to solve differential/algebraic problems it is
+C              necessary to use a matrix of partial derivatives of the
+C              system of differential equations.  if you do not
+C              provide a subroutine to evaluate it analytically (see
+C              description of the item jac in the call list), it will
+C              be approximated by numerical differencing in this code.
+C              although it is less trouble for you to have the code
+C              compute partial derivatives by numerical differencing,
+C              the solution will be more reliable if you provide the
+C              derivatives via jac. sometimes numerical differencing
+C              is cheaper than evaluating derivatives in jac and
+C              sometimes it is not - this depends on your problem.
+C
+C           **** do you want the code to evaluate the partial
+C                  derivatives automatically by numerical differences ...
+C                   yes - set info(5)=0
+C                    no - set info(5)=1
+C                  and provide subroutine jac for evaluating the
+C                  matrix of partial derivatives ****
+C
+C       info(6) - sdassl will perform much better if the matrix of
+C              partial derivatives, dg/dy + cj*dg/dyprime,
+C              (here cj is a scalar determined by sdassl)
+C              is banded and the code is told this. in this
+C              case, the storage needed will be greatly reduced,
+C              numerical differencing will be performed much cheaper,
+C              and a number of important algorithms will execute much
+C              faster. the differential equation is said to have
+C              half-bandwidths ml (lower) and mu (upper) if equation i
+C              involves only unknowns y(j) with
+C                             i-ml .le. j .le. i+mu
+C              for all i=1,2,...,neq. thus, ml and mu are the widths
+C              of the lower and upper parts of the band, respectively,
+C              with the main diagonal being excluded. if you do not
+C              indicate that the equation has a banded matrix of partial
+C                 derivatives
+C              the code works with a full matrix of neq**2 elements
+C              (stored in the conventional way). computations with
+C              banded matrices cost less time and storage than with
+C              full matrices if  2*ml+mu .lt. neq.  if you tell the
+C              code that the matrix of partial derivatives has a banded
+C              structure and you want to provide subroutine jac to
+C              compute the partial derivatives, then you must be careful
+C              to store the elements of the matrix in the special form
+C              indicated in the description of jac.
+C
+C          **** do you want to solve the problem using a full
+C               (dense) matrix (and not a special banded
+C               structure) ...
+C                yes - set info(6)=0
+C                 no - set info(6)=1
+C                       and provide the lower (ml) and upper (mu)
+C                       bandwidths by setting
+C                       iwork(1)=ml
+C                       iwork(2)=mu ****
+C
+C
+C        info(7) -- you can specify a maximum (absolute value of)
+C              stepsize, so that the code
+C              will avoid passing over very
+C              large regions.
+C
+C          ****  do you want the code to decide
+C                on its own maximum stepsize?
+C                yes - set info(7)=0
+C                 no - set info(7)=1
+C                      and define hmax by setting
+C                      rwork(2)=hmax ****
+C
+C        info(8) -- differential/algebraic problems
+C              may occaisionally suffer from
+C              severe scaling difficulties on the
+C              first step. if you know a great deal
+C              about the scaling of your problem, you can
+C              help to alleviate this problem by
+C              specifying an initial stepsize ho.
+C
+C          ****  do you want the code to define
+C                its own initial stepsize?
+C                yes - set info(8)=0
+C                 no - set info(8)=1
+C                      and define ho by setting
+C                      rwork(3)=ho ****
+C
+C        info(9) -- if storage is a severe problem,
+C              you can save some locations by
+C              restricting the maximum order maxord.
+C              the default value is 5. for each
+C              order decrease below 5, the code
+C              requires neq fewer locations, however
+C              it is likely to be slower. in any
+C              case, you must have 1 .le. maxord .le. 5
+C          ****  do you want the maximum order to
+C                default to 5?
+C                yes - set info(9)=0
+C                 no - set info(9)=1
+C                      and define maxord by setting
+C                      iwork(3)=maxord ****
+C
+C        info(10) --if you know that the solutions to your equations will
+C               always be nonnegative, it may help to set this
+C               parameter.  however, it is probably best to
+C               try the code without using this option first,
+C               and only to use this option if that doesn't
+C               work very well.
+C           ****  do you want the code to solve the problem without
+C                 invoking any special nonnegativity constraints?
+C                  yes - set info(10)=0
+C                   no - set info(10)=1
+C
+C        info(11) --sdassl normally requires the initial t,
+C               y, and yprime to be consistent.  that is,
+C               you must have g(t,y,yprime) = 0 at the initial
+C               time.  if you do not know the initial
+C               derivative precisely, you can let sdassl try
+C               to compute it.
+C          ****   are the initial t, y, yprime consistent?
+C                 yes - set info(11) = 0
+C                  no - set info(11) = 1,
+C                       and set yprime to an initial approximation
+C                       to yprime.  (if you have no idea what
+C                       yprime should be, set it to zero. note
+C                       that the initial y should be such
+C                       that there must exist a yprime so that
+C                       g(t,y,yprime) = 0.)
+C
+C   rtol, atol -- you must assign relative (rtol) and absolute (atol
+C               error tolerances to tell the code how accurately you want
+C               the solution to be computed. they must be defined as
+C               variables because the code may change them. you have two
+C               choices --
+C                     both rtol and atol are scalars. (info(2)=0)
+C                     both rtol and atol are vectors. (info(2)=1)
+C               in either case all components must be non-negative.
+C
+C               the tolerances are used by the code in a local error test
+C               at each step which requires roughly that
+C                     abs(local error) .le. rtol*abs(y)+atol
+C               for each vector component.
+C               (more specifically, a root-mean-square norm is used to
+C               measure the size of vectors, and the error test uses the
+C               magnitude of the solution at the beginning of the step.)
+C
+C               the true (global) error is the difference between the true
+C               solution of the initial value problem and the computed
+C               approximation. practically all present day codes.
+C               including this one, control the local error at each step
+C               and do not even attempt to control the global error
+C               directly.
+C               usually, but not always, the true accuracy of
+C               the computed y is comparable to the error tolerances. this
+C               code will usually, but not always, deliver a more accurate
+C               solution if you reduce the tolerances and integrate again.
+C               by comparing two such solutions you can get a fairly
+C               reliable idea of the true error in the solution at the
+C               bigger tolerances.
+C
+C               setting atol=0. results in a pure relative error test on
+C               that component. setting rtol=0. results in a pure absolute
+C               error test on that component. a mixed test with non-zero
+C               rtol and atol corresponds roughly to a relative error
+C               test when the solution component is much bigger than atol
+C               and to an absolute error test when the solution component
+C               is smaller than the threshold atol.
+C
+C               the code will not attempt to compute a solution at an
+C               accuracy unreasonable for the machine being used. it will
+C               advise you if you ask for too much accuracy and inform
+C               you as to the maximum accuracy it believes possible.
+C
+C  rwork(*) -- dimension this real work array of length lrw in your
+C               calling program.
+C
+C  lrw -- set it to the declared length of the rwork array.
+C               you must have
+C                    lrw .ge. 40+(maxord+4)*neq+neq**2
+C               for the full (dense) jacobian case (when info(6)=0),  or
+C                    lrw .ge. 40+(maxord+4)*neq+(2*ml+mu+1)*neq
+C               for the banded user-defined jacobian case
+C               (when info(5)=1 and info(6)=1), or
+C                     lrw .ge. 40+(maxord+4)*neq+(2*ml+mu+1)*neq
+C                           +2*(neq/(ml+mu+1)+1)
+C               for the banded finite-difference-generated jacobian case
+C               (when info(5)=0 and info(6)=1)
+C
+C  iwork(*) -- dimension this integer work array of length liw in
+C             your calling program.
+C
+C  liw -- set it to the declared length of the iwork array.
+C               you must have liw .ge. 20+neq
+C
+C  rpar, ipar -- these are parameter arrays, of real and integer
+C               type, respectively. you can use them for communication
+C               between your program that calls sdassl and the
+C               res subroutine (and the jac subroutine). they are not
+C               altered by sdassl. if you do not need rpar or ipar, ignore
+C               these parameters by treating them as dummy arguments. if
+C               you do choose to use them, dimension them in your calling
+C               program and in res (and in jac) as arrays of appropriate
+C               length.
+C
+C  jac -- if you have set info(5)=0, you can ignore this parameter
+C               by treating it as a dummy argument. otherwise, you must
+C               provide a subroutine of the form
+C               jac(t,y,yprime,pd,cj,rpar,ipar)
+C               to define the matrix of partial derivatives
+C               pd=dg/dy+cj*dg/dyprime
+C               cj is a scalar which is input to jac.
+C               for the given values of t,y,yprime, the
+C               subroutine must evaluate the non-zero partial
+C               derivatives for each equation and each solution
+C               compowent, and store these values in the
+C               matrix pd. the elements of pd are set to zero
+C               before each call to jac so only non-zero elements
+C               need to be defined.
+C
+C               subroutine jac must not alter t,y,(*),yprime(*),or cj.
+C               you must declare the name jac in an
+C               external statement in your program that calls
+C               sdassl. you must dimension y, yprime and pd
+C               in jac.
+C
+C               the way you must store the elements into the pd matrix
+C               depends on the structure of the matrix which you
+C               indicated by info(6).
+C               *** info(6)=0 -- full (dense) matrix ***
+C                   when you evaluate the (non-zero) partial derivative
+C                   of equation i with respect to variable j, you must
+C               store it in pd according to
+C                   pd(i,j) = * dg(i)/dy(j)+cj*dg(i)/dyprime(j)*
+C               *** info(6)=1 -- banded jacobian with ml lower and mu
+C                   upper diagonal bands (refer to info(6) description of
+C                   ml and mu) ***
+C                   when you evaluate the (non-zero) partial derivative
+C                   of equation i with respect to variable j, you must
+C                   store it in pd according to
+C                   irow = i - j + ml + mu + 1
+C                   pd(irow,j) = *dg(i)/dy(j)+cj*dg(i)/dyprime(j)*
+C               rpar and ipar are real and integer parameter arrays which
+C               you can use for communication between your calling
+C               program and your jacobian subroutine jac. they are not
+C               altered by sdassl. if you do not need rpar or ipar, ignore
+C               these parameters by treating them as dummy arguments. if
+C               you do choose to use them, dimension them in your calling
+C               program and in jac as arrays of appropriate length.
+C
+C
+C
+C  optionally replaceable norm routine:
+C  sdassl uses a weighted norm sdanrm to measure the size
+C  of vectors such as the estimated error in each step.
+C  a function subprogram
+C    double precision function sdanrm(neq,v,wt,rpar,ipar)
+C    dimension v(neq),wt(neq)
+C  is used to define this norm.  here, v is the vector
+C  whose norm is to be computed, and wt is a vector of
+C  weights.  a sdanrm routine has been included with sdassl
+C  which computes the weighted root-mean-square norm
+C  given by
+C    sdanrm=sqrt((1/neq)*sum(v(i)/wt(i))**2)
+C  this norm is suitable for most problems.  in some
+C  special cases, it may be more convenient and/or
+C  efficient to define your own norm by writing a function
+C  subprogram to be called instead of sdanrm.  this should
+C  however, be attempted only after careful thought and
+C  consideration.
+C
+C
+C------output-after any return from sdassl----
+C
+C  the principal aim of the code is to return a computed solution at
+C  tout, although it is also possible to obtain intermediate results
+C  along the way. to find out whether the code achieved its goal
+C  or if the integration process was interrupted before the task was
+C  completed, you must check the idid parameter.
+C
+C
+C   t -- the solution was successfully advanced to the
+C               output value of t.
+C
+C   y(*) -- contains the computed solution approximation at t.
+C
+C   yprime(*) -- contains the computed derivative
+C               approximation at t
+C
+C   idid -- reports what the code did
+C
+C                     *** task completed ***
+C                reported by positive values of idid
+C
+C           idid = 1 -- a step was successfully taken in the
+C                   intermediate-output mode. the code has not
+C                   yet reached tout.
+C
+C           idid = 2 -- the integration to tout was successfully
+C                   completed (t=tout) by stepping exactly to tout.
+C
+C           idid = 3 -- the integration to tout was successfully
+C                   completed (t=tout) by stepping past tout.
+C                   y(*) is obtained by interpolation.
+C                   yprime(*) is obtained by interpolation.
+C
+C                    *** task interrupted ***
+C                reported by negative values of idid
+C
+C           idid = -1 -- a large amount of work has been expended.
+C                   (about 500 steps)
+C
+C           idid = -2 -- the error tolerances are too stringent.
+C
+C           idid = -3 -- the local error test cannot be satisfied
+C                   because you specified a zero component in atol
+C                   and the corresponding computed solution
+C                   component is zero. thus, a pure relative error
+C                   test is impossible for this component.
+C
+C           idid = -6 -- sdassl had repeated error test
+C                   failures on the last attempted step.
+C
+C           idid = -7 -- the corrector could not converge.
+C
+C           idid = -8 -- the matrix of partial derivatives
+C                   is singular.
+C
+C           idid = -9 -- the corrector could not converge.
+C                   there were repeated error test failures
+C                   in this step.
+C
+C           idid =-10 -- the corrector could not converge
+C                   because ires was equal to minus one.
+C
+C           idid =-11 -- ires equal to -2 was encountered
+C                   and control is being returned to the
+C                   calling program.
+C
+C           idid =-12 -- sdassl failed to compute the initial
+C                   yprime.
+C
+C
+C
+C           idid = -13,..,-32 -- not applicable for this code
+C
+C                    *** task terminated ***
+C                reported by the value of idid=-33
+C
+C           idid = -33 -- the code has encountered trouble from which
+C                   it cannot recover. a message is printed
+C                   explaining the trouble and control is returned
+C                   to the calling program. for example, this occurs
+C                   when invalid input is detected.
+C
+C   rtol, atol -- these quantities remain unchanged except when
+C               idid = -2. in this case, the error tolerances have been
+C               increased by the code to values which are estimated to be
+C               appropriate for continuing the integration. however, the
+C               reported solution at t was obtained using the input values
+C               of rtol and atol.
+C
+C   rwork, iwork -- contain information which is usually of no
+C               interest to the user but necessary for subsequent calls.
+C               however, you may find use for
+C
+C               rwork(3)--which contains the step size h to be
+C                       attempted on the next step.
+C
+C               rwork(4)--which contains the current value of the
+C                       independent variable, i.e. the farthest point
+C                       integration has reached. this will be different
+C                       from t only when interpolation has been
+C                       performed (idid=3).
+C
+C               rwork(7)--which contains the stepsize used
+C                       on the last successful step.
+C
+C               iwork(7)--which contains the order of the method to
+C                       be attempted on the next step.
+C
+C               iwork(8)--which contains the order of the method used
+C                       on the last step.
+C
+C               iwork(11)--which contains the number of steps taken so far.
+C
+C               iwork(12)--which contains the number of calls to res
+C                        so far.
+C
+C               iwork(13)--which contains the number of evaluations of
+C                        the matrix of partial derivatives needed so far.
+C
+C               iwork(14)--which contains the total number
+C                        of error test failures so far.
+C
+C               iwork(15)--which contains the total number
+C                        of convergence test failures so far.
+C                        (includes singular iteration matrix
+C                        failures.)
+C
+C
+C
+C   input -- what to do to continue the integration
+C            (calls after the first)                **
+C
+C     this code is organized so that subsequent calls to continue the
+C     integration involve little (if any) additional effort on your
+C     part. you must monitor the idid parameter in order to determine
+C     what to do next.
+C
+C     recalling that the principal task of the code is to integrate
+C     from t to tout (the interval mode), usually all you will need
+C     to do is specify a new tout upon reaching the current tout.
+C
+C     do not alter any quantity not specifically permitted below,
+C     in particular do not alter neq,t,y(*),yprime(*),rwork(*),iwork(*)
+C     or the differential equation in subroutine res. any such
+C     alteration constitutes a new problem and must be treated as such,
+C     i.e. you must start afresh.
+C
+C     you cannot change from vector to scalar error control or vice
+C     versa (info(2)) but you can change the size of the entries of
+C     rtol, atol. increasing a tolerance makes the equation easier
+C     to integrate. decreasing a tolerance will make the equation
+C     harder to integrate and should generally be avoided.
+C
+C     you can switch from the intermediate-output mode to the
+C     interval mode (info(3)) or vice versa at any time.
+C
+C     if it has been necessary to prevent the integration from going
+C     past a point tstop (info(4), rwork(1)), keep in mind that the
+C     code will not integrate to any tout beyound the currently
+C     specified tstop. once tstop has been reached you must change
+C     the value of tstop or set info(4)=0. you may change info(4)
+C     or tstop at any time but you must supply the value of tstop in
+C     rwork(1) whenever you set info(4)=1.
+C
+C     do not change info(5), info(6), iwork(1), or iwork(2)
+C     unless you are going to restart the code.
+C
+C                    *** following a completed task ***
+C     if
+C     idid = 1, call the code again to continue the integration
+C                  another step in the direction of tout.
+C
+C     idid = 2 or 3, define a new tout and call the code again.
+C                  tout must be different from t. you cannot change
+C                  the direction of integration without restarting.
+C
+C                    *** following an interrupted task ***
+C                  to show the code that you realize the task was
+C                  interrupted and that you want to continue, you
+C                  must take appropriate action and set info(1) = 1
+C     if
+C     idid = -1, the code has taken about 500 steps.
+C                  if you want to continue, set info(1) = 1 and
+C                  call the code again. an additional 500 steps
+C                  will be allowed.
+C
+C
+C     idid = -2, the error tolerances rtol, atol have been
+C                  increased to values the code estimates appropriate
+C                  for continuing. you may want to change them
+C                  yourself. if you are sure you want to continue
+C                  with relaxed error tolerances, set info(1)=1 and
+C                  call the code again.
+C
+C     idid = -3, a solution component is zero and you set the
+C                  corresponding component of atol to zero. if you
+C                  are sure you want to continue, you must first
+C                  alter the error criterion to use positive values
+C                  for those components of atol corresponding to zero
+C                  solution components, then set info(1)=1 and call
+C                  the code again.
+C
+C     idid = -4,-5  --- cannot occur with this code
+C
+C     idid = -6, repeated error test failures occurred on the
+C                  last attempted step in sdassl. a singularity in the
+C                  solution may be present. if you are absolutely
+C                  certain you want to continue, you should restart
+C                  the integration.(provide initial values of y and
+C                  yprime which are consistent)
+C
+C     idid = -7, repeated convergence test failures occurred
+C                  on the last attempted step in sdassl. an inaccurate or
+C                  illconditioned jacobian may be the problem. if you
+C                  are absolutely certain you want to continue, you
+C                  should restart the integration.
+C
+C     idid = -8, the matrix of partial derivatives is singular.
+C                  some of your equations may be redundant.
+C                  sdassl cannot solve the problem as stated.
+C                  it is possible that the redundant equations
+C                  could be removed, and then sdassl could
+C                  solve the problem. it is also possible
+C                  that a solution to your problem either
+C                  does not exist or is not unique.
+C
+C     idid = -9, sdassl had multiple convergence test
+C                  failures, preceeded by multiple error
+C                  test failures, on the last attempted step.
+C                  it is possible that your problem
+C                  is ill-posed, and cannot be solved
+C                  using this code.  or, there may be a
+C                  discontinuity or a singularity in the
+C                  solution.  if you are absolutely certain
+C                  you want to continue, you should restart
+C                  the integration.
+C
+C    idid =-10, sdassl had multiple convergence test failures
+C                  because ires was equal to minus one.
+C                  if you are absolutely certain you want
+C                  to continue, you should restart the
+C                  integration.
+C
+C    idid =-11, ires=-2 was encountered, and control is being
+C                  returned to the calling program.
+C
+C    idid =-12, sdassl failed to compute the initial yprime.
+C               this could happen because the initial
+C               approximation to yprime was not very good, or
+C               if a yprime consistent with the initial y
+C               does not exist.  the problem could also be caused
+C               by an inaccurate or singular iteration matrix.
+C
+C
+C
+C     idid = -13,..,-32 --- cannot occur with this code
+C
+C                       *** following a terminated task ***
+C     if idid= -33, you cannot continue the solution of this
+C                  problem. an attempt to do so will result in your
+C                  run being terminated.
+C
+C  ---------------------------------------------------------------------
+C
+C***REFERENCES  A DESCRIPTION OF DASSL: A DIFFERENTIAL/ALGEBRAIC
+C                  SYSTEM SOLVER, L. R. PETZOLD, SAND82-8637,
+C                  SANDIA NATIONAL LABORATORIES, SEPTEMBER 1982.
+C***ROUTINES CALLED  R1MACH,SDASTP,SDAINI,SDANRM,SDAWTS,SDATRP,XERRWV
+C***COMMON BLOCKS    SDA001
+C***END PROLOGUE  SDASSL

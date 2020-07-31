@@ -1,0 +1,79 @@
+ 
+      SUBROUTINE MINFIT(NM,M,N,A,W,IP,B,IERR,RV1)
+C***BEGIN PROLOGUE  MINFIT
+C***DATE WRITTEN   760101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  D9,D9
+C***KEYWORDS  EIGENVALUES,EIGENVECTORS,EISPACK
+C***AUTHOR  SMITH, B. T., ET AL.
+C***PURPOSE  Compute Singular Value Decomposition of rectangular
+C            matrix and solve related Linear Least Squares problem
+C***DESCRIPTION
+C
+C     This subroutine is a translation of the ALGOL procedure MINFIT,
+C     NUM. MATH. 14, 403-420(1970) by Golub and Reinsch.
+C     HANDBOOK FOR AUTO. COMP., VOL II-LINEAR ALGEBRA, 134-151(1971).
+C
+C     This subroutine determines, towards the solution of the linear
+C                                                        T
+C     system AX=B, the singular value decomposition A=USV  of a real
+C                                         T
+C     M by N rectangular matrix, forming U B rather than U.  Householder
+C     bidiagonalization and a variant of the QR algorithm are used.
+C
+C     On INPUT
+C
+C        NM must be set to the row dimension of two-dimensional
+C          array parameters as declared in the calling program
+C          dimension statement.  Note that NM must be at least
+C          as large as the maximum of M and N.
+C
+C        M is the number of rows of A and B.
+C
+C        N is the number of columns of A and the order of V.
+C
+C        A contains the rectangular coefficient matrix of the system.
+C
+C        IP is the number of columns of B.  IP can be zero.
+C
+C        B contains the constant column matrix of the system
+C          if IP is not zero.  Otherwise B is not referenced.
+C
+C     On OUTPUT
+C
+C        A has been overwritten by the matrix V (orthogonal) of the
+C          decomposition in its first N rows and columns.  If an
+C          error exit is made, the columns of V corresponding to
+C          indices of correct singular values should be correct.
+C
+C        W contains the N (non-negative) singular values of A (the
+C          diagonal elements of S).  They are UNORDERED.  If an
+C          error exit is made, the singular values should be correct
+C          for indices IERR+1,IERR+2,...,N.
+C
+C                                   T
+C        B has been overwritten by U B.  If an error exit is made,
+C                       T
+C          the rows of U B corresponding to indices of correct
+C          singular values should be correct.
+C
+C        IERR is set to
+C          Zero       for normal return,
+C          K          if the K-th singular value has not been
+C                     determined after 30 iterations.
+C
+C        RV1 is a temporary storage array.
+C
+C     Calls PYTHAG(A,B) for sqrt(A**2 + B**2).
+C
+C     Questions and comments should be directed to B. S. Garbow,
+C     APPLIED MATHEMATICS DIVISION, ARGONNE NATIONAL LABORATORY
+C     ------------------------------------------------------------------
+C***REFERENCES  B. T. SMITH, J. M. BOYLE, J. J. DONGARRA, B. S. GARBOW,
+C                 Y. IKEBE, V. C. KLEMA, C. B. MOLER, *MATRIX EIGEN-
+C                 SYSTEM ROUTINES - EISPACK GUIDE*, SPRINGER-VERLAG,
+C                 1976.
+C***ROUTINES CALLED  PYTHAG
+C***END PROLOGUE  MINFIT
+ 
+ 

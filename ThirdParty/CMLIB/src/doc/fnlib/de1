@@ -1,0 +1,72 @@
+ 
+      DOUBLE PRECISION FUNCTION DE1(X)
+C***BEGIN PROLOGUE  DE1
+C***DATE WRITTEN   770701   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C5
+C***KEYWORDS  DOUBLE PRECISION,EXPONENTIAL INTEGRAL,SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the d.p. exponential integral E1(X).
+C***DESCRIPTION
+C
+C DE1(X) calculates the double precision exponential integral
+C E1(X) for positive double precision argument X and the
+C Cauchy principal value for negative X.  If principal values are
+C used everywhere, then for all X
+C
+C        Ei(X) = -E1(-X)   or
+C        E1(X) = -Ei(-X).
+C
+C
+C Series for AE10       on the interval -3.12500E-02 to  0.
+C                                        with weighted error   4.62E-32
+C                                         log weighted error  31.34
+C                               significant figures required  29.70
+C                                    decimal places required  32.18
+C
+C
+C Series for AE11       on the interval -1.25000E-01 to -3.12500E-02
+C                                        with weighted error   2.22E-32
+C                                         log weighted error  31.65
+C                               significant figures required  30.75
+C                                    decimal places required  32.54
+C
+C
+C Series for AE12       on the interval -2.50000E-01 to -1.25000E-01
+C                                        with weighted error   5.19E-32
+C                                         log weighted error  31.28
+C                               significant figures required  30.82
+C                                    decimal places required  32.09
+C
+C
+C Series for E11        on the interval -4.00000E+00 to -1.00000E+00
+C                                        with weighted error   8.49E-34
+C                                         log weighted error  33.07
+C                               significant figures required  34.13
+C                                    decimal places required  33.80
+C
+C
+C Series for E12        on the interval -1.00000E+00 to  1.00000E+00
+C                                        with weighted error   8.08E-33
+C                                         log weighted error  32.09
+C                        approx significant figures required  30.4
+C                                    decimal places required  32.79
+C
+C
+C Series for AE13       on the interval  2.50000E-01 to  1.00000E+00
+C                                        with weighted error   6.65E-32
+C                                         log weighted error  31.18
+C                               significant figures required  30.69
+C                                    decimal places required  32.03
+C
+C
+C Series for AE14       on the interval  0.          to  2.50000E-01
+C                                        with weighted error   5.07E-32
+C                                         log weighted error  31.30
+C                               significant figures required  30.40
+C                                    decimal places required  32.20
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D1MACH,DCSEVL,INITDS,XERROR
+C***END PROLOGUE  DE1
+ 
+ 

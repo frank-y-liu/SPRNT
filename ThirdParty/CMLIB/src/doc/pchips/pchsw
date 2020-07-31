@@ -1,0 +1,54 @@
+ 
+      SUBROUTINE PCHSW(DFMAX,IEXTRM,D1,D2,H,SLOPE,IERR)
+C***BEGIN PROLOGUE  PCHSW
+C***REFER TO  PCHCS
+C***ROUTINES CALLED  R1MACH,XERROR
+C***REVISION DATE  870707   (YYMMDD)
+C***DESCRIPTION
+C
+C         PCHSW:  PCHCS Switch Excursion Limiter.
+C
+C     Called by  PCHCS  to adjust D1 and D2 if necessary to insure that
+C     the extremum on this interval is not further than DFMAX from the
+C     extreme data value.
+C
+C ----------------------------------------------------------------------
+C
+C  Calling sequence:
+C
+C        INTEGER  IEXTRM, IERR
+C        REAL  DFMAX, D1, D2, H, SLOPE
+C
+C        CALL  PCHSW (DFMAX, IEXTRM, D1, D2, H, SLOPE, IERR)
+C
+C   Parameters:
+C
+C     DFMAX -- (input) maximum allowed difference between F(IEXTRM) and
+C           the cubic determined by derivative values D1,D2.  (assumes
+C           DFMAX.GT.0.)
+C
+C     IEXTRM -- (input) index of the extreme data value.  (assumes
+C           IEXTRM = 1 or 2 .  Any value .NE.1 is treated as 2.)
+C
+C     D1,D2 -- (input) derivative values at the ends of the interval.
+C           (Assumes D1*D2 .LE. 0.)
+C          (output) may be modified if necessary to meet the restriction
+C           imposed by DFMAX.
+C
+C     H -- (input) interval length.  (Assumes  H.GT.0.)
+C
+C     SLOPE -- (input) data SLOPE on the interval.
+C
+C     IERR -- (output) error flag.  should be zero.
+C           If IERR=-1, assumption on D1 and D2 is not satisfied.
+C           If IERR=-2, quadratic equation locating extremum has
+C                       negative descriminant (should never occur).
+C
+C    -------
+C    WARNING:  This routine does no validity-checking of arguments.
+C    -------
+C
+C
+C  Fortran intrinsics used:  ABS, SIGN, SQRT.
+C
+C***END PROLOGUE  PCHSW

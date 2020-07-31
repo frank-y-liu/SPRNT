@@ -1,0 +1,71 @@
+ 
+      SUBROUTINE BESY(X,FNU,N,Y)
+C***BEGIN PROLOGUE  BESY
+C***DATE WRITTEN   800501   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C10A3
+C***KEYWORDS  BESSEL FUNCTION,SPECIAL FUNCTION,Y BESSEL FUNCTION
+C***AUTHOR  AMOS, D. E., (Sandia National Laboratories, Albuquerque)
+C***PURPOSE  BESY implements forward recursion on the three term recur-
+C            sion relation for a sequence of non-negative order Bessel
+C            functions Y/SUB(FNU+I-1)/(X), I=1,N for real X.GT.0.0E0 and
+C            non-negative orders FNU.
+C***DESCRIPTION
+C
+C     Written by D. E. Amos, May, 1980
+C
+C     References
+C         SAND-80-1498
+C
+C         On the Numerical Evaluation of the Ordinary Bessel Function
+C         of the Second Kind by N. M. Temme, J. Comp. Physics, 21,
+C         1976, pp. 343-350.
+C
+C         On the Numerical Evaluation of the Modified Bessel Function
+C         of the Third Kind by N. M. Temme, J. Comp. Physics, 19, 1975,
+C         pp. 324-337.
+C
+C         Tables of Bessel Functions of Moderate or Large Orders,
+C         NPL Mathematical Tables, Vol. 6, by F. W. J. Olver, Her
+C         Majesty's Stationery Office, London, 1962.
+C
+C     Abstract
+C         BESY implements forward recursion on the three term
+C         recursion relation for a sequence of non-negative order Bessel
+C         functions Y/sub(FNU+I-1)/(X), I=1,N for real X .GT. 0.0E0 and
+C         non-negative orders FNU.  If FNU .LT. NULIM, orders FNU and
+C         FNU+1 are obtained from BESYNU which computes by a power
+C         series for X .LE. 2, the K Bessel function of an imaginary
+C         argument for 2 .LT. X .LE. 20 and the asymptotic expansion for
+C         X .GT. 20.
+C
+C         If FNU .GE. NULIM, the uniform asymptotic expansion is coded
+C         in ASYJY for orders FNU and FNU+1 to start the recursion.
+C         NULIM is 70 or 100 depending on whether N=1 or N .GE. 2.  An
+C         overflow test is made on the leading term of the asymptotic
+C         expansion before any extensive computation is done.
+C
+C         BESY calls BESYNU,GAMMA,ASYJY,SIH,COSH,BESY0,BESY1
+C                    I1MACH,R1MACH,XERROR
+C
+C     Description of Arguments
+C
+C         Input
+C           X      - X .GT. 0.0E0
+C           FNU    - order of the initial Y function, FNU .GE. 0.0E0
+C           N      - number of members in the sequence, N .GE. 1
+C
+C         Output
+C           Y      - a vector whose first N components contain values
+C                    for the sequence Y(I)=Y/sub(FNU+I-1)/(X), I=1,N.
+C
+C     Error Conditions
+C         Improper input arguments - a fatal error
+C         Overflow - a fatal error
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  ASYJY,BESY0,BESY1,BESYNU,I1MACH,R1MACH,XERROR,
+C                    YAIRY
+C***END PROLOGUE  BESY
+C
+ 
+ 

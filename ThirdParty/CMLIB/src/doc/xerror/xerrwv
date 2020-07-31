@@ -1,0 +1,57 @@
+ 
+      SUBROUTINE XERRWV(MESSG,NMESSG,NERR,LEVEL,NI,I1,I2,NR,R1,R2)
+C***BEGIN PROLOGUE  XERRWV
+C***DATE WRITTEN   800319   (YYMMDD)
+C***REVISION DATE  840405   (YYMMDD)
+C***CATEGORY NO.  R3C
+C***KEYWORDS  ERROR,XERROR PACKAGE
+C***AUTHOR  JONES, R. E., (SNLA)
+C***PURPOSE  Processes error message allowing 2 integer and two real
+C            values to be included in the message.
+C***DESCRIPTION
+C
+C     Abstract
+C        XERRWV processes a diagnostic message, in a manner
+C        determined by the value of LEVEL and the current value
+C        of the library error control flag, KONTRL.
+C        (See subroutine XSETF for details.)
+C        In addition, up to two integer values and two real
+C        values may be printed along with the message.
+C
+C     Description of Parameters
+C      --Input--
+C        MESSG - the Hollerith message to be processed.
+C        NMESSG- the actual number of characters in MESSG.
+C        NERR  - the error number associated with this message.
+C                NERR must not be zero.
+C        LEVEL - error category.
+C                =2 means this is an unconditionally fatal error.
+C                =1 means this is a recoverable error.  (I.e., it is
+C                   non-fatal if XSETF has been appropriately called.)
+C                =0 means this is a warning message only.
+C                =-1 means this is a warning message which is to be
+C                   printed at most once, regardless of how many
+C                   times this call is executed.
+C        NI    - number of integer values to be printed. (0 to 2)
+C        I1    - first integer value.
+C        I2    - second integer value.
+C        NR    - number of real values to be printed. (0 to 2)
+C        R1    - first real value.
+C        R2    - second real value.
+C
+C     Examples
+C        CALL XERROR(29HSMOOTH -- NUM (=I1) WAS ZERO.,29,1,2,
+C    1   1,NUM,0,0,0.,0.)
+C        CALL XERRWV(54HQUADXY -- REQUESTED ERROR (R1) LESS THAN MINIMUM
+C    1 (R2).,54,77,1,0,0,0,2,ERRREQ,ERRMIN)
+C
+C     Written by Ron Jones, with SLATEC Common Math Library Subcommittee
+C     Latest revision ---  19 Mar 1980
+C***REFERENCES  JONES R.E., *SLATEC COMMON MATHEMATICAL LIBRARY ERROR
+C                 HANDLING PACKAGE*, SAND78-1189, SANDIA LABORATORIES,
+C                 1978.
+C***ROUTINES CALLED  FDUMP,I1MACH,J4SAVE,XERABT,XERCTL,XERPRT,XERSAV,
+C                    XGETUA
+C***END PROLOGUE  XERRWV
+ 
+ 

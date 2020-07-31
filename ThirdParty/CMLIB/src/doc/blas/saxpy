@@ -1,0 +1,40 @@
+ 
+      SUBROUTINE SAXPY(N,SA,SX,INCX,SY,INCY)
+C***BEGIN PROLOGUE  SAXPY
+C***DATE WRITTEN   791001   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  D1A7
+C***KEYWORDS  BLAS,LINEAR ALGEBRA,TRIAD,VECTOR
+C***AUTHOR  LAWSON, C. L., (JPL)
+C           HANSON, R. J., (SNLA)
+C           KINCAID, D. R., (U. OF TEXAS)
+C           KROGH, F. T., (JPL)
+C***PURPOSE  S.P. computation y = a*x + y
+C***DESCRIPTION
+C
+C                B L A S  Subprogram
+C    Description of Parameters
+C
+C     --Input--
+C        N  number of elements in input vector(s)
+C       SA  single precision scalar multiplier
+C       SX  single precision vector with N elements
+C     INCX  storage spacing between elements of SX
+C       SY  single precision vector with N elements
+C     INCY  storage spacing between elements of SY
+C
+C     --Output--
+C       SY  single precision result (unchanged if N .LE. 0)
+C
+C     Overwrite single precision SY with single precision SA*SX +SY.
+C     For I = 0 to N-1, replace  SY(LY+I*INCY) with SA*SX(LX+I*INCX) +
+C       SY(LY+I*INCY), where LX = 1 if INCX .GE. 0, else LX = (-INCX)*N
+C       and LY is defined in a similar way using INCY.
+C***REFERENCES  LAWSON C.L., HANSON R.J., KINCAID D.R., KROGH F.T.,
+C                 *BASIC LINEAR ALGEBRA SUBPROGRAMS FOR FORTRAN USAGE*,
+C                 ALGORITHM NO. 539, TRANSACTIONS ON MATHEMATICAL
+C                 SOFTWARE, VOLUME 5, NUMBER 3, SEPTEMBER 1979, 308-323
+C***ROUTINES CALLED  (NONE)
+C***END PROLOGUE  SAXPY
+ 
+ 

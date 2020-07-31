@@ -1,0 +1,84 @@
+ 
+      SUBROUTINE QZVAL(NM,N,A,B,ALFR,ALFI,BETA,MATZ,Z)
+C***BEGIN PROLOGUE  QZVAL
+C***DATE WRITTEN   760101   (YYMMDD)
+C***REVISION DATE  830518   (YYMMDD)
+C***CATEGORY NO.  D4C2C
+C***KEYWORDS  EIGENVALUES,EIGENVECTORS,EISPACK
+C***AUTHOR  SMITH, B. T., ET AL.
+C***PURPOSE  The third step of the QZ algorithm for generalized
+C            eigenproblems. Accepts a pair of real matrices, one
+C            quasi-triangular form and the other in upper triangular
+C            form and computes the eigenvalues of the associated
+C            eigenproblem. Usually preceded by QZHES, QZIT, and
+C            followed by QZVEC.
+C***DESCRIPTION
+C
+C     This subroutine is the third step of the QZ algorithm
+C     for solving generalized matrix eigenvalue problems,
+C     SIAM J. NUMER. ANAL. 10, 241-256(1973) by MOLER and STEWART.
+C
+C     This subroutine accepts a pair of REAL matrices, one of them
+C     in quasi-triangular form and the other in upper triangular form.
+C     It reduces the quasi-triangular matrix further, so that any
+C     remaining 2-by-2 blocks correspond to pairs of complex
+C     eigenvalues, and returns quantities whose ratios give the
+C     generalized eigenvalues.  It is usually preceded by  QZHES
+C     and  QZIT  and may be followed by  QZVEC.
+C
+C     On Input
+C
+C        NM must be set to the row dimension of two-dimensional
+C          array parameters as declared in the calling program
+C          dimension statement.
+C
+C        N is the order of the matrices.
+C
+C        A contains a real upper quasi-triangular matrix.
+C
+C        B contains a real upper triangular matrix.  In addition,
+C          location B(N,1) contains the tolerance quantity (EPSB)
+C          computed and saved in  QZIT.
+C
+C        MATZ should be set to .TRUE. If the right hand transformations
+C          are to be accumulated for later use in computing
+C          eigenvectors, and to .FALSE. otherwise.
+C
+C        Z contains, if MATZ has been set to .TRUE., the
+C          transformation matrix produced in the reductions by QZHES
+C          and QZIT, if performed, or else the identity matrix.
+C          If MATZ has been set to .FALSE., Z is not referenced.
+C
+C     On Output
+C
+C        A has been reduced further to a quasi-triangular matrix
+C          in which all nonzero subdiagonal elements correspond to
+C          pairs of complex eigenvalues.
+C
+C        B is still in upper triangular form, although its elements
+C          have been altered.  B(N,1) is unaltered.
+C
+C        ALFR and ALFI contain the real and imaginary parts of the
+C          diagonal elements of the triangular matrix that would be
+C          obtained if a were reduced completely to triangular form
+C          by unitary transformations.  Non-zero values of ALFI occur
+C          in pairs, the first member positive and the second negative.
+C
+C        BETA contains the diagonal elements of the corresponding B,
+C          normalized to be real and non-negative.  The generalized
+C          eigenvalues are then the ratios ((ALFR+I*ALFI)/BETA).
+C
+C        Z contains the product of the right hand transformations
+C          (for all three steps) if MATZ has been set to .TRUE.
+C
+C     Questions and comments should be directed to B. S. Garbow,
+C     APPLIED MATHEMATICS DIVISION, ARGONNE NATIONAL LABORATORY
+C     ------------------------------------------------------------------
+C***REFERENCES  B. T. SMITH, J. M. BOYLE, J. J. DONGARRA, B. S. GARBOW,
+C                 Y. IKEBE, V. C. KLEMA, C. B. MOLER, *MATRIX EIGEN-
+C                 SYSTEM ROUTINES - EISPACK GUIDE*, SPRINGER-VERLAG,
+C                 1976.
+C***ROUTINES CALLED  (NONE)
+C***END PROLOGUE  QZVAL
+ 
+ 

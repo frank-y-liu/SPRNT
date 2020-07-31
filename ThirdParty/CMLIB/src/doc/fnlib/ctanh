@@ -1,0 +1,19 @@
+*DECK CTANH
+      COMPLEX FUNCTION CTANH (Z)
+C***BEGIN PROLOGUE  CTANH
+C***PURPOSE  Compute the complex hyperbolic tangent.
+C***LIBRARY   SLATEC (FNLIB)
+C***CATEGORY  C4C
+C***TYPE      COMPLEX (CTANH-C)
+C***KEYWORDS  ELEMENTARY FUNCTIONS, FNLIB, HYPERBOLIC TANGENT
+C***AUTHOR  Fullerton, W., (LANL)
+C***DESCRIPTION
+C
+C CTANH(Z) calculates the complex hyperbolic tangent of complex
+C argument Z.  Z is in units of radians.
+C
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  CTAN
+C***REVISION HISTORY  (YYMMDD)
+C   770401  DATE WRITTEN
+C***END PROLOGUE  CTANH

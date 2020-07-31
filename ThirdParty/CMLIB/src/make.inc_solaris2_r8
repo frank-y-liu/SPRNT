@@ -1,0 +1,6 @@
+FORTRAN=f77
+OPTS=-O3 -PIC -xtypemap=real:64,double:128,integer:mixed
+NOPTS=-g -PIC -xtypemap=real:64,double:128,integer:mixed
+RANLIB=ranlib
+MACHCON=SUN.F77-WITH-R8-OPTION
+LIBRARY=libcm.so

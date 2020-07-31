@@ -1,0 +1,42 @@
+ 
+      DOUBLE PRECISION FUNCTION DPCHDF(K,X,S,IERR)
+C***BEGIN PROLOGUE  DPCHDF
+C***REFER TO  DPCHCE,DPCHSP
+C***ROUTINES CALLED  XERROR
+C***REVISION DATE  870707   (YYMMDD)
+C***DESCRIPTION
+C
+C          DPCHDF:   DPCHIP Finite Difference Formula
+C
+C     Uses a divided difference formulation to compute a K-point approx-
+C     imation to the derivative at X(K) based on the data in X and S.
+C
+C     Called by  DPCHCE  and  DPCHSP  to compute 3- and 4-point boundary
+C     derivative approximations.
+C
+C ----------------------------------------------------------------------
+C
+C     On input:
+C        K      is the order of the desired derivative approximation.
+C               K must be at least 3 (error return if not).
+C        X      contains the K values of the independent variable.
+C               X need not be ordered, but the values **MUST** be
+C               distinct.  (Not checked here.)
+C        S      contains the associated slope values:
+C                  S(I) = (F(I+1)-F(I))/(X(I+1)-X(I)), I=1(1)K-1.
+C               (Note that S need only be of length K-1.)
+C
+C     On return:
+C        S      will be destroyed.
+C        IERR   will be set to -1 if K.LT.2 .
+C        DPCHDF  will be set to the desired derivative approximation if
+C               IERR=0 or to zero if IERR=-1.
+C
+C ----------------------------------------------------------------------
+C
+C  Reference:  Carl de Boor, A Practical Guide to Splines, Springer-
+C              Verlag (New York, 1978), pp. 10-16.
+C
+C***END PROLOGUE  DPCHDF
+ 
+ 

@@ -1,0 +1,26 @@
+ 
+      SUBROUTINE DBSKES(XNU,X,NIN,BKE)
+C***BEGIN PROLOGUE  DBSKES
+C***DATE WRITTEN   770601   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C10B3
+C***KEYWORDS  BESSEL FUNCTION,DOUBLE PRECISION,EXPONENTIALLY SCALED,
+C             FRACTIONAL ORDER,MODIFIED BESSEL FUNCTION,SEQUENCE,
+C             SPECIAL FUNCTION,THIRD KIND
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes a d.p. sequence of exponentially scaled modified
+C            Bessel functions of the third kind of fractional order.
+C***DESCRIPTION
+C
+C DBSKES(XNU,X,NIN,BKE) computes a double precision sequence
+C of exponentially scaled modified Bessel functions
+C of the third kind of order XNU + I at X, where X .GT. 0,
+C XNU lies in (-1,1), and I = 0, 1, ... , NIN - 1, if NIN is positive
+C and I = 0, -1, ... , NIN + 1, if NIN is negative.  On return, the
+C vector BKE(.) contains the results at X for order starting at XNU.
+C XNU, X, and BKE are double precison.  NIN is integer.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D1MACH,D9KNUS,XERROR
+C***END PROLOGUE  DBSKES
+ 
+ 

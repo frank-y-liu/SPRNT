@@ -1,0 +1,42 @@
+ 
+      DOUBLE PRECISION FUNCTION DBI(X)
+C***BEGIN PROLOGUE  DBI
+C***DATE WRITTEN   770701   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C10D
+C***KEYWORDS  BAIRY FUNCTION,DOUBLE PRECISION,SPECIAL FUNCTION
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Calculates the d.p. Bairy function (Airy of second kind).
+C***DESCRIPTION
+C
+C DBI(X) calculates the double precision Airy function of the
+C second kind for double precision argument X.
+C
+C Series for BIF        on the interval -1.00000E+00 to  1.00000E+00
+C                                        with weighted error   1.45E-32
+C                                         log weighted error  31.84
+C                               significant figures required  30.85
+C                                    decimal places required  32.40
+C
+C Series for BIG        on the interval -1.00000E+00 to  1.00000E+00
+C                                        with weighted error   1.29E-33
+C                                         log weighted error  32.89
+C                               significant figures required  31.48
+C                                    decimal places required  33.45
+C
+C Series for BIF2       on the interval  1.00000E+00 to  8.00000E+00
+C                                        with weighted error   6.08E-32
+C                                         log weighted error  31.22
+C                        approx significant figures required  30.8
+C                                    decimal places required  31.80
+C
+C Series for BIG2       on the interval  1.00000E+00 to  8.00000E+00
+C                                        with weighted error   4.91E-33
+C                                         log weighted error  32.31
+C                        approx significant figures required  31.6
+C                                    decimal places required  32.90
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D1MACH,D9AIMP,DBIE,DCSEVL,INITDS,XERROR
+C***END PROLOGUE  DBI
+ 
+ 

@@ -1,0 +1,24 @@
+ 
+      DOUBLE PRECISION FUNCTION DEXPRL(X)
+C***BEGIN PROLOGUE  DEXPRL
+C***DATE WRITTEN   770801   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C4B
+C***KEYWORDS  DOUBLE PRECISION,ELEMENTARY FUNCTION,EXPONENTIAL,
+C             FIRST ORDER,RELATIVE ACCURACY
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Calculates the d.p. relative error exponential
+C            (DEXP(X)-1)/X.
+C***DESCRIPTION
+C
+C Evaluate  EXPREL(X) = (EXP(X) - 1.0) / X.   For small ABS(X) the
+C Taylor series is used.  If X is negative the reflection formula
+C         EXPREL(X) = EXP(X) * EXPREL(ABS(X))
+C may be used.  This reflection formula will be of use when the
+C evaluation for small ABS(X) is done by Chebyshev series rather than
+C Taylor series.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  D1MACH
+C***END PROLOGUE  DEXPRL
+ 
+ 

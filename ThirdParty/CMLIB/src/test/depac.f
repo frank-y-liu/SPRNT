@@ -1,0 +1,267 @@
+C
+C   DRIVER FOR TESTING CMLIB ROUTINES
+C      DERKF
+C      DEABM
+C      DEBDF
+C
+C    ONE INPUT DATA CARD IS REQUIRED
+C         READ(LIN,1) KPRINT,TIMES
+C    1    FORMAT(I1,E10.0)
+C
+C     KPRINT = 0   NO PRINTING
+C              1   NO PRINTING FOR PASSED TESTS, SHORT MESSAGE
+C                  FOR FAILED TESTS
+C              2   PRINT SHORT MESSAGE FOR PASSED TESTS, FULLER
+C                  INFORMATION FOR FAILED TESTS
+C              3   PRINT COMPLETE QUICK-CHECK RESULTS
+C
+C                ***IMPORTANT NOTE***
+C         ALL QUICK CHECKS USE ROUTINES R2MACH AND D2MACH
+C         TO SET THE ERROR TOLERANCES.
+C     TIMES IS A CONSTANT MULTIPLIER THAT CAN BE USED TO SCALE THE
+C     VALUES OF R1MACH AND D1MACH SO THAT
+C               R2MACH(I) = R1MACH(I) * TIMES   FOR I=3,4,5
+C               D2MACH(I) = D1MACH(I) * TIMES   FOR I=3,4,5
+C     THIS MAKES IT EASILY POSSIBLE TO CHANGE THE ERROR TOLERANCES
+C     USED IN THE QUICK CHECKS.
+C     IF TIMES .LE. 0.0 THEN TIMES IS DEFAULTED TO 1.0
+C
+C              ***END NOTE***
+C
+      COMMON/UNIT/LUN
+      COMMON/MSG/ICNT,JTEST(38)
+      COMMON/XXMULT/TIMES
+      LUN=I1MACH(2)
+      LIN=I1MACH(1)
+      ITEST=1
+C
+C     READ KPRINT,TIMES PARAMETERS FROM DATA CARD..
+C
+      READ(LIN,1) KPRINT,TIMES
+1     FORMAT(I1,E10.0)
+      IF(TIMES.LE.0.) TIMES=1.
+      CALL XSETUN(LUN)
+      CALL XSETF(0)
+      CALL XERMAX(1000)
+C  TEST DERKF
+      CALL QXRKF(KPRINT,IPASS)
+      ITEST=ITEST*IPASS
+C  TEST DEABM
+      CALL QXABM(KPRINT,IPASS)
+      ITEST=ITEST*IPASS
+C  TEST DEBDF
+      CALL QXBDF(KPRINT,IPASS)
+      ITEST=ITEST*IPASS
+C
+      IF(KPRINT.GE.1.AND.ITEST.NE.1) WRITE(LUN,2)
+2     FORMAT(/' ***** WARNING -- AT LEAST ONE TEST FOR SUBLIBRARY DEPAC
+     1 HAS FAILED ***** ')
+      IF(KPRINT.GE.1.AND.ITEST.EQ.1) WRITE(LUN,3)
+3     FORMAT(/' ----- SUBLIBRARY DEPAC PASSED ALL TESTS ----- ')
+      END
+      DOUBLE PRECISION FUNCTION D2MACH(I)
+      DOUBLE PRECISION D1MACH
+      COMMON/XXMULT/TIMES
+      D2MACH=D1MACH(I)
+      IF(I.EQ.1.OR. I.EQ.2) RETURN
+      D2MACH = D2MACH * DBLE(TIMES)
+      RETURN
+      END
+      SUBROUTINE QXABM(KPRINT,IPASS)
+C
+C   TEST DRIVER FOR DEABM WRITTEN BY J. CHOW, C-3, LANL, 8/81
+C
+C   DEABM IS TESTED FOR SOLVING THE EQUATIONS OF MOTION OF A BODY
+C   MOVING IN A PLANE ABOUT A SPHERICAL EARTH, NAMELY
+C           (D/DT)(D/DT)X = -G*X/R**3
+C           (D/DT)(D/DT)Y = -G*Y/R**3
+C   WHERE G = 1, R = SQRT(X**2 + Y**2) AND
+C           X(0) = 1
+C           (D/DT)X(0) = 0
+C           Y(0) = 0
+C           (D/DT)Y(0) = 1.
+C
+      COMMON /MSG/ICNT,ITEST(38)
+      COMMON/UNIT/LUN
+      DIMENSION U(4),RWORK(204),IWORK(33),INFO(15)
+      EXTERNAL F
+      LRW = 204
+      LIW = 33
+      N = 4
+      T = 0.
+      TOUT = 2.*ACOS(-1.)
+      U(1) = 1.
+      U(2) = 0.
+      U(3) = 0.
+      U(4) = 1.
+      IE = 0
+      RELTOL = SQRT(R2MACH(4))
+      RELERR = .1*RELTOL
+      ABSERR = RELERR**1.5
+      INFO(1) = 0
+      INFO(2) = 0
+      INFO(3) = 1
+      INFO(4) = 0
+      IF(KPRINT.GT.2)WRITE(LUN,610) RELERR,ABSERR
+   10 CALL DEABM(F,N,T,U,TOUT,INFO,RELERR,ABSERR,
+     .           IDID,RWORK,LRW,IWORK,LIW,RPAR,IPAR)
+      R = SQRT(U(1)*U(1)+U(2)*U(2))
+      IF (ABS(R-1.).GT.RELTOL) IE = IE + 1
+      IF(KPRINT.GT.2)WRITE(LUN,610) T, R
+  610 FORMAT(2E20.8)
+      INFO(1) = 1
+      IPASS=1
+      IF (IDID.EQ.1)                    GO TO 10
+      IF (IDID.GT.1)                    GO TO 20
+      CALL XERRWV(' DEABM RETURNS IDID=I1',22,1,1,1,IDID,0,0,0.,0.)
+   20 IF(KPRINT.GT.1.AND.IE.EQ.0) WRITE(LUN,620)
+      IF(IE.NE.0)IPASS=0
+  620 FORMAT('DEABM IS CORRECT.')
+      IF(KPRINT.GE.1.AND.IE.NE.0) WRITE(LUN,630)
+  630 FORMAT('DEABM IS NOT CORRECT.')
+                                        RETURN
+      END
+      SUBROUTINE QXBDF(KPRINT,IPASS)
+C
+C   TEST DRIVER FOR DEBDF WRITTEN BY J. CHOW, C-3, LANL, 8/81
+C
+C   DEBDF IS TESTED FOR SOLVING THE EQUATIONS OF MOTION OF A BODY
+C   MOVING IN A PLANE ABOUT A SPHERICAL EARTH, NAMELY
+C           (D/DT)(D/DT)X = -G*X/R**3
+C           (D/DT)(D/DT)Y = -G*Y/R**3
+C   WHERE G = 1, R = SQRT(X**2 + Y**2) AND
+C           X(0) = 1
+C           (D/DT)X(0) = 0
+C           Y(0) = 0
+C           (D/DT)Y(0) = 1.
+C
+      COMMON/MSG/ICNT,ITEST(38)
+      COMMON/UNIT/LUN
+      DIMENSION U(4),RWORK(306),IWORK(59),INFO(15)
+      EXTERNAL F,JAC
+      LRW = 306
+      LIW = 59
+      N = 4
+      T = 0.
+      TOUT = 2.*ACOS(-1.)
+      U(1) = 1.
+      U(2) = 0.
+      U(3) = 0.
+      U(4) = 1.
+      IE = 0
+      RELTOL = SQRT(R2MACH(4))
+      RELERR = .001*RELTOL
+      ABSERR = RELERR**1.5
+      INFO(1) = 0
+      INFO(2) = 0
+      INFO(3) = 1
+      INFO(4) = 0
+      INFO(5) = 1
+      INFO(6) = 0
+      IF(KPRINT.GT.2)WRITE(LUN,610) RELERR,ABSERR
+   10 CALL DEBDF(F,N,T,U,TOUT,INFO,RELERR,ABSERR,
+     .           IDID,RWORK,LRW,IWORK,LIW,RPAR,IPAR,JAC)
+      R = SQRT(U(1)*U(1)+U(2)*U(2))
+      IF (ABS(R-1.).GT.RELTOL) IE = IE + 1
+      IF(KPRINT.GT.2)WRITE(LUN,610) T, R
+  610 FORMAT(2E20.8)
+      INFO(1) = 1
+      IPASS=1
+      IF (IDID.EQ.1)                    GO TO 10
+      IF (IDID.GT.1)                    GO TO 20
+      CALL XERRWV(' DEBDF RETURNS IDID=I1',22,1,1,1,IDID,0,0,0.,0.)
+   20 IF(KPRINT.GE.2.AND.IE.EQ.0) WRITE(LUN,620)
+  620 FORMAT('DEBDF IS CORRECT.')
+      IF(KPRINT.GE.1.AND.IE.NE.0) WRITE(LUN,630)
+  630 FORMAT('DEBDF IS NOT CORRECT.')
+      IF(IE.NE.0)IPASS=0
+                                        RETURN
+      END
+      SUBROUTINE QXRKF(KPRINT,IPASS)
+C
+C   TEST DRIVER FOR DERKF WRITTEN BY J. CHOW, C-3, LANL, 8/81
+C
+C   DERKF IS TESTED FOR SOLVING THE EQUATIONS OF MOTION OF A BODY
+C   MOVING IN A PLANE ABOUT A SPHERICAL EARTH, NAMELY
+C           (D/DT)(D/DT)X = -G*X/R**3
+C           (D/DT)(D/DT)Y = -G*Y/R**3
+C   WHERE G = 1, R = SQRT(X**2 + Y**2) AND
+C           X(0) = 1
+C           (D/DT)X(0) = 0
+C           Y(0) = 0
+C           (D/DT)Y(0) = 1.
+C
+      COMMON/MSG/ICNT,ITEST(38)
+      COMMON/UNIT/LUN
+      DIMENSION U(4),RWORK(61),IWORK(33),INFO(15)
+      EXTERNAL F
+      LRW = 61
+      LIW = 33
+      N = 4
+      T = 0.
+      TOUT = 2.*ACOS(-1.)
+      U(1) = 1.
+      U(2) = 0.
+      U(3) = 0.
+      U(4) = 1.
+      IE = 0
+      RELTOL = SQRT(R2MACH(4))
+      RELERR = .1*RELTOL
+      ABSERR = RELERR**1.5
+      INFO(1) = 0
+      INFO(2) = 0
+      INFO(3) = 1
+      INFO(4) = 0
+      IF(KPRINT.GT.2)WRITE(LUN,610) RELERR,ABSERR
+   10 CALL DERKF(F,N,T,U,TOUT,INFO,RELERR,ABSERR,
+     .           IDID,RWORK,LRW,IWORK,LIW,RPAR,IPAR)
+      R = SQRT(U(1)*U(1)+U(2)*U(2))
+      IF (ABS(R-1.).GT.RELTOL) IE = IE + 1
+      IF(KPRINT.GT.2)WRITE(LUN,610) T, R
+  610 FORMAT(2E20.8)
+      IPASS=1
+      INFO(1) = 1
+      IF (IDID.EQ.1)                    GO TO 10
+      IF (IDID.GT.1)                    GO TO 20
+      CALL XERRWV(' DERKF RETURNS IDID=I1',22,1,1,1,IDID,0,0,0.,0.)
+      IF(IE.NE.0)IPASS=0
+   20 IF(KPRINT.GT.1.AND.IE.EQ.0) WRITE(LUN,620)
+  620 FORMAT('DERKF IS CORRECT.')
+      IF(KPRINT.GE.1.AND.IE.NE.0) WRITE(LUN,630)
+  630 FORMAT('DERKF IS NOT CORRECT.')
+                                        RETURN
+      END
+      REAL FUNCTION R2MACH(I)
+      COMMON/XXMULT/TIMES
+      R2MACH=R1MACH(I)
+      IF(I.EQ.1.OR. I.EQ.2) RETURN
+      R2MACH = R2MACH * TIMES
+      RETURN
+      END
+      SUBROUTINE F(T,U,UPRIME,RPAR,IPAR)
+      DIMENSION U(*),UPRIME(*),RPAR(*),IPAR(*)
+      RSQ = U(1)*U(1) + U(2)*U(2)
+      R = SQRT(RSQ)
+      R3 = RSQ*R
+      UPRIME(1) = U(3)
+      UPRIME(2) = U(4)
+      UPRIME(3) = -(U(1)/R3)
+      UPRIME(4) = -(U(2)/R3)
+                                        RETURN
+      END
+      SUBROUTINE JAC(T,U,PD,NROWPD,RPAR,IPAR)
+      DIMENSION U(*),PD(NROWPD,*),RPAR(*),IPAR(*)
+      U1SQ = U(1)*U(1)
+      U2SQ = U(2)*U(2)
+      U1U2 = U(1)*U(2)
+      RSQ = U1SQ + U2SQ
+      R = SQRT(RSQ)
+      R5 = RSQ*RSQ*R
+      PD(3,1) = (3.*U1SQ - RSQ)/R5
+      PD(4,1) = 3.*U1U2/R5
+      PD(3,2) = PD(4,1)
+      PD(4,2) = (3.*U2SQ - RSQ)/R5
+      PD(1,3) = 1.
+      PD(2,4) = 1.
+                                        RETURN
+      END

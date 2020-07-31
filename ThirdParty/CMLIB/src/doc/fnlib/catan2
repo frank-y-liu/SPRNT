@@ -1,0 +1,21 @@
+ 
+      COMPLEX FUNCTION CATAN2(CSN,CCS)
+C***BEGIN PROLOGUE  CATAN2
+C***DATE WRITTEN   770401   (YYMMDD)
+C***REVISION DATE  820801   (YYMMDD)
+C***CATEGORY NO.  C4A
+C***KEYWORDS  ARC TANGENT,COMPLEX,ELEMENTARY FUNCTION,QUADRANT
+C***AUTHOR  FULLERTON, W., (LANL)
+C***PURPOSE  Computes the complex arc Tangent in the proper quadrant.
+C***DESCRIPTION
+C
+C CATAN2(CSN,CCS) calculates the complex trigonometric arc
+C tangent of the ratio CSN/CCS and returns a result whose real
+C part is in the correct quadrant (within a multiple of 2*PI).  The
+C result is in units of radians and the real part is between -PI
+C and +PI.
+C***REFERENCES  (NONE)
+C***ROUTINES CALLED  CATAN,XERROR
+C***END PROLOGUE  CATAN2
+ 
+ 
