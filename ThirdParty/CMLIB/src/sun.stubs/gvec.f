@@ -1,2 +1,0 @@
-      subroutine gvec
-      end
