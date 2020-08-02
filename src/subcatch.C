@@ -568,10 +568,10 @@ void Subcatchment::GetDiffs(double &qdiff, double &adiff, double &tdiff) {
   tdiff = sqrt(qdiff * qdiff + adiff * adiff);
 }
 
-// calculate froude number, also returns the ideal step size based on the
-// average of flow velocity and celerity
-double Subcatchment::CalFroude() {
-  int j, cntr, bl;
+// calculate froude number, also returns the ideal step size based on the average of 
+// flow velocity and celerity
+double Subcatchment::CalFroude(char **NAMES) {
+  int j, cntr, bl, al;
   const int onei = 1;
   const double sqg = OPT.SqrtG();
   MasStvEqn *ME;
@@ -591,10 +591,15 @@ double Subcatchment::CalFroude() {
   for (j = 0; j < _num_nodes; j++)
     _workb[j] = sqrt(_workb[j]);
   FORTRAN(dscal)(&_num_nodes, &sqg, &_workb[0], &onei);
-
-  // calculate the froude number
-  for (j = 0; j < _num_nodes; j++)
-    _Froude[j] = _work[2 * j] / _workb[j];
+  
+  _local_min_a = 9999.99;
+  al = -1;
+  for (j=0; j<_num_nodes; j++ ) {
+    if (_X[_NS[j]->AIdx()] < _local_min_a ) { al = j; _local_min_a = _X[_NS[j]->AIdx()];}
+    }
+    
+    // calculate the froude number
+  for (j=0; j<_num_nodes; j++) _Froude[j] = _work[2*j]/_workb[j];
 
   // find out the max froude number, and how many of them are super critical,
   // could be expensive
@@ -609,8 +614,13 @@ double Subcatchment::CalFroude() {
     if (_Froude[j] > OPT.SuperC())
       cntr++;
   }
+
+
   _num_superc = cntr;
   _max_froude = _Froude[bl];
+  _max_froude_node = bl;
+  _max_fr_name = NAMES[_NS[bl]->Id()];
+  _min_a_name = NAMES[_NS[al]->Id()];
 
   // calculate step size, use fudge number in OPT to scale it up
   // we use a heuristic method in place of the Froude number
@@ -935,58 +945,43 @@ void Subcatchment::PrintOnDemand(sptFile F, double tnow, int pstart, int what,
 
   static int prev_t = pstart - OPT.PrintInterval();
 
-  if (!(what & (PRT_Q | PRT_A | PRT_D | PRT_Z)))
-    return;
+  if ( ! (what & ( PRT_Q | PRT_A | PRT_D | PRT_Z | PRT_FR)) ) return;  
 
   int interval = OPT.PrintInterval();
   int tnowmin = (int)(tnow / 60.0);
 
   if (interval == 0) { // we print whatever we have if interval is 0
     // print the header
-    if (OPT.UseMetric() == 1) {
-      sptFprintf(F, "*** id time(min)");
-      if (what & PRT_Q)
-        sptFprintf(F, " flow(m3/s)");
-      if (what & PRT_A)
-        sptFprintf(F, " wet_a(m2)");
-      if (what & PRT_D)
-        sptFprintf(F, " depth(m)");
-      if (what & PRT_Z)
-        sptFprintf(F, " surf_elev(m)");
-      if (what & PRT_XY)
-        sptFprintf(F, " xy-coordinates");
-      sptFprintf(F, "\n");
+    if (OPT.UseMetric() ==1 ) {
+      sptFprintf(F,"*** id time(min)");
+      if ( what & PRT_Q ) sptFprintf(F," flow(m3/s)");
+      if ( what & PRT_A ) sptFprintf(F," wet_a(m2)");
+      if ( what & PRT_D ) sptFprintf(F," depth(m)");
+      if ( what & PRT_Z ) sptFprintf(F," surf_elev(m)");
+      if ( what & PRT_XY) sptFprintf(F," xy-coordinates");
+      if ( what & PRT_FR) sptFprintf(F," froude_num");
+      sptFprintf(F,"\n");
     } else {
-      sptFprintf(F, "*** id time(min)");
-      if (what & PRT_Q)
-        sptFprintf(F, " flow(ft3/s)");
-      if (what & PRT_A)
-        sptFprintf(F, " wet_a(ft2)");
-      if (what & PRT_D)
-        sptFprintf(F, " depth(ft)");
-      if (what & PRT_Z)
-        sptFprintf(F, " surf_elev(ft)");
-      if (what & PRT_XY)
-        sptFprintf(F, " xy-coordinates");
-      sptFprintf(F, "\n");
+      sptFprintf(F,"*** id time(min)");
+      if ( what & PRT_Q ) sptFprintf(F," flow(ft3/s)");
+      if ( what & PRT_A ) sptFprintf(F," wet_a(ft2)");
+      if ( what & PRT_D ) sptFprintf(F," depth(ft)");
+      if ( what & PRT_Z ) sptFprintf(F," surf_elev(ft)");
+      if ( what & PRT_XY) sptFprintf(F," xy-coordinates");
+      if ( what & PRT_FR) sptFprintf(F," froude_num");
+      sptFprintf(F,"\n");
     }
     // print the rest
-    for (int jj = 0; jj < _num_nodes; jj++) {
-      if (!NAMES)
-        sptFprintf(F, "%d %6.2f", _NS[jj]->Id(), tnow / 60.0);
-      else
-        sptFprintf(F, "%s %6.2f", NAMES[_NS[jj]->Id()], tnow / 60.0);
-      if (what & PRT_Q)
-        sptFprintf(F, PRT_FMT, _X[_NS[jj]->QIdx()] * fq);
-      if (what & PRT_A)
-        sptFprintf(F, PRT_FMT, _X[_NS[jj]->AIdx()] * fa);
-      if (what & PRT_D)
-        sptFprintf(F, PRT_FMT, _Depth[jj] * fd);
-      if (what & PRT_Z)
-        sptFprintf(F, PRT_FMT, _Elevation[jj] * fd);
-      if (what & PRT_XY)
-        sptFprintf(F, PRT_XY_FMT, _NS[jj]->X(), _NS[jj]->Y());
-      sptFprintf(F, "\n");
+    for (int jj=0; jj<_num_nodes; jj++) {
+      if (!NAMES) sptFprintf(F, "%d %6.2f", _NS[jj]->Id(), tnow/60.0);
+      else        sptFprintf(F, "%s %6.2f", NAMES[_NS[jj]->Id()], tnow/60.0);
+      if ( what & PRT_Q) sptFprintf(F, PRT_FMT, _X[_NS[jj]->QIdx()] * fq);
+      if ( what & PRT_A) sptFprintf(F, PRT_FMT, _X[_NS[jj]->AIdx()] * fa);
+      if ( what & PRT_D) sptFprintf(F, PRT_FMT, _Depth[jj] * fd);
+      if ( what & PRT_Z) sptFprintf(F, PRT_FMT, _Elevation[jj] * fd);
+      if ( what & PRT_XY) sptFprintf(F, PRT_XY_FMT, _NS[jj]->X(), _NS[jj]->Y());
+      if ( what & PRT_FR) sptFprintf(F, PRT_FMT, _NS[jj]->GetFroude(_X[_NS[jj]->QIdx()] * fq, _X[_NS[jj]->AIdx()] * fa));
+      sptFprintf(F,"\n");
     }
   } else { // we only print at the frequency being asked for
     if (tnowmin < pstart)
@@ -994,123 +989,87 @@ void Subcatchment::PrintOnDemand(sptFile F, double tnow, int pstart, int what,
 
     if (prev_t < 0 && pstart == 0) {
       // print the header
-      if (OPT.UseMetric() == 1) {
-        sptFprintf(F, "*** id time(min)");
-        if (what & PRT_Q)
-          sptFprintf(F, " flow(m3/s)");
-        if (what & PRT_A)
-          sptFprintf(F, " wet_a(m2)");
-        if (what & PRT_D)
-          sptFprintf(F, " depth(m)");
-        if (what & PRT_Z)
-          sptFprintf(F, " surf_elev(m)");
-        if (what & PRT_XY)
-          sptFprintf(F, " xy-coordinates");
-        sptFprintf(F, "\n");
+      if ( OPT.UseMetric() == 1 )  {
+	sptFprintf(F,"*** id time(min)");
+	if ( what & PRT_Q ) sptFprintf(F," flow(m3/s)");
+	if ( what & PRT_A ) sptFprintf(F," wet_a(m2)");
+	if ( what & PRT_D ) sptFprintf(F," depth(m)");
+	if ( what & PRT_Z ) sptFprintf(F," surf_elev(m)");
+	if ( what & PRT_XY) sptFprintf(F," xy-coordinates");
+  if ( what & PRT_FR) sptFprintf(F," froude_num");
+	sptFprintf(F,"\n");
       } else {
-        sptFprintf(F, "*** id time(min)");
-        if (what & PRT_Q)
-          sptFprintf(F, " flow(ft3/s)");
-        if (what & PRT_A)
-          sptFprintf(F, " wet_a(ft2)");
-        if (what & PRT_D)
-          sptFprintf(F, " depth(ft)");
-        if (what & PRT_Z)
-          sptFprintf(F, " surf_elev(ft)");
-        if (what & PRT_XY)
-          sptFprintf(F, " xy-coordinates");
-
-        sptFprintf(F, "\n");
+	sptFprintf(F,"*** id time(min)");
+	if ( what & PRT_Q ) sptFprintf(F," flow(ft3/s)");
+	if ( what & PRT_A ) sptFprintf(F," wet_a(ft2)");
+	if ( what & PRT_D ) sptFprintf(F," depth(ft)");
+	if ( what & PRT_Z ) sptFprintf(F," surf_elev(ft)");
+	if ( what & PRT_XY) sptFprintf(F," xy-coordinates");
+  if ( what & PRT_FR) sptFprintf(F," froude_num");
+	sptFprintf(F,"\n");
       }
 
-      for (int jj = 0; jj < _num_nodes; jj++) {
-        if (!NAMES)
-          sptFprintf(F, "%d %d", _NS[jj]->Id(), 0);
-        else
-          sptFprintf(F, "%s %d", NAMES[_NS[jj]->Id()], 0);
-        if (what & PRT_Q)
-          sptFprintf(F, PRT_FMT, _X[_NS[jj]->QIdx()] * fq);
-        if (what & PRT_A)
-          sptFprintf(F, PRT_FMT, _X[_NS[jj]->AIdx()] * fa);
-        if (what & PRT_D)
-          sptFprintf(F, PRT_FMT, _Depth[jj] * fd);
-        if (what & PRT_Z)
-          sptFprintf(F, PRT_FMT, _Elevation[jj] * fd);
-        if (what & PRT_XY)
-          sptFprintf(F, PRT_XY_FMT, _NS[jj]->X(), _NS[jj]->Y());
-        sptFprintf(F, "\n");
+      for (int jj=0; jj<_num_nodes; jj++) {
+	if (!NAMES) sptFprintf(F, "%d %d", _NS[jj]->Id(), 0 );
+	else        sptFprintf(F, "%s %d", NAMES[_NS[jj]->Id()], 0);
+	if ( what & PRT_Q) sptFprintf(F, PRT_FMT, _X[_NS[jj]->QIdx()] * fq);
+	if ( what & PRT_A) sptFprintf(F, PRT_FMT, _X[_NS[jj]->AIdx()] * fa);
+	if ( what & PRT_D) sptFprintf(F, PRT_FMT, _Depth[jj] * fd);
+	if ( what & PRT_Z) sptFprintf(F, PRT_FMT, _Elevation[jj] * fd);
+	if ( what & PRT_XY) sptFprintf(F, PRT_XY_FMT, _NS[jj]->X(), _NS[jj]->Y());
+  if ( what & PRT_FR) sptFprintf(F, PRT_FMT, _NS[jj]->GetFroude(_X[_NS[jj]->QIdx()] * fq, _X[_NS[jj]->AIdx()] * fa));
+	sptFprintf(F,"\n");
       }
       // move print time stamp forward
       prev_t += interval;
     } else if (tnowmin >= prev_t + interval) {
       int tprt = prev_t + interval;
-      while (prev_t + interval <= tnowmin) {
-        if (OPT.UseMetric() == 1) {
-          sptFprintf(F, "*** id time(min)");
-          if (what & PRT_Q)
-            sptFprintf(F, " flow(m3/s)");
-          if (what & PRT_A)
-            sptFprintf(F, " wet_a(m2)");
-          if (what & PRT_D)
-            sptFprintf(F, " depth(m)");
-          if (what & PRT_Z)
-            sptFprintf(F, " surf_elev(m)");
-          if (what & PRT_XY)
-            sptFprintf(F, " xy-coordinates");
-          sptFprintf(F, "\n");
-        } else {
-          sptFprintf(F, "*** id time(min)");
-          if (what & PRT_Q)
-            sptFprintf(F, " flow(ft3/s)");
-          if (what & PRT_A)
-            sptFprintf(F, " wet_a(ft2)");
-          if (what & PRT_D)
-            sptFprintf(F, " depth(ft)");
-          if (what & PRT_Z)
-            sptFprintf(F, " surf_elev(ft)");
-          if (what & PRT_XY)
-            sptFprintf(F, " xy-coordinates");
-          sptFprintf(F, "\n");
-        }
-        for (int jj = 0; jj < _num_nodes; jj++) {
-          if (!NAMES)
-            sptFprintf(F, "%d %d", _NS[jj]->Id(), prev_t + interval);
-          else
-            sptFprintf(F, "%s %d", NAMES[_NS[jj]->Id()], prev_t + interval);
-          // in order for interpolation, we recompute depth and elevation at the
-          // previous time point on the fly. Note that "tprt" is given in
-          // minutes
-          if (what & PRT_Q)
-            sptFprintf(F, PRT_FMT,
-                       lin_interp(_tm1, _Xtm1[_NS[jj]->QIdx()], _t,
-                                  _X[_NS[jj]->QIdx()], tprt * 60.0) *
-                           fq);
-          if (what & PRT_A)
-            sptFprintf(F, PRT_FMT,
-                       lin_interp(_tm1, _Xtm1[_NS[jj]->AIdx()], _t,
-                                  _X[_NS[jj]->AIdx()], tprt * 60.0) *
-                           fa);
-          if (what & PRT_D)
-            sptFprintf(
-                F, PRT_FMT,
-                lin_interp(_tm1,
-                           _NS[jj]->GetAbsoluteDepth(_Xtm1[_NS[jj]->AIdx()]),
-                           _t, _Depth[jj], tprt * 60.0) *
-                    fd);
-          if (what & PRT_Z)
-            sptFprintf(F, PRT_FMT,
-                       lin_interp(_tm1,
-                                  _NS[jj]->GetElevation(_Xtm1[_NS[jj]->AIdx()]),
-                                  _t, _Elevation[jj], tprt * 60.0) *
-                           fd);
-
-          if (what & PRT_XY)
-            sptFprintf(F, PRT_XY_FMT, _NS[jj]->X(), _NS[jj]->Y());
-          sptFprintf(F, "\n");
-        }
-        // move print time stamp forward
-        prev_t += interval;
-        tprt += interval;
+      while ( prev_t + interval <= tnowmin ) {
+	if ( OPT.UseMetric() == 1 ) {
+	  sptFprintf(F,"*** id time(min)");
+	  if ( what & PRT_Q ) sptFprintf(F," flow(m3/s)");
+	  if ( what & PRT_A ) sptFprintf(F," wet_a(m2)");
+	  if ( what & PRT_D ) sptFprintf(F," depth(m)");
+	  if ( what & PRT_Z ) sptFprintf(F," surf_elev(m)");
+	  if ( what & PRT_XY) sptFprintf(F," xy-coordinates");
+    if ( what & PRT_FR) sptFprintf(F," froude_num");
+	  sptFprintf(F,"\n");
+	} else {
+	  sptFprintf(F,"*** id time(min)");
+	  if ( what & PRT_Q ) sptFprintf(F," flow(ft3/s)");
+	  if ( what & PRT_A ) sptFprintf(F," wet_a(ft2)");
+	  if ( what & PRT_D ) sptFprintf(F," depth(ft)");
+	  if ( what & PRT_Z ) sptFprintf(F," surf_elev(ft)");
+	  if ( what & PRT_XY) sptFprintf(F," xy-coordinates");
+    if ( what & PRT_FR) sptFprintf(F," froude_num");
+	  sptFprintf(F,"\n");
+	}
+	for (int jj=0; jj<_num_nodes; jj++) {
+	  if (!NAMES) sptFprintf(F, "%d %d", _NS[jj]->Id(), prev_t+interval);
+	  else        sptFprintf(F, "%s %d", NAMES[_NS[jj]->Id()], prev_t+interval);
+	  // in order for interpolation, we recompute depth and elevation at the previous
+	  // time point on the fly. Note that "tprt" is given in minutes
+	  if ( what & PRT_Q) sptFprintf(F, PRT_FMT, lin_interp(
+							   _tm1, _Xtm1[_NS[jj]->QIdx()], 
+							   _t,_X[_NS[jj]->QIdx()], tprt*60.0) * fq);
+	  if ( what & PRT_A) sptFprintf(F, PRT_FMT, lin_interp(
+							   _tm1,_Xtm1[_NS[jj]->AIdx()], 
+							   _t,_X[_NS[jj]->AIdx()], tprt*60.0) * fa );
+	  if ( what & PRT_D) sptFprintf(F, PRT_FMT, lin_interp(
+							   _tm1, _NS[jj]->GetAbsoluteDepth(_Xtm1[_NS[jj]->AIdx()]), 
+							   _t,_Depth[jj], tprt*60.0) * fd );
+	  if ( what & PRT_Z) sptFprintf(F, PRT_FMT, lin_interp(
+							   _tm1, _NS[jj]->GetElevation(_Xtm1[_NS[jj]->AIdx()]), 
+							   _t,_Elevation[jj], tprt*60.0) * fd);
+	  if ( what & PRT_XY) sptFprintf(F, PRT_XY_FMT, _NS[jj]->X(), _NS[jj]->Y());
+    if ( what & PRT_FR) sptFprintf(F, PRT_FMT, lin_interp(
+                  _tm1, _NS[jj]->GetFroude(_Xtm1[_NS[jj]->QIdx()] * fq, _Xtm1[_NS[jj]->AIdx()] * fa),
+                  _t, _NS[jj]->GetFroude(_X[_NS[jj]->QIdx()] * fq, _X[_NS[jj]->AIdx()] * fa), tprt*60));
+	  sptFprintf(F,"\n");
+	}
+	// move print time stamp forward
+	prev_t += interval;
+	tprt += interval;
       }
     }
   }
@@ -1560,7 +1519,7 @@ int Subcatchment::UnsteadySolve(double final_t, int jac_num, int max_iter,
   while (1) {
 
     /* determine the time step we should use */
-    optdt = CalFroude(); // optimal time step based on Froude #
+    optdt = CalFroude(NAMES);         // optimal time step based on Froude #
 
     if (first_start) { // case1: first time enter restart, use previous
       dtused = _dt;
@@ -1590,21 +1549,19 @@ int Subcatchment::UnsteadySolve(double final_t, int jac_num, int max_iter,
                          num_iter, minnorm, maxnorm, tdif);
       t_num_iter += num_iter;
       niter_here += num_iter;
-      if (rc < 0) {
+      if ( rc < 0 ) {
 
-        STAT.Add_dy_step(current_t, dtused, num_iter, -1);
+	STAT.Add_dy_step(current_t, dtused, num_iter, -1);
 
-        dtused *= 0.5;
-        negcounter++;
-        if (OPT.DebugLevel() >= 2) {
-          fprintf(stdout, "   reduce time step to %.2e\n", dtused);
-        }
-        if (dtused < OPT.MinDT()) {
-          fprintf(stderr,
-                  "[EE] Bummer: time step too small at time point %.4e\n",
-                  current_t);
-          return ERROR;
-        }
+	dtused *= 0.5; // Half the timestep
+	negcounter++;
+	if ( OPT.DebugLevel() >= 2) {
+	  fprintf(stdout,"   reduce time step to %.2e\n", dtused);
+	}
+	if ( dtused < OPT.MinDT() ) {
+	  fprintf(stderr, "[EE] Bummer: time step too small at time point %.4e\n", current_t);
+	  return ERROR;
+	}
       }
     }
 
@@ -1621,11 +1578,8 @@ int Subcatchment::UnsteadySolve(double final_t, int jac_num, int max_iter,
     if (OPT.DebugLevel() >= 1) {
       int nbk = CheckBankFull();
       int nmn = CheckMinimalA();
-      fprintf(stdout,
-              "  U time=%.4e (%6.2f out of %5.2f hrs), num_iter=%2d, "
-              "falter=%d, dt=%.2e, n_sc=%3d, max_f=%5.2f, n_bk=%3d, n_mn=%3d\n",
-              _t, _t / 3600, tf_hr, niter_here, negcounter, dtused,
-              GetNumSuperC(), GetMaxFroude(), nbk, nmn);
+      fprintf(stdout,"  U time=%.4e (%6.2f out of %5.2f hrs), num_iter=%2d, falter=%d, dt=%.2e, n_SC=%3d, maxF=%5.2f, maxF_at %s, MinA=%.3f, MinA_at %s, n_bk=%3d, n_mn=%3d\n", 
+	      _t, _t/3600, tf_hr, niter_here, negcounter, dtused, GetNumSuperC(), GetMaxFroude(), GetMaxFrName(), GetLocalMinA(), GetMinAName(), nbk, nmn );
     }
 
     // compute depth and elevation when needed
@@ -1784,5 +1738,6 @@ int Subcatchment::ComputeDepthAndElevation(int flags) {
 
   return 0;
 }
+
 
 // End

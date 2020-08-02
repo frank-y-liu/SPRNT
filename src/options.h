@@ -47,6 +47,7 @@ private:
   double _bogus_limit; // bogus limit
   double _ht; // limit to envoke n correction, in meters, set to zero to
               // disable it
+  double _Fr_Criteria;
   int _check_only;  // flag to run kinematic checking only
   int _steady_only; // flag to run steady only
   int _steady_acc;  // flag to accelerate steady solve
@@ -63,10 +64,14 @@ private:
   int _print_d;       // flag to print D
   int _print_z;       // flag to print surf elev
   int _print_xy;      // flag to print xy coordinates
+  int _print_fr;      // Justin add, flag to print froude number
   double _lmax;       // L max, for checking only
   double _lmin;       // L min for checking only
   double _min_n;      // minimal manning's N, for checking only
   char _buf[512];     // for others to copy the content to
+
+
+
   // char      _ssfile[512]; // steady state file
   // char      _chksum[10];  // stores the checksum for both node names and
   // Q/A/lateral
@@ -75,6 +80,7 @@ private:
 
   void _defaults() {
     _g = 9.80665;
+    _Fr_Criteria = 1.0; // A hardcoded thershold for suppressing inertia terms, Justin 20200430
     _sqrt_g = 3.13156;
     _ftom = 0.3048;
     _f3tom3 = 0.028317;
@@ -109,6 +115,7 @@ private:
     _print_d = 0;
     _print_z = 0;
     _print_xy = 0;
+    _print_fr = 0;
     _lmax = 9.9e+9;
     _lmin = 0.0;
     _min_n = 1e-3;
@@ -132,6 +139,7 @@ public:
   double FtoM() const { return _ftom; }
   double F2toM2() const { return _f2tom2; }
   double F3toM3() const { return _f3tom3; }
+  double Froude_Criteria() const { return _Fr_Criteria; }
 
   /* coefficients, can be changed */
   int &UseMetric() { return _use_metric; }
@@ -169,6 +177,7 @@ public:
   int &PrintD() { return _print_d; }
   int &PrintZ() { return _print_z; }
   int &PrintXY() { return _print_xy; }
+  int& PrintFR() {return _print_fr;}
   double &LMax() { return _lmax; }
   double &LMin() { return _lmin; }
   double &MinN() { return _min_n; }
@@ -179,6 +188,8 @@ public:
     _buf[511] = 0;
   }
 
+  
+  
   // char* SSFile() { if (_ssfile[0] != 0 ) return _ssfile; else return NULL; }
   // void  SetSSFile(char *s) { assert(s!=NULL); strncpy(_ssfile,s,512);
   // _ssfile[511]=0;}
@@ -206,9 +217,12 @@ private:
 
   long int _ss_steps;
   long int _dy_steps;
-
+  int      _sc_counter;
   GrowVec<Behavior, 2048> _steady_stats;
   GrowVec<Behavior, 8192> _dynamic_stats;
+  
+
+ 
 
   // stats related to a particular netlist
   char _ssfile[512];
@@ -226,6 +240,7 @@ public:
     _in_file[0] = 0;
     _chksum[0] = 0;
     strcpy(_epoch, "1970-01-01T00:00:00Z");
+    _sc_counter=0;
   }
 
   ~Stats() {}

@@ -99,19 +99,29 @@ Descriptor BdnType_Descriptor[] = {{"AREA", yes, ft_ascii},
                                    {"DEPTH", yes, ft_ascii}};
 
 Descriptor Op_Descriptor[] = {
-    {"METRIC", no, ft_ascii},                                         // 0
-    {"TIMESTEP", no, ft_real},     {"TIMESTEPUNIT", no, ft_ascii},    // 2
-    {"STOPTIME", yes, ft_real},    {"STOPTIMEUNIT", yes, ft_ascii},   // 4
-    {"PRTINTERVAL", no, ft_ascii}, {"PRTINTERVALUNIT", no, ft_ascii}, // 6
-    {"PRTSTART", no, ft_ascii},    {"PRTSTARTUNIT", no, ft_ascii},    // 8
-    {"CHECKONLY", no, ft_ascii},   {"SSFILE", no, ft_ascii},          // 10
-    {"LMAX", no, ft_ascii},        {"LMIN", no, ft_ascii},            // 12
-    {"PRTDEPTH", no, ft_ascii},    {"PRTSURFELEV", no, ft_ascii},     // 14
-    {"PRTQ", no, ft_ascii},        {"PRTA", no, ft_ascii},            // 16
-    {"PRTCOORD", no, ft_ascii},    {"VERBOSE", no, ft_ascii},         // 18
-    {"EPOCH", no, ft_ascii},                                          // 19
-    {"SPINUPTIME", no, ft_real},                                      // 20
-    {"STEADYONLY", no, ft_ascii}                                      // 21
+  { "METRIC",      no,  ft_ascii }, // 0
+  { "TIMESTEP",    no,  ft_real  },
+  { "TIMESTEPUNIT",no,  ft_ascii }, // 2
+  { "STOPTIME",    yes, ft_real  },
+  { "STOPTIMEUNIT",yes, ft_ascii }, // 4
+  { "PRTINTERVAL", no,  ft_ascii }, 
+  { "PRTINTERVALUNIT", no, ft_ascii }, // 6
+  { "PRTSTART", no,  ft_ascii },    
+  { "PRTSTARTUNIT", no, ft_ascii }, // 8
+  { "CHECKONLY",   no,  ft_ascii }, 
+  { "SSFILE",      no,  ft_ascii }, // 10
+  { "LMAX",        no,  ft_ascii }, 
+  { "LMIN",        no,  ft_ascii }, // 12
+  { "PRTDEPTH",    no,  ft_ascii }, 
+  { "PRTSURFELEV", no,  ft_ascii }, // 14
+  { "PRTQ",        no,  ft_ascii }, 
+  { "PRTA",        no,  ft_ascii }, // 16
+  { "PRTCOORD",    no,  ft_ascii },
+  { "PRTFR",       no,  ft_ascii }, // 18  
+  { "VERBOSE",     no,  ft_ascii }, // 19
+  { "EPOCH",       no,  ft_ascii }, // 20
+  { "SPINUPTIME", no,  ft_real  }, //21
+  {"STEADYONLY", no, ft_ascii}  //22
 };
 
 /* return 1 if found anything
@@ -748,21 +758,30 @@ int read_spt_from_file(sptFile F, Subcatchment *SUB, NameStore *NODE_NAMES,
           fprintf(out, "[II]: PrtCoord set to %1d\n", OPT.PrintXY());
       }
 
-      tmp = Prime->Find_Value(Op_Descriptor[18]._key); // verbose
+      tmp = Prime->Find_Value( Op_Descriptor[18]._key); // PrintFroudeNum
+      if (tmp) {
+	      OPT.PrintFR() = atoi(tmp) > 0 ? 1 : 0;
+	      if (out) fprintf(out,"[II]: PrtFr set to %1d\n", OPT.PrintFR() );
+      }
+
+
+      tmp = Prime->Find_Value(Op_Descriptor[19]._key); // verbose
       if (tmp) {
         OPT.DebugLevel() = atoi(tmp) > 0 ? atoi(tmp) : 0;
         if (out)
           fprintf(out, "[II]: Verbose set to %1d\n", OPT.DebugLevel());
       }
 
-      tmp = Prime->Find_Value(Op_Descriptor[19]._key); // epoch
+
+
+      tmp = Prime->Find_Value( Op_Descriptor[20]._key); // epoch
       if (tmp) {
         STAT.SetEpoch(tmp);
         if (out)
           fprintf(out, "[II]: Epoch is set to %s\n", STAT.Epoch());
       }
 
-      tmp = Prime->Find_Value(Op_Descriptor[20]._key); // spinup_time
+      tmp = Prime->Find_Value(Op_Descriptor[21]._key); // spinup_time
       if (tmp)
         spinuptime = atof(tmp);
       if (spinuptime < 0) {
@@ -774,7 +793,7 @@ int read_spt_from_file(sptFile F, Subcatchment *SUB, NameStore *NODE_NAMES,
         spinuptime = 0.0;
       }
 
-      tmp = Prime->Find_Value(Op_Descriptor[21]._key); // steadyonly
+      tmp = Prime->Find_Value(Op_Descriptor[22]._key); // steadyonly
       if (tmp) {
         OPT.SteadyOnly() = atoi(tmp) > 0 ? 1 : 0;
         if (out)

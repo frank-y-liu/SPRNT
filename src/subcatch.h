@@ -21,6 +21,7 @@ comments: the formulation should be taken to remove the known source
 #define _SUBCATCH_H
 
 #include "ngraph.h"
+#include <string>
 #include "node.h"
 #include "solver_interface.h"
 #include "sources.h"
@@ -49,6 +50,10 @@ protected:
   double _max_a;      //
   double _max_q;      //
 
+  char             *_max_fr_name;    // Node Name of max froude number, simply make it long
+  double           _local_min_a;         // Min A in each timestep to print
+  char             *_min_a_name; 
+
   double _t;   // current time point
   double _tm1; // previous time point
   double _dt;  // current time step
@@ -59,6 +64,11 @@ protected:
 
   SparseMatrix _M; // the jacobian matrix
   Solver_Interface *_s;
+  
+  int              _max_froude_node;     //node number of max froude number
+
+
+  
 
   /* internal storage, size varies */
   FlexVec<double> _RHS;       // the right-hand-side
@@ -89,7 +99,7 @@ protected:
 
   // evaluation methods
   // dt > 0 : unsteady
-  // dt > 0 : steady, ignore entries related to Q.
+  // dt < 0 : steady, ignore entries related to Q.
   int EvaluateRHS(double t, double dt);
   int Evaluate(double t, double dt);
 
@@ -114,6 +124,13 @@ public:
   int GetNumSrc() const { return _num_src; }
   int GetNumSuperC() const { return _num_superc; }
   double GetMaxFroude() const { return _max_froude; }
+  //double GetInquireA() const {return _inquire_A; } //Temporary
+  //double GetInquireQ() const {return _inquire_Q;} //Temporary
+  //double GetInquireFr() const {return _inquire_FR;}
+  char* GetMaxFrName() const { return _max_fr_name; }
+  int GetMaxFrNode() const { return _max_froude_node; }
+  double GetLocalMinA() const { return _local_min_a; }
+  char* GetMinAName() const { return _min_a_name; }
 
   void CalSolStat();
   double GetCurTime() const { return _t; }
@@ -192,12 +209,10 @@ public:
   double GetANorm(); // norm of RHS, A only
   double GetNorm();  // norm of RHS, both
 
-  void GetDiffs(double &qdif, double &adif,
-                double &tdif); // diff between X and Xp
-  int GetCelerity(double &max_cel,
-                  double &opt_dt); // return celerity and best dt
-  double CalFroude();              // return optimal step size and
-                                   // calculate froude numbers
+  void GetDiffs(double &qdif, double &adif, double &tdif);  // diff between X and Xp
+  int GetCelerity(double &max_cel, double &opt_dt);    // return celerity and best dt
+  double CalFroude(char **NAMES);                                  // return optimal step size and
+						       // calculate froude numbers
 
   // as the name says
   void CopyXpToX(void) { memcpy(&_X[0], &_Xp[0], _num_eqns * sizeof(double)); }

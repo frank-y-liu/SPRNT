@@ -1,0 +1,214 @@
+# This test case is generated based on case UR6 in MacDonald  (1995) (https://www.reading.ac.uk/web/files/maths/02-95.pdf)
+# The purpose of this test case is to test the change of flow regime from subcritical to supercritical (or vice versa). 
+def options metric=1 verbose=1 end
+def options timestep=3 timestepunit=second end
+def options prtq=1 prta=1 prtdepth=1 prtsurfelevz=1 end
+def options stoptime=20 stoptimeunit=hour end
+def options prtinteval=1 prtintervalunit=hour end
+
+def node id=1 sR=0.00222 n=0.020000 zR=5.630000, hR=0
+   def xy 
+       x=0.00 y=10.00 
+       x=0.00 y=0.00  
+       x=10.00 y=0.00 
+       x=10.00 y=10.00 
+   end
+end
+def node id=2 sR=0.00226 n=0.020000 zR=5.519000, hR=0
+   def xy 
+       x=0.00 y=10.00 
+       x=0.00 y=0.00  
+       x=10.00 y=0.00 
+       x=10.00 y=10.00 
+   end
+end
+def node id=3 sR=0.00234 n=0.020000 zR=5.406000, hR=0
+   def xy 
+       x=0.00 y=10.00 
+       x=0.00 y=0.00  
+       x=10.00 y=0.00 
+       x=10.00 y=10.00 
+   end
+end
+def node id=4 sR=0.00242 n=0.020000 zR=5.289000, hR=0
+   def xy 
+       x=0.00 y=10.00 
+       x=0.00 y=0.00  
+       x=10.00 y=0.00 
+       x=10.00 y=10.00 
+   end
+end
+def node id=5 sR=0.00256 n=0.020000 zR=5.168000, hR=0
+   def xy 
+       x=0.00 y=10.00 
+       x=0.00 y=0.00  
+       x=10.00 y=0.00 
+       x=10.00 y=10.00 
+   end
+end
+def node id=6 sR=0.00278 n=0.020000 zR=5.040000, hR=0
+   def xy 
+       x=0.00 y=10.00 
+       x=0.00 y=0.00  
+       x=10.00 y=0.00 
+       x=10.00 y=10.00 
+   end
+end
+def node id=7 sR=0.00306 n=0.020000 zR=4.901000, hR=0
+   def xy 
+       x=0.00 y=10.00 
+       x=0.00 y=0.00  
+       x=10.00 y=0.00 
+       x=10.00 y=10.00 
+   end
+end
+def node id=8 sR=0.00346 n=0.020000 zR=4.748000, hR=0
+   def xy 
+       x=0.00 y=10.00 
+       x=0.00 y=0.00  
+       x=10.00 y=0.00 
+       x=10.00 y=10.00 
+   end
+end
+def node id=9 sR=0.00404 n=0.020000 zR=4.575000, hR=0
+   def xy 
+       x=0.00 y=10.00 
+       x=0.00 y=0.00  
+       x=10.00 y=0.00 
+       x=10.00 y=10.00 
+   end
+end
+def node id=10 sR=0.00478 n=0.020000 zR=4.373000, hR=0
+   def xy 
+       x=0.00 y=10.00 
+       x=0.00 y=0.00  
+       x=10.00 y=0.00 
+       x=10.00 y=10.00 
+   end
+end
+def node id=11 sR=0.00570 n=0.020000 zR=4.134000, hR=0
+   def xy 
+       x=0.00 y=10.00 
+       x=0.00 y=0.00  
+       x=10.00 y=0.00 
+       x=10.00 y=10.00 
+   end
+end
+def node id=12 sR=0.00670 n=0.020000 zR=3.849000, hR=0
+   def xy 
+       x=0.00 y=10.00 
+       x=0.00 y=0.00  
+       x=10.00 y=0.00 
+       x=10.00 y=10.00 
+   end
+end
+def node id=13 sR=0.00760 n=0.020000 zR=3.514000, hR=0
+   def xy 
+       x=0.00 y=10.00 
+       x=0.00 y=0.00  
+       x=10.00 y=0.00 
+       x=10.00 y=10.00 
+   end
+end
+def node id=14 sR=0.00826 n=0.020000 zR=3.134000, hR=0
+   def xy 
+       x=0.00 y=10.00 
+       x=0.00 y=0.00  
+       x=10.00 y=0.00 
+       x=10.00 y=10.00 
+   end
+end
+def node id=15 sR=0.00868 n=0.020000 zR=2.721000, hR=0
+   def xy 
+       x=0.00 y=10.00 
+       x=0.00 y=0.00  
+       x=10.00 y=0.00 
+       x=10.00 y=10.00 
+   end
+end
+def node id=16 sR=0.00896 n=0.020000 zR=2.287000, hR=0
+   def xy 
+       x=0.00 y=10.00 
+       x=0.00 y=0.00  
+       x=10.00 y=0.00 
+       x=10.00 y=10.00 
+   end
+end
+def node id=17 sR=0.00910 n=0.020000 zR=1.839000, hR=0
+   def xy 
+       x=0.00 y=10.00 
+       x=0.00 y=0.00  
+       x=10.00 y=0.00 
+       x=10.00 y=10.00 
+   end
+end
+def node id=18 sR=0.00918 n=0.020000 zR=1.384000, hR=0
+   def xy 
+       x=0.00 y=10.00 
+       x=0.00 y=0.00  
+       x=10.00 y=0.00 
+       x=10.00 y=10.00 
+   end
+end
+def node id=19 sR=0.00924 n=0.020000 zR=0.925000, hR=0
+   def xy 
+       x=0.00 y=10.00 
+       x=0.00 y=0.00  
+       x=10.00 y=0.00 
+       x=10.00 y=10.00 
+   end
+end
+def node id=20 sR=0.00926 n=0.020000 zR=0.463000, hR=0
+   def xy 
+       x=0.00 y=10.00 
+       x=0.00 y=0.00  
+       x=10.00 y=0.00 
+       x=10.00 y=10.00 
+   end
+end
+def node id=21 sR=0.00926 n=0.020000 zR=0.000000, hR=0
+   def xy 
+       x=0.00 y=10.00 
+       x=0.00 y=0.00  
+       x=10.00 y=0.00 
+       x=10.00 y=10.00 
+   end
+end
+def segment up=1 down=2 length=50.00 end
+def segment up=2 down=3 length=50.00 end
+def segment up=3 down=4 length=50.00 end
+def segment up=4 down=5 length=50.00 end
+def segment up=5 down=6 length=50.00 end
+def segment up=6 down=7 length=50.00 end
+def segment up=7 down=8 length=50.00 end
+def segment up=8 down=9 length=50.00 end
+def segment up=9 down=10 length=50.00 end
+def segment up=10 down=11 length=50.00 end
+def segment up=11 down=12 length=50.00 end
+def segment up=12 down=13 length=50.00 end
+def segment up=13 down=14 length=50.00 end
+def segment up=14 down=15 length=50.00 end
+def segment up=15 down=16 length=50.00 end
+def segment up=16 down=17 length=50.00 end
+def segment up=17 down=18 length=50.00 end
+def segment up=18 down=19 length=50.00 end
+def segment up=19 down=20 length=50.00 end
+def segment up=20 down=21 length=50.00 end
+def qsource
+ location=1
+ def timeseries
+     timeunit=minute
+     t=0 v=20.0
+     t=100 v=20.0
+ end
+end
+
+
+def boundarycondition
+  location=21 type=depth
+  def timeseries
+      timeunit=minute
+      t=0 v=0.619 
+      t=100 v=0.619 
+  end
+end

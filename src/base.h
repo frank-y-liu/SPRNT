@@ -72,6 +72,7 @@ template <class T> inline double DBL_SIGN(T x) {
 /* constants have been moved to options */
 
 /* flags to control what to print */
+#define PRT_FR 0x20 //Added by JustinYu
 #define PRT_XY 0x10
 #define PRT_Q 0x08
 #define PRT_A 0x04
