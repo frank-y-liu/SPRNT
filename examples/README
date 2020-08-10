@@ -1,6 +1,6 @@
 For each test, the makefile will do two things: 
 1. run SPRNT to generate output file
-2. compare the output file with golden results, stored in "golden"
+2. compare the output file with golden results, stored in "golden".
 
 Note that the golden results are generated on a 64bit computer. If you
 compile the code on a 32bit computer, the output files will be different. 
