@@ -2,3 +2,4 @@
 *.so
 *.a
 **/.vscode/
+.DS_Store
