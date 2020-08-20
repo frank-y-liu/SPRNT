@@ -1,0 +1,411 @@
+## A simple Y-shape junction with constant flow Q=0.1 m3/s in minor branch.
+## Hydrograph in the major branch has a ~350 m3/s peak at t=50hrs, which creates reverse
+## flow in the minor branch.    
+def options metric=1 verbose=1 end
+def options timestep=100 timestepunit=hour end
+def options prtq=1 prta=1 prtdepth=1 prtsurfelevz=1 prtfr=1 end
+def options prtinterval=1.0 prtintervalunit=hour end
+def options stoptime=100.0 stoptimeunit=hour end
+def options timestep=5 timestepunit=minute end
+
+
+def node id=1_1 sR=0.003000 n=0.04 zR=200.000000 hR=0.0
+  def trapezoidal
+      bottomwidth=5 slope=1
+  end
+end
+def node id=1_2 sR=0.003000 n=0.04 zR=199.400000 hR=0.0
+  def trapezoidal
+      bottomwidth=5 slope=1
+  end
+end
+def node id=1_3 sR=0.003000 n=0.04 zR=198.800000 hR=0.0
+  def trapezoidal
+      bottomwidth=5 slope=1
+  end
+end
+def node id=1_4 sR=0.003000 n=0.04 zR=198.200000 hR=0.0
+  def trapezoidal
+      bottomwidth=5 slope=1
+  end
+end
+def node id=1_5 sR=0.003000 n=0.04 zR=197.600000 hR=0.0
+  def trapezoidal
+      bottomwidth=5 slope=1
+  end
+end
+def node id=1_6 sR=0.003000 n=0.04 zR=197.000000 hR=0.0
+  def trapezoidal
+      bottomwidth=5 slope=1
+  end
+end
+def node id=1_7 sR=0.003000 n=0.04 zR=196.400000 hR=0.0
+  def trapezoidal
+      bottomwidth=5 slope=1
+  end
+end
+def node id=1_8 sR=0.003000 n=0.04 zR=195.800000 hR=0.0
+  def trapezoidal
+      bottomwidth=5 slope=1
+  end
+end
+def node id=1_9 sR=0.003000 n=0.04 zR=195.200000 hR=0.0
+  def trapezoidal
+      bottomwidth=5 slope=1
+  end
+end
+def node id=1_10 sR=0.003000 n=0.04 zR=194.600000 hR=0.0
+  def trapezoidal
+      bottomwidth=5 slope=1
+  end
+end
+def node id=2_1 sR=0.003000 n=0.04 zR=200.000000 hR=0.0
+  def trapezoidal
+      bottomwidth=3 slope=1
+  end
+end
+def node id=2_2 sR=0.003000 n=0.04 zR=199.400000 hR=0.0
+  def trapezoidal
+      bottomwidth=3 slope=1
+  end
+end
+def node id=2_3 sR=0.003000 n=0.04 zR=198.800000 hR=0.0
+  def trapezoidal
+      bottomwidth=3 slope=1
+  end
+end
+def node id=2_4 sR=0.003000 n=0.04 zR=198.200000 hR=0.0
+  def trapezoidal
+      bottomwidth=3 slope=1
+  end
+end
+def node id=2_5 sR=0.003000 n=0.04 zR=197.600000 hR=0.0
+  def trapezoidal
+      bottomwidth=3 slope=1
+  end
+end
+def node id=2_6 sR=0.003000 n=0.04 zR=197.000000 hR=0.0
+  def trapezoidal
+      bottomwidth=3 slope=1
+  end
+end
+def node id=2_7 sR=0.003000 n=0.04 zR=196.400000 hR=0.0
+  def trapezoidal
+      bottomwidth=3 slope=1
+  end
+end
+def node id=2_8 sR=0.003000 n=0.04 zR=195.800000 hR=0.0
+  def trapezoidal
+      bottomwidth=3 slope=1
+  end
+end
+def node id=2_9 sR=0.003000 n=0.04 zR=195.200000 hR=0.0
+  def trapezoidal
+      bottomwidth=3 slope=1
+  end
+end
+def node id=2_10 sR=0.003000 n=0.04 zR=194.600000 hR=0.0
+  def trapezoidal
+      bottomwidth=3 slope=1
+  end
+end
+def node id=3_1 sR=0.003000 n=0.04 zR=192.000000 hR=0.0
+  def trapezoidal
+      bottomwidth=5 slope=1
+  end
+end
+def node id=3_2 sR=0.003000 n=0.04 zR=191.400000 hR=0.0
+  def trapezoidal
+      bottomwidth=5 slope=1
+  end
+end
+def node id=3_3 sR=0.003000 n=0.04 zR=190.800000 hR=0.0
+  def trapezoidal
+      bottomwidth=5 slope=1
+  end
+end
+def node id=3_4 sR=0.003000 n=0.04 zR=190.200000 hR=0.0
+  def trapezoidal
+      bottomwidth=5 slope=1
+  end
+end
+def node id=3_5 sR=0.003000 n=0.04 zR=189.600000 hR=0.0
+  def trapezoidal
+      bottomwidth=5 slope=1
+  end
+end
+def node id=3_6 sR=0.003000 n=0.04 zR=189.000000 hR=0.0
+  def trapezoidal
+      bottomwidth=5 slope=1
+  end
+end
+def node id=3_7 sR=0.003000 n=0.04 zR=188.400000 hR=0.0
+  def trapezoidal
+      bottomwidth=5 slope=1
+  end
+end
+def node id=3_8 sR=0.003000 n=0.04 zR=187.800000 hR=0.0
+  def trapezoidal
+      bottomwidth=5 slope=1
+  end
+end
+def node id=3_9 sR=0.003000 n=0.04 zR=187.200000 hR=0.0
+  def trapezoidal
+      bottomwidth=5 slope=1
+  end
+end
+def node id=3_10 sR=0.003000 n=0.04 zR=186.600000 hR=0.0
+  def trapezoidal
+      bottomwidth=5 slope=1
+  end
+end
+def segment up=1_1 down=1_2 length=200.000000 end
+def segment up=1_2 down=1_3 length=200.000000 end
+def segment up=1_3 down=1_4 length=200.000000 end
+def segment up=1_4 down=1_5 length=200.000000 end
+def segment up=1_5 down=1_6 length=200.000000 end
+def segment up=1_6 down=1_7 length=200.000000 end
+def segment up=1_7 down=1_8 length=200.000000 end
+def segment up=1_8 down=1_9 length=200.000000 end
+def segment up=1_9 down=1_10 length=200.000000 end
+def segment up=2_1 down=2_2 length=200.000000 end
+def segment up=2_2 down=2_3 length=200.000000 end
+def segment up=2_3 down=2_4 length=200.000000 end
+def segment up=2_4 down=2_5 length=200.000000 end
+def segment up=2_5 down=2_6 length=200.000000 end
+def segment up=2_6 down=2_7 length=200.000000 end
+def segment up=2_7 down=2_8 length=200.000000 end
+def segment up=2_8 down=2_9 length=200.000000 end
+def segment up=2_9 down=2_10 length=200.000000 end
+def segment up=3_1 down=3_2 length=200.000000 end
+def segment up=3_2 down=3_3 length=200.000000 end
+def segment up=3_3 down=3_4 length=200.000000 end
+def segment up=3_4 down=3_5 length=200.000000 end
+def segment up=3_5 down=3_6 length=200.000000 end
+def segment up=3_6 down=3_7 length=200.000000 end
+def segment up=3_7 down=3_8 length=200.000000 end
+def segment up=3_8 down=3_9 length=200.000000 end
+def segment up=3_9 down=3_10 length=200.000000 end
+def junction
+    down=3_1 up1=1_10 coeff1=0.625 up2=2_10 coeff2=0.375 
+end
+def qsource 
+  location=1_1 timeunit=hour
+   def timeseries
+       timeunit=hour
+      t=0 v=50.000000
+      t=1 v=50.000000
+      t=2 v=50.000000
+      t=3 v=50.000000
+      t=4 v=50.000000
+      t=5 v=50.000000
+      t=6 v=50.000000
+      t=7 v=50.000000
+      t=8 v=50.000000
+      t=9 v=50.000000
+      t=10 v=50.000000
+      t=11 v=50.000000
+      t=12 v=50.000000
+      t=13 v=50.000000
+      t=14 v=50.000000
+      t=15 v=50.000000
+      t=16 v=50.000000
+      t=17 v=50.000000
+      t=18 v=50.000000
+      t=19 v=50.000000
+      t=20 v=50.000000
+      t=21 v=50.000000
+      t=22 v=50.000000
+      t=23 v=50.000000
+      t=24 v=50.000000
+      t=25 v=50.000000
+      t=26 v=50.000000
+      t=27 v=50.000000
+      t=28 v=50.000000
+      t=29 v=50.000000
+      t=30 v=50.000000
+      t=31 v=50.000000
+      t=32 v=50.000000
+      t=33 v=50.000000
+      t=34 v=50.000000
+      t=35 v=50.000000
+      t=36 v=50.000000
+      t=37 v=50.000000
+      t=38 v=50.443883
+      t=39 v=51.592943
+      t=40 v=55.115371
+      t=41 v=64.699382
+      t=42 v=87.797761
+      t=43 v=136.971737
+      t=44 v=229.075127
+      t=45 v=379.941885
+      t=46 v=593.982204
+      t=47 v=852.559039
+      t=48 v=1109.532656
+      t=49 v=1301.689935
+      t=50 v=1373.196159
+      t=51 v=1301.689935
+      t=52 v=1109.532656
+      t=53 v=852.559039
+      t=54 v=593.982204
+      t=55 v=379.941885
+      t=56 v=229.075127
+      t=57 v=136.971737
+      t=58 v=87.797761
+      t=59 v=64.699382
+      t=60 v=55.115371
+      t=61 v=51.592943
+      t=62 v=50.443883
+      t=63 v=50.000000
+      t=64 v=50.000000
+      t=65 v=50.000000
+      t=66 v=50.000000
+      t=67 v=50.000000
+      t=68 v=50.000000
+      t=69 v=50.000000
+      t=70 v=50.000000
+      t=71 v=50.000000
+      t=72 v=50.000000
+      t=73 v=50.000000
+      t=74 v=50.000000
+      t=75 v=50.000000
+      t=76 v=50.000000
+      t=77 v=50.000000
+      t=78 v=50.000000
+      t=79 v=50.000000
+      t=80 v=50.000000
+      t=81 v=50.000000
+      t=82 v=50.000000
+      t=83 v=50.000000
+      t=84 v=50.000000
+      t=85 v=50.000000
+      t=86 v=50.000000
+      t=87 v=50.000000
+      t=88 v=50.000000
+      t=89 v=50.000000
+      t=90 v=50.000000
+      t=91 v=50.000000
+      t=92 v=50.000000
+      t=93 v=50.000000
+      t=94 v=50.000000
+      t=95 v=50.000000
+      t=96 v=50.000000
+      t=97 v=50.000000
+      t=98 v=50.000000
+      t=99 v=50.000000
+   end
+end
+def qsource 
+  location=2_1 timeunit=hour
+   def timeseries
+       timeunit=hour
+      t=0 v=0.100000
+      t=1 v=0.100000
+      t=2 v=0.100000
+      t=3 v=0.100000
+      t=4 v=0.100000
+      t=5 v=0.100000
+      t=6 v=0.100000
+      t=7 v=0.100000
+      t=8 v=0.100000
+      t=9 v=0.100000
+      t=10 v=0.100000
+      t=11 v=0.100000
+      t=12 v=0.100000
+      t=13 v=0.100000
+      t=14 v=0.100000
+      t=15 v=0.100000
+      t=16 v=0.100000
+      t=17 v=0.100000
+      t=18 v=0.100000
+      t=19 v=0.100000
+      t=20 v=0.100000
+      t=21 v=0.100000
+      t=22 v=0.100000
+      t=23 v=0.100000
+      t=24 v=0.100000
+      t=25 v=0.100000
+      t=26 v=0.100000
+      t=27 v=0.100000
+      t=28 v=0.100000
+      t=29 v=0.100000
+      t=30 v=0.100000
+      t=31 v=0.100000
+      t=32 v=0.100000
+      t=33 v=0.100000
+      t=34 v=0.100000
+      t=35 v=0.100000
+      t=36 v=0.100000
+      t=37 v=0.100000
+      t=38 v=0.100000
+      t=39 v=0.100000
+      t=40 v=0.100000
+      t=41 v=0.100000
+      t=42 v=0.100000
+      t=43 v=0.100000
+      t=44 v=0.100000
+      t=45 v=0.100000
+      t=46 v=0.100000
+      t=47 v=0.100000
+      t=48 v=0.100000
+      t=49 v=0.100000
+      t=50 v=0.100000
+      t=51 v=0.100000
+      t=52 v=0.100000
+      t=53 v=0.100000
+      t=54 v=0.100000
+      t=55 v=0.100000
+      t=56 v=0.100000
+      t=57 v=0.100000
+      t=58 v=0.100000
+      t=59 v=0.100000
+      t=60 v=0.100000
+      t=61 v=0.100000
+      t=62 v=0.100000
+      t=63 v=0.100000
+      t=64 v=0.100000
+      t=65 v=0.100000
+      t=66 v=0.100000
+      t=67 v=0.100000
+      t=68 v=0.100000
+      t=69 v=0.100000
+      t=70 v=0.100000
+      t=71 v=0.100000
+      t=72 v=0.100000
+      t=73 v=0.100000
+      t=74 v=0.100000
+      t=75 v=0.100000
+      t=76 v=0.100000
+      t=77 v=0.100000
+      t=78 v=0.100000
+      t=79 v=0.100000
+      t=80 v=0.100000
+      t=81 v=0.100000
+      t=82 v=0.100000
+      t=83 v=0.100000
+      t=84 v=0.100000
+      t=85 v=0.100000
+      t=86 v=0.100000
+      t=87 v=0.100000
+      t=88 v=0.100000
+      t=89 v=0.100000
+      t=90 v=0.100000
+      t=91 v=0.100000
+      t=92 v=0.100000
+      t=93 v=0.100000
+      t=94 v=0.100000
+      t=95 v=0.100000
+      t=96 v=0.100000
+      t=97 v=0.100000
+      t=98 v=0.100000
+      t=99 v=0.100000
+   end
+end
+def boundarycondition
+    location=3_10 type=depth
+    def timeseries
+        timeunit=hour
+        t=0 v=3.5
+        t=100 v=3.5
+     end
+end
