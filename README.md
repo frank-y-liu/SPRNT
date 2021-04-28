@@ -40,3 +40,4 @@ Modeling and Simulation](https://dx.doi.org/10.1561/1000000033)" Foundations and
 
 * Yu, Cheng-Wei, Frank Liu and Ben R. Hodges. "[Consistent initial conditions for the Saint-Venant equations in river network modeling](https://doi.org/10.5194/hess-21-4959-2017)" Hydrology and Earth System Science 21.9(2017) 4959.  
 
+* Yu, Cheng-Wei, Ben R. Hodges and Frank Liu, "[A new form of the Saint-Venant equations for variable topography](https://hess.copernicus.org/articles/24/4001/2020/)" Hydrology and Earth System Science 24.8(2020) 4001.
