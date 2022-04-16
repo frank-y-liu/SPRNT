@@ -17,7 +17,7 @@ ROOT=..
 include ${ROOT}/Make.rules
 
 # locations to find the executable 
-CMD=LD_LIBRARY_PATH=../ThirdParty/UF ${SPT_HOME}/sprnt
+CMD=${DYNPATH_CMD} ${SPT_HOME}/sprnt
 DIFF=diff -q
 UNZIP=gzip -q -d
 

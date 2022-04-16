@@ -31,11 +31,8 @@ OPT_FLAG = -O3
 MYDEBUG =
 
 # bits info
-ifeq ("$(shell uname -m)","i686")
-  BITS = -m32
-else
-  BITS = -m64
-endif
+# remove 32 bit support
+BITS = -m64
 
 # arch type
 ARCH := $(shell uname )
@@ -46,8 +43,10 @@ LIBFORTRAN = @LDFLAGS@ -lgfortran
 ## where to find blas, returned by ax_loc_blas
 ifeq (${ARCH},Darwin)
   BLAS = -L${LIBHOME}/ThirdParty/BLAS -lblas
+  DYNPATH_CMD = DYLD_FALLBACK_LIBRARY_PATH=../ThirdParty/UF
 else
   BLAS = @LOC_BLAS_LIBS@
+  DYNPATH_CMD = LD_LIBRARY_PATH=../ThirdParty/UF
 endif
 
 # where to find required libraries

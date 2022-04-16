@@ -32,6 +32,10 @@ if [ $# -lt 1 ]; then
   exit 1
 fi
 
-LD_LIBRARY_PATH=$SCRIPTPATH/../lib:$LD_LIBRARY_PATH $SCRIPTPATH/sprnt "$@"
+if [ `uname` = "Darwin" ]; then
+  DYLD_LIBRARY_PATH=$SCRIPTPATH/../lib:$DYLD_LIBRARY_PATH $SCRIPTPATH/sprnt "$@"
+else
+  LD_LIBRARY_PATH=$SCRIPTPATH/../lib:$LD_LIBRARY_PATH $SCRIPTPATH/sprnt "$@"
+fi
 
 ## 
